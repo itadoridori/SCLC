@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生成されたインフォグラフィック</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+      body {
+        font-family: 'Inter', 'Noto Sans JP', sans-serif;
+        /* Base styles for the generated HTML page - can be overridden by Tailwind classes in the infographic */
+        background-color: #f3f4f6; /* Tailwind gray-100 as a default */
+        color: #1f2937; /* Tailwind gray-800 as a default */
+      }
+      /* Infographic content itself should primarily use Tailwind classes */
+    </style>
+</head>
+<body class="p-2 sm:p-4 md:p-8">
+<div class="container mx-auto p-6 sm:p-8 lg:p-12 bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen font-sans text-gray-800">
+
+    <!-- Title Section -->
+    <section class="text-center mb-12 sm:mb-16 lg:mb-20">
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-4 drop-shadow-md">
+            <span class="bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-500">
+                肝臓とエクソソーム
+            </span>
+            <br class="hidden sm:inline"> 癌発生・転移の知られざる起点・調節因子
+        </h1>
+        <p class="text-md sm:text-lg text-gray-700 mt-4 max-w-3xl mx-auto">海外研究から探る、細胞間コミュニケーションと肝臓の深い関係</p>
+    </section>
+
+    <!-- Introduction: Exosomes -->
+    <section class="mb-12">
+        <article class="bg-white p-6 sm:p-8 rounded-xl shadow-xl border border-blue-300 transform transition duration-300 hover:scale-105 hover:shadow-2xl">
+            <div class="flex items-center mb-5">
+                <!-- SVG Icon: Cell Communication -->
+                <svg class="w-8 h-8 sm:w-10 sm:h-10 text-blue-600 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-.59.295a2 2 0 01-1.82.019l-.59-.3z"></path></svg>
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-900">エクソソームとは？癌における役割</h2>
+            </div>
+            <p class="text-gray-700 leading-relaxed text-sm sm:text-base">
+                エクソソームは、細胞が放出するナノサイズの小胞で、タンパク質やRNAなど様々な情報を運び、細胞間のコミュニケーションを媒介します。癌においては、増殖、浸潤、血管新生、免疫回避、薬剤耐性、そして転移の促進に深く関与する重要なメッセンジャーです。
+            </p>
+            <p class="text-gray-600 leading-relaxed text-xs sm:text-sm mt-3">
+                特に、癌細胞が遠隔臓器に転移する前に、その場所を転移に適した環境（前転移ニッチ: PMN）に準備する役割を担います。
+            </p>
+        </article>
+    </section>
+
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10">
+
+        <!-- Section 2: Liver's Dual Role - HCC -->
+        <article class="bg-white p-6 sm:p-8 rounded-xl shadow-xl border border-red-400 transform transition duration-300 hover:scale-105 hover:shadow-2xl">
+             <div class="flex items-center mb-5">
+                <!-- SVG Icon: Liver/Cancer -->
+                 <svg class="w-8 h-8 sm:w-10 sm:h-10 text-red-600 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-900">肝臓の役割①：原発性肝癌 (HCC)</h2>
+            </div>
+            <p class="text-gray-700 leading-relaxed text-sm sm:text-base">
+                肝細胞癌 (HCC) から放出されるエクソソームは、HCC自体の増殖、浸潤、血管新生、免疫回避、薬剤耐性に関与します。
+            </p>
+            <p class="text-gray-700 leading-relaxed text-sm sm:text-base mt-3">
+                特に、高転移性のHCC細胞由来エクソソームに含まれるタンパク質 <strong class="font-semibold text-red-700">RNPEP</strong> は、肺に到達し、肺の線維芽細胞を癌関連線維芽細胞 (CAF) に変化させ、肺転移を強力に促進することが示されています。
+            </p>
+        </article>
+
+        <!-- Section 3: Liver's Dual Role - Diseased Non-cancerous -->
+        <article class="bg-white p-6 sm:p-8 rounded-xl shadow-xl border border-orange-400 transform transition duration-300 hover:scale-105 hover:shadow-2xl">
+             <div class="flex items-center mb-5">
+                <!-- SVG Icon: Diseased Liver -->
+                 <svg class="w-8 h-8 sm:w-10 sm:h-10 text-orange-600 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 3h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-900">肝臓の役割②：病的な非癌性肝状態</h2>
+            </div>
+            <p class="text-gray-700 leading-relaxed text-sm sm:text-base">
+                癌ではないものの、病的な状態にある肝臓（例: NAFLD、肝硬変、老化肝細胞）から放出されるエクソソームも、肝外の癌発生や進行に影響を与える可能性が示唆されています。
+            </p>
+            <p class="text-gray-700 leading-relaxed text-sm sm:text-base mt-3">
+                NAFLDは様々な肝外癌のリスク増加と関連しており、NAFLD肝細胞のエクソソームは <strong class="font-semibold text-orange-700">miR-192-5p</strong> を多く含み、炎症促進に寄与します。老化肝細胞は <strong class="font-semibold text-orange-700">ACSL4</strong> を含むEVsを放出し、肝内での癌促進に関与します。
+            </p>
+            <p class="text-gray-600 leading-relaxed text-xs sm:text-sm mt-3">
+                これらのエクソソームや分泌物が、全身に影響を与え、他の場所での癌発生に有利な環境を作り出すと考えられています。
+            </p>
+        </article>
+
+        <!-- Section 4: Molecular Cargo & Pathways -->
+        <article class="bg-white p-6 sm:p-8 rounded-xl shadow-xl border border-purple-400 transform transition duration-300 hover:scale-105 hover:shadow-2xl lg:col-span-2">
+             <div class="flex items-center mb-5">
+                <!-- SVG Icon: Molecules -->
+                 <svg class="w-8 h-8 sm:w-10 sm:h-10 text-purple-600 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-900">分子メカニズム：主要カーゴと経路</h2>
+            </div>
+            <p class="text-gray-700 leading-relaxed text-sm sm:text-base mb-4">
+                肝臓関連エクソソームは、特定の分子を搭載し、遠隔臓器の細胞を再プログラムします。
+            </p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm sm:text-base">
+                <div>
+                    <h3 class="font-semibold text-gray-800 mb-2 flex items-center">
+                        <svg class="w-5 h-5 text-purple-500 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill-rule="evenodd" d="M9.243 3.03a1 1 0 01.727 1.213L9.53 6h2.94l.56-2.043a1 1 0 11.915-.252l1.658.422a1 1 0 01.252 1.658l-.422 1.658L16 10.47v2.94l2.043.56a1 1 0 11.252.915l-.422 1.658a1 1 0 01-1.658.252l-1.658-.422L10.47 16H7.53l-.56 2.043a1 1 0 01-.915.252l-1.658-.422a1 1 0 01-.252-1.658l.422-1.658L4 13.53v-2.94l-2.043-.56a1 1 0 01-.252-.915l.422-1.658a1 1 0 011.658-.252l1.658.422L9.53 6h-.007l-.28-1.03a1 1 0 011.213-.72zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"></path></svg>
+                        主要カーゴ
+                    </h3>
+                    <ul class="list-disc list-inside space-y-1 text-gray-700">
+                        <li><strong class="font-semibold text-purple-700">タンパク質:</strong> RNPEP (肺転移促進), ACSL4 (肝細胞老化)</li>
+                        <li><strong class="font-semibold text-purple-700">非コードRNA:</strong> miRNA (例: miR-192-5p - NAFLD関連), lncRNA</li>
+                        <li><strong class="font-semibold text-purple-700">表面分子:</strong> インテグリン (臓器指向性に関与の可能性)</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-gray-800 mb-2 flex items-center">
+                        <svg class="w-5 h-5 text-purple-500 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M10 1a9 9 0 019 9c0 4.274-2.183 8.124-5.5 10.25-.524-.833-1.15-1.7-1.828-2.515C10.385 16.56 9.934 16 9.022 16H6.5A3.5 3.5 0 013 12.5v-2A3.5 3.5 0 016.5 7H8a1 1 0 000-2H6.5A5.5 5.5 0 001 10.5v2A5.5 5.5 0 006.5 18h2.522c1.28 0 2.01-.933 2.476-1.548.722-.937 1.465-1.878 2.187-2.784A9 9 0 0110 1z"></path></svg>
+                        調節される経路
+                    </h3>
+                    <ul class="list-disc list-inside space-y-1 text-gray-700">
+                        <li>MAPK/ERK, PI3K/AKT</li>
+                        <li>WNT, STAT3</li>
+                        <li>上皮間葉転換 (EMT)</li>
+                        <li>血管新生</li>
+                        <li>老化関連分泌現象 (SASP)</li>
+                    </ul>
+                </div>
+            </div>
+        </article>
+
+         <!-- Section 5: Organotropism & PMN -->
+        <article class="bg-white p-6 sm:p-8 rounded-xl shadow-xl border border-teal-400 transform transition duration-300 hover:scale-105 hover:shadow-2xl">
+             <div class="flex items-center mb-5">
+                <!-- SVG Icon: Target/Location -->
+                 <svg class="w-8 h-8 sm:w-10 sm:h-10 text-teal-600 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-900">臓器指向性と前転移ニッチ (PMN)</h2>
+            </div>
+            <p class="text-gray-700 leading-relaxed text-sm sm:text-base">
+                肝臓から放出されたエクソソームは、「偵察隊」のように遠隔臓器（特に肺）に到達し、転移細胞が定着しやすい環境 (PMN) を準備します。
+            </p>
+            <p class="text-gray-700 leading-relaxed text-sm sm:text-base mt-3">
+                エクソソーム表面の <strong class="font-semibold text-teal-700">インテグリン</strong> などの分子が、特定臓器への「ホーミングシグナル」となり、転移の臓器指向性を決定すると考えられています。
+            </p>
+             <p class="text-gray-600 leading-relaxed text-xs sm:text-sm mt-3">
+                ※肝臓由来エクソソームの特定インテグリンによる肝外臓器指向性に関する直接的な証拠は、さらなる研究が必要です。
+            </p>
+        </article>
+
+        <!-- Section 6: Clinical Significance -->
+        <article class="bg-gradient-to-br from-green-500 to-blue-600 text-white p-6 sm:p-8 rounded-xl shadow-xl transform transition duration-300 hover:scale-105 hover:shadow-2xl">
+             <div class="flex items-center mb-5">
+                <!-- SVG Icon: Clinical -->
+                 <svg class="w-8 h-8 sm:w-10 sm:h-10 text-white mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+                <h2 class="text-xl sm:text-2xl font-bold">臨床的意義と治療への応用</h2>
+            </div>
+            <p class="text-gray-100 leading-relaxed text-sm sm:text-base mb-4">
+                肝臓を癌影響のハブとして理解することは、診断・治療戦略に新たな道を開きます。
+            </p>
+            <ul class="list-disc list-inside space-y-3 text-gray-100 text-sm sm:text-base">
+                <li><strong class="font-semibold text-green-200">診断/予後予測:</strong> 肝臓関連エクソソームのカーゴ (タンパク質、RNA、表面分子) は、早期発見、転移リスク予測、病勢モニタリングのバイオマーカーとして有望。</li>
+                <li><strong class="font-semibold text-green-200">治療法:</strong>
+                    <ul class="list-circle list-inside ml-4 space-y-1">
+                        <li>有害エクソソームの放出抑制</li>
+                        <li>癌促進性カーゴの中和</li>
+                        <li>標的細胞への取り込み阻害</li>
+                    </ul>
+                </li>
+            </ul>
+        </article>
+
+        <!-- Section 7: Future Research -->
+        <article class="bg-white p-6 sm:p-8 rounded-xl shadow-xl border border-gray-400 transform transition duration-300 hover:scale-105 hover:shadow-2xl lg:col-span-2">
+             <div class="flex items-center mb-5">
+                <!-- SVG Icon: Research -->
+                 <svg class="w-8 h-8 sm:w-10 sm:h-10 text-gray-600 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v16a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-900">今後の研究課題</h2>
+            </div>
+            <p class="text-gray-700 leading-relaxed text-sm sm:text-base mb-4">
+                非癌性の病的肝状態が肝外癌に与える影響など、未解明な点も多く残されています。
+            </p>
+             <ul class="list-disc list-inside space-y-2 text-gray-700 text-sm sm:text-base">
+                <li>様々な病的肝状態由来エクソソームの肝外癌促進メカニズム解明</li>
+                <li>肝臓由来エクソソームカーゴ（特に非コードRNAやインテグリンコード）の特定</li>
+                <li>in vivo研究による因果関係の確認</li>
+                <li>肝臓微小環境がエクソソームに与える影響の理解</li>
+                <li>大規模臨床コホートでのバイオマーカー検証</li>
+                <li>肝臓由来エクソソームと遠隔臓器の免疫系との相互作用</li>
+            </ul>
+        </article>
+
+    </div>
+
+    <!-- Conclusion -->
+    <section class="text-center mt-12 sm:mt-16 lg:mt-20 p-6 sm:p-8 bg-indigo-800 text-white rounded-xl shadow-xl">
+        <h3 class="text-xl sm:text-2xl font-bold mb-4">まとめ</h3>
+        <p class="text-md sm:text-lg leading-relaxed mb-6">
+            肝臓は、エクソソームを介して癌の発生・転移において中心的な役割を果たす可能性が示されています。このメカニズムの解明は、新たな診断・治療法開発に繋がると期待されます。
+        </p>
+        <p class="text-sm sm:text-md text-indigo-200">
+            本情報は海外研究からの考察に基づいています。<br>詳細は引用文献をご確認ください。
+        </p>
+    </section>
+
+</div>
+</body>
+</html>
