@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インタラクティブプレゼンテーション：肝臓と癌エクソソーム仮説</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #0D1B2A;
+            color: #E0E1DD;
+            overflow: hidden;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            padding-bottom: 150px; /* space for narration */
+            transition: opacity 0.7s ease-in-out, transform 0.7s ease-in-out;
+            opacity: 0;
+            transform: scale(0.95);
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: scale(1);
+            z-index: 10;
+        }
+        
+        .slide.inactive {
+            opacity: 0;
+            transform: scale(1.05);
+            z-index: 1;
+        }
+
+        .pagination-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #415A77;
+            margin: 0 8px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .pagination-dot.active {
+            background-color: #E0E1DD;
+            transform: scale(1.2);
+        }
+        
+        .nav-arrow {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 20;
+            background-color: rgba(224, 225, 221, 0.1);
+            color: #E0E1DD;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+            border: 1px solid #415A77;
+        }
+        .nav-arrow:hover {
+            background-color: rgba(224, 225, 221, 0.2);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        #prevBtn { left: 20px; }
+        #nextBtn { right: 20px; }
+
+        .content-card {
+            background-color: #1B263B;
+            border: 1px solid #415A77;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .flow-item {
+            background-color: #0D1B2A;
+            border: 1px solid #415A77;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+         .flow-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 178, 255, 0.2);
+         }
+
+        .flow-arrow-icon {
+            color: #778DA9;
+            font-size: 2.5rem;
+        }
+        .chart-container {
+            position: relative;
+            height: 40vh;
+            width: 100%;
+            max-width: 500px;
+            margin: auto;
+        }
+        
+        .narration-script {
+            position: absolute;
+            bottom: 60px; /* Position above pagination */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            max-width: 800px;
+            padding: 1rem;
+            background-color: rgba(13, 27, 42, 0.7);
+            border-top: 1px solid #415A77;
+            border-radius: 0.5rem;
+            text-align: center;
+            font-style: italic;
+            color: #A9B4C2;
+            font-size: 0.9rem;
+        }
+
+    </style>
+</head>
+<body>
+
+    <main id="presentation-container">
+        <!-- Slide 1: Title -->
+        <section class="slide active" id="slide-0">
+            <div class="text-center">
+                <h1 class="text-4xl md:text-6xl font-black tracking-tight" style="color: #E0E1DD;">肝臓とエクソソーム</h1>
+                <h2 class="text-2xl md:text-3xl font-bold mt-2" style="color: #778DA9;">全身性発がんの隠れた関係性</h2>
+                <p class="mt-8 max-w-2xl mx-auto text-lg">
+                    肝臓が「がんの種」を全身に拡散するハブとなり得る—。この野心的で新しい科学的仮説を、インタラクティブなプレゼンテーションで探ります。
+                </p>
+                 <p class="mt-12 text-sm text-[#415A77]">矢印キーまたは画面のナビゲーションボタンで進んでください</p>
+            </div>
+            <div class="narration-script">
+                <p>本日は、がん研究の最前線にある、野心的で新しい仮説について探ります。それは、私たちの体のフィルターである『肝臓』が、実は『がんの種』を全身に広める司令塔かもしれない、というものです。このプレゼンテーションで、その謎に迫っていきましょう。</p>
+            </div>
+        </section>
+
+        <!-- Slide 2: Hypothesis -->
+        <section class="slide" id="slide-1">
+            <div class="content-card text-center">
+                <h2 class="text-2xl md:text-3xl font-bold mb-8 text-[#E0E1DD]">中心的な仮説</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="flow-item">
+                        <div class="text-4xl mb-3">📥</div>
+                        <h3 class="font-bold text-lg">1. 蓄積</h3>
+                        <p class="text-sm mt-1 text-[#778DA9]">肝臓が、ウイルスや細菌由来の有害なエクソソームを収集・蓄積する。</p>
+                    </div>
+                    <div class="flow-item">
+                        <div class="text-4xl mb-3">🧬</div>
+                        <h3 class="font-bold text-lg">2. 内包</h3>
+                        <p class="text-sm mt-1 text-[#778DA9]">蓄積された粒子内で「がんDNA」が生成・パッケージングされる。</p>
+                    </div>
+                    <div class="flow-item">
+                        <div class="text-4xl mb-3">📤</div>
+                        <h3 class="font-bold text-lg">3. 拡散</h3>
+                        <p class="text-sm mt-1 text-[#778DA9]">肝臓から放出され、全身のがん発生の引き金となる。</p>
+                    </div>
+                </div>
+            </div>
+            <div class="narration-script">
+                <p>この仮説の核心は、3つのステップに集約されます。第一に『蓄積』。第二に『内包』。そして第三に『拡散』。肝臓が有害なナノ粒子を集め、その中でがんDNAを育み、そして全身にばらまく、という衝撃的なシナリオです。</p>
+            </div>
+        </section>
+
+        <!-- Slide 3: Process Flow -->
+        <section class="slide" id="slide-2">
+             <div class="content-card">
+                <h2 class="text-2xl md:text-3xl font-bold mb-8 text-center text-[#E0E1DD]">仮説のプロセスフロー</h2>
+                <div class="grid grid-cols-1 md:grid-cols-5 items-center gap-4 text-sm">
+                    <div class="flow-item">
+                        <h3 class="font-bold">入力源</h3>
+                        <p class="text-[#778DA9]">ウイルス・細菌・腫瘍細胞</p>
+                    </div>
+                    <div class="flow-arrow-icon text-center">→</div>
+                    <div class="flow-item">
+                        <h3 class="font-bold">ハブ（肝臓）</h3>
+                        <p class="text-[#778DA9]">蓄積・処理・変化</p>
+                    </div>
+                    <div class="flow-arrow-icon text-center">→</div>
+                    <div class="flow-item">
+                        <h3 class="font-bold">全身への影響</h3>
+                        <p class="text-[#778DA9]">遠隔転移・免疫抑制</p>
+                    </div>
+                </div>
+                 <p class="text-center mt-6 text-[#778DA9]">
+                    肝臓は単なるフィルターではなく、有害なシグナルを処理し、全身に再放送する「アクティブなハブ」として機能する可能性があります。
+                 </p>
+            </div>
+            <div class="narration-script">
+                 <p>このプロセスは、一連の流れとして考えられます。外部からの『入力源』が肝臓という『ハブ』に集められ、変化したシグナルが『全身への影響』として現れます。肝臓は単なる受け身のフィルターではなく、積極的にシグナルを再放送する司令塔として機能するのです。</p>
+            </div>
+        </section>
+        
+        <!-- Slide 4: Evidence Radar Chart -->
+        <section class="slide" id="slide-3">
+             <div class="content-card">
+                <h2 class="text-2xl md:text-3xl font-bold mb-2 text-center text-[#E0E1DD]">証拠の強度評価</h2>
+                <p class="text-center text-sm mb-6 text-[#778DA9]">仮説を構成する各要素の科学的証拠はどの程度確立されているのでしょうか？</p>
+                 <div class="chart-container">
+                    <canvas id="evidenceRadarChart"></canvas>
+                </div>
+            </div>
+            <div class="narration-script">
+                <p>では、この仮説はどの程度確かなのでしょうか？このレーダーチャートは、各要素の科学的証拠の強さを示しています。『ウイルスと肝がんの関連』は非常に強い一方、『肝臓からの放出と全身性がんの直接的証明』は、まだ研究途上であることがわかります。</p>
+            </div>
+        </section>
+
+        <!-- Slide 5: DNA Source Bar Chart -->
+        <section class="slide" id="slide-4">
+             <div class="content-card">
+                 <h2 class="text-2xl md:text-3xl font-bold mb-2 text-center text-[#E0E1DD]">「がんDNA」の供給源候補</h2>
+                 <p class="text-center text-sm mb-6 text-[#778DA9]">エクソソームが運ぶ「がんDNA」はどこから来るのか？最も有力な候補はウイルス由来のものです。</p>
+                 <div class="chart-container" style="height: 50vh;">
+                     <canvas id="dnaSourceBarChart"></canvas>
+                 </div>
+            </div>
+            <div class="narration-script">
+                 <p>エクソソームが運ぶという『がんDNA』。その正体は何なのでしょうか？最も有力な候補は、B型肝炎ウイルスなどが宿主の細胞に組み込む『ウイルス由来のDNA』です。これは肝がん発生との強い関連が長年指摘されています。</p>
+            </div>
+        </section>
+        
+        <!-- Slide 6: Implications -->
+        <section class="slide" id="slide-5">
+             <div class="content-card">
+                 <h2 class="text-2xl md:text-3xl font-bold mb-8 text-center text-[#E0E1DD]">将来への示唆</h2>
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                     <div class="text-center">
+                         <div class="text-5xl mb-4">🩺</div>
+                         <h3 class="text-xl font-bold">新しい診断法</h3>
+                         <p class="mt-2 text-[#778DA9]">血液検査（リキッドバイオプシー）でエクソソームを調べることにより、超早期のがん発見や再発予測が実現するかもしれません。</p>
+                     </div>
+                     <div class="text-center">
+                         <div class="text-5xl mb-4">💊</div>
+                         <h3 class="text-xl font-bold">新しい治療戦略</h3>
+                         <p class="mt-2 text-[#778DA9]">有害なエクソソームの働きをブロックする、あるいは肝臓からの放出を抑制する、敢えて放出させて体外に排除するといった新しいアプローチの治療薬開発に繋がります。</p>
+                     </div>
+                 </div>
+            </div>
+            <div class="narration-script">
+                <p>この仮説が証明されれば、私たちの未来は大きく変わるでしょう。診断の面では、血液一滴でがんを発見する『新しい診断法』が。治療の面では、がんの根源を叩く『新しい治療戦略』が生まれ、がんとの戦い方が根本的に変わる可能性があります。</p>
+            </div>
+        </section>
+
+        <!-- Slide 7: Conclusion -->
+        <section class="slide" id="slide-6">
+            <div class="text-center">
+                <h2 class="text-3xl md:text-4xl font-bold mb-6 text-[#E0E1DD]">結論と今後の展望</h2>
+                <p class="max-w-3xl mx-auto text-lg mb-8">
+                    この仮説はまだ証明されていませんが、多くの点で既存の研究と一致しており、非常に説得力があります。もし正しければ、がんの理解、予防、治療法を根底から変える「パラダイムシフト」をもたらすでしょう。
+                </p>
+                <button id="restartBtn" class="bg-[#415A77] hover:bg-[#778DA9] text-white font-bold py-3 px-6 rounded-lg transition-colors">最初からやり直す</button>
+            </div>
+            <div class="narration-script">
+                <p>ご覧いただいたように、この『肝臓エクソソーム仮説』は、まだ多くの謎を秘めていますが、そのポテンシャルは計り知れません。今後の研究が、がん克服への新たな扉を開くことを期待しましょう。ご清聴ありがとうございました。</p>
+            </div>
+        </section>
+    </main>
+    
+    <!-- Navigation -->
+    <div id="prevBtn" class="nav-arrow">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </div>
+    <div id="nextBtn" class="nav-arrow">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+    </div>
+    
+    <!-- Pagination -->
+    <div id="pagination" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-20 flex"></div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const slides = document.querySelectorAll('.slide');
+            const totalSlides = slides.length;
+            let currentSlide = 0;
+
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const paginationContainer = document.getElementById('pagination');
+            const restartBtn = document.getElementById('restartBtn');
+
+            let radarChartInstance = null;
+            let barChartInstance = null;
+
+            function createPagination() {
+                for (let i = 0; i < totalSlides; i++) {
+                    const dot = document.createElement('div');
+                    dot.classList.add('pagination-dot');
+                    dot.dataset.slide = i;
+                    paginationContainer.appendChild(dot);
+                }
+            }
+
+            function updatePagination() {
+                const dots = document.querySelectorAll('.pagination-dot');
+                dots.forEach(dot => {
+                    dot.classList.remove('active');
+                    if (parseInt(dot.dataset.slide) === currentSlide) {
+                        dot.classList.add('active');
+                    }
+                });
+            }
+
+            function updateNavButtons() {
+                prevBtn.style.display = currentSlide === 0 ? 'none' : 'flex';
+                nextBtn.style.display = currentSlide === totalSlides - 1 ? 'none' : 'flex';
+            }
+
+            function showSlide(index) {
+                slides.forEach((slide, i) => {
+                    slide.classList.remove('active');
+                    slide.classList.add('inactive');
+                });
+                
+                slides[index].classList.remove('inactive');
+                slides[index].classList.add('active');
+                
+                currentSlide = index;
+                updatePagination();
+                updateNavButtons();
+                
+                if(index === 3 && !radarChartInstance) {
+                    initRadarChart();
+                }
+                if(index === 4 && !barChartInstance) {
+                    initBarChart();
+                }
+            }
+            
+            function next() {
+                if (currentSlide < totalSlides - 1) {
+                    showSlide(currentSlide + 1);
+                }
+            }
+
+            function prev() {
+                if (currentSlide > 0) {
+                    showSlide(currentSlide - 1);
+                }
+            }
+            
+            function goToSlide(index) {
+                showSlide(index);
+            }
+
+            createPagination();
+            showSlide(0);
+
+            nextBtn.addEventListener('click', next);
+            prevBtn.addEventListener('click', prev);
+            restartBtn.addEventListener('click', () => goToSlide(0));
+            
+            paginationContainer.addEventListener('click', (e) => {
+                if (e.target.classList.contains('pagination-dot')) {
+                    const slideIndex = parseInt(e.target.dataset.slide);
+                    goToSlide(slideIndex);
+                }
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight') {
+                    next();
+                } else if (e.key === 'ArrowLeft') {
+                    prev();
+                }
+            });
+
+            function wrapLabel(str, maxLen = 16) {
+                if (str.length <= maxLen) return str;
+                const words = str.split(/\s+|\(|（|）|\)/);
+                let lines = [];
+                let currentLine = '';
+                for (const word of words) {
+                    if (word === '') continue;
+                    if ((currentLine + word).length > maxLen) {
+                        lines.push(currentLine.trim());
+                        currentLine = '';
+                    }
+                    currentLine += word + ' ';
+                }
+                lines.push(currentLine.trim());
+                return lines.filter(line => line.length > 0);
+            }
+            
+            const tooltipTitleCallback = (tooltipItems) => {
+                const item = tooltipItems[0];
+                let label = item.chart.data.labels[item.dataIndex];
+                return Array.isArray(label) ? label.join(' ') : label;
+            };
+
+            const sharedTooltipConfig = { plugins: { tooltip: { callbacks: { title: tooltipTitleCallback } } } };
+
+            function initRadarChart() {
+                const ctx = document.getElementById('evidenceRadarChart').getContext('2d');
+                radarChartInstance = new Chart(ctx, {
+                    type: 'radar',
+                    data: {
+                        labels: [
+                            wrapLabel('エクソソームのがん促進役割'), 
+                            wrapLabel('肝臓へのエクソソーム蓄積'), 
+                            wrapLabel('エクソソームによるDNA輸送'), 
+                            wrapLabel('ウイルスと肝がんの関連'), 
+                            wrapLabel('肝臓からの放出と全身性がんの直接的証明')
+                        ],
+                        datasets: [{
+                            label: '証拠の強度',
+                            data: [5, 4, 3, 5, 2],
+                            backgroundColor: 'rgba(0, 178, 255, 0.2)',
+                            borderColor: 'rgb(0, 178, 255)',
+                            pointBackgroundColor: 'rgb(0, 178, 255)',
+                        }]
+                    },
+                    options: {
+                        ...sharedTooltipConfig,
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { ...sharedTooltipConfig.plugins, legend: { display: false } },
+                        scales: {
+                            r: {
+                                beginAtZero: true, max: 5, stepSize: 1,
+                                grid: { color: 'rgba(119, 141, 169, 0.3)' },
+                                angleLines: { color: 'rgba(119, 141, 169, 0.3)' },
+                                pointLabels: { color: '#E0E1DD', font: { size: 12 } },
+                                ticks: {
+                                    backdropColor: 'rgba(0,0,0,0)',
+                                    color: '#778DA9',
+                                    font: { weight: 'bold' },
+                                    callback: (value) => ['', '弱い', '推測', '中', '強い', '確実'][value]
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            function initBarChart() {
+                const ctx = document.getElementById('dnaSourceBarChart').getContext('2d');
+                barChartInstance = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: [wrapLabel('ウイルスDNA（例: HBVゲノム組込み）'), wrapLabel('腫瘍細胞由来の変異DNA'), wrapLabel('細菌由来のDNA（間接的影響）')],
+                        datasets: [{
+                            label: '証拠の相対的な強さ',
+                            data: [90, 65, 30],
+                            backgroundColor: ['#00B2FF', '#415A77', '#778DA9'],
+                            borderRadius: 5,
+                        }]
+                    },
+                    options: {
+                        ...sharedTooltipConfig,
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { ...sharedTooltipConfig.plugins, legend: { display: false } },
+                        scales: {
+                            x: {
+                                beginAtZero: true, max: 100,
+                                grid: { color: 'rgba(119, 141, 169, 0.1)' },
+                                ticks: { color: '#778DA9', callback: (value) => value + '%' }
+                            },
+                            y: {
+                                grid: { display: false },
+                                ticks: { color: '#E0E1DD', font: { size: 14 } }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
