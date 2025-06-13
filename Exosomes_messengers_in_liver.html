@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インフォグラフィック：肝臓をハブとするエクソソームと全身性発がん仮説</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+        .flow-box {
+            border-width: 2px;
+            padding: 1rem;
+            text-align: center;
+            border-radius: 0.5rem;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        .flow-arrow {
+            font-size: 2.5rem;
+            line-height: 1;
+            color: #778DA9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem 0;
+        }
+        @media (min-width: 768px) {
+            .flow-arrow {
+                padding: 0;
+            }
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            max-height: 400px;
+        }
+         @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-[#E0E1DD]">
+
+    <header class="bg-[#0D1B2A] text-white p-6 text-center shadow-lg">
+        <h1 class="text-3xl md:text-4xl font-bold">肝臓とエクソソーム：全身性発がんの隠れた関係</h1>
+        <p class="mt-2 text-lg text-[#778DA9]">科学的仮説をインフォグラフィックで解説</p>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-8">
+
+        <section id="hypothesis" class="mb-12">
+            <div class="bg-white rounded-lg shadow-xl p-6 md:p-8">
+                <h2 class="text-2xl font-bold text-[#1B263B] mb-4 text-center">中心的な仮説：肝臓は「がんの種」を全身に拡散するハブか？</h2>
+                <p class="text-base text-gray-700 leading-relaxed mb-6">
+                    私たちの体内で、肝臓はフィルターとして機能し、血液中の不要な物質を取り除いています。しかし、ある仮説では、この肝臓が細菌、ウイルス、あるいは異常な細胞から放出される「エクソソーム」と呼ばれるナノ粒子を蓄積してしまうと提唱されています。これらのエクソソームが「がんDNA」を内包し、時間とともに全身に放出されることで、様々な場所でがんが発生する引き金になる可能性がある、というものです。このインフォグラフィックでは、この複雑で新しい仮説の根拠と課題を探ります。
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                    <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-[#415A77]">
+                        <h3 class="text-lg font-bold text-[#1B263B]">① 蓄積</h3>
+                        <p class="text-sm mt-1">肝臓が様々な由来のエクソソームを収集・蓄積する。</p>
+                    </div>
+                    <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-[#415A77]">
+                        <h3 class="text-lg font-bold text-[#1B263B]">② 内包</h3>
+                        <p class="text-sm mt-1">粒子内に「がんDNA」がパッケージングされる。</p>
+                    </div>
+                    <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-[#415A77]">
+                        <h3 class="text-lg font-bold text-[#1B263B]">③ 拡散</h3>
+                        <p class="text-sm mt-1">肝臓から放出され、全身のがん発生に関与する。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="exosomes" class="mb-12">
+             <div class="bg-white rounded-lg shadow-xl p-6 md:p-8">
+                <h2 class="text-2xl font-bold text-[#1B263B] mb-4 text-center">エクソソームとは？細胞間のメッセンジャー</h2>
+                <p class="text-base text-gray-700 leading-relaxed mb-6 text-center">
+                    エクソソームは、細胞が放出する直径30～150ナノメートルの微小な袋です。内部に様々な「積み荷（カーゴ）」を搭載し、細胞から細胞へと情報を伝達する重要な役割を担います。がん細胞が放出するエクソソームは、がんの進行を助ける有害な情報を持っていることがあります。
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="border p-4 rounded-lg bg-gray-50">
+                        <h3 class="font-bold text-lg text-[#1B263B]">🧬 核酸 (DNA/RNA)</h3>
+                        <p class="text-sm mt-2">がん遺伝子やウイルス由来のDNA、細胞の増殖や転移を制御するマイクロRNAなどを輸送し、受け取った細胞の性質を変化させます。</p>
+                    </div>
+                    <div class="border p-4 rounded-lg bg-gray-50">
+                        <h3 class="font-bold text-lg text-[#1B263B]"> PROTEINS (タンパク質)</h3>
+                        <p class="text-sm mt-2">がんの増殖、浸潤、血管新生を促進するタンパク質を運び、がん細胞が育ちやすい環境（前転移ニッチ）を形成します。</p>
+                    </div>
+                    <div class="border p-4 rounded-lg bg-gray-50">
+                        <h3 class="font-bold text-lg text-[#1B263B]">🦠 ウイルス由来成分</h3>
+                        <p class="text-sm mt-2">B型・C型肝炎ウイルスなどがエクソソームの仕組みを乗っ取り、自身の遺伝子やタンパク質を運ばせ、免疫から逃れたり、がん化を促進します。</p>
+                    </div>
+                    <div class="border p-4 rounded-lg bg-gray-50">
+                        <h3 class="font-bold text-lg text-[#1B263B]"> BACTERIAL (細菌由来成分)</h3>
+                        <p class="text-sm mt-2">細菌自体も小胞を放出します。これらが慢性的な炎症を引き起こし、間接的にがんの発生に関与する可能性があります。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="flow" class="mb-12">
+            <div class="bg-white rounded-lg shadow-xl p-6 md:p-8">
+                <h2 class="text-2xl font-bold text-[#1B263B] mb-4 text-center">仮説のプロセスフロー：肝臓を介した全身性がん化の連鎖</h2>
+                <p class="text-base text-gray-700 leading-relaxed mb-8 text-center">
+                    この仮説は、一連のドミノ倒しのようなプロセスとして考えられます。外部からの因子が肝臓で処理され、それが変化して全身に影響を及ぼすという流れです。以下にその主要なステップを図解します。
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-7 items-center gap-y-4">
+                    <div class="flow-box border-[#247BA0] bg-blue-50 col-span-1 md:col-span-2">
+                        <h3 class="font-bold">1. 入力と蓄積</h3>
+                        <p class="text-sm">ウイルス、細菌、腫瘍細胞由来のエクソソームが血流に乗り、フィルターである肝臓に集積する。</p>
+                    </div>
+                    <div class="flow-arrow md:col-span-1">➡️</div>
+                    <div class="flow-box border-[#F25F5C] bg-red-50 col-span-1 md:col-span-2">
+                        <h3 class="font-bold">2. 処理と変化</h3>
+                        <p class="text-sm">肝細胞がこれらの粒子を取り込み、「がんDNA」が導入されたり、肝臓自体が炎症を起こして病的エクソソームを産生するようになる。</p>
+                    </div>
+                    <div class="flow-arrow md:col-span-1">➡️</div>
+                    <div class="flow-box border-[#00B2FF] bg-cyan-50 col-span-1 md:col-span-2">
+                        <h3 class="font-bold">3. 放出と全身播種</h3>
+                        <p class="text-sm">病的になった肝臓から、「がんDNA」を含むエクソソームが再び血流に放出され、全身に拡散する。</p>
+                    </div>
+                </div>
+                 <div class="text-center text-4xl mt-4 text-[#778DA9]">⬇️</div>
+                 <div class="flow-box border-[#00F5D4] bg-teal-50 mt-4 md:col-span-7 max-w-md mx-auto">
+                    <h3 class="font-bold">4. 全身での影響</h3>
+                    <p class="text-sm">全身に到達したエクソソームが、遠隔臓器での前転移ニッチ形成、免疫抑制、がん細胞の増殖を促し、全身的ながん発生につながる。</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="evidence" class="mb-12">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white rounded-lg shadow-xl p-6">
+                    <h2 class="text-xl font-bold text-[#1B263B] mb-4 text-center">証拠の強度：仮説の各要素はどれくらい確かなのか？</h2>
+                     <p class="text-sm text-gray-600 leading-relaxed mb-4">
+                        この仮説は複数の要素から成り立っていますが、それぞれの科学的証拠の強さには差があります。レーダーチャートは、各要素の現時点での評価を示しています。
+                    </p>
+                    <div class="chart-container">
+                        <canvas id="evidenceRadarChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-xl p-6">
+                    <h2 class="text-xl font-bold text-[#1B263B] mb-4 text-center">「がんDNA」の供給源：有力な候補は？</h2>
+                    <p class="text-sm text-gray-600 leading-relaxed mb-4">
+                        エクソソームが運ぶ「がんDNA」には複数の起源が考えられます。特にB型肝炎ウイルス（HBV）由来のDNAが宿主のゲノムに組み込まれる現象は、肝がん発生との強い関連が示されており、最も有力な候補とされています。
+                    </p>
+                    <div class="chart-container h-80">
+                        <canvas id="dnaSourceBarChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="implications" class="mb-12">
+            <div class="bg-white rounded-lg shadow-xl p-6 md:p-8">
+                <h2 class="text-2xl font-bold text-[#1B263B] mb-4 text-center">今後の展望と私たちへの影響</h2>
+                <p class="text-base text-gray-700 leading-relaxed mb-6">
+                   この仮説が証明されれば、がんの理解、診断、治療に大きな変化をもたらす可能性があります。肝臓は単なる転移先ではなく、がんを全身に広げる「司令塔」としての役割を持つことになります。
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-green-50 p-4 rounded-lg border-l-4 border-green-500">
+                        <h3 class="text-lg font-bold text-green-800">新しい診断法（リキッドバイオプシー）</h3>
+                        <p class="text-sm mt-1">血液中のエクソソームを調べることで、超早期のがん発見や再発予測が可能になるかもしれません。</p>
+                    </div>
+                    <div class="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-500">
+                        <h3 class="text-lg font-bold text-yellow-800">新しい治療戦略</h3>
+                        <p class="text-sm mt-1">有害なエクソソームの肝臓への取り込みをブロックしたり、その放出を抑制する新しい治療薬の開発につながる可能性があります。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-[#0D1B2A] text-white p-4 text-center text-sm">
+        <p>本インフォグラフィックは提示された研究報告に基づいて作成されたものであり、確定的な医学的結論を示すものではありません。</p>
+        <p>&copy; 2025 Infographic Generator. All rights reserved.</p>
+    </footer>
+
+    <script>
+        function wrapLabel(str, maxLen) {
+            if (str.length <= maxLen) {
+                return str;
+            }
+            const words = str.split(' ');
+            let lines = [];
+            let currentLine = '';
+            for (const word of words) {
+                if ((currentLine + word).length > maxLen) {
+                    lines.push(currentLine.trim());
+                    currentLine = '';
+                }
+                currentLine += word + ' ';
+            }
+            lines.push(currentLine.trim());
+            return lines.filter(line => line.length > 0);
+        }
+
+        const tooltipTitleCallback = function(tooltipItems) {
+            const item = tooltipItems[0];
+            let label = item.chart.data.labels[item.dataIndex];
+            if (Array.isArray(label)) {
+              return label.join(' ');
+            } else {
+              return label;
+            }
+        };
+        
+        const sharedTooltipConfig = {
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        title: tooltipTitleCallback
+                    }
+                }
+            }
+        };
+
+        const chartColors = {
+            blue: '#00B2FF',
+            teal: '#00F5D4',
+            red: '#F25F5C',
+            yellow: '#FFE066',
+            darkBlue: '#247BA0',
+            gray: '#778DA9'
+        };
+
+        const evidenceRadarCtx = document.getElementById('evidenceRadarChart').getContext('2d');
+        const evidenceData = {
+            labels: [
+                wrapLabel('エクソソームのがん促進役割', 16), 
+                wrapLabel('肝臓へのエクソソーム蓄積', 16), 
+                wrapLabel('エクソソームによるDNA輸送', 16), 
+                wrapLabel('ウイルスと肝がんの関連', 16), 
+                wrapLabel('肝臓からの放出と全身性がんの直接的証明', 16)
+            ],
+            datasets: [{
+                label: '証拠の強度',
+                data: [5, 4, 3, 5, 2],
+                backgroundColor: 'rgba(36, 123, 160, 0.2)',
+                borderColor: chartColors.darkBlue,
+                borderWidth: 2,
+                pointBackgroundColor: chartColors.darkBlue,
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: chartColors.darkBlue
+            }]
+        };
+        new Chart(evidenceRadarCtx, {
+            type: 'radar',
+            data: evidenceData,
+            options: {
+                ...sharedTooltipConfig,
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        angleLines: { color: '#ddd' },
+                        grid: { color: '#ddd' },
+                        pointLabels: { 
+                            font: { size: 12 },
+                            color: '#333'
+                        },
+                        ticks: {
+                            beginAtZero: true,
+                            min: 0,
+                            max: 5,
+                            stepSize: 1,
+                            backdropColor: 'rgba(0,0,0,0)',
+                            callback: function(value) {
+                                const labels = ['', '弱い', '推測的', '中程度', '強い', '非常に強い'];
+                                return labels[value];
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    ...sharedTooltipConfig.plugins,
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+
+        const dnaSourceBarCtx = document.getElementById('dnaSourceBarChart').getContext('2d');
+        const dnaSourceData = {
+            labels: [
+                wrapLabel('ウイルスDNA (例: HBVゲノム組込み)', 20),
+                wrapLabel('腫瘍細胞由来の変異DNA', 20),
+                wrapLabel('細菌由来のDNA (間接的影響)', 20)
+            ],
+            datasets: [{
+                label: '証拠の相対的な強さ',
+                data: [90, 65, 30],
+                backgroundColor: [chartColors.red, chartColors.yellow, chartColors.blue],
+                borderColor: '#fff',
+                borderWidth: 2,
+                borderRadius: 5,
+            }]
+        };
+        new Chart(dnaSourceBarCtx, {
+            type: 'bar',
+            data: dnaSourceData,
+            options: {
+                ...sharedTooltipConfig,
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            callback: function(value) { return value + '%' }
+                        },
+                        grid: {
+                            display: false
+                        }
+                    },
+                    y: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                plugins: {
+                    ...sharedTooltipConfig.plugins,
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: false
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
