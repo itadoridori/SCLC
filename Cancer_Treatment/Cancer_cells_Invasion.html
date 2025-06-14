@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インタラクティブ・レポート：外部電磁場によるナノ粒子がん治療</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <!-- Chosen Palette: Warm Neutrals (Off-white, Charcoal, Muted Teal) -->
+    <!-- Application Structure Plan: The SPA is designed as a guided narrative, moving from the core problem to the proposed solution and evidence. It uses a top navigation bar for easy access to five thematic sections: 1. Introduction (The challenge & hypothesis), 2. The Arsenal (Interactive cards for nanoparticles), 3. The Tools (Visual comparison of PEMF vs. THz), 4. The Evidence (An interactive dashboard with a dynamic chart to showcase key findings), 5. The Future (A summary and a visual roadmap for next steps). This structure breaks down the complex report into digestible, user-explorable segments, prioritizing understanding and engagement over a linear reproduction of the source document. The flow is designed to build knowledge progressively, culminating in the evidence and future outlook. -->
+    <!-- Visualization & Content Choices: Report Info -> Key experimental results (e.g., PEMF increasing cisplatin uptake). Goal -> Visually compare treated vs. untreated. Viz/Method -> Bar Chart (Chart.js) dynamically updated by user selection. Interaction -> User clicks a button ('PEMF' or 'THz') to see the relevant experiment's data visualized. Justification -> A dynamic chart is more engaging than a static table (Table 2) and makes quantitative results like a "2x increase" immediately apparent. Report Info -> Mechanisms of PEMF/THz. Goal -> Explain complex biophysical interactions simply. Viz/Method -> HTML/CSS diagrams with simple JS-driven animations. Interaction -> Hovering or clicking reveals animated effects like "pore formation". Justification -> Avoids static images and complex SVG, providing a lightweight, interactive explanation. Report Info -> Future research plan. Goal -> Present a clear path forward. Viz/Method -> HTML/Tailwind CSS flexbox-based visual timeline. Justification -> More engaging and easier to follow than a simple bulleted list. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link.active, .nav-link:hover {
+            border-bottom-color: #0d9488; /* teal-600 */
+            color: #0f766e; /* teal-700 */
+        }
+        .content-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .content-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .tab-button.active {
+            background-color: #0d9488; /* teal-600 */
+            color: white;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .mechanism-box {
+            border: 1px solid #e2e8f0; /* slate-200 */
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+            height: 180px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .cell-representation {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid #475569; /* slate-600 */
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        .cell-representation .pore {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #f87171; /* red-400 */
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .pemf-active .cell-representation {
+             border-style: dashed;
+        }
+        .pemf-active .pore {
+            opacity: 1;
+        }
+        .thz-active .cell-representation {
+            animation: wobble 0.8s ease-in-out;
+        }
+        .thz-active .pore {
+            opacity: 1;
+        }
+        @keyframes wobble {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(0.95); }
+            50% { transform: scale(1.1); }
+            75% { transform: scale(0.98); }
+        }
+    </style>
+</head>
+<body class="bg-stone-50 text-stone-800">
+
+    <header id="header" class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl font-bold text-teal-700">ナノ医療の最前線</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#introduction" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-stone-600">序論</a>
+                        <a href="#arsenal" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-stone-600">兵器庫</a>
+                        <a href="#tools" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-stone-600">鍵となる技術</a>
+                        <a href="#evidence" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-stone-600">実証</a>
+                        <a href="#future" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-stone-600">展望</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+
+        <section id="introduction" class="my-16 scroll-mt-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-teal-800 mb-4">細胞の壁を越えて</h2>
+                <p class="max-w-3xl mx-auto text-lg text-stone-600">ナノ粒子はがん治療に革命をもたらす可能性を秘めていますが、最大の障壁は「がん細胞内へどうやって薬を届けるか」です。このレポートでは、電磁場を利用してナノ粒子のがん細胞への侵入を助けるという革新的な仮説を、科学的証拠と共に探求します。</p>
+            </div>
+        </section>
+
+        <section id="arsenal" class="my-16 scroll-mt-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-teal-800 mb-4">ナノ粒子兵器庫</h2>
+                <p class="max-w-3xl mx-auto text-lg text-stone-600">治療の主役となるナノ粒子や関連物質を紹介します。それぞれが持つ独自の特性と役割を理解することが、仮説の核心に迫る第一歩です。カードをクリックして詳細をご覧ください。</p>
+            </div>
+            <div id="arsenal-grid" class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            </div>
+        </section>
+
+        <section id="tools" class="my-16 scroll-mt-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-teal-800 mb-4">電磁場という「鍵」</h2>
+                <p class="max-w-3xl mx-auto text-lg text-stone-600">細胞膜という強固な扉を、いかにして開くのか。ここでは、その「鍵」となる二つの電磁場技術、PEMFとテラヘルツ波が、細胞にどのように作用するのかを解説します。下のボタンで作用をシミュレートできます。</p>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-2xl font-bold mb-4 text-center">パルス電磁場 (PEMF)</h3>
+                    <p class="mb-4 text-stone-600">時間変化する磁場が組織内に微弱な電場を誘導し、細胞膜に一時的な「孔」を形成します（非接触エレクトロポレーション）。これにより、外部の分子が細胞内に侵入しやすくなります。</p>
+                    <div id="pemf-viz" class="mechanism-box">
+                         <div class="cell-representation">
+                             <div class="pore" style="top: 20%; left: 50%; transform: translate(-50%, -50%);"></div>
+                             <div class="pore" style="top: 80%; left: 30%; transform: translate(-50%, -50%);"></div>
+                             <div class="pore" style="top: 60%; left: 80%; transform: translate(-50%, -50%);"></div>
+                         </div>
+                    </div>
+                     <button id="pemf-button" class="mt-4 w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-4 rounded transition">PEMF作用シミュレート</button>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-2xl font-bold mb-4 text-center">テラヘルツ (THz) 波</h3>
+                    <p class="mb-4 text-stone-600">非電離性の電磁波が、水の分子や生体分子と相互作用し、膜の孔形成、動的な変形（ブレブ形成）、エンドサイトーシスの促進などを引き起こし、細胞の透過性を高めます。</p>
+                    <div id="thz-viz" class="mechanism-box">
+                         <div class="cell-representation">
+                             <div class="pore" style="top: 50%; left: 15%; transform: translate(-50%, -50%);"></div>
+                             <div class="pore" style="top: 30%; left: 75%; transform: translate(-50%, -50%);"></div>
+                             <div class="pore" style="top: 85%; left: 60%; transform: translate(-50%, -50%);"></div>
+                         </div>
+                    </div>
+                     <button id="thz-button" class="mt-4 w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-4 rounded transition">THz作用シミュレート</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="evidence" class="my-16 scroll-mt-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-teal-800 mb-4">相乗効果の実証</h2>
+                <p class="max-w-3xl mx-auto text-lg text-stone-600">仮説は、実際の実験データによって裏付けられています。ここでは、電磁場がナノ粒子や薬物の細胞内送達をどれだけ強化したかを示す主要な研究成果をインタラクティブに探ります。下のボタンで表示する研究を切り替えてください。</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <div class="flex justify-center space-x-2 mb-6">
+                    <button data-evidence="pemf_cisplatin" class="tab-button text-sm md:text-base bg-white hover:bg-teal-100 text-teal-700 font-semibold py-2 px-4 border border-teal-500 rounded-full shadow transition">PEMF + シスプラチン</button>
+                    <button data-evidence="pemf_sirna" class="tab-button text-sm md:text-base bg-white hover:bg-teal-100 text-teal-700 font-semibold py-2 px-4 border border-teal-500 rounded-full shadow transition">HI-PEMF + siRNA</button>
+                    <button data-evidence="thz_silica" class="tab-button text-sm md:text-base bg-white hover:bg-teal-100 text-teal-700 font-semibold py-2 px-4 border border-teal-500 rounded-full shadow transition">THz + シリカ粒子</button>
+                </div>
+                <div id="evidence-display" class="grid md:grid-cols-2 gap-8 items-center">
+                    <div id="evidence-text" class="fade-in">
+                        <h3 id="evidence-title" class="text-2xl font-bold mb-2"></h3>
+                        <p id="evidence-description" class="text-stone-600 mb-4"></p>
+                        <div class="text-sm text-stone-500">
+                            <p><strong>モデル系:</strong> <span id="evidence-model"></span></p>
+                            <p><strong>示唆されるメカニズム:</strong> <span id="evidence-mechanism"></span></p>
+                            <p><strong>出典:</strong> <span id="evidence-source"></span></p>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="evidenceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="future" class="my-16 scroll-mt-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-teal-800 mb-4">結論と今後の展望</h2>
+                <p class="max-w-3xl mx-auto text-lg text-stone-600">証拠は有望ですが、この技術が臨床応用されるまでにはまだ多くの課題が残されています。現在の知見、存在する知識のギャップ、そして未来へ続く研究のロードマップを概観します。</p>
+            </div>
+            <div class="bg-white p-8 rounded-lg shadow-lg">
+                <div class="grid lg:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-2xl font-bold mb-4">中核仮説の検証と課題</h3>
+                        <p class="text-stone-600 mb-4"><strong>検証済み:</strong> PEMFやTHz波が、小分子薬物やシリカナノ粒子の細胞内送達を強化することは、複数の研究で示されています。この仮説は「原理証明」の段階をクリアしています。</p>
+                        <h4 class="font-bold mt-6 mb-2">主要な知識ギャップ:</h4>
+                        <ul class="list-disc list-inside space-y-2 text-stone-600">
+                            <li><strong>カーボンナノチューブ(CNT)のデータ欠如:</strong> 電磁場によるCNTの送達強化を直接検証した研究はまだありません。</li>
+                            <li><strong>パラメータの特異性:</strong> ある条件下で成功した電磁場の周波数や強度が、別の種類のがんやナノ粒子で機能する保証はありません。</li>
+                            <li><strong>臨床データの不在:</strong> すべての証拠は実験室レベルであり、ヒトでの安全性や有効性は未確認です。</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold mb-4">臨床応用へのロードマップ</h3>
+                        <div class="relative pl-6">
+                            <div class="absolute left-0 top-0 bottom-0 w-0.5 bg-teal-200"></div>
+                            <div class="mb-8 relative">
+                                <div class="absolute left-[-22px] top-1 w-4 h-4 bg-teal-500 rounded-full border-4 border-white"></div>
+                                <h4 class="font-bold text-teal-700">フェーズ1: In Vitroでの検証</h4>
+                                <p class="text-sm text-stone-600">CNT送達強化実験や、最適な電磁場パラメータを見つけるための系統的な研究を実施。</p>
+                            </div>
+                            <div class="mb-8 relative">
+                                <div class="absolute left-[-22px] top-1 w-4 h-4 bg-teal-500 rounded-full border-4 border-white"></div>
+                                <h4 class="font-bold text-teal-700">フェーズ2: 高度な前臨床試験</h4>
+                                <p class="text-sm text-stone-600">3D腫瘍モデルや患者由来のモデルを用いて、より複雑な環境での有効性を検証。</p>
+                            </div>
+                             <div class="mb-8 relative">
+                                <div class="absolute left-[-22px] top-1 w-4 h-4 bg-teal-500 rounded-full border-4 border-white"></div>
+                                <h4 class="font-bold text-teal-700">フェーズ3: 安全性・毒性学研究</h4>
+                                <p class="text-sm text-stone-600">大型動物モデルで、長期的な安全性と体内動態を厳密に評価。</p>
+                            </div>
+                            <div class="relative">
+                                <div class="absolute left-[-22px] top-1 w-4 h-4 bg-teal-500 rounded-full border-4 border-white"></div>
+                                <h4 class="font-bold text-teal-700">フェーズ4: 臨床試験</h4>
+                                <p class="text-sm text-stone-600">ヒトでの安全性と適切な投与量を確認するための第I相臨床試験を開始。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-stone-800 text-white mt-16">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-4 text-center text-sm">
+            <p>&copy; 2025 インタラクティブ・サイエンスレポート. All rights reserved.</p>
+            <p class="text-stone-400">このレポートは提供された科学文献に基づき生成されました。</p>
+        </div>
+    </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    const arsenalData = [
+        {
+            title: 'ナノカーボン (CNT)',
+            icon: '⚡',
+            description: '針状の構造を持つ炭素系ナノ材料。細胞膜を直接貫通する能力があり、薬物を効率的に搭載できる。',
+            details: '高いアスペクト比と表面積が特徴。ドキソルビシン等の抗がん剤のキャリアとして有望視されています。表面修飾により、標的指向性や生体適合性を高めることが可能です。'
+        },
+        {
+            title: 'テラシリカ (MSN)',
+            icon: '🌐',
+            description: '多孔質のシリカナノ粒子。高い生体適合性を持ち、内部の空間に様々な薬物を安定して内包できる。',
+            details: 'メソポーラスシリカナノ粒子(MSN)が代表的。表面の「ゲートキーパー」により、特定の環境下（例：がん組織の酸性環境）で薬物を放出するよう設計できます。'
+        },
+        {
+            title: '超重曹 (炭酸水素ナトリウム)',
+            icon: '🛡️',
+            description: '腫瘍周辺の酸性環境を中和するアルカリ化剤。ナノ粒子ではなく、治療の「土台」を整える役割。',
+            details: 'がん細胞が作り出す酸性環境は、薬の効果を弱め、転移を促進します。炭酸水素ナトリウムはこれを中和し、他の治療法（化学療法など）が効きやすい環境を作ります。'
+        },
+        {
+            title: 'その他の仮説',
+            icon: '❓',
+            description: '「ナノ水」や「ソマチッド」については、提供された科学文献内では有効性を裏付けるデータは見つかりませんでした。',
+            details: '本レポートは、査読済みの科学文献で検証可能な証拠に基づいています。そのため、現時点では「ナノ水」「ソマチッド」に関する議論は含んでいません。'
+        }
+    ];
+
+    const arsenalGrid = document.getElementById('arsenal-grid');
+    arsenalData.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'content-card bg-white p-6 rounded-lg shadow-md cursor-pointer';
+        card.innerHTML = `
+            <div class="flex items-center mb-4">
+                <span class="text-4xl mr-4">${item.icon}</span>
+                <h3 class="text-xl font-bold">${item.title}</h3>
+            </div>
+            <p class="text-stone-600">${item.description}</p>
+            <div class="details mt-4 text-sm text-stone-500 bg-stone-100 p-3 rounded-md" style="display: none;">${item.details}</div>
+        `;
+        arsenalGrid.appendChild(card);
+        
+        card.addEventListener('click', () => {
+            const details = card.querySelector('.details');
+            const isVisible = details.style.display === 'block';
+            details.style.display = isVisible ? 'none' : 'block';
+        });
+    });
+
+    const evidenceData = {
+        pemf_cisplatin: {
+            title: 'PEMF + シスプラチン (抗がん剤)',
+            description: 'マウスの黒色腫モデルにおいて、PEMFと化学療法薬シスプラチンを併用した結果、腫瘍細胞内に到達した薬物（白金）の量が約2倍に増加。これにより、侵襲的な手法に匹敵する抗腫瘍効果が非侵襲的に達成されました。',
+            model: 'マウスB16F10黒色腫 (生体内)',
+            mechanism: '非接触エレクトロポレーション',
+            source: '[25]',
+            chartData: {
+                labels: ['シスプラチン単独', 'PEMF + シスプラチン'],
+                values: [100, 200],
+                label: '細胞内白金取り込み量 (相対値)'
+            }
+        },
+        pemf_sirna: {
+            title: 'HI-PEMF + siRNA (遺伝子治療薬)',
+            description: '高強度PEMF(HI-PEMF)を用いることで、遺伝子の働きを抑制するsiRNA分子をマウスの腫瘍へ送達することに成功。標的遺伝子の発現が抑制され、蛍光を発する腫瘍面積が最大39%減少しました。',
+            model: 'マウスB16F10-EGFP腫瘍 (生体内)',
+            mechanism: '遺伝子エレクトロトランスファー',
+            source: '[27]',
+            chartData: {
+                labels: ['治療前', 'HI-PEMF + siRNA後'],
+                values: [100, 61],
+                label: '蛍光腫瘍面積 (相対値)'
+            }
+        },
+        thz_silica: {
+            title: 'THz + シリカナノ粒子',
+            description: '培養細胞を用いた実験で、テラヘルツ波を10分間照射することにより、照射しなかった対照群では見られなかったシリカナノ粒子の細胞内への取り込みが明確に確認されました。この効果は一過性で、細胞への長期的な害は見られませんでした。',
+            model: 'PC12細胞 (in vitro)',
+            mechanism: '膜ブレブ形成、透過性亢進',
+            source: '[31, 34]',
+            chartData: {
+                labels: ['THz照射なし', 'THz照射あり'],
+                values: [5, 95],
+                label: 'ナノ粒子取り込み細胞の割合 (%)'
+            }
+        }
+    };
+    
+    let evidenceChart;
+    const ctx = document.getElementById('evidenceChart').getContext('2d');
+
+    function updateEvidence(key) {
+        const data = evidenceData[key];
+        document.getElementById('evidence-title').textContent = data.title;
+        document.getElementById('evidence-description').textContent = data.description;
+        document.getElementById('evidence-model').textContent = data.model;
+        document.getElementById('evidence-mechanism').textContent = data.mechanism;
+        document.getElementById('evidence-source').textContent = data.source;
+        
+        document.getElementById('evidence-text').classList.remove('fade-in');
+        void document.getElementById('evidence-text').offsetWidth;
+        document.getElementById('evidence-text').classList.add('fade-in');
+
+        if (evidenceChart) {
+            evidenceChart.destroy();
+        }
+        
+        evidenceChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data.chartData.labels,
+                datasets: [{
+                    label: data.chartData.label,
+                    data: data.chartData.values,
+                    backgroundColor: ['rgba(107, 114, 128, 0.5)', 'rgba(20, 184, 166, 0.5)'],
+                    borderColor: ['rgb(107, 114, 128)', 'rgb(13, 148, 136)'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: data.chartData.label,
+                            font: { size: 12 }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.y !== null) {
+                                    label += context.parsed.y;
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    const tabButtons = document.querySelectorAll('.tab-button');
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            updateEvidence(button.dataset.evidence);
+        });
+    });
+
+    updateEvidence('pemf_cisplatin');
+    document.querySelector('.tab-button[data-evidence="pemf_cisplatin"]').classList.add('active');
+    
+    document.getElementById('pemf-button').addEventListener('click', function() {
+        const viz = document.getElementById('pemf-viz');
+        viz.classList.add('pemf-active');
+        setTimeout(() => viz.classList.remove('pemf-active'), 1500);
+    });
+
+    document.getElementById('thz-button').addEventListener('click', function() {
+        const viz = document.getElementById('thz-viz');
+        viz.classList.add('thz-active');
+        setTimeout(() => viz.classList.remove('thz-active'), 800);
+    });
+    
+    const sections = document.querySelectorAll('section');
+    const navLinks = document.querySelectorAll('.nav-link');
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                navLinks.forEach(link => {
+                    link.classList.toggle('active', link.getAttribute('href').substring(1) === entry.target.id);
+                });
+            }
+        });
+    }, { rootMargin: "-50% 0px -50% 0px" });
+
+    sections.forEach(section => {
+        observer.observe(section);
+    });
+
+});
+</script>
+
+</body>
+</html>

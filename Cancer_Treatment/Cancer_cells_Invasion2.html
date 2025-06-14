@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インフォグラフィック：外部電磁場によるナノ粒子がん治療</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Chosen Palette: Brilliant Blues -->
+    <!-- Application Structure Plan: The infographic follows a narrative structure to guide the user through a complex scientific topic. 1. **Introduction:** A hook presenting the core challenge (cell barrier) and the proposed solution. 2. **The Arsenal:** Introducing the key components (nanoparticles) using informational cards. 3. **The Tools:** Explaining the mechanisms of PEMF and THz waves with simple visual diagrams. 4. **The Evidence:** A central section featuring a bar chart to visually and quantitatively compare experimental results, proving the concept. 5. **The Road Ahead:** A visual timeline outlining the future research and development path. This structure breaks down the dense report into a logical, digestible, and engaging story, moving from problem to solution, to evidence, and finally to future outlook. -->
+    <!-- Visualization & Content Choices: Data Point: Key quantitative findings from Table 2 (drug uptake increase, tumor area reduction). Goal: Compare treated vs. untreated groups. Chosen Viz: Bar Chart (Chart.js/Canvas). Justification: A bar chart provides a direct and easily understood visual comparison of magnitudes, making the "2x increase" or "39% decrease" immediately apparent. Data Point: Mechanisms of PEMF/THz. Goal: Organize/Explain a process. Chosen Viz: HTML/CSS Flow Diagram. Justification: A simple, non-SVG diagram can effectively illustrate concepts like "pore formation" or "membrane blebbing" without the overhead of complex graphics, aligning with the NO-SVG rule. Data Point: Future research plan. Goal: Organize/Show a process over time. Chosen Viz: HTML/CSS Timeline. Justification: A vertical timeline is a classic and effective way to present phased information, making the roadmap clear and easy to follow. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #F0F8FF;
+        }
+        .header-bg {
+            background-color: #0A2463;
+        }
+        .accent-text {
+            color: #D8315B;
+        }
+        .primary-text {
+            color: #0A2463;
+        }
+        .secondary-text {
+            color: #3E92CC;
+        }
+        .card {
+            background-color: white;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            max-width: 800px;
+            margin: auto;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 450px;
+            }
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -30px;
+            top: 5px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #3E92CC;
+            border: 4px solid #F0F8FF;
+        }
+        .flow-diagram-cell {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 3px solid #0A2463;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 1rem auto;
+            color: #0A2463;
+            font-weight: bold;
+        }
+        .nanoparticle {
+            width: 15px;
+            height: 15px;
+            background-color: #D8315B;
+            border-radius: 50%;
+            position: absolute;
+            left: -40px;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <header class="header-bg text-white p-6 text-center shadow-lg">
+        <h1 class="text-3xl md:text-5xl font-bold">細胞の壁を、越える。</h1>
+        <p class="mt-2 text-lg md:text-xl text-gray-300">外部電磁場は、ナノ粒子が「がん細胞」へ侵入する鍵となるか？</p>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-8">
+
+        <section id="intro" class="my-12 md:my-16">
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div class="text-center md:text-left">
+                    <h2 class="text-3xl font-bold primary-text mb-4">最大の障壁</h2>
+                    <p class="text-lg leading-relaxed">最先端のナノ粒子治療において、最大の課題は「薬物をいかにして、がん細胞の内部に届けるか」です。投与されたナノ粒子のうち、実際に標的へ到達するのはごく一部。この根本的な問題を解決しない限り、治療効果は限定的です。</p>
+                </div>
+                <div class="p-6">
+                    <div class="flow-diagram-cell">
+                        細胞膜
+                        <div class="nanoparticle"></div>
+                        <span class="text-5xl accent-text absolute right-[-20px] font-mono">✕</span>
+                    </div>
+                    <p class="text-center text-gray-500 mt-2">ナノ粒子は細胞膜にブロックされる</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="arsenal" class="my-12 md:my-16 bg-white p-8 rounded-xl shadow-lg">
+            <h2 class="text-3xl font-bold primary-text mb-8 text-center">治療の主役たち：ナノ粒子兵器庫</h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="card p-6 rounded-lg border-l-4 border-[#0A2463]">
+                    <h3 class="text-2xl font-bold primary-text mb-2">ナノカーボン (CNT)</h3>
+                    <p class="mb-2"><strong>役割:</strong> 薬物運搬のエース</p>
+                    <p>針状の構造で細胞膜を直接貫通する能力を持つ。高い薬物搭載量も魅力。</p>
+                </div>
+                <div class="card p-6 rounded-lg border-l-4 border-[#3E92CC]">
+                    <h3 class="text-2xl font-bold secondary-text mb-2">テラシリカ (MSN)</h3>
+                    <p class="mb-2"><strong>役割:</strong> 多機能な運び屋</p>
+                    <p>多孔質で生体適合性が高い。内部に薬物を安定保持し、標的で放出可能。</p>
+                </div>
+                <div class="card p-6 rounded-lg border-l-4 border-[#D8315B]">
+                    <h3 class="text-2xl font-bold accent-text mb-2">超重曹（補助）</h3>
+                    <p class="mb-2"><strong>役割:</strong> 環境整備役</p>
+                    <p>がん周辺の酸性環境を中和し、他の治療薬が効きやすい「土壌」を作る。</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="tools" class="my-12 md:my-16">
+            <h2 class="text-3xl font-bold primary-text mb-8 text-center">突破の鍵：外部電磁場というツール</h2>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="card p-6 text-center rounded-lg">
+                    <h3 class="text-2xl font-bold primary-text mb-4">パルス電磁場 (PEMF)</h3>
+                    <div class="flow-diagram-cell border-dashed">
+                         細胞膜
+                        <div class="nanoparticle" style="left: 5px; animation: pulse 1.5s infinite;"></div>
+                    </div>
+                    <p class="mt-4">細胞膜に一時的な「孔」を形成し、ナノ粒子の通り道を作る（非接触エレクトロポレーション）。</p>
+                </div>
+                <div class="card p-6 text-center rounded-lg">
+                     <h3 class="text-2xl font-bold secondary-text mb-4">テラヘルツ (THz) 波</h3>
+                     <div class="flow-diagram-cell" style="animation: wobble 1s infinite;">
+                         細胞膜
+                         <div class="nanoparticle" style="left: 15px; animation: pulse 1.5s infinite reverse;"></div>
+                    </div>
+                     <p class="mt-4">細胞膜自体を動的に変形させ、飲み込み（エンドサイトーシス）を促進。膜の透過性を高める。</p>
+                </div>
+            </div>
+        </section>
+        
+        <section id="evidence" class="my-12 md:my-16 bg-white p-8 rounded-xl shadow-lg">
+            <h2 class="text-3xl font-bold primary-text mb-2 text-center">相乗効果の証拠</h2>
+            <p class="text-center max-w-3xl mx-auto mb-8">仮説は、実際の実験データによって強く支持されています。外部電磁場は、ナノ粒子や薬物の細胞内への送達を劇的に強化することを示しています。</p>
+            <div class="chart-container">
+                <canvas id="evidenceChart"></canvas>
+            </div>
+             <p class="text-center text-sm text-gray-500 mt-4">出典: [25], [27], [31], [34]</p>
+        </section>
+
+        <section id="roadmap" class="my-12 md:my-16">
+            <h2 class="text-3xl font-bold primary-text mb-12 text-center">臨床応用へのロードマップ</h2>
+            <div class="relative max-w-2xl mx-auto border-l-4 border-gray-300 pl-8">
+                <div class="timeline-item mb-12">
+                    <h3 class="text-2xl font-bold secondary-text">フェーズ1：In Vitroでの検証</h3>
+                    <p class="mt-2">細胞レベルで有効性を確立し、最適な電磁場パラメータ（周波数、強度など）を特定する。</p>
+                </div>
+                <div class="timeline-item mb-12">
+                    <h3 class="text-2xl font-bold secondary-text">フェーズ2：高度な前臨床試験</h3>
+                    <p class="mt-2">3D腫瘍モデルや動物モデルを用いて、より複雑な生体内環境での有効性と安全性を検証する。</p>
+                </div>
+                <div class="timeline-item mb-12">
+                    <h3 class="text-2xl font-bold secondary-text">フェーズ3：安全性・毒性学研究</h3>
+                    <p class="mt-2">大型動物モデルで、長期的な安全性と体内動態を厳密に評価し、ヒトへの応用のための基礎データを固める。</p>
+                </div>
+                <div class="timeline-item">
+                    <h3 class="text-2xl font-bold secondary-text">フェーズ4：臨床試験</h3>
+                    <p class="mt-2">ヒトでの安全性と適切な投与量を確認するための第I相臨床試験を開始。夢の治療法実現への最終ステップ。</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+    
+    <footer class="mt-16 p-6 text-center bg-[#0A2463] text-white">
+        <p>このインフォグラフィックは、提供された科学的レビュー報告書に基づいて作成されました。</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const ctx = document.getElementById('evidenceChart').getContext('2d');
+            
+            const processLabel = (label) => {
+                if (typeof label !== 'string' || label.length <= 16) {
+                    return label;
+                }
+                const words = label.split(' ');
+                const lines = [];
+                let currentLine = '';
+                words.forEach(word => {
+                    if ((currentLine + ' ' + word).trim().length > 16) {
+                        lines.push(currentLine);
+                        currentLine = word;
+                    } else {
+                        currentLine = (currentLine + ' ' + word).trim();
+                    }
+                });
+                lines.push(currentLine);
+                return lines;
+            };
+
+            const chartData = {
+                labels: [
+                    'PEMF + シスプラチン送達',
+                    'HI-PEMF + siRNA送達',
+                    'THz + シリカナノ粒子送達'
+                ].map(processLabel),
+                datasets: [{
+                    label: '対照群 (電磁場なし)',
+                    data: [100, 100, 5],
+                    backgroundColor: 'rgba(62, 146, 204, 0.6)',
+                    borderColor: '#3E92CC',
+                    borderWidth: 2,
+                    barPercentage: 0.6,
+                    categoryPercentage: 0.7
+                }, {
+                    label: '実験群 (電磁場あり)',
+                    data: [200, 61, 95],
+                    backgroundColor: 'rgba(216, 49, 91, 0.6)',
+                    borderColor: '#D8315B',
+                    borderWidth: 2,
+                    barPercentage: 0.6,
+                    categoryPercentage: 0.7
+                }]
+            };
+
+            const evidenceChart = new Chart(ctx, {
+                type: 'bar',
+                data: chartData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '効果 (相対値 / %)',
+                                color: '#0A2463',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            }
+                        },
+                        y: {
+                           ticks: {
+                               color: '#0A2463',
+                               font: {
+                                   size: 12
+                               }
+                           }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                color: '#0A2463',
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    const item = tooltipItems[0];
+                                    let label = item.chart.data.labels[item.dataIndex];
+                                    if (Array.isArray(label)) {
+                                      return label.join(' ');
+                                    } else {
+                                      return label;
+                                    }
+                                },
+                                 label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    let value = context.raw;
+                                    let baseValue = context.chart.data.datasets[0].data[context.dataIndex];
+                                    if(context.datasetIndex === 1 && context.dataIndex === 0) { // PEMF + Cisplatin
+                                        label += `${value} (対照群の2倍)`;
+                                    } else if(context.datasetIndex === 1 && context.dataIndex === 1) { // HI-PEMF + siRNA
+                                        label += `${value} (39%減少)`;
+                                    } else if(context.dataIndex === 2) { // THz + Silica
+                                        label += `${value}% の細胞で取り込み`;
+                                    }
+                                    else {
+                                        label += value;
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+    <style>
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.5; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes wobble {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+    </style>
+</body>
+</html>

@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インタラクティブプレゼンテーション：ナノ粒子がん治療の最前線</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+        .slide {
+            display: none;
+        }
+        .slide.active {
+            display: block;
+        }
+        .chart-container {
+            position: relative;
+            height: 40vh;
+            width: 80vw;
+            max-width: 600px;
+            margin: auto;
+        }
+        .flow-arrow {
+            position: relative;
+            padding: 0 20px;
+        }
+        .flow-arrow::after {
+            content: '→';
+            position: absolute;
+            right: -5px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2rem;
+            color: #1e40af;
+        }
+        .faded {
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body class="bg-slate-100">
+
+    <div id="presentation-container" class="w-full max-w-5xl mx-auto bg-white shadow-2xl rounded-lg my-4 overflow-hidden">
+        <!-- Slides will be injected here by JavaScript -->
+        <div id="slides-wrapper" class="relative p-6 md:p-12 min-h-[60vh] flex items-center justify-center">
+        </div>
+
+        <!-- Narration Box -->
+        <div id="narration-box" class="bg-slate-800 text-white p-4 md:p-6 min-h-[100px]">
+            <p id="narration-text" class="text-slate-200 leading-relaxed"></p>
+        </div>
+
+        <!-- Pagination Controls -->
+        <div class="bg-white border-t border-slate-200 p-4 flex justify-between items-center">
+            <button id="prev-btn" class="bg-blue-800 hover:bg-blue-900 text-white font-bold py-2 px-4 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed">
+                前へ
+            </button>
+            <div id="pagination-dots" class="flex space-x-2">
+                <!-- Dots will be injected here -->
+            </div>
+            <button id="next-btn" class="bg-blue-800 hover:bg-blue-900 text-white font-bold py-2 px-4 rounded-lg transition">
+                次へ
+            </button>
+        </div>
+    </div>
+    
+    <!-- Modal for Prompts -->
+    <div id="prompt-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-lg shadow-xl p-8 max-w-3xl w-full m-4 overflow-y-auto max-h-[90vh]">
+            <h2 class="text-2xl font-bold mb-6 text-slate-800 text-center">YouTube & BGM生成用プロンプト</h2>
+            <div class="space-y-8">
+                <div>
+                    <h3 class="font-bold text-xl text-blue-800 mb-3">YouTube用タイトル案</h3>
+                    <div class="space-y-3">
+                        <p class="bg-slate-100 p-4 rounded-md text-slate-700"><strong>案1：</strong>未来のがん治療：電磁波がナノマシンを細胞に導く【科学解説】</p>
+                        <p class="bg-slate-100 p-4 rounded-md text-slate-700"><strong>案2：</strong>【最先端科学】細胞の壁を突破せよ！電磁波 x ナノ粒子のがん治療革命</p>
+                        <p class="bg-slate-100 p-4 rounded-md text-slate-700"><strong>案3：</strong>見えない力でがんを叩く！PEMFとテラヘルツ波が拓くナノ医療の未来</p>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="font-bold text-xl text-blue-800 mb-3">YouTube用概要欄</h3>
+                    <textarea class="w-full h-40 bg-slate-100 p-3 rounded-md text-slate-700" readonly>最先端のがん治療では、ナノマシン（ナノ粒子）を使って薬を直接がん細胞に届ける研究が進んでいます。しかし、最大の壁は「どうやって細胞の中に侵入させるか」。この動画では、PEMF（パルス電磁場）やテラヘルツ波といった外部の電磁場を使い、ナノマシンが細胞の壁を突破するのを手助けするという革新的なアプローチを、最新の研究報告に基づいて分かりやすく解説します。
+
+00:00 オープニング：がん治療の新たな挑戦
+01:15 主役となるナノ粒子たち
+02:30 細胞の壁をこじ開ける「鍵」
+04:00【証拠】電磁場の驚くべき効果
+05:30 臨床応用へのロードマップ
+06:45 まとめと今後の課題
+
+※この動画は、提供された科学的レビュー報告書の内容を基に作成した教育コンテンツです。</textarea>
+                </div>
+                <div>
+                    <h3 class="font-bold text-xl text-blue-800 mb-3">サムネイル生成AI用プロンプト</h3>
+                     <div class="space-y-3">
+                        <p class="bg-slate-100 p-4 rounded-md text-slate-700"><strong>案1：</strong>A futuristic, cinematic digital art thumbnail. A glowing blue nanoparticle is about to enter a transparent, glowing human cell. Purple and blue energy waves (representing electromagnetic fields) surround the cell, creating a pathway. The style is sleek, modern, with a dark background and vibrant neon highlights. Text: '細胞の壁を越える'. Aspect ratio 16:9.</p>
+                        <p class="bg-slate-100 p-4 rounded-md text-slate-700"><strong>案2：</strong>Split-screen style infographic thumbnail. On the left, a detailed diagram of a nanoparticle failing to enter a cell with a red "X". On the right, the same diagram but with blue energy waves helping the nanoparticle enter, with a green checkmark. Bold, clear text: "がん治療の新常識". High-tech, clean aesthetic. Aspect ratio 16:9.</p>
+                        <p class="bg-slate-100 p-4 rounded-md text-slate-700"><strong>案3：</strong>Microscopic view, hyper-realistic 3D render. A swarm of tiny, glowing nanoparticles are being guided by visible waves of light (in blue and purple hues) towards a large, complex cancer cell. Focus is on the sheer number of particles and the power of the guiding waves. Text: "電磁波で薬を届ける". Dramatic lighting. Aspect ratio 16:9.</p>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="font-bold text-xl text-blue-800 mb-3">BGM生成AI (Suno)用プロンプト</h3>
+                    <div class="space-y-3">
+                        <p class="bg-slate-100 p-4 rounded-md text-slate-700"><strong>案1：</strong>[Style: ambient, corporate, science documentary], [Mood: hopeful, intriguing, slightly futuristic, inspiring], [Instrumentation: light synthesizers, soft piano melody, subtle electronic beat, atmospheric pads], [Tempo: slow, ~80 bpm]. A background track for a scientific presentation about cutting-edge medical technology. It should be non-distracting but create a sense of wonder and progress.</p>
+                        <p class="bg-slate-100 p-4 rounded-md text-slate-700"><strong>案2：</strong>[Style: cinematic, orchestral, underscore], [Mood: dramatic, determined, awe-inspiring], [Instrumentation: sweeping strings, subtle brass swells, a steady, pulsing synthesizer bassline, ethereal choir pads], [Tempo: medium, ~100 bpm]. Music for a video revealing a major scientific breakthrough, building a sense of importance and discovery.</p>
+                        <p class="bg-slate-100 p-4 rounded-md text-slate-700"><strong>案3：</strong>[Style: minimalist electronic, lofi], [Mood: focused, calm, contemplative, modern], [Instrumentation: clean electric piano chords, a simple and crisp drum machine beat, warm synth bass, atmospheric textures], [Tempo: slow, ~75 bpm]. A modern, stylish background track for a tech explainer video, feels sophisticated and clear.</p>
+                    </div>
+                </div>
+            </div>
+            <button id="close-modal-btn" class="mt-8 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg w-full">閉じる</button>
+        </div>
+    </div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const slidesData = [
+            {
+                type: 'title',
+                title: '外部電磁場による<br>がん細胞へのナノ粒子浸透強化',
+                subtitle: '先進的治療薬物送達のための相乗作用メカニズム',
+                narration: '皆様、本日は「外部電磁場による、がん細胞へのナノ粒子浸透強化」というテーマについて解説します。これは、未来のがん治療の可能性を大きく広げる、最先端の研究分野です。'
+            },
+            {
+                type: 'problem',
+                title: '根本的な障害：がん細胞膜の突破',
+                infographic: `
+                    <div class="text-center">
+                        <div class="flex items-center justify-center space-x-8">
+                            <div class="text-center">
+                                <div class="w-24 h-24 bg-red-500 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg">ナノ粒子</div>
+                                <p class="mt-2 font-semibold">治療薬</p>
+                            </div>
+                            <div class="text-5xl text-blue-800 font-bold animate-pulse">&gt;&gt;X&lt;&lt;</div>
+                            <div class="text-center">
+                                <div class="w-32 h-32 border-4 border-slate-700 rounded-full flex items-center justify-center text-slate-700 font-bold text-lg shadow-inner bg-slate-200">がん細胞</div>
+                                <p class="mt-2 font-semibold">標的</p>
+                            </div>
+                        </div>
+                        <p class="mt-8 text-xl text-slate-600">ナノ医療の最大の課題は、薬物を搭載したナノ粒子が<br>最終関門である「細胞膜」を突破できないことです。</p>
+                    </div>
+                `,
+                narration: '最先端のナノ医療ですが、実は大きな壁に直面しています。それは、薬を乗せたナノ粒子が、目的のがん細胞の中に入れない、という問題です。投与された粒子のうち、実際に細胞内に到達するのは、ほんの僅か。この問題を解決しない限り、治療効果は限定的です。'
+            },
+            {
+                type: 'infographic_cards',
+                title: '治療の主役たち：ナノ粒子兵器庫',
+                cards: [
+                    { title: 'ナノカーボン (CNT)', description: '針状の構造で細胞膜を直接貫通する能力を持つ、薬物運搬のエース。', icon: '⚡' },
+                    { title: 'テラシリカ (MSN)', description: '多孔質で生体適合性が高い。内部に薬物を安定保持し、標的で放出できる多機能な運び屋。', icon: '🌐' },
+                    { title: '超重曹（補助）', description: 'がん周辺の酸性環境を中和し、薬が効きやすい「土壌」を作る環境整備役。', icon: '🛡️' }
+                ],
+                narration: 'この課題に挑む主役たちが、これらのナノ粒子です。鋭い針のような「ナノカーボン」、薬を安全に運ぶカプセルのような「テラシリカ」、そして治療の土台を整える「超重曹」。それぞれが重要な役割を担います。'
+            },
+            {
+                type: 'tools',
+                title: '細胞の壁をこじ開ける「鍵」：外部電磁場',
+                tools: [
+                    { name: 'パルス電磁場 (PEMF)', description: '細胞膜に一時的な「孔」を形成し、ナノ粒子の通り道を作る。', viz: '<div class="w-32 h-32 border-4 border-dashed border-blue-600 rounded-full flex items-center justify-center"><div class="w-20 h-20 bg-blue-200 rounded-full"></div></div>' },
+                    { name: 'テラヘルツ (THz) 波', description: '細胞膜自体を動的に変形させ、粒子を飲み込ませる（エンドサイトーシス）のを促進。', viz: '<div class="w-32 h-32 border-4 border-cyan-600 rounded-full flex items-center justify-center animate-pulse"><div class="w-20 h-20 bg-cyan-200 rounded-full"></div></div>' }
+                ],
+                narration: 'では、どうやって細胞の壁を突破するのか。その鍵となるのが「外部電磁場」です。パルス電磁場、いわゆるPEMFは、細胞膜に目に見えない小さな孔を開けます。一方、テラヘルツ波は、細胞膜を揺さぶり、ナノ粒子をいわば「飲み込ませる」ように促します。'
+            },
+            {
+                type: 'chart',
+                title: '【証拠①】PEMFによる薬物送達の強化',
+                chartId: 'pemf-chart',
+                narration: 'これは仮説だけではありません。マウスを使った実験では、抗がん剤であるシスプラチンとPEMFを併用したところ、PEMFを使わなかった場合に比べて、がん細胞内に到達した薬の量が約2倍に増加したことが確認されています。これは驚くべき結果です。'
+            },
+            {
+                type: 'infographic_result',
+                title: '【証拠②】THz波によるナノ粒子取り込みの可視化',
+                before_text: 'THz照射なし',
+                after_text: 'THz照射あり',
+                infographic: `
+                    <div class="flex items-center justify-center space-x-4">
+                        <!-- Before -->
+                        <div class="text-center">
+                            <div class="w-32 h-32 border-4 border-slate-700 rounded-full bg-slate-200 flex items-center justify-center relative"><span class="w-4 h-4 bg-red-500 rounded-full absolute -left-6 top-1/2"></span></div>
+                            <p class="mt-2 font-semibold">取り込みなし</p>
+                        </div>
+                        <div class="text-5xl text-cyan-500 font-bold animate-pulse">⚡</div>
+                        <!-- After -->
+                        <div class="text-center">
+                            <div class="w-32 h-32 border-4 border-slate-700 rounded-full bg-slate-200 flex items-center justify-center relative"><span class="w-4 h-4 bg-red-500 rounded-full absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"></span></div>
+                            <p class="mt-2 font-semibold">取り込み成功</p>
+                        </div>
+                    </div>`,
+                narration: 'テラヘルツ波についても、直接的な証拠があります。培養細胞を用いた実験で、テラヘルツ波を照射しなかった細胞ではナノ粒子は中に入れませんでしたが、照射した細胞では、明確に粒子が取り込まれる様子が顕微鏡で観察されました。'
+            },
+            {
+                type: 'hypothesis',
+                title: '未踏の領域：CNTへの応用の可能性',
+                infographic: `
+                    <div class="flex items-center justify-center space-x-4">
+                        <div class="text-center space-y-2">
+                            <div class="text-3xl">⚡</div>
+                            <p class="font-semibold">ナノカーボン<br>(CNT)</p>
+                        </div>
+                        <div class="text-4xl text-slate-500">+</div>
+                        <div class="text-center space-y-2">
+                            <div class="text-3xl">🌊</div>
+                            <p class="font-semibold">電磁場<br>(PEMF/THz)</p>
+                        </div>
+                         <div class="text-4xl text-slate-500">=</div>
+                        <div class="text-center space-y-2">
+                            <div class="text-3xl text-green-500">❓</div>
+                            <p class="font-bold text-green-600">相乗効果？</p>
+                        </div>
+                    </div>
+                     <p class="mt-8 text-xl text-slate-600">電磁場が細胞膜を不安定にすることで、<br>CNTの「針」がより貫通しやすくなるという強力な理論的根拠があります。</p>
+                `,
+                narration: 'では、最強の矛であるナノカーボンと、最強の盾を破る鍵である電磁場を組み合わせたらどうなるでしょうか。まだ直接的な実験データはありませんが、電磁場で不安定になった細胞膜は、ナノカーボンの鋭い針に対して、より無防備になるはずです。これは、今後の研究が非常に期待される領域です。'
+            },
+            {
+                type: 'roadmap',
+                title: '臨床応用へのロードマップ',
+                steps: [
+                    { phase: 1, title: 'In Vitroでの検証', description: '細胞レベルで有効性を確立し、最適な電磁場パラメータを特定。' },
+                    { phase: 2, title: '高度な前臨床試験', description: '3D腫瘍モデルや動物モデルで、より複雑な生体内環境での有効性を検証。' },
+                    { phase: 3, title: '安全性・毒性学研究', description: '大型動物モデルで、長期的な安全性を厳密に評価。' },
+                    { phase: 4, title: '臨床試験', description: 'ヒトでの安全性と適切な投与量を確認するための第I相臨床試験を開始。' }
+                ],
+                narration: 'もちろん、この技術がすぐにでも使えるわけではありません。細胞実験から始まり、動物実験、そして厳格な安全性試験を経て、最終的にヒトでの臨床試験へと進む、長く慎重な道のりが待っています。'
+            },
+            {
+                type: 'conclusion',
+                title: '結論と今後の課題',
+                summary: '外部電磁場がナノ粒子の細胞内送達を強化するという仮説は、複数の実験によって強く支持されています。',
+                gaps: [
+                    '臨床データの不在',
+                    '各がん・粒子に合わせたパラメータの最適化',
+                    'ナノカーボン(CNT)送達強化の直接的証拠の欠如'
+                ],
+                narration: 'まとめです。外部電磁場がナノ粒子の送達を助ける、という仮説は、もはや単なる理論ではなく、実験的証拠に裏付けられています。しかし、臨床応用までには、まだ解決すべき課題も多く残されています。今後の研究の進展に、大いにご期待ください。ご清聴ありがとうございました。'
+            },
+            {
+                type: 'final',
+                title: 'ご清聴ありがとうございました',
+                narration: 'プレゼンテーションは以上です。'
+            }
+        ];
+
+        let currentSlide = 0;
+        const slidesWrapper = document.getElementById('slides-wrapper');
+        const narrationText = document.getElementById('narration-text');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const paginationDots = document.getElementById('pagination-dots');
+        const modal = document.getElementById('prompt-modal');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+
+
+        function renderSlide(index) {
+            slidesWrapper.innerHTML = '';
+            const slideData = slidesData[index];
+            const slideElement = document.createElement('div');
+            slideElement.className = 'slide active animate-fade-in w-full';
+
+            let content = `<h2 class="text-3xl md:text-4xl font-bold text-center text-blue-900 mb-8">${slideData.title}</h2>`;
+
+            switch (slideData.type) {
+                case 'title':
+                    content = `<div class="text-center"><h1 class="text-4xl md:text-5xl font-bold text-blue-900 leading-tight">${slideData.title}</h1><p class="mt-4 text-xl md:text-2xl text-slate-600">${slideData.subtitle}</p></div>`;
+                    break;
+                case 'problem':
+                case 'infographic_result':
+                case 'hypothesis':
+                    content += slideData.infographic;
+                    break;
+                case 'infographic_cards':
+                    content += '<div class="grid md:grid-cols-3 gap-6">';
+                    slideData.cards.forEach(card => {
+                        content += `
+                            <div class="bg-white p-6 rounded-lg shadow-lg border-l-4 border-blue-800">
+                                <h3 class="text-xl font-bold text-slate-800 mb-2 flex items-center"><span class="text-2xl mr-3">${card.icon}</span>${card.title}</h3>
+                                <p class="text-slate-600">${card.description}</p>
+                            </div>
+                        `;
+                    });
+                    content += '</div>';
+                    break;
+                 case 'tools':
+                    content += '<div class="grid md:grid-cols-2 gap-8 text-center">';
+                    slideData.tools.forEach(tool => {
+                        content += `
+                            <div class="bg-white p-6 rounded-lg shadow-lg">
+                                 <h3 class="text-2xl font-bold text-slate-800 mb-4">${tool.name}</h3>
+                                 <div class="flex justify-center mb-4">${tool.viz}</div>
+                                 <p class="text-slate-600">${tool.description}</p>
+                            </div>
+                        `;
+                    });
+                    content += '</div>';
+                    break;
+                case 'chart':
+                    content += `<div class="chart-container"><canvas id="${slideData.chartId}"></canvas></div>`;
+                    break;
+                case 'roadmap':
+                     content += '<div class="relative border-l-4 border-blue-300 ml-4 pl-8 space-y-12">';
+                     slideData.steps.forEach(step => {
+                         content += `
+                            <div class="relative">
+                                <div class="absolute -left-[44px] top-1 w-8 h-8 bg-blue-800 text-white rounded-full flex items-center justify-center font-bold">${step.phase}</div>
+                                <h3 class="text-2xl font-bold text-blue-900">${step.title}</h3>
+                                <p class="mt-1 text-slate-600">${step.description}</p>
+                            </div>
+                         `;
+                     });
+                     content += '</div>';
+                    break;
+                case 'conclusion':
+                    content += `
+                        <div class="grid md:grid-cols-2 gap-8 text-left">
+                            <div class="bg-green-100 p-6 rounded-lg border-l-4 border-green-500">
+                                 <h3 class="text-xl font-bold text-green-800 mb-3">検証された仮説</h3>
+                                 <p class="text-green-700">${slideData.summary}</p>
+                            </div>
+                            <div class="bg-red-100 p-6 rounded-lg border-l-4 border-red-500">
+                                 <h3 class="text-xl font-bold text-red-800 mb-3">今後の課題</h3>
+                                 <ul class="list-disc list-inside text-red-700 space-y-1">
+                                    ${slideData.gaps.map(gap => `<li>${gap}</li>`).join('')}
+                                 </ul>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'final':
+                    content += `<button id="open-modal-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg text-lg mx-auto block">エクスポート用プロンプト生成</button>`;
+                    break;
+            }
+
+            slideElement.innerHTML = content;
+            slidesWrapper.appendChild(slideElement);
+            
+            if (slideData.type === 'chart') {
+                renderChart();
+            }
+            
+            if(slideData.type === 'final') {
+                 document.getElementById('open-modal-btn').addEventListener('click', () => modal.classList.remove('hidden'));
+            }
+        }
+
+        function renderChart() {
+            const ctx = document.getElementById('pemf-chart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['シスプラチン送達', 'siRNA送達'],
+                    datasets: [
+                        {
+                            label: '電磁場なし (対照群)',
+                            data: [100, 100],
+                            backgroundColor: 'rgba(100, 116, 139, 0.6)',
+                            borderColor: 'rgb(100, 116, 139)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'PEMFあり (実験群)',
+                            data: [200, 61], // 100 * 2 for cisplatin, 100 - 39 for siRNA
+                            backgroundColor: 'rgba(59, 130, 246, 0.6)',
+                            borderColor: 'rgb(59, 130, 246)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: '効果（相対値）' }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) { label += ': '; }
+                                    if (context.dataIndex === 0) {
+                                        label += `${context.raw} (取り込み量)`;
+                                    }
+                                    if (context.dataIndex === 1) {
+                                        label += `${context.raw} (腫瘍面積)`;
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateUI() {
+            renderSlide(currentSlide);
+            narrationText.textContent = slidesData[currentSlide].narration;
+
+            // Update pagination dots
+            const dots = paginationDots.querySelectorAll('.dot');
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('bg-blue-800', index === currentSlide);
+                dot.classList.toggle('bg-slate-300', index !== currentSlide);
+            });
+
+            // Update buttons state
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === slidesData.length - 1;
+        }
+
+        // Event Listeners
+        prevBtn.addEventListener('click', () => {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateUI();
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentSlide < slidesData.length - 1) {
+                currentSlide++;
+                updateUI();
+            }
+        });
+
+        closeModalBtn.addEventListener('click', () => modal.classList.add('hidden'));
+
+        // Initial setup
+        slidesData.forEach((_, index) => {
+            const dot = document.createElement('div');
+            dot.className = 'dot w-3 h-3 rounded-full cursor-pointer transition';
+            dot.addEventListener('click', () => {
+                currentSlide = index;
+                updateUI();
+            });
+            paginationDots.appendChild(dot);
+});
+
+        updateUI();
+    });
+
+</script>
+</body>
+</html>
