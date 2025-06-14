@@ -3,177 +3,436 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>テラヘルツ波と癌治療の真実：「生命育成周波数」は科学かデマか？</title>
+    <title>テラヘルツ波がん治療：未来へのスライドショー</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-      body {
-        font-family: 'Inter', 'Noto Sans JP', sans-serif;
-        /* Base styles for the generated HTML page - can be overridden by Tailwind classes in the infographic */
-        background-color: #f3f4f6; /* Tailwind gray-100 as a default */
-        color: #1f2937; /* Tailwind gray-800 as a default */
-      }
-      /* Infographic content itself should primarily use Tailwind classes */
+        body {
+            font-family: 'Noto Sans JP', 'Inter', sans-serif;
+        }
+        .slide {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .slide.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .narration-box {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        .infographic-bg {
+            background-color: #f0f4f8;
+        }
     </style>
 </head>
-<body class="p-2 sm:p-4 md:p-8">
-<div class="container mx-auto p-8 bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen font-sans text-gray-800">
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
 
-    <!-- Title Section -->
-    <section class="text-center mb-16">
-        <h1 class="text-5xl font-extrabold text-gray-900 mb-4 drop-shadow-md">
-            <span class="bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-500">
-                テラヘルツ波
-            </span>
-            <br>
-            癌治療への可能性と「生命育成周波数」の真実
-        </h1>
-        <p class="text-xl text-gray-700 mt-4">科学的視点から探るTHz波の生体作用と医療応用</p>
-    </section>
+    <div class="w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden">
+        <div class="p-6 md:p-8">
+            <!-- Slides Container -->
+            <div id="slides-container" class="relative">
+                <!-- Slide 1: Title -->
+                <div class="slide active">
+                    <div class="text-center">
+                        <h1 class="text-3xl md:text-5xl font-bold text-gray-800 mb-2">がん治療の未来を拓く</h1>
+                        <h2 class="text-xl md:text-3xl font-semibold text-blue-600 mb-6">テラヘルツ波という新たな光</h2>
+                        <div class="infographic-bg rounded-lg p-6 flex justify-center items-center h-64 md:h-80">
+                            <svg class="w-48 h-48 text-blue-500" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M50,10 A40,40 0 0,1 90,50" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+                                <path d="M50,10 A40,40 0 0,0 10,50" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-dasharray="8,8"/>
+                                <path d="M50,90 A40,40 0 0,0 90,50" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+                                <path d="M50,90 A40,40 0 0,1 10,50" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-dasharray="8,8"/>
+                                <circle cx="50" cy="50" r="15" fill="none" stroke="#ef4444" stroke-width="3"/>
+                                <path d="M45,45 L55,55 M45,55 L55,45" stroke="#ef4444" stroke-width="3" stroke-linecap="round"/>
+                                <text x="50" y="7" font-size="8" text-anchor="middle" fill="#6b7280">マイクロ波</text>
+                                <text x="95" y="53" font-size="8" text-anchor="middle" fill="#6b7280">テラヘルツ波</text>
+                                <text x="50" y="98" font-size="8" text-anchor="middle" fill="#6b7280">赤外線</text>
+                                <text x="25" y="30" font-size="7" fill="#ef4444">がん細胞</text>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
 
-    <!-- Main Content Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                <!-- Slide 2: What is THz? -->
+                <div class="slide">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">テラヘルツ波とは？「未開拓の光」</h2>
+                    <div class="grid md:grid-cols-2 gap-6 items-center">
+                        <div class="infographic-bg rounded-lg p-6 flex justify-center items-center h-64">
+                             <svg class="w-full h-full" viewBox="0 0 200 100">
+                                <rect x="0" y="0" width="200" height="100" fill="#f0f4f8"/>
+                                <text x="100" y="15" text-anchor="middle" font-size="8" fill="#374151">電磁波スペクトル</text>
+                                <path d="M10,80 C 40,20 60,20 90,80 S 140,20 170,80" stroke="#3b82f6" stroke-width="2" fill="none"/>
+                                <text x="20" y="95" font-size="7" fill="#4b5563">マイクロ波</text>
+                                <text x="160" y="95" font-size="7" fill="#4b5563">赤外線</text>
+                                <rect x="80" y="30" width="40" height="60" fill="rgba(239, 68, 68, 0.2)" />
+                                <text x="100" y="50" text-anchor="middle" font-weight="bold" font-size="9" fill="#dc2626">テラヘルツ波</text>
+                                <text x="100" y="65" text-anchor="middle" font-size="7" fill="#dc2626">「テラヘルツ・ギャップ」</text>
+                            </svg>
+                        </div>
+                        <ul class="space-y-3 text-gray-700">
+                            <li class="flex items-start"><span class="text-blue-500 mr-2">✓</span><strong>非電離性：</strong>体を傷つけない安全な光。X線とは根本的に違います。</li>
+                            <li class="flex items-start"><span class="text-blue-500 mr-2">✓</span><strong>水への高い感受性：</strong>水分子に強く吸収される性質が、がん発見の鍵となります。</li>
+                            <li class="flex items-start"><span class="text-blue-500 mr-2">✓</span><strong>分子の指紋：</strong>特定の分子を識別できるため、精密な診断・治療に繋がります。</li>
+                        </ul>
+                    </div>
+                </div>
 
-        <!-- Section 1: THz波とは？ -->
-        <article class="bg-white p-8 rounded-xl shadow-xl border border-blue-300 transform transition duration-300 hover:scale-105 hover:shadow-2xl">
-            <div class="flex items-center mb-5">
-                <!-- SVG Icon: Wave -->
-                <svg class="w-10 h-10 text-blue-600 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.557l-4.204-1.261a1 1 0 01-.605-.912V3.056a2 2 0 00-3.007-1.794l-2.75 1.537a1 1 0 00-.399.918v7.445a1 1 0 01-.605.912l-4.204 1.26a2 2 0 00-1.022.557m18.856 0a2 2 0 01.999 1.39l.397 1.987a2 2 0 01-.999 2.275l-3.637 2.875a1 1 0 01-1.595-.81l.094-1.849a2 2 0 00-.268-1.01l-4.693-4.693a1 1 0 00-.912-.605z"></path></svg>
-                <h2 class="text-2xl font-bold text-gray-900">テラヘルツ（THz）波とは</h2>
+                <!-- Slide 3: Core Principle -->
+                <div class="slide">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">なぜがんに効くのか？水分の違いを捉える</h2>
+                    <div class="infographic-bg rounded-lg p-6 flex flex-col md:flex-row justify-around items-center h-auto md:h-80">
+                        <div class="text-center p-4">
+                            <h3 class="font-bold text-lg mb-2">正常な細胞</h3>
+                            <svg class="w-32 h-32 mx-auto" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="40" fill="#a5f3fc" stroke="#06b6d4" stroke-width="2"/>
+                                <path d="M10,50 C30,70 70,30 90,50" stroke="#60a5fa" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.5"/>
+                                <text x="50" y="55" text-anchor="middle" font-size="10">水分量: 少</text>
+                            </svg>
+                            <p class="text-sm mt-2">THz波は透過しやすい</p>
+                        </div>
+                        <div class="text-blue-500 text-4xl font-bold p-4">→</div>
+                        <div class="text-center p-4">
+                            <h3 class="font-bold text-lg mb-2">がん細胞</h3>
+                            <svg class="w-32 h-32 mx-auto" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="40" fill="#93c5fd" stroke="#2563eb" stroke-width="2"/>
+                                <path d="M10,50 C30,70 70,30 90,50" stroke="#1d4ed8" stroke-width="3" fill="none" stroke-linecap="round"/>
+                                <path d="M10,30 C30,50 70,10 90,30" stroke="#1d4ed8" stroke-width="3" fill="none" stroke-linecap="round"/>
+                                <path d="M10,70 C30,90 70,50 90,70" stroke="#1d4ed8" stroke-width="3" fill="none" stroke-linecap="round"/>
+                                <text x="50" y="55" text-anchor="middle" font-size="10" fill="white">水分量: 多</text>
+                            </svg>
+                            <p class="text-sm mt-2">THz波は吸収されやすい</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Slide 4: Two Approaches -->
+                <div class="slide">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">テラヘルツ波による2つの治療アプローチ</h2>
+                     <div class="grid md:grid-cols-2 gap-6 items-stretch h-auto md:h-80">
+                        <div class="infographic-bg rounded-lg p-6 flex flex-col items-center justify-center text-center">
+                             <svg class="w-24 h-24 mb-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M12 6V4m0 16v-2M8 12a4 4 0 118 0 4 4 0 01-8 0z"></path></svg>
+                            <h3 class="text-xl font-bold text-purple-700">① 非熱的アプローチ</h3>
+                            <p class="mt-2 text-gray-600">特定の周波数でがん細胞の弱点を直接攻撃。「光の薬」のように分子レベルでがんの機能を止めます。</p>
+                        </div>
+                        <div class="infographic-bg rounded-lg p-6 flex flex-col items-center justify-center text-center">
+                            <svg class="w-24 h-24 mb-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.343A8 8 0 016.343 7.657m11.314 10.686a8 8 0 00-11.314-10.686m11.314 10.686L21 21M5 5l-2.343-2.343"></path></svg>
+                            <h3 class="text-xl font-bold text-red-700">② 熱的アプローチ</h3>
+                            <p class="mt-2 text-gray-600">がん組織が水分を多く含む性質を利用し、選択的に加熱して焼き切る「温熱療法」です。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 5: Non-Thermal 1 (Telomerase) -->
+                <div class="slide">
+                     <h2 class="text-2xl font-bold text-gray-800 mb-4">非熱的治療①：「光の薬」でがんの無限増殖を止める</h2>
+                     <div class="grid md:grid-cols-2 gap-6 items-center">
+                        <div class="infographic-bg rounded-lg p-6 flex justify-center items-center h-64">
+                           <svg class="w-full h-full" viewBox="0 0 200 100">
+                                <path d="M10,50 Q 30,20 50,50 T 90,50 T 130,50 T 170,50" stroke="#4b5563" stroke-width="4" fill="none" stroke-linecap="round"/>
+                                <path d="M10,55 Q 30,85 50,55 T 90,55 T 130,55 T 170,55" stroke="#4b5563" stroke-width="4" fill="none" stroke-linecap="round"/>
+                                <rect x="170" y="40" width="20" height="25" fill="#3b82f6" rx="5"/>
+                                <text x="180" y="35" text-anchor="middle" font-size="8">テロメア</text>
+                                <path d="M15,20 L 40,45" stroke="#a855f7" stroke-width="3" stroke-dasharray="4 2" />
+                                <text x="10" y="15" fill="#a855f7" font-size="8">33 THz</text>
+                                <circle cx="50" cy="52.5" r="10" fill="#a855f7" />
+                                <text x="50" y="55" text-anchor="middle" fill="white" font-size="8">テロメラーゼ</text>
+                                <line x1="45" y1="47.5" x2="55" y2="57.5" stroke="white" stroke-width="2"/>
+                                <line x1="45" y1="57.5" x2="55" y2="47.5" stroke="white" stroke-width="2"/>
+                                <text x="50" y="80" text-anchor="middle" font-size="9" font-weight="bold" fill="#a855f7">活性を阻害！</text>
+                           </svg>
+                        </div>
+                        <div>
+                            <p class="text-gray-700 leading-relaxed">がん細胞の無限増殖を支える「テロメラーゼ」という酵素。中国の研究では、<strong class="text-purple-600">33 THz</strong>という特定の周波数の光を当てることで、この酵素の働きを70%以上も抑制できることが発見されました。薬を使わずに、がんの「不死の仕組み」を断ち切る画期的なアプローチです。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 6: Non-Thermal 2 (DNA Demethylation) -->
+                <div class="slide">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">非熱的治療②：「エピジェネティックなハサミ」</h2>
+                     <div class="grid md:grid-cols-2 gap-6 items-center">
+                        <div class="infographic-bg rounded-lg p-6 flex justify-center items-center h-64">
+                           <svg class="w-full h-full" viewBox="0 0 200 100">
+                                <path d="M10,50 Q 30,20 50,50 T 90,50 T 130,50 T 170,50" stroke="#4b5563" stroke-width="4" fill="none" stroke-linecap="round"/>
+                                <path d="M10,55 Q 30,85 50,55 T 90,55 T 130,55 T 170,55" stroke="#4b5563" stroke-width="4" fill="none" stroke-linecap="round"/>
+                                <circle cx="70" cy="35" r="8" fill="#f97316"/>
+                                <text x="70" y="38" text-anchor="middle" font-size="7" fill="white">CH₃</text>
+                                <text x="70" y="22" text-anchor="middle" font-size="8" fill="#f97316">異常メチル化</text>
+                                <path d="M40,20 L 65,30" stroke="#f97316" stroke-width="3" stroke-dasharray="4 2"/>
+                                <text x="35" y="15" fill="#f97316" font-size="8">~1.65 THz</text>
+                                <g transform="translate(140, 50) rotate(-45)">
+                                    <path d="M-10,-5 L10,-5 L10,-15 L15,-15 L15, -5 L20,-5 A5,5 0 0 1 20,5 L15,5 L15,15 L10,15 L10,5 L-10,5 A5,5 0 0 1 -10,-5 Z" fill="#f97316"/>
+                                </g>
+                                <text x="140" y="80" text-anchor="middle" font-size="9" font-weight="bold" fill="#f97316">異常をリセット！</text>
+                           </svg>
+                        </div>
+                        <div>
+                            <p class="text-gray-700 leading-relaxed">がんの発生には、遺伝子スイッチの異常（DNAメチル化）が関わっています。研究により、<strong class="text-orange-600">約1.65 THz</strong>のテラヘルツ波が、この異常なメチル基を「ハサミ」のように切り離し、遺伝子の状態を正常に戻せる可能性が示されました。がんを根本から再プログラミングする治療法です。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 7: Thermal Ablation -->
+                <div class="slide">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">熱的治療：がんを狙い撃ちする「精密温熱療法」</h2>
+                     <div class="grid md:grid-cols-2 gap-6 items-center">
+                        <div class="infographic-bg rounded-lg p-6 flex justify-center items-center h-64">
+                           <svg class="w-full h-full" viewBox="0 0 200 100">
+                                <path d="M10,20 L 50,50" stroke="#ef4444" stroke-width="4"/>
+                                <path d="M15,10 L 60,45" stroke="#ef4444" stroke-width="4"/>
+                                <path d="M20,5 L 70,40" stroke="#ef4444" stroke-width="4"/>
+                                <circle cx="130" cy="50" r="40" fill="#a5f3fc" stroke="#06b6d4" stroke-width="2" />
+                                <text x="130" y="20" text-anchor="middle" font-size="8">正常組織</text>
+                                <circle cx="130" cy="50" r="20" fill="#fecaca" stroke="#dc2626" stroke-width="2" />
+                                <circle cx="130" cy="50" r="15" fill="#ef4444" />
+                                <text x="130" y="55" text-anchor="middle" font-size="8" fill="white">がん組織</text>
+                                <text x="130" y="80" text-anchor="middle" font-size="8" fill="#ef4444" font-weight="bold">45℃以上に加熱</text>
+                           </svg>
+                        </div>
+                        <div>
+                             <p class="text-gray-700 leading-relaxed">がん組織が水分を多く含む性質を利用し、テラヘルツ波を照射して選択的に加熱。がん細胞だけを45℃以上に温めて破壊します。従来の温熱療法より波長が短いため、よりピンポイントで精密な加熱が可能になり、周囲の正常な細胞へのダメージを最小限に抑えることが期待されています。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 8: Penetration Wall -->
+                <div class="slide">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">最大の壁：「透過性の限界」という課題</h2>
+                    <div class="grid md:grid-cols-2 gap-6 items-center">
+                        <div class="infographic-bg rounded-lg p-6 flex justify-center items-center h-64">
+                           <svg class="w-full h-full" viewBox="0 0 200 100">
+                                <path d="M10,20 L 50,50" stroke="#3b82f6" stroke-width="4"/>
+                                <path d="M15,10 L 60,45" stroke="#3b82f6" stroke-width="4" opacity="0.7"/>
+                                <path d="M20,5 L 70,40" stroke="#3b82f6" stroke-width="4" opacity="0.4"/>
+                                <rect x="80" y="0" width="30" height="100" fill="#fde68a"/>
+                                <text x="95" y="50" text-anchor="middle" font-size="10">皮膚・組織</text>
+                                <text x="95" y="65" text-anchor="middle" font-size="8">(0.1-0.3mm)</text>
+                                <circle cx="150" cy="50" r="20" fill="#dc2626"/>
+                                <text x="150" y="55" text-anchor="middle" font-size="8" fill="white">深部のがん</text>
+                                <line x1="110" y1="50" x2="130" y2="50" stroke="red" stroke-width="3" stroke-dasharray="5 3"/>
+                                <text x="120" y="45" text-anchor="middle" font-size="10" fill="red">届かない！</text>
+                           </svg>
+                        </div>
+                        <div>
+                            <p class="text-gray-700 leading-relaxed">テラヘルツ治療の最大の課題は、水に吸収されやすいため、体内深くまで届かないことです。皮膚からわずか0.3mm程度しか進めません。この「透過性の壁」により、現状では皮膚がんなど表面のがんにしか適用できません。この壁をどう乗り越えるかが、臨床応用の鍵を握っています。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 9: Solution 1 (Nano) -->
+                <div class="slide">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">壁を越える戦略①：ナノテクノロジー</h2>
+                    <div class="grid md:grid-cols-2 gap-6 items-center">
+                        <div class="infographic-bg rounded-lg p-6 flex justify-center items-center h-64">
+                           <svg class="w-full h-full" viewBox="0 0 200 100">
+                                <circle cx="150" cy="50" r="30" fill="#fecaca"/>
+                                <circle cx="140" cy="40" r="4" fill="#facc15"/>
+                                <circle cx="160" cy="45" r="4" fill="#facc15"/>
+                                <circle cx="155" cy="60" r="4" fill="#facc15"/>
+                                <circle cx="145" cy="65" r="4" fill="#facc15"/>
+                                <text x="150" y="25" text-anchor="middle" font-size="8">がん組織</text>
+                                <text x="150" y="85" text-anchor="middle" font-size="8">金ナノ粒子</text>
+                                <path d="M10,50 L 120,50" stroke="#3b82f6" stroke-width="2" stroke-dasharray="4 2"/>
+                                <text x="65" y="45" text-anchor="middle" font-size="8">弱いTHz波</text>
+                                <path d="M140,40 C 130,30 150,30 140,40" stroke="#fbbf24" stroke-width="2" fill="none"/>
+                                <path d="M160,45 C 150,35 170,35 160,45" stroke="#fbbf24" stroke-width="2" fill="none"/>
+                                <text x="150" y="6" text-anchor="middle" font-size="8" font-weight="bold" fill="#ca8a04">効果を増幅！</text>
+                           </svg>
+                        </div>
+                        <div>
+                            <p class="text-gray-700 leading-relaxed">体内に微小な「金ナノ粒子」を送り込み、がん組織に集積させます。このナノ粒子が「アンテナ」のように機能し、弱いテラヘルツ波でもその場で効果を増幅。これにより、体の奥深くにあるがんにまで、治療効果を届けることが可能になると期待されています。診断と治療を一体化する「セラノスティクス」技術の核となります。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 10: Solution 2 (Delivery) -->
+                <div class="slide">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">壁を越える戦略②：革新的なデリバリー技術</h2>
+                    <div class="grid md:grid-cols-2 gap-6 items-stretch h-auto md:h-80">
+                        <div class="infographic-bg rounded-lg p-6 flex flex-col items-center justify-center text-center">
+                           <h3 class="text-xl font-bold text-teal-700 mb-4">テラヘルツ内視鏡</h3>
+                           <svg class="w-24 h-24 mb-4 text-teal-600" viewBox="0 0 100 100">
+                                <path d="M20,40 C30,20 70,20 80,40 L 80,90 H 20 Z" fill="#e0f2f1" stroke="#4db6ac" stroke-width="2"/>
+                                <path d="M30,50 L70,50 M30,60 L70,60 M30,70 L70,70" stroke="#4db6ac" stroke-width="2" />
+                                <path d="M50,40 V10 H55" stroke="#4db6ac" stroke-width="2" fill="none" />
+                                <circle cx="58" cy="10" r="3" fill="#ef4444"/>
+                           </svg>
+                           <p class="mt-2 text-gray-600">内視鏡の先端にテラヘルツ装置を取り付け、消化管などのがんに物理的に直接アプローチします。</p>
+                        </div>
+                        <div class="infographic-bg rounded-lg p-6 flex flex-col items-center justify-center text-center">
+                           <h3 class="text-xl font-bold text-sky-700 mb-4">間質的プローブ</h3>
+                            <svg class="w-24 h-24 mb-4 text-sky-600" viewBox="0 0 100 100">
+                                <rect x="10" y="45" width="70" height="10" fill="#e0f7fa" stroke="#26c6da" stroke-width="2" rx="5"/>
+                                <path d="M80,50 L95,50" stroke="#26c6da" stroke-width="2" />
+                                <circle cx="98" cy="50" r="3" fill="#ef4444"/>
+                           </svg>
+                           <p class="mt-2 text-gray-600">針状の細いプローブを体外から深部の腫瘍に直接刺し、そこからテラヘルツ波を照射します。</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Slide 11: Global Ecosystem -->
+                <div class="slide">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">世界が挑む最先端研究：グローバルエコシステム</h2>
+                    <div class="infographic-bg rounded-lg p-6 flex justify-center items-center h-auto md:h-80">
+                       <svg class="w-full h-full" viewBox="0 0 300 150">
+                            <!-- World Map Placeholder -->
+                            <path d="M49,112 C34,103 33,85 36,78 C40,71 39,69 41,62 C43,55 46,54 48,49 C50,44 56,43 57,39 C58,35 59,33 62,31 C65,29 68,29 71,28 C74,27 77,26 80,23 C83,20 87,20 90,20 C93,20 96,21 98,24 C100,27 103,28 106,28 C109,28 112,29 114,31 C116,33 118,35 119,39 C120,43 126,44 128,49 C130,54 133,55 135,62 C137,69 136,71 140,78 C143,85 142,103 127,112 C112,121 64,121 49,112Z M150,22 C152,22 154,23 155,25 C156,27 159,28 162,28 C165,28 168,27 171,24 C174,21 177,20 180,20 C183,20 187,20 190,23 C193,26 196,27 199,28 C202,29 205,29 208,31 C211,33 212,35 213,39 C214,43 220,44 222,49 C224,54 227,55 229,62 C231,69 230,71 234,78 C237,85 236,103 221,112 C206,121 158,121 143,112 C143,110 143,108 143,106 C148,111 157,114 165,114 C173,114 182,111 187,106 C192,101 195,94 195,87 C195,80 192,73 187,68 C182,63 173,60 165,60 C157,60 148,63 143,68 C143,65 143,62 143,59 C148,54 157,51 165,51 C173,51 182,54 187,59 C192,64 195,71 195,78 C195,79 195,80 195,81 C194,79 193,77 192,75 C191,73 190,72 188,70 C186,68 184,67 182,66 C180,65 178,64 175,64 C172,64 170,65 168,66 C166,67 164,68 162,70 C160,72 159,73 158,75 C157,77 156,79 155,81 C155,80 155,79 155,78 C155,71 152,64 147,59 C142,54 133,51 125,51 C117,51 108,54 103,59 C98,64 95,71 95,78 C95,79 95,80 95,81 C94,79 93,77 92,75 C91,73 90,72 88,70 C86,68 84,67 82,66 C80,65 78,64 75,64 C72,64 70,65 68,66 C66,67 64,68 62,70 C60,72 59,73 58,75 C57,77 56,79 55,81 C55,80 55,79 55,78 C55,71 52,64 47,59 C42,54 33,51 25,51 C17,51 8,54 3,59 C3,62 3,65 3,68 C8,63 17,60 25,60 C33,60 42,63 47,68 C52,73 55,80 55,87 C55,94 52,101 47,106 C42,111 33,114 25,114 C17,114 8,111 3,106 C3,108 3,110 3,112 C18,121 66,121 81,112 C81,110 81,108 81,106 C76,111 67,114 59,114 C51,114 42,111 37,106 C32,101 29,94 29,87 C29,80 32,73 37,68 C42,63 51,60 59,60 C67,60 76,63 81,68 C81,65 81,62 81,59 C76,54 67,51 59,51 C51,51 42,54 37,59 C32,64 29,71 29,78 C29,79 29,80 29,81 C30,79 31,77 32,75 C33,73 34,72 36,70 C38,68 40,67 42,66 C44,65 46,64 49,64 C52,64 54,65 56,66 C58,67 60,68 62,70 C64,72 65,73 66,75 C67,77 68,79 69,81 C69,80 69,79 69,78 C69,71 66,64 61,59 C56,54 47,51 39,51 C31,51 22,54 17,59 C17,62 17,65 17,68 C22,63 31,60 39,60 C47,60 56,63 61,68 C66,73 69,80 69,87 C69,94 66,101 61,106 C56,111 47,114 39,114 C31,114 22,111 17,106 C17,108 17,110 17,112 C32,121 80,121 95,112 C95,110 95,108 95,106 C90,111 81,114 73,114 C65,114 56,111 51,106 C46,101 43,94 43,87 C43,80 46,73 51,68 C56,63 65,60 73,60 C81,60 90,63 95,68 C95,65 95,62 95,59 C90,54 81,51 73,51 C65,51 56,54 51,59 C46,64 43,71 43,78 C43,79 43,80 43,81 C44,79 45,77 46,75 C47,73 48,72 50,70 C52,68 54,67 56,66 C58,65 60,64 63,64 C66,64 68,65 70,66 C72,67 74,68 76,70 C78,72 79,73 80,75 C81,77 82,79 83,81 C83,80 83,79 83,78 C83,71 80,64 75,59 C70,54 61,51 53,51 C45,51 36,54 31,59 C26,64 23,71 23,78 C23,85 26,92 31,97 C36,102 45,105 53,105 C61,105 70,102 75,97 C80,92 83,85 83,78 L83,78 Z" fill="#dbeafe"/>
+                            <!-- Hotspots -->
+                            <g>
+                                <circle cx="200" cy="50" r="10" fill="#ef4444" opacity="0.8"/>
+                                <text x="200" y="70" text-anchor="middle" font-size="8" font-weight="bold">中国</text>
+                            </g>
+                             <g>
+                                <circle cx="70" cy="60" r="10" fill="#3b82f6" opacity="0.8"/>
+                                <text x="70" y="80" text-anchor="middle" font-size="8" font-weight="bold">米国</text>
+                            </g>
+                            <g>
+                                <circle cx="125" cy="45" r="10" fill="#16a34a" opacity="0.8"/>
+                                <text x="125" y="30" text-anchor="middle" font-size="8" font-weight="bold">欧州</text>
+                            </g>
+                       </svg>
+                    </div>
+                    <p class="text-center text-sm text-gray-600 mt-2">中国、米国、欧州を中心に、世界中の大学や企業が連携・競争しながら研究開発を進めています。</p>
+                </div>
+                
+                <!-- Slide 12: Path to Clinic -->
+                <div class="slide">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">臨床応用への道：「三重のハードル」</h2>
+                    <div class="infographic-bg rounded-lg p-6 flex flex-col items-center justify-center h-auto md:h-80">
+                        <div class="w-full space-y-4">
+                            <div class="flex items-center">
+                                <div class="bg-red-500 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-xl">1</div>
+                                <p class="ml-4 text-gray-700"><strong>安全性データの不足：</strong>長期的な影響に関する体系的なデータがまだ少ない。</p>
+                            </div>
+                            <div class="text-2xl ml-5 text-gray-400">↓</div>
+                             <div class="flex items-center">
+                                <div class="bg-yellow-500 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-xl">2</div>
+                                <p class="ml-4 text-gray-700"><strong>規制ガイドラインの不在：</strong>国際的な安全基準が未整備。</p>
+                            </div>
+                            <div class="text-2xl ml-5 text-gray-400">↓</div>
+                            <div class="flex items-center">
+                                <div class="bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-xl">3</div>
+                                <p class="ml-4 text-gray-700"><strong>臨床試験の困難：</strong>上記のため、大規模なヒトでの試験に踏み切れない。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 13: Conclusion -->
+                <div class="slide">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">結論と未来への展望</h2>
+                    <div class="grid md:grid-cols-2 gap-6 items-center">
+                        <div class="infographic-bg rounded-lg p-6 flex justify-center items-center h-64">
+                            <svg class="w-full h-full" viewBox="0 0 200 100">
+                                <circle cx="100" cy="50" r="45" fill="none" stroke="#3b82f6" stroke-width="2" stroke-dasharray="5 5"/>
+                                <text x="100" y="55" text-anchor="middle" font-size="12" font-weight="bold" fill="#3b82f6">THz Cancer Therapy</text>
+                                <text x="30" y="30" text-anchor="middle" font-size="8">安全性研究</text>
+                                <text x="170" y="30" text-anchor="middle" font-size="8">AI/機械学習</text>
+                                <text x="100" y="90" text-anchor="middle" font-size="8">ナノ粒子開発</text>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-gray-700 leading-relaxed mb-4">テラヘルツがん治療は、科学的な好奇心の段階から、実用化に向けた具体的な課題解決のフェーズへと移行しています。</p>
+                            <ul class="space-y-2 text-gray-700">
+                                <li class="flex items-start"><span class="text-green-500 mr-2">▶</span><strong>今後の鍵：</strong>安全性研究の推進、AIによる個別化治療、多機能ナノ粒子の開発。</li>
+                                <li class="flex items-start"><span class="text-green-500 mr-2">▶</span><strong>未来：</strong>多くの課題はありますが、物理学、ナノテク、生物学の融合により、未来の腫瘍学における強力なツールとなる可能性を秘めています。</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <p class="text-gray-700 leading-relaxed">電磁スペクトルのマイクロ波と遠赤外線の間に位置（0.1～10 THz）。</p>
-            <ul class="list-disc list-inside space-y-1 text-gray-700 mt-3">
-                <li>紙、木材、プラスチックなどを<strong class="font-semibold text-blue-700">透過</strong>。</li>
-                <li>レーザー光のような<strong class="font-semibold text-blue-700">高い指向性</strong>。</li>
-                <li>光子エネルギーが低く<strong class="font-semibold text-blue-700">非電離放射線</strong>。</li>
-                <li>生体組織との<strong class="font-semibold text-blue-700">強い相互作用</strong>（特に水）。</li>
-            </ul>
-        </article>
-
-        <!-- Section 2: 「生命育成周波数帯域」概念 -->
-        <article class="bg-white p-8 rounded-xl shadow-xl border border-yellow-400 transform transition duration-300 hover:scale-105 hover:shadow-2xl">
-            <div class="flex items-center mb-5">
-                <!-- SVG Icon: Question Mark -->
-                <svg class="w-10 h-10 text-yellow-600 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9.247a4.25 4.25 0 100 5.506m0-5.506L9.5 7.25m-.772 6.753l1.272-1.753m-1.272 1.753A4.25 4.25 0 118.228 9.247M12 21a9 9 0 110-18 9 9 0 010 18z"></path></svg>
-                <h2 class="text-2xl font-bold text-gray-900">「生命育成周波数帯域」とは？</h2>
+            
+            <!-- Narration Box -->
+            <div id="narration-container" class="mt-6 md:mt-8">
+                <div class="narration-box p-5 rounded-xl shadow-inner">
+                    <p id="narration-text" class="text-gray-800 leading-relaxed text-sm"></p>
+                </div>
             </div>
-            <p class="text-gray-700 leading-relaxed">NASAが遠赤外線（4-14µm、約21.4-75 THz）を生体代謝・育成に不可欠としたことに由来。</p>
-            <p class="text-gray-700 leading-relaxed mt-3">一部でTHz帯にも拡大解釈され、生体分子との「共振」が有益な効果をもたらすと主張される。</p>
-            <p class="text-sm text-gray-600 mt-3">
-                <strong class="font-semibold text-red-600">注意点：</strong>
-                <ul class="list-disc list-inside space-y-1 text-gray-600 text-sm mt-1">
-                    <li>概念が曖昧で、科学的検証に必要な特異性を欠く。</li>
-                    <li>遠赤外線とTHz帯の定義が混同されることがある。</li>
-                    <li>「怪しいテラヘルツ商法」に悪用される懸念がある（研究者からの警告あり）。</li>
-                    <li>癌治療においては、細胞「育成」は逆効果の可能性も。</li>
-                </ul>
-            </p>
-        </article>
 
-        <!-- Section 3: 生体系との相互作用 -->
-        <article class="bg-white p-8 rounded-xl shadow-xl border border-purple-300 transform transition duration-300 hover:scale-105 hover:shadow-2xl">
-            <div class="flex items-center mb-5">
-                <!-- SVG Icon: Molecule -->
-                <svg class="w-10 h-10 text-purple-600 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17.25v-4.477c0-.892.49-1.712 1.227-2.12l1.472-.817a4.5 4.5 0 01.364-.18V6.25a2.25 2.25 0 00-2.25-2.25H9a2.25 2.25 0 00-2.25 2.25v.557a2.25 2.25 0 00.16.997l.862 1.529c.08.14.127.3.127.465V17.25m0 0a2.25 2.25 0 002.25 2.25h.25a2.25 2.25 0 002.25-2.25m-4.5 0h4.5m-9 0H5.25A2.25 2.25 0 013 14.75v-3.323c0-.447.18-.879.491-1.188l1.055-1.055a2.25 2.25 0 011.601-.665H8.25m0 0h4.5m-9 0h3.75"></path></svg>
-                <h2 class="text-2xl font-bold text-gray-900">生体系との相互作用</h2>
-            </div>
-            <ul class="list-disc list-inside space-y-3 text-gray-700">
-                <li><strong class="font-semibold text-purple-700">水分子との相互作用:</strong> 強く吸収され、浸透深度は浅い（数十～数百µm）。熱効果や含水率によるコントラストの基礎。</li>
-                <li><strong class="font-semibold text-purple-700">生体分子との共振:</strong> タンパク質やDNAの振動・回転準位がTHz帯に存在。コンフォメーション変化などを誘起する可能性。</li>
-                <li><strong class="font-semibold text-purple-700">熱効果:</strong> エネルギー吸収による温度上昇。高強度・長時間で細胞死（アブレーション）。</li>
-                <li><strong class="font-semibold text-purple-700">非熱効果:</strong> 温度上昇なしでの生物効果（遺伝子発現変化、細胞膜影響など）の可能性。メカニズムは研究中。</li>
-                <li><strong class="font-semibold text-purple-700">指紋スペクトル:</strong> 物質固有の吸収パターン。診断（癌組織識別）に応用。</li>
-            </ul>
-        </article>
+        </div>
 
-        <!-- Section 4: 診断応用 -->
-        <article class="bg-white p-8 rounded-xl shadow-xl border border-green-300 transform transition duration-300 hover:scale-105 hover:shadow-2xl">
-            <div class="flex items-center mb-5">
-                <!-- SVG Icon: Microscope/Scan -->
-                <svg class="w-10 h-10 text-green-600 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path></svg>
-                <h2 class="text-2xl font-bold text-gray-900">癌診断への応用</h2>
-            </div>
-            <p class="text-gray-700 leading-relaxed">癌組織と健常組織の含水率や密度、分子組成の違いを利用したイメージング・分光法。</p>
-            <ul class="list-disc list-inside space-y-2 text-gray-700 mt-3">
-                <li><strong class="font-semibold text-green-700">研究例:</strong> 乳癌（少数細胞検出）、皮膚癌（基底細胞癌識別）、大腸癌、脳腫瘍など。</li>
-                <li><strong class="font-semibold text-green-700">有望な分野:</strong> 術中マージン評価（リアルタイム性）、早期発見の可能性。</li>
-                <li><strong class="font-semibold text-green-700">利点:</strong> 非侵襲、非電離放射線。</li>
-                <li><strong class="font-semibold text-green-700">限界:</strong> 浸透深度（表在性限定）、空間分解能、データ解釈の複雑性。</li>
-            </ul>
-            <p class="text-sm text-gray-600 mt-3">診断応用は、治療よりも実用化に近い段階にある。</p>
-        </article>
-
-        <!-- Section 5: 治療応用 -->
-        <article class="bg-white p-8 rounded-xl shadow-xl border border-red-300 transform transition duration-300 hover:scale-105 hover:shadow-2xl">
-            <div class="flex items-center mb-5">
-                <!-- SVG Icon: Target -->
-                <svg class="w-10 h-10 text-red-600 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0h.008v.008h-.008m0 11.25h.008v.008h-.008m-16.5 0h.008v.008h-.008M3.75 6.375h.008v.008h-.008m0 11.25h.008v.008h-.008"></path></svg>
-                <h2 class="text-2xl font-bold text-gray-900">癌治療への応用</h2>
-            </div>
-            <ul class="list-disc list-inside space-y-3 text-gray-700">
-                <li><strong class="font-semibold text-red-700">熱アブレーション:</strong> THz波で癌細胞を加熱・破壊。1.65 THzでの研究例（メチル化DNA共振の可能性も示唆）。</li>
-                <li><strong class="font-semibold text-red-700">特定の細胞メカニズム標的:</strong>
-                    <ul class="list-disc list-inside ml-5 space-y-1 text-gray-700">
-                        <li><strong class="font-semibold text-red-700">テロメラーゼ阻害:</strong> 33 THz照射で乳癌細胞のテロメラーゼ活性抑制（in vitro/in vivo）。</li>
-                        <li>遺伝子発現調節、細胞膜透過性変化など。</li>
-                    </ul>
-                </li>
-                <li><strong class="font-semibold text-red-700">現状:</strong> ほとんどが前臨床段階（in silico, in vitro, 動物モデル）。ヒト臨床データは少ない。</li>
-                <li><strong class="font-semibold text-red-700">課題:</strong> 癌細胞への特異性、深部腫瘍への送達、線量測定、メカニズム解明。</li>
-            </ul>
-            <p class="text-sm text-gray-600 mt-3">治療応用は、曖昧な「育成」ではなく、特定の破壊的/抑制的メカニズムに基づく。</p>
-        </article>
-
-        <!-- Section 6: 安全性と規制 -->
-        <article class="bg-white p-8 rounded-xl shadow-xl border border-orange-300 transform transition duration-300 hover:scale-105 hover:shadow-2xl">
-            <div class="flex items-center mb-5">
-                <!-- SVG Icon: Shield -->
-                <svg class="w-10 h-10 text-orange-600 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                <h2 class="text-2xl font-bold text-gray-900">安全性と規制</h2>
-            </div>
-            <ul class="list-disc list-inside space-y-3 text-gray-700">
-                <li><strong class="font-semibold text-orange-700">非電離性:</strong> X線などと異なりDNAを直接損傷しにくい主要な利点。</li>
-                <li><strong class="font-semibold text-orange-700">安全ガイドライン:</strong> ICNIRP、日本の電波防護指針など（主に熱効果防止が根拠）。THz全域や非熱効果への特異性は限定的。</li>
-                <li><strong class="font-semibold text-orange-700">リスク評価:</strong> 過度な熱による組織損傷が主な懸念。非熱効果の長期影響は研究中。眼は特に敏感。</li>
-                <li><strong class="font-semibold text-orange-700">倫理的考慮:</strong> 科学的根拠のない「健康グッズ」販売や誤情報への対応が重要。研究者からの懸念表明もある。</li>
-            </ul>
-        </article>
-
-        <!-- Section 7: 結論 - ユーザーの問いへの回答 -->
-        <article class="bg-gradient-to-br from-indigo-600 to-purple-700 text-white p-8 rounded-xl shadow-xl lg:col-span-3 transform transition duration-300 hover:scale-105 hover:shadow-2xl">
-            <div class="flex items-center mb-5">
-                <!-- SVG Icon: Checkmark/Conclusion -->
-                <svg class="w-10 h-10 text-white mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                <h2 class="text-2xl font-bold">結論：癌治療におけるTHz波の可能性</h2>
-            </div>
-            <p class="text-gray-100 leading-relaxed text-lg">
-                テラヘルツ波は、「生命育成周波数帯域」原理に基づいて癌治療に応用できるか？
-            </p>
-            <p class="text-gray-100 leading-relaxed text-xl font-semibold mt-4 mb-6">
-                <span class="text-yellow-300">直接的な回答：</span>一般的に理解されている「生命育成原理」に基づいては、<strong class="text-yellow-300">応用できません</strong>。
-            </p>
-            <p class="text-gray-100 leading-relaxed text-lg">
-                この原理は曖昧で癌への特異性を欠き、科学的根拠が不十分です。
-            </p>
-            <p class="text-gray-100 leading-relaxed text-lg mt-4">
-                しかし、テラヘルツ波は、熱エネルギー沈着、特定の分子相互作用（例: テロメラーゼ阻害）、遺伝子調節など、<strong class="font-semibold text-yellow-300">他の明確な生物物理学的メカニズム</strong>に基づいて、癌の診断および治療に<strong class="font-semibold text-yellow-300">可能性</strong>を秘めています。これらのメカニズムは、「生命育成」という考え方とは異なります。
-            </p>
-            <p class="text-gray-200 leading-relaxed text-md mt-6">
-                将来の成功は、厳密な科学的研究、技術開発、そして根拠のない主張との明確な区別にかかっています。
-            </p>
-        </article>
-
+        <!-- Navigation -->
+        <div class="bg-gray-50 px-6 py-4 flex justify-between items-center border-t">
+            <button id="prev-btn" class="bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded-lg hover:bg-gray-400 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                前へ
+            </button>
+            <div id="slide-counter" class="text-sm text-gray-600"></div>
+            <button id="next-btn" class="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                次へ
+            </button>
+        </div>
     </div>
 
-    <!-- Footer/Source -->
-    <section class="text-center mt-16 p-6 bg-gray-200 text-gray-700 rounded-xl shadow-inner">
-        <p class="text-sm">本インフォグラフィックは、提供された動画トランスクリプトに基づき作成されました。</p>
-        <p class="text-sm mt-2">科学的根拠に基づいた情報収集の重要性を示唆しています。</p>
-    </section>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const slides = document.querySelectorAll('.slide');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const slideCounter = document.getElementById('slide-counter');
+            const narrationText = document.getElementById('narration-text');
+            let currentSlide = 0;
 
-</div>
-```
+            const narrations = [
+                // Slide 1
+                "こんにちは。本日は、がん治療の常識を覆すかもしれない、新たな技術『テラヘルツ波』についてご紹介します。これは、体を傷つけずにがんを狙い撃ちする、未来の光治療です。一体どのような技術なのでしょうか？",
+                // Slide 2
+                "まず、テラヘルツ波とは何でしょうか。これは電波と光の中間に位置する、これまであまり利用されてこなかった『未開拓の光』です。X線と違って体を傷つけない『非電離性』、そして水分によく吸収される性質が、がん治療の鍵を握っています。",
+                // Slide 3
+                "では、なぜテラヘルツ波ががんに有効なのでしょうか。その秘密は『水分量』にあります。がん細胞は正常な細胞に比べて水分を多く含んでいます。テラヘルツ波は、この水分の違いを敏感に察知し、がん組織だけを正確に見つけ出すことができるのです。",
+                // Slide 4
+                "テラヘルツ波による治療には、大きく分けて2つのアプローチがあります。一つは、特定の周波数でがんの機能を分子レベルで停止させる『非熱的アプローチ』。もう一つは、がんを選択的に加熱して破壊する『熱的アプローチ』です。それぞれ詳しく見ていきましょう。",
+                // Slide 5
+                "こちらは『光の薬』とも呼べる画期的なアプローチです。がん細胞が無限に増殖するために使う『テロメラーゼ』という酵素があります。ある研究では、33テラヘルツという特定の周波数の光を当てるだけで、この酵素の働きを大幅に抑え、がんの無限増殖をストップさせることに成功しました。",
+                // Slide 6
+                "もう一つの非熱的アプローチが、『エピジェネティックなハサミ』です。がんの発生には、遺伝子のスイッチが異常になる『DNAメチル化』が関わっています。約1.65テラヘルツの波は、この異常な部分をハサミのように切り離し、遺伝子の状態を正常に戻す効果が期待されています。",
+                // Slide 7
+                "こちらは、より直接的な熱的アプローチです。がん組織が水分を多く含む性質を利用して、テラヘルツ波で選択的に加熱します。がん細胞だけを45℃以上に温めて破壊することで、周囲の正常な組織へのダメージを最小限に抑える、精密な温熱療法です。",
+                // Slide 8
+                "しかし、この夢のような治療法には大きな壁があります。それは『透過性の限界』です。テラヘルツ波は水に吸収されやすいため、体内を深く進むことができません。このままでは皮膚がんなど、表面のがんにしか使えないのです。科学者たちはこの壁をどう乗り越えようとしているのでしょうか？",
+                // Slide 9
+                "壁を越えるための一つの答えが、ナノテクノロジーです。特殊な『金ナノ粒子』を体内に送り込み、がん組織に集めます。このナノ粒子がアンテナの役割を果たし、弱いテラヘルツ波でもその場で効果を増幅。体の奥深くのがんにまで治療効果を届けます。",
+                // Slide 10
+                "もう一つの戦略が、デリバリー方法の革新です。内視鏡の先にテラヘルツ装置を付けてがんに直接届けたり、針状の細いプローブを深部の腫瘍に直接刺して照射したりと、物理的に壁を迂回するアプローチも開発されています。",
+                // Slide 11
+                "この研究は、世界中で進められています。特に、基礎研究に強い中国、技術開発をリードするアメリカ、そして産学連携が進むヨーロッパが中心となり、世界中の研究者たちがしのぎを削りながら、この新しい治療法の確立を目指しています。",
+                // Slide 12
+                "しかし、実用化にはまだ『三重のハードル』があります。長期的な安全性を証明するデータが不足していること、それに基づく国際的なルールがないこと、そしてその結果、大規模な臨床試験が難しいことです。これらの課題を一つずつクリアしていく必要があります。",
+                // Slide 13
+                "結論です。テラヘルツがん治療は、まだ多くの課題を抱えていますが、実用化に向けた研究が世界中で加速しています。今後の鍵は、安全性の確立、AIによる個別化治療、そしてさらに高性能なナノ粒子の開発です。テラヘルツ波は、未来のがん治療に革命をもたらす、大きな可能性を秘めた希望の光なのです。"
+            ];
+
+            function updateSlide() {
+                slides.forEach((slide, index) => {
+                    slide.classList.toggle('active', index === currentSlide);
+                });
+                narrationText.textContent = narrations[currentSlide];
+                slideCounter.textContent = `${currentSlide + 1} / ${slides.length}`;
+                prevBtn.disabled = currentSlide === 0;
+                nextBtn.disabled = currentSlide === slides.length - 1;
+            }
+
+            prevBtn.addEventListener('click', () => {
+                if (currentSlide > 0) {
+                    currentSlide--;
+                    updateSlide();
+                }
+            });
+
+            nextBtn.addEventListener('click', () => {
+                if (currentSlide < slides.length - 1) {
+                    currentSlide++;
+                    updateSlide();
+                }
+            });
+
+            // Initial setup
+            updateSlide();
+        });
+    </script>
 </body>
 </html>
