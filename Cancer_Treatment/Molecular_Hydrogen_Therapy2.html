@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分子状水素治療：作用機序と応用</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', 'Inter', sans-serif;
+        }
+        .slide {
+            display: none;
+        }
+        .slide.active {
+            display: block;
+        }
+        .slide-content {
+            height: 60vh; /* vh for responsive height */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            text-align: center;
+        }
+        .narration {
+            height: 20vh; /* vh for responsive height */
+            background-color: #f3f4f6; /* bg-gray-100 */
+            padding: 1.5rem;
+            overflow-y: auto;
+            border-top: 1px solid #e5e7eb; /* border-gray-200 */
+        }
+        .pagination-dot {
+            transition: background-color 0.3s ease;
+        }
+        .icon-text-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 800px;
+        }
+        .icon-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .icon-item svg {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 0.5rem;
+        }
+        .comparison-chart {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 2rem;
+            width: 100%;
+        }
+        .comparison-bar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .bar {
+            background-color: #3b82f6; /* bg-blue-500 */
+            border-radius: 0.25rem;
+            width: 50px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <div id="slider" class="max-w-4xl mx-auto my-8 bg-white rounded-xl shadow-lg overflow-hidden">
+        <!-- Slides will be inserted here by JavaScript -->
+    </div>
+
+    <script>
+        const slidesData = [
+            // Slide 0: Title
+            {
+                title: "驚異の力！分子状水素治療の科学",
+                content: `
+                    <div class="flex flex-col items-center justify-center text-center">
+                        <svg class="w-40 h-40 text-blue-500 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        <h1 class="text-3xl md:text-5xl font-bold text-gray-900 mb-4">驚異の力！<br>分子状水素治療の科学</h1>
+                        <p class="text-lg text-gray-600">その作用機序と可能性に迫る</p>
+                    </div>`,
+                narration: "このプレゼンテーションでは、医療や美容の分野で注目を集める「分子状水素」について、その驚くべき働きと私たちの健康にもたらす可能性を、分かりやすく解説していきます。"
+            },
+            // Slide 1: What is Hydrogen?
+            {
+                title: "水素とは？ - 宇宙で一番小さな分子",
+                content: `
+                    <h2 class="text-2xl font-bold mb-6">宇宙で一番小さな分子、それが水素</h2>
+                    <div class="comparison-chart">
+                        <div class="comparison-bar">
+                             <div class="bar bg-sky-400" style="height: 20px;"></div>
+                             <p class="mt-2 font-semibold">水素(H₂)</p>
+                        </div>
+                        <div class="comparison-bar">
+                             <div class="bar bg-green-400" style="height: 150px;"></div>
+                             <p class="mt-2 font-semibold">ビタミンC</p>
+                        </div>
+                        <div class="comparison-bar">
+                             <div class="bar bg-yellow-400" style="height: 250px;"></div>
+                             <p class="mt-2 font-semibold">コエンザイムQ10</p>
+                        </div>
+                    </div>
+                    <p class="mt-6 text-lg">他の抗酸化物質と比べても圧倒的に小さいため、<br>体の隅々、脳や細胞の中まで届きます。</p>`,
+                narration: "皆さん、水素と聞くと何を思い浮かべますか？実は水素は、この宇宙で最も小さくて軽い分子です。その小ささこそが、私たちの体にとって素晴らしい働きをする秘密なのです。他のどんな抗酸化物質よりも小さいため、体の隅々まで簡単に入り込むことができます。"
+            },
+            // Slide 2: Why Hydrogen?
+            {
+                title: "なぜ水素が注目されるのか？",
+                content: `
+                    <h2 class="text-2xl font-bold mb-6">体内で増えすぎる「悪玉活性酸素」</h2>
+                    <div class="flex items-center justify-around w-full max-w-2xl">
+                        <div class="text-center p-4 rounded-lg bg-green-100">
+                             <span class="text-5xl">😇</span>
+                             <h3 class="font-bold text-lg mt-2">善玉活性酸素</h3>
+                             <p class="text-sm">体の機能を保つ</p>
+                        </div>
+                        <div class="text-5xl mx-4 font-bold text-red-500">VS</div>
+                        <div class="text-center p-4 rounded-lg bg-red-100">
+                             <span class="text-5xl">😈</span>
+                             <h3 class="font-bold text-lg mt-2">悪玉活性酸素</h3>
+                             <p class="text-sm">細胞を傷つけ<br>老化・病気の原因に</p>
+                        </div>
+                    </div>
+                    <p class="mt-6 text-lg">ストレス、紫外線、食生活の乱れなどで<br>「悪玉」が過剰に発生し、体を酸化させてしまいます。</p>`,
+                narration: "私たちの体内では、呼吸をするだけでも「活性酸素」が作られています。これには細胞のシグナルとして働く「善玉」と、細胞を傷つけ老化や病気の原因となる「悪玉」があります。問題なのは、この悪玉活性酸素が増えすぎてしまうことです。"
+            },
+            // Slide 3: Selective Removal
+            {
+                title: "悪玉活性酸素を選択的に除去",
+                content: `
+                    <h2 class="text-2xl font-bold mb-6">水素の賢い働き：悪玉だけを狙い撃ち</h2>
+                     <div class="flex items-center justify-center space-x-4 w-full">
+                        <span class="text-6xl">😈</span> <!-- O₂ -->
+                        <span class="text-4xl">+</span>
+                        <span class="text-6xl">💧</span> <!-- H₂ -->
+                        <span class="text-4xl">→</span>
+                        <span class="text-6xl">💦</span> <!-- H₂O -->
+                     </div>
+                    <p class="mt-4 text-lg">水素(H₂)は、最も有害な悪玉活性酸素（ヒドロキシルラジカル）と結合し、<br>無害な水(H₂O)に変えて体外へ排出します。</p>
+                    <p class="mt-6 text-green-600 font-bold text-xl">すごい！😇善玉活性酸素はそのまま残す！</p>`,
+                narration: "ここで登場するのが水素です。水素は、体内の悪玉活性酸素だけを狙い撃ちし、無害な水に変えてくれるという、非常に賢い性質を持っています。善玉活性酸素には影響を与えない、これが水素のすごいところです。"
+            },
+             // Slide 4: Mechanism 1 - Antioxidant
+            {
+                title: "作用メカニズム① 抗酸化作用",
+                content: `
+                    <h2 class="text-2xl font-bold mb-6">細胞の「サビつき」を防ぐ</h2>
+                    <div class="flex items-center justify-around w-full max-w-2xl">
+                         <div class="text-center">
+                            <svg class="w-24 h-24 text-red-400 mx-auto" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.21 3.03-1.742 3.03H4.42c-1.532 0-2.492-1.696-1.742-3.03l5.58-9.92zM10 13a1 1 0 110-2 1 1 0 010 2zm-1.75-5.25a.75.75 0 00-1.5 0v3.5c0 .414.336.75.75.75h3.5a.75.75 0 000-1.5h-2.75v-2.75z" clip-rule="evenodd" /></svg>
+                            <p class="mt-2 font-bold">酸化した細胞</p>
+                            <p class="text-sm">老化・病気</p>
+                         </div>
+                         <svg class="w-16 h-16 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3" /></svg>
+                         <div class="text-center">
+                            <svg class="w-24 h-24 text-green-500 mx-auto" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 0110 2zM5.05 3.636a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.9 0a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zM3 10a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5h-1.5A.75.75 0 013 10zm13.25.75a.75.75 0 000-1.5h-1.5a.75.75 0 000 1.5h1.5zM6.11 14.95a.75.75 0 011.06-1.06l1.06 1.06a.75.75 0 01-1.06 1.06l-1.06-1.061a.75.75 0 010-1.06zm7.82-1.06a.75.75 0 010 1.06l-1.06 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zM10 17a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5h-1.5A.75.75 0 0110 17z" /><path d="M10 4.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11z" /></svg>
+                            <p class="mt-2 font-bold">守られた細胞</p>
+                            <p class="text-sm">健康・若々しさ</p>
+                         </div>
+                    </div>
+                     <p class="mt-6 text-lg">水素の強力な「抗酸化作用」が、体を酸化ストレスから守ります。</p>
+                `,
+                narration: "水素の最も重要な働きは、この強力な「抗酸化作用」です。細胞が酸化し、錆びてしまうのを防ぐことで、様々な病気のリスクを減らし、若々しさを保つ手助けをします。"
+            },
+            // Slide 5: Mechanism 2 - Anti-inflammatory
+            {
+                title: "作用メカニズム② 抗炎症作用",
+                content: `
+                    <h2 class="text-2xl font-bold mb-6">体内の「火事（炎症）」を鎮める</h2>
+                    <div class="flex items-center justify-around w-full max-w-2xl">
+                        <div class="text-center">
+                            <svg class="w-24 h-24 text-orange-500 mx-auto" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.61 3.234a.75.75 0 011.06 0c1.124 1.123 1.124 2.942 0 4.066-.349.349-.74.65-1.154.89l.012.012.011.011c.36.248.673.57.939.939l.011.012.012.011a2.87 2.87 0 010 4.059.75.75 0 01-1.06 0 2.87 2.87 0 01-4.059 0l-.012-.012-.011-.011a2.88 2.88 0 01-.939-.94l-.011-.011-.012-.012a2.87 2.87 0 010-4.059c1.123-1.124 2.942-1.124 4.066 0a2.859 2.859 0 01.889 1.154l.001.002zM10 10.5a.5.5 0 01.5-.5h.008a.5.5 0 01.5.5v.008a.5.5 0 01-.5.5h-.008a.5.5 0 01-.5-.5v-.008zm-1.5 0a.5.5 0 01.5-.5h.008a.5.5 0 01.5.5v.008a.5.5 0 01-.5.5h-.008a.5.5 0 01-.5-.5v-.008z" clip-rule="evenodd" /></svg>
+                            <p class="mt-2 font-bold">炎症の発生</p>
+                        </div>
+                        <div class="text-center">
+                            <svg class="w-16 h-16 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                             <p class="mt-2 text-lg">水素が<br>炎症を抑制</p>
+                        </div>
+                         <div class="text-center">
+                            <svg class="w-24 h-24 text-gray-400 mx-auto" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M12.25 3.033a.75.75 0 011.034.81l-3.5 10.5a.75.75 0 01-1.42.234l-1.34-4.02a1.5 1.5 0 00-1.894-1.254l-4.22 1.407a.75.75 0 01-.893-1.077l2.12-4.24a1.5 1.5 0 00.11-1.083l-1.5-6a.75.75 0 011.23-.73l10.43 6.953zM10.75 9.75a.75.75 0 00-1.5 0v2.5a.75.75 0 001.5 0v-2.5z" clip-rule="evenodd" /></svg>
+                             <p class="mt-2 font-bold">鎮静化</p>
+                        </div>
+                    </div>
+                    <p class="mt-6 text-lg">炎症を引き起こす物質（炎症性サイトカイン）の過剰な産生を抑えます。</p>
+                `,
+                narration: "さらに、水素には体内の不要な「炎症」を抑える働きもあります。慢性的な炎症は多くの病気につながりますが、水素は炎症の原因となる物質を減らし、体を落ち着かせてくれます。"
+            },
+            // Slide 6: Mechanism 3 - Cell Protection
+            {
+                title: "作用メカニズム③ 細胞を守る",
+                content: `
+                    <h2 class="text-2xl font-bold mb-6">細胞自身の「防御力」をONにする</h2>
+                     <div class="flex flex-col items-center">
+                        <svg class="w-20 h-20 text-yellow-500" fill="currentColor" viewBox="0 0 20 20"><path d="M10.868 2.884c.321-.772 1.436-.772 1.757 0l.684 1.645a.75.75 0 00.562.41l1.815.263c.831.12.94.978.384 1.488l-1.313 1.28a.75.75 0 00-.217.665l.31 1.808c.14.822-.647 1.233-1.396.858l-1.62-.852a.75.75 0 00-.702 0l-1.62.852c-.75.375-1.536-.036-1.396-.858l.31-1.808a.75.75 0 00-.217-.665L4.195 6.69c-.556-.51-.447-1.368.384-1.488l1.815-.263a.75.75 0 00.562-.41l.684-1.645z" /></svg>
+                         <p class="my-4 text-lg">水素がシグナルとなり...</p>
+                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                         <div class="mt-4 flex items-center gap-4 p-4 border-2 border-green-500 rounded-lg bg-green-50">
+                            <svg class="w-20 h-20 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                            <div>
+                                <h3 class="text-xl font-bold">細胞の防御システムが起動！</h3>
+                                <p>(抗酸化酵素、HO-1など)</p>
+                            </div>
+                         </div>
+                     </div>`,
+                narration: "水素は、自らが戦うだけでなく、私たちの細胞が本来持っている防御システムをONにするスイッチのような役割も果たします。これにより、体は自ら酸化ストレスと戦う力を高めることができるのです。"
+            },
+            // Slide 7: Mitochondria
+            {
+                title: "ミトコンドリアを元気にする",
+                content: `
+                    <h2 class="text-2xl font-bold mb-6">エネルギー工場「ミトコンドリア」を保護</h2>
+                    <div class="flex items-center justify-around w-full max-w-3xl">
+                        <div class="text-center">
+                            <svg class="w-24 h-24 text-gray-400 mx-auto animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <p class="mt-2 font-bold">酸化で疲弊した<br>ミトコンドリア</p>
+                            <p class="text-sm">エネルギー不足</p>
+                        </div>
+                        <div class="text-center">
+                            <svg class="w-16 h-16 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            <p class="mt-2 text-lg">水素が保護</p>
+                        </div>
+                        <div class="text-center">
+                            <svg class="w-24 h-24 text-yellow-400 mx-auto" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 0110 2zM5.05 3.636a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.9 0a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zM3 10a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5h-1.5A.75.75 0 013 10zm13.25.75a.75.75 0 000-1.5h-1.5a.75.75 0 000 1.5h1.5zM6.11 14.95a.75.75 0 011.06-1.06l1.06 1.06a.75.75 0 01-1.06 1.06l-1.06-1.061a.75.75 0 010-1.06zm7.82-1.06a.75.75 0 010 1.06l-1.06 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zM10 17a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5h-1.5A.75.75 0 0110 17z" /><path d="M10 4.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11z" /></svg>
+                             <p class="mt-2 font-bold">元気になった<br>ミトコンドリア</p>
+                             <p class="text-sm">エネルギー(ATP)産生UP!</p>
+                        </div>
+                    </div>
+                `,
+                narration: "細胞の中には、エネルギーを作る工場である「ミトコンドリア」があります。水素は、このミトコンドリアを酸化ストレスから守り、その働きをサポートします。ミトコンドリアが元気になれば、私たちはより多くのエネルギーを生み出し、活動的に過ごせます。"
+            },
+            // Slide 8: How to take
+            {
+                title: "どうやって水素を取り入れる？",
+                content: `
+                    <h2 class="text-2xl font-bold mb-6">ライフスタイルに合わせた多様な摂取方法</h2>
+                    <div class="icon-text-grid">
+                        <div class="icon-item">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.636 18.364a9 9 0 010-12.728m12.728 0a9 9 0 010 12.728m-9.9-2.829a5 5 0 010-7.07m7.072 0a5 5 0 010 7.07M12 6v6l3 3"></path></svg>
+                            <span class="font-semibold">水素ガス吸入</span>
+                        </div>
+                        <div class="icon-item">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <span class="font-semibold">水素水飲用</span>
+                        </div>
+                        <div class="icon-item">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.657 7.343A8 8 0 0117.657 18.657z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.879 16.121A3 3 0 1014.12 11.88a3 3 0 00-4.242 4.242z"></path></svg>
+                            <span class="font-semibold">水素風呂</span>
+                        </div>
+                        <div class="icon-item">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+                            <span class="font-semibold">サプリメント</span>
+                        </div>
+                         <div class="icon-item">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                            <span class="font-semibold">点滴・注射</span>
+                        </div>
+                    </div>`,
+                narration: "では、どうすれば水素を体に取り入れられるのでしょうか。水素ガスを吸ったり、水素水を飲んだり、水素のお風呂に入ったりと、様々な方法があります。ライフスタイルに合わせて、手軽に始めることができます。"
+            },
+            // Slide 9: Applications
+            {
+                title: "水素治療の応用例",
+                content: `
+                    <h2 class="text-2xl font-bold mb-6">170以上の疾患モデルで効果を研究</h2>
+                    <div class="icon-text-grid">
+                        <div class="icon-item"><svg class="text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>神経疾患</div>
+                        <div class="icon-item"><svg class="text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>心血管疾患</div>
+                        <div class="icon-item"><svg class="text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>メタボリック症候群</div>
+                        <div class="icon-item"><svg class="text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>皮膚疾患・美容</div>
+                        <div class="icon-item"><svg class="text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.5 12.75l-7.5-7.5-7.5 7.5m15-5.25l-7.5 7.5-7.5-7.5"></path></svg>がん治療の補助</div>
+                        <div class="icon-item"><svg class="text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>運動パフォーマンス</div>
+                    </div>
+                `,
+                narration: "水素の応用範囲は非常に広く、神経の病気、生活習慣病、心臓病、皮膚のトラブル、さらにはがん治療の副作用軽減まで、170以上の疾患モデルでその効果が研究されており、多くの分野で期待されています。"
+            },
+             // Slide 10: Safety and Future
+            {
+                title: "安全性と今後の展望",
+                content: `
+                    <h2 class="text-2xl font-bold mb-6">高い安全性と未来への可能性</h2>
+                    <div class="flex items-center justify-around w-full max-w-3xl">
+                        <div class="text-center p-6 rounded-lg bg-green-100 shadow">
+                           <svg class="w-16 h-16 text-green-600 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                            <h3 class="font-bold text-xl">副作用の報告なし</h3>
+                            <p>体内で水になるだけなので安心</p>
+                        </div>
+                        <div class="text-center p-6 rounded-lg bg-blue-100 shadow">
+                           <svg class="w-16 h-16 text-blue-600 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                            <h3 class="font-bold text-xl">未来の医療へ</h3>
+                            <p>世界中で研究が進行中</p>
+                        </div>
+                    </div>
+                `,
+                narration: "水素治療の最も素晴らしい点の一つは、その安全性の高さです。体内で悪玉活性酸素と反応した後は、水になるだけなので、副作用の報告はほとんどありません。現在も世界中で研究が進められており、未来の医療を支える大きな柱となる可能性を秘めています。"
+            },
+            // Slide 11: Final
+            {
+                title: "YouTubeコンテンツ案",
+                content: `
+                    <div class="text-left w-full px-4 md:px-8 overflow-y-auto">
+                        <h2 class="text-2xl font-bold mb-6 text-center">YouTube動画コンテンツ案</h2>
+                        
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold mb-2 text-blue-600">【タイトル案】</h3>
+                            <ul class="list-disc list-inside space-y-1">
+                                <li>【科学的解説】飲むだけじゃない！「水素」が身体のサビを取る本当の理由</li>
+                                <li>老化を遅らせる？最新研究で注目の「分子状水素」のパワーとは【医師も注目】</li>
+                                <li>知らないと損！トップアスリートも実践する「水素ケア」の秘密を徹底解剖</li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold mb-2 text-blue-600">【概要欄】</h3>
+                            <p class="text-sm bg-gray-100 p-3 rounded">
+                                今回は、医療・美容業界で話題の「分子状水素」について、科学的根拠を基に徹底解説します！<br>
+                                「なぜ水素が体に良いの？」「活性酸素って何？」そんな疑問に、インフォグラフィックスを使って分かりやすくお答えします。<br>
+                                この動画を見れば、水素が持つ驚異の抗酸化作用、抗炎症作用、そしてミトコンドリアを元気にする仕組みが丸わかり！<br>
+                                日々の健康維持やアンチエイジングに興味がある方は必見です。<br><br>
+                                #水素 #分子状水素 #健康 #アンチエイジング #活性酸素 #ミトコンドリア
+                            </p>
+                        </div>
+
+                        <div class="mb-6">
+                             <h3 class="text-xl font-semibold mb-2 text-blue-600">【サムネイル生成用プロンプト案 (AI画像生成用)】</h3>
+                            <ul class="list-disc list-inside space-y-1">
+                                <li>A visually striking image comparing a rusty, aged cell on one side and a vibrant, healthy cell on the other, with a glowing hydrogen molecule (H₂) in the center acting as a shield. Text overlay: "体のサビを取る！". Style: 3D, infographic, bright colors.</li>
+                                <li>A person with a worried face looking at a mirror showing an older reflection, and another image of the same person smiling with a youthful glow. A stylized DNA helix protected by blue energy particles representing hydrogen. Text overlay: "老化STOP?". Style: Photorealistic, split-screen, dramatic lighting.</li>
+                                <li>An illustration of a human silhouette, showing the brain and other organs. Tiny blue glowing particles (hydrogen) are flowing through the body, concentrating on the brain and mitochondria, making them glow brightly. Text overlay: "奇跡の分子". Style: Scientific illustration, futuristic, neon glow effect.</li>
+                            </ul>
+                        </div>
+                        
+                        <div>
+                             <h3 class="text-xl font-semibold mb-2 text-blue-600">【BGM生成用プロンプト案 (Suno AI等)】</h3>
+                            <ul class="list-disc list-inside space-y-1">
+                                <li>An uplifting and inspiring corporate background track. Calm, hopeful, with a sense of discovery. Gentle piano melody, subtle strings, and a soft electronic beat. Good for scientific explanations.</li>
+                                <li>A futuristic and clean electronic track. Minimalist, with a feeling of high technology and innovation. Pulsing synth bass, crisp hi-hats, and atmospheric pads. Suitable for explaining molecular mechanisms.</li>
+                                <li>A warm and optimistic acoustic track. Light guitar strumming, simple percussion, and a positive, reassuring vibe. Perfect for lifestyle and wellness content.</li>
+                            </ul>
+                        </div>
+                    </div>
+                `,
+                narration: ""
+            }
+        ];
+
+        let currentSlide = 0;
+        const slider = document.getElementById('slider');
+
+        function renderSlider() {
+            slider.innerHTML = `
+                <div id="slide-container" class="relative">
+                    ${slidesData.map((slide, index) => `
+                        <div id="slide-${index}" class="slide ${index === 0 ? 'active' : ''}">
+                            <div class="slide-content">
+                                ${slide.content}
+                            </div>
+                            <div class="narration">
+                                ${slide.narration ? `<p class="text-base md:text-lg">${slide.narration}</p>` : ''}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <div class="flex items-center justify-between p-4 bg-gray-200">
+                    <button id="prevBtn" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-400">前へ</button>
+                    <div id="pagination" class="flex space-x-2">
+                         ${slidesData.map((_, index) => `<button class="w-3 h-3 rounded-full pagination-dot ${index === 0 ? 'bg-blue-600' : 'bg-gray-400'}" data-slide="${index}"></button>`).join('')}
+                    </div>
+                    <button id="nextBtn" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-400">次へ</button>
+                </div>
+            `;
+            addEventListeners();
+            updateButtons();
+        }
+
+        function showSlide(index) {
+            document.querySelectorAll('.slide').forEach(slide => slide.classList.remove('active'));
+            document.getElementById(`slide-${index}`).classList.add('active');
+            
+            document.querySelectorAll('.pagination-dot').forEach(dot => {
+                dot.classList.remove('bg-blue-600');
+                dot.classList.add('bg-gray-400');
+            });
+            document.querySelector(`.pagination-dot[data-slide="${index}"]`).classList.add('bg-blue-600');
+            
+            currentSlide = index;
+            updateButtons();
+        }
+
+        function updateButtons() {
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === slidesData.length - 1;
+        }
+
+        function addEventListeners() {
+            document.getElementById('prevBtn').addEventListener('click', () => {
+                if (currentSlide > 0) {
+                    showSlide(currentSlide - 1);
+                }
+            });
+
+            document.getElementById('nextBtn').addEventListener('click', () => {
+                if (currentSlide < slidesData.length - 1) {
+                    showSlide(currentSlide + 1);
+                }
+            });
+            
+            document.querySelectorAll('.pagination-dot').forEach(dot => {
+                dot.addEventListener('click', (e) => {
+                    const slideIndex = parseInt(e.target.dataset.slide);
+                    showSlide(slideIndex);
+                });
+            });
+        }
+
+        renderSlider();
+    </script>
+
+</body>
+</html>
