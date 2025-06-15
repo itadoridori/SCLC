@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インタラクティブスライド：がん転移と悪玉エクソソームの謎</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #0c1427;
+            color: #e2e8f0;
+        }
+        .slide-container {
+            width: 100%;
+            max-width: 1100px;
+            aspect-ratio: 16 / 9;
+            margin: 2rem auto;
+            position: relative;
+            background-color: #1e293b;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.3), 0 8px 10px -6px rgb(0 0 0 / 0.3);
+        }
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 3rem 4rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.6s ease-in-out, visibility 0.6s;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            z-index: 10;
+        }
+        .narration-box {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: rgba(0, 0, 0, 0.4);
+            padding: 1rem 4rem;
+            font-size: 0.9rem;
+            color: #cbd5e1;
+            backdrop-filter: blur(4px);
+            border-top: 1px solid #334155;
+        }
+        .pagination-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .pagination-btn, .pagination-dot {
+            background-color: #334155;
+            color: #e2e8f0;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .pagination-btn:hover {
+            background-color: #475569;
+        }
+        .pagination-dot {
+            width: 12px;
+            height: 12px;
+            padding: 0;
+        }
+        .pagination-dot.active {
+            background-color: #7dd3fc;
+        }
+        .chart-container {
+            position: relative;
+            flex-grow: 1;
+            width: 100%;
+            max-height: 80%;
+        }
+        .flow-arrow {
+            color: #7dd3fc;
+            font-weight: 900;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-4">
+
+    <div id="slide-container" class="slide-container">
+
+        <!-- Slide 1: Title -->
+        <div class="slide active" data-slide="1">
+            <div class="text-center">
+                <h1 class="text-6xl font-black text-white leading-tight">悪玉エクソソームの正体</h1>
+                <p class="text-2xl text-sky-300 mt-4">がん転移を引き起こす、目に見えない運び屋の謎に迫る</p>
+            </div>
+            <div class="narration-box">
+                <p>がんが、なぜ体のあちこちに転移するのか。その謎を解く鍵として、今、「エクソソーム」という、私たちの細胞から放出される極小の粒子が注目されています。特に、がん細胞が放出する「悪玉エクソソーム」が、転移の引き金となっている可能性が明らかになってきました。このプレゼンテーションでは、その驚くべきメカニズムの最前線に迫ります。</p>
+            </div>
+        </div>
+
+        <!-- Slide 2: What is an Exosome? -->
+        <div class="slide" data-slide="2">
+            <h2 class="text-4xl font-bold text-white text-center mb-8">エクソソームとは？ - 細胞間の情報伝達カプセル</h2>
+            <div class="flex items-center justify-around">
+                <div class="w-1/2 text-center">
+                     <div class="text-8xl font-black text-sky-300">30-150</div>
+                     <div class="text-2xl text-white">ナノメートル</div>
+                     <p class="mt-4 text-slate-300">ウイルスの大きさに匹敵する極小サイズ。細胞は1日に数千個のエクソソームを放出します。</p>
+                </div>
+                <div class="w-1/2 p-4">
+                     <div class="relative w-full aspect-square bg-slate-800 rounded-full flex items-center justify-center">
+                        <div class="text-white font-bold">細胞</div>
+                        <div class="absolute w-8 h-8 bg-sky-400 rounded-full animate-ping"></div>
+                        <div class="absolute w-8 h-8 bg-sky-400 rounded-full text-xs flex items-center justify-center text-slate-900 font-bold" style="transform: translate(140%, -80%);">Exo</div>
+                        <p class="absolute text-sm text-slate-400" style="transform: translate(160%, 50%);">情報（DNA, RNA, タンパク質）を内包して放出</p>
+                    </div>
+                </div>
+            </div>
+            <div class="narration-box">
+                <p>エクソソームとは、私たちの体を作る全ての細胞から放出されている、ナノサイズの小さなカプセルです。その内部には、DNAやRNA、タンパク質といった、細胞の様々な情報が詰め込まれています。これらは細胞から細胞へと情報を運ぶメッセンジャーの役割を果たしており、いわば「細胞間の手紙」のような存在です。</p>
+            </div>
+        </div>
+
+        <!-- Slide 3: The Problem - TDEs -->
+        <div class="slide" data-slide="3">
+            <h2 class="text-4xl font-bold text-white text-center mb-8">がん細胞が作る「悪玉」エクソソーム</h2>
+            <div class="flex items-center justify-center space-x-8">
+                <div class="text-center w-1/3">
+                    <div class="p-6 bg-red-800/50 rounded-full aspect-square flex flex-col justify-center items-center border-4 border-red-500">
+                        <p class="text-2xl font-bold text-red-300">がん細胞</p>
+                        <p class="text-sm mt-2 text-red-400">(TDEsを放出)</p>
+                    </div>
+                </div>
+                <div class="text-5xl text-red-400 font-black">&rarr;</div>
+                <div class="text-center w-1/3">
+                    <div class="p-6 bg-slate-700 rounded-full aspect-square flex flex-col justify-center items-center">
+                        <p class="text-2xl font-bold text-slate-300">正常な細胞</p>
+                        <p class="text-sm mt-2 text-slate-400">（悪影響を受ける）</p>
+                    </div>
+                </div>
+            </div>
+             <p class="text-center mt-8 text-lg text-slate-300">がん細胞由来エクソソーム（TDEs）は、がんの増殖や転移に有利な「悪い情報」を正常細胞に伝達し、体をがんにとって都合の良い環境に作り変えてしまいます。</p>
+            <div class="narration-box">
+                <p>問題は、がん細胞が作り出すエクソソームです。これらは「腫瘍由来エクソソーム」、略してTDEsと呼ばれ、がんの増殖や転移を助けるための、いわば「悪質な指示書」を内包しています。TDEsは、正常な細胞に取り込まれると、その細胞を操り、がんの味方へと変えてしまうのです。</p>
+            </div>
+        </div>
+
+        <!-- Slide 4: The Liver's Role -->
+        <div class="slide" data-slide="4" data-chart="liverUptakeChart">
+            <h2 class="text-4xl font-bold text-white text-center mb-8">標的は「肝臓」 - エクソソームの供給源であり、吸収源</h2>
+            <div class="flex items-center justify-center space-x-8">
+                <div class="w-1/2">
+                    <h3 class="text-xl font-bold text-sky-300 text-center mb-4">エクソソームは肝臓を目指す</h3>
+                    <div class="chart-container" style="height: 300px; max-width:300px;">
+                        <canvas id="liverUptakeChart"></canvas>
+                    </div>
+                </div>
+                <div class="w-1/2 space-y-4">
+                     <p class="text-lg text-slate-300">肝臓は、全身から流れ着くエクソソームを効率的に捕捉するフィルターの役割を持っています。この性質が、がん転移において逆用されてしまいます。</p>
+                     <div class="p-4 bg-slate-700 rounded-lg">
+                        <p><strong class="text-sky-300">ソース（供給源）:</strong> 肝がん細胞はTDEsを大量に放出する。</p>
+                        <p><strong class="text-red-300">シンク（吸収源）:</strong> 他のがんから来たTDEsも肝臓に集積する。</p>
+                     </div>
+                </div>
+            </div>
+            <div class="narration-box">
+                <p>血流に乗ったエクソソームの多くは、最終的に肝臓へと流れ着きます。ある研究では、体内に注入されたエクソソームのおよそ70%が肝臓に集積することが示されました。肝臓は、他のがんから来たエクソソームの「吸収源」であると同時に、肝がん細胞自身がエクソソームを大量に放出する「供給源」でもあり、転移において極めて重要な役割を果たしています。</p>
+            </div>
+        </div>
+
+        <!-- Slide 5: PMN Formation -->
+        <div class="slide" data-slide="5">
+            <h2 class="text-4xl font-bold text-white text-center mb-8">転移の「土壌」作り - 転移前ニッチの形成</h2>
+            <div class="flex items-center justify-around w-full text-center">
+                <div class="flex flex-col items-center">
+                    <div class="p-4 w-48 h-48 rounded-full border-4 border-red-500 flex flex-col justify-center items-center bg-red-900/50">
+                        <p class="text-lg font-bold">1. TDEs放出</p>
+                        <p class="text-sm mt-1">がん細胞が悪質な指示書をばらまく</p>
+                    </div>
+                </div>
+                <div class="text-4xl flow-arrow">&rarr;</div>
+                <div class="flex flex-col items-center">
+                    <div class="p-4 w-48 h-48 rounded-full border-4 border-amber-500 flex flex-col justify-center items-center bg-amber-900/50">
+                        <p class="text-lg font-bold">2. 環境改変</p>
+                        <p class="text-sm mt-1">肝臓の正常細胞を操り、炎症や線維化を誘発</p>
+                    </div>
+                </div>
+                 <div class="text-4xl flow-arrow">&rarr;</div>
+                <div class="flex flex-col items-center">
+                    <div class="p-4 w-48 h-48 rounded-full border-4 border-sky-500 flex flex-col justify-center items-center bg-sky-900/50">
+                        <p class="text-lg font-bold">3. 土壌完成</p>
+                        <p class="text-sm mt-1">がんが定着しやすい「転移前ニッチ」が完成</p>
+                    </div>
+                </div>
+            </div>
+            <div class="narration-box">
+                <p>がん細胞本体が移動する前に、TDEsが先回りして、転移先の環境をがんにとって住みやすいように作り変えます。この準備された環境は「転移前ニッチ」、つまり転移のための「土壌」と呼ばれます。TDEsは、肝臓で炎症を引き起こしたり、組織を硬くしたりすることで、この土壌を入念に準備するのです。</p>
+            </div>
+        </div>
+
+        <!-- Slide 6: The Cargo -->
+        <div class="slide" data-slide="6" data-chart="cargoEvidenceChart">
+            <h2 class="text-4xl font-bold text-white text-center mb-4">悪質な指示書の中身は「DNA」</h2>
+            <p class="text-center text-slate-300 mb-6">エクソソームの悪性度は、その積荷（カーゴ）によって決まります。特に、様々な由来のDNAが転移を促進する上で重要な役割を果たしていると考えられています。</p>
+            <div class="chart-container">
+                <canvas id="cargoEvidenceChart"></canvas>
+            </div>
+            <div class="narration-box">
+                <p>では、TDEsは何を運んでいるのでしょうか。その中でも特に重要なのが、DNAです。ウイルス由来のDNA、細胞のエネルギー工場であるミトコンドリア由来のDNAなどが、エクソソームに詰め込まれて運ばれます。このグラフは、それぞれのDNAが転移に関与することを示す科学的証拠の強さを比較したものです。ウイルスDNAの証拠が特に強いことがわかります。</p>
+            </div>
+        </div>
+
+        <!-- Slide 7: Viruses -->
+        <div class="slide" data-slide="7">
+            <h2 class="text-4xl font-bold text-white text-center mb-8">主犯格：B型肝炎ウイルス（HBV）</h2>
+            <div class="flex items-center justify-around space-x-8">
+                <div class="w-1/2">
+                    <div class="p-6 bg-slate-700 rounded-lg">
+                        <p class="text-4xl font-black text-red-400">>50%</p>
+                        <p class="text-lg text-slate-300 mt-2">の肝細胞がんは、HBVの慢性感染が原因です。</p>
+                    </div>
+                    <p class="mt-6 text-slate-300">HBVはエクソソームを「トロイの木馬」として利用し、免疫の監視から逃れつつ、ウイルスDNAやがん遺伝子を他の細胞に送り込み、感染とがん化を広げます。</p>
+                </div>
+                <div class="w-1/2 text-center p-4">
+                     <div class="p-4 w-64 h-64 rounded-full border-4 border-red-500 flex flex-col justify-center items-center bg-red-900/50 relative">
+                        <p class="text-xl font-bold">エクソソーム</p>
+                        <p class="text-sm">(トロイの木馬)</p>
+                        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
+                           <p class="text-sm font-bold text-red-300">HBV DNA</p>
+                           <p class="text-sm font-bold text-red-300">がんタンパク質</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="narration-box">
+                <p>転移を引き起こすDNAの中でも、最も強力な証拠があるのがB型肝炎ウイルス、HBVのDNAです。肝細胞がんの半数以上は、このウイルスの慢性感染が原因とされています。HBVは、自身の一部をエクソソームに忍び込ませることで、免疫システムから身を隠しながら、他の細胞へと感染を広げ、がん化を促進するのです。まさに「トロイの木馬」戦術です。</p>
+            </div>
+        </div>
+
+        <!-- Slide 8: Bacteria -->
+        <div class="slide" data-slide="8">
+            <h2 class="text-4xl font-bold text-white text-center mb-8">共犯者？：細菌の役割</h2>
+            <div class="grid grid-cols-2 gap-8 h-full">
+                <div class="bg-slate-700/50 p-6 rounded-lg border border-slate-600">
+                    <h3 class="text-xl font-bold text-sky-300 mb-4">間接的な影響（有力な説）</h3>
+                    <p class="text-slate-300">腸内細菌などが生み出す毒素（LPS）が、がん細胞を刺激します。その結果、がん細胞が放出するエクソソームが、より悪質なものに変化します。この場合、エクソソーム自体に細菌DNAは含まれません。</p>
+                </div>
+                <div class="bg-slate-700/50 p-6 rounded-lg border border-slate-600">
+                    <h3 class="text-xl font-bold text-amber-300 mb-4">直接的な影響（推測的な説）</h3>
+                    <p class="text-slate-300">細菌自身がDNA入りの小胞を放出したり、細菌DNAが何らかの形で宿主のがん細胞のエクソソームに取り込まれたりする可能性も考えられていますが、まだ直接的な証拠は乏しいのが現状です。</p>
+                </div>
+            </div>
+            <div class="narration-box">
+                <p>では、細菌はどうでしょうか。細菌のDNAが直接エクソソームに詰め込まれるという証拠はまだ不十分です。しかし、腸内細菌などが放出する毒素が、がん細胞を刺激し、その結果、より悪質なエクソソームが作られるという「間接的」なルートが、より有力な説として考えられています。ウイルスが主犯格なら、細菌は共犯者、といったところかもしれません。</p>
+            </div>
+        </div>
+
+        <!-- Slide 9: Visual Evidence -->
+        <div class="slide" data-slide="9">
+            <h2 class="text-4xl font-bold text-white text-center mb-8">視覚的証拠：「見えているもの」と「ミッシングリンク」</h2>
+            <div class="grid grid-cols-3 gap-8 text-center">
+                <div class="bg-slate-700/50 p-4 rounded-lg">
+                    <h3 class="text-lg font-bold text-sky-300">見える① エクソソームの形</h3>
+                    <div class="h-32 bg-slate-800 my-2 rounded flex items-center justify-center">[電子顕微鏡画像]</div>
+                    <p class="text-sm text-slate-400">分離したエクソソームのカップ状の姿は確認できる。</p>
+                </div>
+                <div class="bg-slate-700/50 p-4 rounded-lg">
+                    <h3 class="text-lg font-bold text-sky-300">見える② 肝臓への集積</h3>
+                    <div class="h-32 bg-slate-800 my-2 rounded flex items-center justify-center">[蛍光イメージング画像]</div>
+                    <p class="text-sm text-slate-400">蛍光標識したエクソソームが肝臓に集まる様子を追跡できる。</p>
+                </div>
+                 <div class="bg-amber-800/50 p-4 rounded-lg border-2 border-dashed border-amber-400">
+                    <h3 class="text-lg font-bold text-amber-300">ミッシングリンク</h3>
+                    <div class="h-32 bg-slate-800 my-2 rounded flex items-center justify-center text-7xl font-black text-amber-400">?</div>
+                    <p class="text-sm text-amber-400">細胞から放出され、隣の細胞に取り込まれる「決定的瞬間」の連続撮影は未だ成功していない。</p>
+                </div>
+            </div>
+            <div class="narration-box">
+                <p>では、これらの現象は実際に見ることができるのでしょうか。電子顕微鏡でエクソソームの形を見たり、蛍光技術で肝臓に集まる様子を捉えることは可能です。しかし、「がん細胞がエクソソームを放出し、それが隣の細胞に取り込まれる」という、一連の決定的瞬間を高解像度で連続して捉えることは、現在の技術ではまだ困難です。これこそが、研究における「ミッシングリンク」、つまり失われた環なのです。</p>
+            </div>
+        </div>
+        
+        <!-- Slide 10: Conclusion -->
+        <div class="slide" data-slide="10">
+            <h2 class="text-4xl font-bold text-white text-center mb-8">結論：何が言えるのか</h2>
+            <div class="space-y-6 max-w-4xl mx-auto">
+                <div class="bg-green-800/50 p-4 rounded-lg border-l-4 border-green-400">
+                    <h3 class="font-bold text-lg text-green-300">確度の高い事実</h3>
+                    <p class="text-slate-300">肝がん由来のエクソソームが転移を促進すること、そしてその中にHBV（B型肝炎ウイルス）のDNAが含まれ、重要な役割を果たしていることは、多くの証拠に裏付けられています。</p>
+                </div>
+                <div class="bg-amber-800/50 p-4 rounded-lg border-l-4 border-amber-400">
+                    <h3 class="font-bold text-lg text-amber-300">推測的な仮説</h3>
+                    <p class="text-slate-300">宿主細胞のエクソソームが「細菌DNA」を運ぶという説は、まだ直接的な証拠が不足しています。細菌は、その産物を通じて間接的に影響を与えている可能性の方が高いと考えられます。</p>
+                </div>
+            </div>
+             <div class="narration-box">
+                <p>結論です。肝がん細胞が出すエクソソームが、特にB型肝炎ウイルスのDNAを運び、転移を強力に推し進めている。これは、かなり確度の高い事実と言えるでしょう。一方で、細菌のDNAが直接関与するという説は、まだ推測の域を出ません。今後の研究で、これらの謎がさらに解き明かされていくはずです。</p>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="pagination-controls">
+        <button id="prevBtn" class="pagination-btn">前へ</button>
+        <div id="dots-container" class="flex gap-2"></div>
+        <button id="nextBtn" class="pagination-btn">次へ</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const slides = document.querySelectorAll('.slide');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const dotsContainer = document.getElementById('dots-container');
+            let currentSlide = 0;
+            let charts = {};
+
+            function initDots() {
+                slides.forEach((_, index) => {
+                    const dot = document.createElement('button');
+                    dot.classList.add('pagination-dot');
+                    dot.dataset.slide = index;
+                    dotsContainer.appendChild(dot);
+                });
+                dotsContainer.addEventListener('click', (e) => {
+                    if (e.target.matches('.pagination-dot')) {
+                        const slideIndex = parseInt(e.target.dataset.slide, 10);
+                        goToSlide(slideIndex);
+                    }
+                });
+            }
+            
+            function updateDots() {
+                const dots = document.querySelectorAll('.pagination-dot');
+                dots.forEach((dot, index) => {
+                    dot.classList.toggle('active', index === currentSlide);
+                });
+            }
+
+            function goToSlide(slideNumber) {
+                slides[currentSlide].classList.remove('active');
+                currentSlide = (slideNumber + slides.length) % slides.length;
+                slides[currentSlide].classList.add('active');
+                updateDots();
+                
+                const slideElement = slides[currentSlide];
+                const chartId = slideElement.dataset.chart;
+
+                if (chartId && !charts[chartId]) {
+                    if (chartId === 'liverUptakeChart') initLiverUptakeChart();
+                    if (chartId === 'cargoEvidenceChart') initCargoEvidenceChart();
+                }
+            }
+            
+            prevBtn.addEventListener('click', () => goToSlide(currentSlide - 1));
+            nextBtn.addEventListener('click', () => goToSlide(currentSlide + 1));
+
+            function initLiverUptakeChart() {
+                const ctx = document.getElementById('liverUptakeChart').getContext('2d');
+                charts['liverUptakeChart'] = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['肝臓に集積', 'その他'],
+                        datasets: [{
+                            data: [70, 30],
+                            backgroundColor: ['#0ea5e9', '#334155'],
+                            borderColor: '#1e293b',
+                            borderWidth: 4,
+                        }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false, cutout: '60%',
+                        plugins: { legend: { display: true, position: 'bottom', labels: { color: '#cbd5e1' } } }
+                    }
+                });
+            }
+
+            function initCargoEvidenceChart() {
+                const ctx = document.getElementById('cargoEvidenceChart').getContext('2d');
+                charts['cargoEvidenceChart'] = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['ウイルスDNA (HBV)', 'タンパク質/miRNA', 'ミトコンドリアDNA', '細菌DNA'],
+                        datasets: [{
+                            label: '転移への寄与度 (エビデンスレベル)',
+                            data: [95, 85, 65, 20],
+                            backgroundColor: ['#ef4444', '#38bdf8', '#f59e0b', '#64748b'],
+                            borderRadius: 4,
+                        }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+                        scales: {
+                            x: { beginAtZero: true, max: 100, ticks: { color: '#94a3b8' }, grid: { color: 'rgba(148, 163, 184, 0.2)' } },
+                            y: { ticks: { color: '#cbd5e1', font: {size: 14} }, grid: { display: false } }
+                        },
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+            
+            initDots();
+            goToSlide(0); // Initialize first slide
+        });
+    </script>
+</body>
+</html>

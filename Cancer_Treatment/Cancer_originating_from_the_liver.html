@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インタラクティブ・レポート：肝臓がんとエクソソーム</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: "Scientific Calm" - A calm, professional palette with neutrals and muted blues/teals. -->
+    <!-- Application Structure Plan: A thematic, single-page scrolling application with a fixed top navigation. This structure was chosen to guide the user through a complex scientific hypothesis in a non-linear, exploratory manner. It breaks down the dense report into digestible, interactive modules: 1) Introduction to the core hypothesis, 2) An interactive diagram of the liver microenvironment (the app's centerpiece), 3) A comparative exploration of exosome cargo, 4) A dedicated section on visual evidence that directly addresses the user's core request and manages expectations about the "missing link" images. This user-centric design prioritizes intuitive understanding and interactive discovery over a passive, linear reading of the original report. -->
+    <!-- Visualization & Content Choices: 
+        - [Report Info] Liver microenvironment interactions -> [Goal] Show Relationships -> [Viz/Method] Interactive Diagram (HTML/CSS/JS) -> [Interaction] Click/hover on cells -> [Justification] Visually simulates the complex cell-to-cell communication process described in the report, providing a dynamic visual explanation in lieu of non-existent real-world images.
+        - [Report Info] Relative evidence for different exosome cargo -> [Goal] Compare -> [Viz/Method] Bar Chart (Chart.js Canvas) -> [Interaction] Click on bars to filter text -> [Justification] Translates the report's qualitative assessments of evidence strength (e.g., "strongly supported," "speculative") into a quantitative, easy-to-compare visual format.
+        - [Report Info] Existing imaging techniques (TEM, IVIS) -> [Goal] Inform/Organize -> [Viz/Method] Gallery Layout (HTML/Tailwind CSS) -> [Interaction] Static display with explanatory text -> [Justification] Directly addresses the user's request for images by showcasing what is currently possible, while clearly explaining the technological limitations and the "missing link" concept from the report.
+        - [Report Info] Exosome biogenesis -> [Goal] Explain Process -> [Viz/Method] Animated Diagram (HTML/CSS/JS) -> [Justification] Simplifies a complex biological process into an easy-to-follow visual sequence.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+            color: #334155; /* slate-700 */
+        }
+        .nav-link {
+            transition: color 0.3s ease, border-bottom-color 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #0f766e; /* teal-600 */
+            border-bottom-color: #0f766e; /* teal-600 */
+        }
+        .section-card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .section-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.1);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .liver-cell {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        .liver-cell:hover, .liver-cell.selected {
+            transform: scale(1.05);
+            border-color: #0f766e; /* teal-600 */
+            box-shadow: 0 0 15px rgba(15, 118, 110, 0.5);
+        }
+        .flow-line {
+            position: absolute;
+            background-color: #94a3b8; /* slate-400 */
+            z-index: 0;
+        }
+        .exosome-icon {
+             width: 1rem; height: 1rem; background-color: #f97316; border-radius: 9999px; position: absolute; z-index: 10;
+             animation: moveExosome 8s linear infinite;
+        }
+        @keyframes moveExosome {
+            0% { transform: translate(0, 0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translate(var(--tw-translate-x), var(--tw-translate-y)); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl font-bold text-slate-800">肝臓がんとエクソソーム</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#introduction" class="nav-link px-3 py-2 rounded-md text-sm font-medium">序論</a>
+                        <a href="#liver-microenvironment" class="nav-link px-3 py-2 rounded-md text-sm font-medium">肝臓微小環境</a>
+                        <a href="#cargo" class="nav-link px-3 py-2 rounded-md text-sm font-medium">カーゴの役割</a>
+                        <a href="#evidence" class="nav-link px-3 py-2 rounded-md text-sm font-medium">視覚的エビデンス</a>
+                        <a href="#conclusion" class="nav-link px-3 py-2 rounded-md text-sm font-medium">結論</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        
+        <section id="introduction" class="text-center mb-16 md:mb-24">
+            <h2 class="text-3xl md:text-4xl font-bold text-teal-700 mb-4">転移の謎を解く鍵、悪玉エクソソーム</h2>
+            <p class="max-w-3xl mx-auto text-lg text-slate-600 mb-8">
+                肝臓がんの全身転移は、ウイルスや細菌のDNAを内包した「悪玉エクソソーム」というナノサイズの粒子が引き起こしているのではないか？この先進的な仮説を、インタラクティブなデータと共に探求します。
+            </p>
+             <div class="section-card p-6 max-w-4xl mx-auto">
+                <h3 class="text-xl font-bold text-slate-800 mb-4">エクソソームの誕生：細胞内のメッセンジャー</h3>
+                <p class="text-slate-600 mb-6">エクソソームは細胞内で作られ、細胞の情報を詰め込んで放出される小さなカプセルです。このアニメーションは、その基本的な生成プロセスを示しています。</p>
+                <div id="biogenesis-animation" class="relative w-full h-48 bg-slate-100 rounded-lg overflow-hidden border border-slate-200">
+                </div>
+            </div>
+        </section>
+        
+        <section id="liver-microenvironment" class="mb-16 md:mb-24">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">相互作用の舞台：肝臓微小環境</h2>
+                <p class="max-w-3xl mx-auto text-lg text-slate-600">
+                    肝臓はエクソソームの「発生源」であり、同時に全身から流れ着くエクソソームの「標的」でもあります。下の図の細胞をクリックして、エクソソームがどのように相互作用し、がん転移の土壌（転移前ニッチ）を形成するのかを見てみましょう。
+                </p>
+            </div>
+
+            <div class="section-card p-4 md:p-8">
+                <div class="lg:flex lg:space-x-8">
+                    <div class="lg:w-2/3 relative mb-8 lg:mb-0" id="liver-diagram-container">
+                        <div id="liver-diagram" class="relative w-full aspect-[4/3] bg-rose-50 rounded-lg p-4 flex flex-col justify-between">
+                             <!-- Flow Lines -->
+                            <div class="flow-line top-1/2 left-0 w-full h-0.5 -translate-y-1/2"></div>
+
+                            <!-- Cells -->
+                            <div class="flex justify-around items-center">
+                                <div id="cell-hcc" class="liver-cell bg-red-200 text-red-800 p-2 md:p-4 rounded-lg text-center w-24 md:w-32" data-cell="hcc">
+                                    <h4 class="font-bold text-sm md:text-base">肝がん細胞</h4>
+                                    <p class="text-xs md:text-sm">(HCC)</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex justify-around items-center">
+                                 <div id="cell-kc" class="liver-cell bg-blue-200 text-blue-800 p-2 md:p-4 rounded-lg text-center w-24 md:w-32" data-cell="kc">
+                                    <h4 class="font-bold text-sm md:text-base">クッパー細胞</h4>
+                                    <p class="text-xs md:text-sm">(KC)</p>
+                                </div>
+                                <div id="cell-hsc" class="liver-cell bg-green-200 text-green-800 p-2 md:p-4 rounded-lg text-center w-24 md:w-32" data-cell="hsc">
+                                    <h4 class="font-bold text-sm md:text-base">肝星細胞</h4>
+                                    <p class="text-xs md:text-sm">(HSC)</p>
+                                </div>
+                                <div id="cell-lsec" class="liver-cell bg-purple-200 text-purple-800 p-2 md:p-4 rounded-lg text-center w-24 md:w-32" data-cell="lsec">
+                                    <h4 class="font-bold text-sm md:text-base">類洞内皮細胞</h4>
+                                    <p class="text-xs md:text-sm">(LSEC)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="liver-info-panel" class="lg:w-1/3 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                        <h3 id="info-title" class="text-lg font-bold text-slate-800 mb-2">情報を表示</h3>
+                        <p id="info-text" class="text-slate-600">左の図の細胞をクリックしてください。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="cargo" class="mb-16 md:mb-24">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">悪玉カーゴの正体</h2>
+                <p class="max-w-3xl mx-auto text-lg text-slate-600">
+                    エクソソームの「悪性度」はその中身（カーゴ）によって決まります。特にDNAカーゴが転移に重要な役割を果たすと考えられています。下のグラフは、各カーゴと肝転移との関連性に関する科学的エビデンスの強さを示しています。
+                </p>
+            </div>
+            <div class="section-card p-4 md:p-8">
+                 <div class="chart-container mb-8">
+                    <canvas id="cargoChart"></canvas>
+                </div>
+                <div id="cargo-details">
+                    <h3 class="text-xl font-bold text-center text-slate-700 mb-4">カーゴの詳細</h3>
+                    <p class="text-center text-slate-500">グラフの棒をクリックすると、各カーゴの詳細が表示されます。</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="evidence" class="mb-16 md:mb-24">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">視覚的エビデンスの探求</h2>
+                <p class="max-w-3xl mx-auto text-lg text-slate-600">
+                    エクソソームが肝臓に集積し、放出される様子を画像で捉えたいという要望は大きいですが、技術的な課題も存在します。現在、どのような画像が得られており、何が「ミッシングリンク（失われた環）」なのでしょうか。
+                </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="section-card">
+                    <div class="w-full h-48 bg-slate-200 rounded-t-lg flex items-center justify-center">
+                       <p class="text-slate-500 font-mono text-xs">[TEM Image Placeholder]</p>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-lg font-bold text-slate-800">透過型電子顕微鏡 (TEM)</h3>
+                        <p class="mt-2 text-slate-600">【見えるもの】分離されたエクソソームの典型的なカップ状の形態（直径50-100nm）を確認できます。これにより、対象がエクソソームであることを検証します。</p>
+                    </div>
+                </div>
+                <div class="section-card">
+                    <div class="w-full h-48 bg-slate-200 rounded-t-lg flex items-center justify-center">
+                        <p class="text-slate-500 font-mono text-xs">[In Vivo Imaging Placeholder]</p>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-lg font-bold text-slate-800">In Vivo 蛍光イメージング</h3>
+                        <p class="mt-2 text-slate-600">【見えるもの】蛍光標識したエクソソームをマウスに投与し、体内のどこに集まるかを追跡します。肝臓への高い集積が画像で明確に示されます。</p>
+                    </div>
+                </div>
+                <div class="section-card bg-amber-50 border border-amber-200">
+                    <div class="w-full h-48 bg-amber-100 rounded-t-lg flex items-center justify-center">
+                       <p class="text-amber-600 font-bold text-2xl">?</p>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-lg font-bold text-amber-800">ミッシングリンク：In Situでの連続観察</h3>
+                        <p class="mt-2 text-amber-700">【見えていないもの】肝組織内で、がん細胞がエクソソームを放出し、それが隣の細胞に取り込まれるという一連のプロセスを高解像度で捉えた決定的画像はまだありません。これが現在の研究における最大の課題です。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="conclusion" class="text-center bg-white p-8 rounded-lg shadow-lg">
+            <h2 class="text-3xl md:text-4xl font-bold text-teal-700 mb-4">結論と今後の展望</h2>
+            <div class="max-w-3xl mx-auto space-y-4 text-slate-600 text-left">
+                <p><strong class="text-slate-800">支持される仮説：</strong>肝がん由来エクソソーム、特にB型肝炎ウイルス(HBV)のDNAを運ぶエクソソームが、転移を強力に促進することは多くのエビデンスに支持されています。</p>
+                <p><strong class="text-slate-800">推測的な仮説：</strong>宿主細胞のエクソソームが「細菌DNA」を運ぶという部分は直接的な証拠が乏しく、細菌由来のシグナル（LPSなど）や細菌自身が出す小胞(BEVs)が間接的に関与している可能性が高いと考えられます。</p>
+                <p><strong class="text-slate-800">今後の課題：</strong>最大の課題は、超解像顕微鏡などの先端技術を駆使して、生きた肝組織内でのエクソソームの動態を詳細に可視化し、「ミッシングリンク」を埋めることです。</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-slate-800 text-white mt-16">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-4 text-center text-sm">
+            <p>&copy; 2025 インタラクティブ・レポート. この内容は提供された学術レポートに基づいています。</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            const liverCellData = {
+                hcc: {
+                    title: "肝がん細胞 (HCC)",
+                    text: "エクソソームの主要な『発生源』です。がん細胞は、自身の増殖や転移に有利な情報（タンパク質、RNA、DNA）を詰め込んだエクソソームを大量に放出します。これにより、周囲の環境を自分たちが生きやすいように作り変えていきます。"
+                },
+                kc: {
+                    title: "クッパー細胞 (KC)",
+                    text: "肝臓に常在するマクロファージ（免疫細胞）です。通常は異物を処理しますが、がん由来エクソソームに取り込まれると再プログラムされ、炎症や線維化を促進する因子を放出。転移しやすい『土壌』作りに加担してしまいます。"
+                },
+                hsc: {
+                    title: "肝星細胞 (HSC)",
+                    text: "肝臓の線維化を担当する細胞です。がん由来エクソソームによって活性化されると、過剰にコラーゲンなどを産生し、肝臓を硬くします（線維化）。この硬い環境は、がん細胞の足場となり、転移を助長します。"
+                },
+                lsec: {
+                    title: "類洞内皮細胞 (LSEC)",
+                    text: "肝臓の毛細血管（類洞）を構成する細胞です。がん由来エクソソームは、この細胞間の接着を緩め、血管の壁に隙間を作ります。これにより、血流に乗ってきたがん細胞が組織内へ侵入しやすくなります。"
+                },
+                default: {
+                    title: "情報を表示",
+                    text: "左の図の細胞をクリックしてください。"
+                }
+            };
+
+            const liverDiagram = document.getElementById('liver-diagram');
+            const infoTitle = document.getElementById('info-title');
+            const infoText = document.getElementById('info-text');
+            let selectedCell = null;
+
+            liverDiagram.addEventListener('click', function(e) {
+                const cellElement = e.target.closest('.liver-cell');
+                if (!cellElement) return;
+
+                const cellId = cellElement.dataset.cell;
+                const data = liverCellData[cellId];
+
+                if (selectedCell) {
+                    selectedCell.classList.remove('selected');
+                }
+                cellElement.classList.add('selected');
+                selectedCell = cellElement;
+
+                infoTitle.textContent = data.title;
+                infoText.textContent = data.text;
+            });
+
+            const cargoData = {
+                labels: ['ウイルスDNA (HBV)', 'ミトコンドリアDNA', 'タンパク質/miRNA', '細菌DNA (宿主EV内)'],
+                datasets: [{
+                    label: '転移への関与に関するエビデンスレベル',
+                    data: [90, 65, 85, 20],
+                    backgroundColor: [
+                        'rgba(220, 38, 38, 0.6)', // red-600
+                        'rgba(249, 115, 22, 0.6)', // orange-500
+                        'rgba(5, 150, 105, 0.6)', // emerald-600
+                        'rgba(100, 116, 139, 0.6)' // slate-500
+                    ],
+                    borderColor: [
+                        'rgb(220, 38, 38)',
+                        'rgb(249, 115, 22)',
+                        'rgb(5, 150, 105)',
+                        'rgb(100, 116, 139)'
+                    ],
+                    borderWidth: 1
+                }]
+            };
+            
+            const cargoDetailsData = [
+                {
+                    title: "ウイルスDNA (HBV)",
+                    text: "【役割】証拠は強力。HBV感染肝細胞由来のエクソソームは、HBVのDNAやがん遺伝子産物(HBx)を内包します。これらは未感染細胞に送達され、ウイルスの拡散、免疫逃避、そして直接的ながん化シグナル伝達を引き起こし、転移を強力に後押しします。"
+                },
+                {
+                    title: "ミトコンドリアDNA (mtDNA)",
+                    text: "【役割】証拠は増加中。がん細胞のmtDNAがエクソソームに含まれ、他の細胞に運ばれます。これはダメージ信号(DAMPs)として機能し、受容細胞の自然免疫センサー(TLR9)を活性化させ、炎症や浸潤を促進する可能性があります。"
+                },
+                {
+                    title: "タンパク質/miRNA",
+                    text: "【役割】十分に確立。エクソソームは、血管新生、免疫抑制、細胞増殖などを促進する多種多様なタンパク質やマイクロRNA(miRNA)を運びます。これらは転移前ニッチ形成の実行部隊として機能します。"
+                },
+                {
+                    title: "細菌DNA (宿主EV内)",
+                    text: "【役割】推測的。宿主細胞（がん細胞）のエクソソームに細菌由来のDNAが直接パッケージされるという証拠は乏しいです。腸内細菌が転移に与える影響は、細菌の産物(LPS)が宿主細胞を刺激した結果か、細菌自身が放出する小胞(BEVs)によるものである可能性が高いです。"
+                }
+            ];
+
+            const cargoDetailsContainer = document.getElementById('cargo-details');
+            const ctx = document.getElementById('cargoChart').getContext('2d');
+            const cargoChart = new Chart(ctx, {
+                type: 'bar',
+                data: cargoData,
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.x !== null) {
+                                        label += context.parsed.x + ' / 100';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { 
+                            beginAtZero: true,
+                            max: 100,
+                            title: { display: true, text: 'エビデンスレベル (推定値)' }
+                        },
+                        y: {
+                            ticks: {
+                                autoSkip: false
+                            }
+                        }
+                    },
+                    onClick: (event, elements) => {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            const detail = cargoDetailsData[index];
+                            cargoDetailsContainer.innerHTML = `
+                                <h3 class="text-xl font-bold text-center text-slate-700 mb-2">${detail.title}</h3>
+                                <p class="text-slate-600 max-w-2xl mx-auto text-center">${detail.text}</p>
+                            `;
+                        }
+                    }
+                }
+            });
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('main section');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href').substring(1) === entry.target.id) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, { rootMargin: '-50% 0px -50% 0px' });
+            sections.forEach(section => observer.observe(section));
+
+            function createBiogenesisAnimation() {
+                const container = document.getElementById('biogenesis-animation');
+                container.innerHTML = ''; 
+
+                const cell = document.createElement('div');
+                cell.className = 'absolute inset-2 border-4 border-cyan-300 rounded-full';
+                container.appendChild(cell);
+
+                const mvb = document.createElement('div');
+                mvb.className = 'absolute w-20 h-20 bg-cyan-200 rounded-full animate-mvb-formation';
+                mvb.style.cssText = `
+                    top: 50%; left: 50%; transform: translate(-50%, -50%);
+                    animation: mvb_formation 10s infinite;
+                `;
+                container.appendChild(mvb);
+                
+                for(let i=0; i<5; i++) {
+                    const ilv = document.createElement('div');
+                    ilv.className = 'absolute w-3 h-3 bg-cyan-500 rounded-full';
+                    ilv.style.cssText = `
+                        top: ${Math.random()*80+10}%; left: ${Math.random()*80+10}%;
+                        animation: ilv_appear 10s infinite;
+                        animation-delay: ${2 + i * 0.5}s;
+                        opacity: 0;
+                    `;
+                    mvb.appendChild(ilv);
+                }
+
+                const exosome = document.createElement('div');
+                exosome.className = 'absolute w-4 h-4 bg-teal-500 rounded-full';
+                exosome.style.cssText = `
+                    bottom: -0.5rem; left: 50%; transform: translateX(-50%);
+                    animation: exosome_release 10s infinite;
+                    animation-delay: 8s;
+                    opacity: 0;
+                `;
+                container.appendChild(exosome);
+
+                const style = document.createElement('style');
+                style.textContent = `
+                    @keyframes mvb_formation {
+                        0% { transform: translate(-50%, -50%) scale(0.2); opacity: 0; }
+                        20% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+                        70% { transform: translate(-200%, -50%) scale(1); opacity: 1; }
+                        80% { opacity: 0; }
+                        100% { opacity: 0; }
+                    }
+                    @keyframes ilv_appear {
+                        0%, 20% { opacity: 0; transform: scale(0); }
+                        30%, 70% { opacity: 1; transform: scale(1); }
+                        80%, 100% { opacity: 0; }
+                    }
+                    @keyframes exosome_release {
+                        0%, 80% { opacity: 0; transform: translate(-180px, -40px) scale(0.5); }
+                        85% { opacity: 1; transform: translate(-200px, -40px) scale(1); }
+                        100% { opacity: 0; transform: translate(-280px, -40px) scale(1); }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+            createBiogenesisAnimation();
+            
+            function createExosomeFlow() {
+                const container = document.getElementById('liver-diagram');
+                const hcc = document.getElementById('cell-hcc');
+                const kc = document.getElementById('cell-kc');
+                const hsc = document.getElementById('cell-hsc');
+                const lsec = document.getElementById('cell-lsec');
+                
+                const targets = [kc, hsc, lsec];
+                const startRect = hcc.getBoundingClientRect();
+                const containerRect = container.getBoundingClientRect();
+                
+                for(let i=0; i<3; i++) {
+                    const exosome = document.createElement('div');
+                    exosome.className = 'exosome-icon';
+                    
+                    const target = targets[i];
+                    const targetRect = target.getBoundingClientRect();
+
+                    const startX = startRect.left + startRect.width / 2 - containerRect.left;
+                    const startY = startRect.top + startRect.height / 2 - containerRect.top;
+                    const endX = targetRect.left + targetRect.width / 2 - containerRect.left;
+                    const endY = targetRect.top + targetRect.height / 2 - containerRect.top;
+
+                    exosome.style.left = `${startX}px`;
+                    exosome.style.top = `${startY}px`;
+                    exosome.style.setProperty('--tw-translate-x', `${endX - startX}px`);
+                    exosome.style.setProperty('--tw-translate-y', `${endY - startY}px`);
+                    exosome.style.animationDelay = `${i * 2}s`;
+                    container.appendChild(exosome);
+                }
+            }
+            // Use a timeout to ensure layout is calculated
+            setTimeout(createExosomeFlow, 500);
+            window.addEventListener('resize', () => {
+                const existing = document.querySelectorAll('.exosome-icon');
+                existing.forEach(e => e.remove());
+                setTimeout(createExosomeFlow, 100);
+            });
+        });
+    </script>
+</body>
+</html>

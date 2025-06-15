@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インフォグラフィック：がん転移研究の最前線 - エクソソームが拓く新時代</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Brilliant Blues with a vibrant yellow accent (#00449E, #0069C2, #4392F1, #DAEAF1, #F7B538) -->
+    <!-- Application Structure Plan: A single-page, scrolling narrative infographic. The structure guides the user from the basic concept of tumor-derived exosomes to the complex mechanisms of metastasis in liver cancer. It starts with a high-level overview, then dives into the liver's specific role, details the process of metastasis preparation (PMN), compares the evidence for different exosome 'cargos', clarifies the roles of viruses vs. bacteria, and finally addresses the current limitations in visual evidence ('The Missing Link'). This thematic, storytelling approach was chosen over a direct report structure to make the dense scientific information more engaging and understandable for a broader audience. -->
+    <!-- Visualization & Content Choices: 
+        - [Report Info] >50% of HCC caused by HBV -> [Goal] Inform -> [Viz/Method] Single Big Number (HTML/Tailwind) -> [Justification] Immediately grabs attention with a key statistic. 
+        - [Report Info] ~70% of EVs accumulate in the liver -> [Goal] Inform/Compare -> [Viz/Method] Donut Chart (Chart.js/Canvas) -> [Justification] Provides a simple, clear visual for a key proportion.
+        - [Report Info] PMN formation process -> [Goal] Organize -> [Viz/Method] Flow Chart (HTML/Tailwind) -> [Justification] Visually represents a complex multi-step biological process without using prohibited libraries like Mermaid JS.
+        - [Report Info] Evidence strength for different DNA cargos -> [Goal] Compare -> [Viz/Method] Bar Chart (Chart.js/Canvas) -> [Justification] Allows for easy, direct comparison of the report's qualitative assessments, which have been quantified for clarity. 
+        - [Report Info] Viral vs. Bacterial mechanisms -> [Goal] Organize/Compare -> [Viz/Method] Side-by-side diagrams (HTML/Tailwind) -> [Justification] Clearly contrasts the two distinct (and often confused) hypotheses discussed in the report.
+        - [Report Info] Imaging techniques and their limitations -> [Goal] Inform/Organize -> [Viz/Method] Styled card gallery (HTML/Tailwind) -> [Justification] Directly addresses the user's interest in images by showing what's possible and clearly explaining the 'missing link', managing expectations.
+        - All choices confirm to NO SVG / NO MERMAID JS. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+            background-color: #DAEAF1; /* Very Light Blue */
+        }
+        .main-title {
+            color: #00449E; /* Dark Blue */
+        }
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            transition: transform 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .accent-color {
+            color: #F7B538; /* Gold/Yellow Accent */
+        }
+        .accent-bg {
+            background-color: #F7B538;
+        }
+        .base-text {
+            color: #00449E;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            height: 300px;
+            margin: 1rem auto;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .flow-arrow {
+            font-size: 2rem;
+            line-height: 1;
+            color: #4392F1; /* Light Blue */
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-md">
+        <div class="container mx-auto px-6 py-4">
+            <h1 class="text-2xl md:text-3xl font-black main-title">インフォグラフィック：がん転移研究の最前線</h1>
+            <p class="text-sm md:text-base base-text font-medium">エクソソームが拓く、がん治療の新たな地平</p>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-8">
+
+        <!-- Section 1: Introduction -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-bold main-title mb-4 text-center">転移を引き起こす「悪玉エクソソーム」とは？</h2>
+            <p class="max-w-3xl mx-auto text-center base-text text-lg mb-8">
+                がん細胞は、情報を詰め込んだナノサイズのカプセル「エクソソーム」を放出します。この「悪玉エクソソーム」が、がんを全身に広げる黒幕である可能性が、最新の研究で明らかになってきました。
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div class="card p-6 text-center">
+                    <p class="text-lg base-text">世界の肝細胞がん(HCC)症例のうち…</p>
+                    <p class="text-7xl lg:text-8xl font-black accent-color my-4">50%<span class="text-4xl lg:text-5xl">%以上</span></p>
+                    <p class="text-lg base-text">が、B型肝炎ウイルス(HBV)の慢性感染に起因しています。そしてエクソソームは、このウイルスを体内に拡散させる「運び屋」の役割を担っているのです。</p>
+                </div>
+                <div class="card p-6">
+                    <h3 class="text-xl font-bold main-title mb-2">市場としての「肝臓」</h3>
+                    <p class="base-text mb-4">血流に乗ったエクソソームにとって、肝臓は格好の「標的市場」です。その高い集積性が、転移の温床となります。</p>
+                    <div class="chart-container" style="height:250px;">
+                        <canvas id="liverUptakeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: PMN Formation -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-bold main-title mb-4 text-center">転移の「土壌」を準備するプロセス</h2>
+            <p class="max-w-3xl mx-auto text-center base-text text-lg mb-8">
+                がん細胞本体が移動する前に、エクソソームが先回りして転移先の環境を「耕し」、がんが住みやすい「転移前ニッチ」と呼ばれる土壌を形成します。
+            </p>
+            <div class="card p-8">
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-center text-center">
+                    <!-- Step 1 -->
+                    <div class="md:col-span-2">
+                        <div class="p-4 bg-red-100 rounded-lg">
+                            <h4 class="font-bold text-red-800">1. エクソソーム放出</h4>
+                            <p class="text-sm text-red-700">肝がん細胞(HCC)が「悪玉エクソソーム」を放出</p>
+                        </div>
+                    </div>
+                    <!-- Arrow -->
+                    <div class="flex justify-center items-center">
+                        <span class="flow-arrow transform md:rotate-0 rotate-90">&rarr;</span>
+                    </div>
+                    <!-- Step 2 -->
+                    <div class="md:col-span-2">
+                        <div class="p-4 bg-blue-100 rounded-lg">
+                            <h4 class="font-bold text-blue-800">2. 周辺細胞を再プログラム</h4>
+                            <p class="text-sm text-blue-700">クッパー細胞、肝星細胞などを洗脳し、炎症や線維化を誘発</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Down Arrow -->
+                <div class="flex justify-center items-center my-4">
+                    <span class="flow-arrow transform rotate-90">&darr;</span>
+                </div>
+                <!-- Step 3 -->
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-center text-center">
+                    <div class="md:col-start-2 md:col-span-3">
+                         <div class="p-4 accent-bg rounded-lg">
+                            <h4 class="font-bold text-white">3. 「転移前ニッチ」完成</h4>
+                            <p class="text-sm text-yellow-100">がん細胞が定着・増殖しやすい土壌が完成。血管も脆くなり、がんの侵入を容易にする。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Cargo Comparison -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-bold main-title mb-4 text-center">エクソソームの積荷：悪性度を決めるのは何か？</h2>
+            <p class="max-w-3xl mx-auto text-center base-text text-lg mb-8">
+                エクソソームの真の脅威は、その中身（カーゴ）にあります。特にDNAが転移に重要な役割を果たすと考えられています。各DNAカーゴと転移との関連性について、現在の科学的エビデンスの強さを比較します。
+            </p>
+            <div class="card p-8">
+                <h3 class="text-xl font-bold main-title text-center mb-4">転移への寄与度：エビデンスレベル比較</h3>
+                <div class="chart-container">
+                    <canvas id="cargoEvidenceChart"></canvas>
+                </div>
+                 <p class="text-center text-sm base-text mt-4">グラフの棒にカーソルを合わせると詳細が表示されます。</p>
+            </div>
+        </section>
+        
+        <!-- Section 4: Viral vs Bacterial -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-bold main-title mb-4 text-center">主要容疑者：ウイルス vs 細菌</h2>
+             <p class="max-w-3xl mx-auto text-center base-text text-lg mb-8">
+                エクソソームに搭載されるDNAの由来として、特に「ウイルス」と「細菌」が注目されています。しかし、そのメカニズムと確度は大きく異なります。
+            </p>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="card p-8">
+                    <h3 class="text-2xl font-bold text-red-600 mb-4">【主犯格】ウイルス (HBV)</h3>
+                    <p class="base-text mb-4">HBV由来のDNAやがんタンパク質は、エクソソームという「トロイの木馬」に乗って他の細胞に侵入。免疫から逃れつつ、感染を広げ、細胞をがん化させます。</p>
+                    <div class="space-y-3">
+                        <div class="flex items-start space-x-3">
+                            <div class="accent-bg text-white rounded-full w-8 h-8 flex-shrink-0 flex items-center justify-center font-bold">1</div>
+                            <p class="base-text">HBV感染細胞がウイルスDNAをエクソソームに詰める</p>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                             <div class="accent-bg text-white rounded-full w-8 h-8 flex-shrink-0 flex items-center justify-center font-bold">2</div>
+                            <p class="base-text">エクソソームが免疫の監視を潜り抜け、健康な細胞に到達</p>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                             <div class="accent-bg text-white rounded-full w-8 h-8 flex-shrink-0 flex items-center justify-center font-bold">3</div>
+                            <p class="base-text">受け取った細胞が感染・がん化し、転移を促進</p>
+                        </div>
+                    </div>
+                </div>
+                 <div class="card p-8">
+                    <h3 class="text-2xl font-bold text-gray-600 mb-4">【疑惑】細菌</h3>
+                    <p class="base-text mb-4">「宿主のがん細胞が細菌DNAをエクソソームに詰める」という直接的な証拠は乏しいです。むしろ、細菌が出す毒素(LPS)などが間接的に作用したり、細菌自身が出す小胞が影響している可能性が高いと考えられています。</p>
+                     <div class="space-y-3">
+                        <div class="flex items-start space-x-3">
+                            <div class="bg-gray-500 text-white rounded-full w-8 h-8 flex-shrink-0 flex items-center justify-center font-bold">A</div>
+                            <p class="base-text">細菌の毒素(LPS)ががん細胞を刺激 → がん細胞が放出するエクソソームの性質が悪化 (間接作用)</p>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                             <div class="bg-gray-500 text-white rounded-full w-8 h-8 flex-shrink-0 flex items-center justify-center font-bold">B</div>
+                            <p class="base-text">細菌自身がDNA入りの小胞(BEVs)を放出 → それが肝臓に到達 (直接作用だが宿主由来ではない)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: Visual Evidence -->
+        <section>
+            <h2 class="text-3xl font-bold main-title mb-4 text-center">視覚的証拠の探求：「見えているもの」と「ミッシングリンク」</h2>
+            <p class="max-w-3xl mx-auto text-center base-text text-lg mb-8">
+                エクソソームが肝臓に蓄積する画像は存在するのでしょうか？現在の技術で見えるものと、まだ見えていない決定的瞬間「ミッシングリンク」を解説します。
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="card p-6 text-center">
+                    <div class="h-40 bg-gray-200 rounded-md flex items-center justify-center mb-4">
+                        <p class="text-gray-500 font-mono text-sm">[TEM Image]</p>
+                    </div>
+                    <h4 class="text-lg font-bold main-title">【見えている①】エクソソームの姿</h4>
+                    <p class="base-text text-sm">電子顕微鏡を使えば、分離したエクソソームのカップ状の形（直径50-150nm）をはっきりと見ることができます。</p>
+                </div>
+                <div class="card p-6 text-center">
+                    <div class="h-40 bg-gray-200 rounded-md flex items-center justify-center mb-4">
+                        <p class="text-gray-500 font-mono text-sm">[In Vivo Imaging]</p>
+                    </div>
+                    <h4 class="text-lg font-bold main-title">【見えている②】肝臓への集積</h4>
+                    <p class="base-text text-sm">蛍光標識したエクソソームをマウスに注射すると、肝臓に集まる様子を画像で捉えることができます。</p>
+                </div>
+                <div class="card p-6 text-center border-4 border-dashed border-yellow-500">
+                     <div class="h-40 bg-yellow-100 rounded-md flex items-center justify-center mb-4">
+                        <p class="text-5xl accent-color font-black">?</p>
+                    </div>
+                    <h4 class="text-lg font-bold accent-color">【ミッシングリンク】決定的瞬間</h4>
+                    <p class="base-text text-sm">「がん細胞がエクソソームを出し、それが隣の細胞に取り込まれる」という一連の流れを、生きた組織内で高解像度で連続撮影した決定的証拠は、まだ誰も手にしていません。これが研究の最先端課題です。</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="mt-12 bg-[#00449E] text-white">
+        <div class="container mx-auto p-4 text-center text-sm">
+            <p>&copy; 2025 がん転移研究インフォグラフィック. 提供された科学レポートに基づき作成。</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            
+            function wrapLabel(str, maxWidth) {
+                if (typeof str !== 'string' || str.length <= maxWidth) {
+                    return str;
+                }
+                const words = str.split(/\s+/);
+                let lines = [];
+                let currentLine = words[0];
+
+                for (let i = 1; i < words.length; i++) {
+                    if (currentLine.length + words[i].length + 1 < maxWidth) {
+                        currentLine += " " + words[i];
+                    } else {
+                        lines.push(currentLine);
+                        currentLine = words[i];
+                    }
+                }
+                lines.push(currentLine);
+                return lines;
+            }
+            
+            const tooltipTitleCallback = function(tooltipItems) {
+                const item = tooltipItems[0];
+                let label = item.chart.data.labels[item.dataIndex];
+                if (Array.isArray(label)) {
+                  return label.join(' ');
+                } else {
+                  return label;
+                }
+            };
+            
+            // Chart 1: Liver Uptake
+            const liverUptakeCtx = document.getElementById('liverUptakeChart').getContext('2d');
+            new Chart(liverUptakeCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['肝臓に集積', 'その他'],
+                    datasets: [{
+                        label: 'エクソソームの体内分布',
+                        data: [70, 30],
+                        backgroundColor: [
+                            '#0069C2', // Medium Blue
+                            '#DAEAF1'  // Very Light Blue
+                        ],
+                        borderColor: '#FFFFFF',
+                        borderWidth: 4,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#00449E',
+                                font: {
+                                    size: 14,
+                                    family: "'Inter', 'Noto Sans JP', sans-serif"
+                                }
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: '注入されたエクソソームの体内分布',
+                            color: '#00449E',
+                             font: {
+                                size: 16,
+                                weight: 'bold',
+                                family: "'Inter', 'Noto Sans JP', sans-serif"
+                            }
+                        },
+                        tooltip: {
+                             callbacks: {
+                                title: tooltipTitleCallback
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Chart 2: Cargo Evidence
+            const cargoEvidenceCtx = document.getElementById('cargoEvidenceChart').getContext('2d');
+            const originalLabels = ['ウイルスDNA (HBV)', 'タンパク質/miRNA', 'ミトコンドリアDNA', '細菌DNA (宿主EV内)'];
+            new Chart(cargoEvidenceCtx, {
+                type: 'bar',
+                data: {
+                    labels: originalLabels.map(label => wrapLabel(label, 16)),
+                    datasets: [{
+                        label: 'エビデンスレベル (100点満点)',
+                        data: [95, 85, 65, 20],
+                        backgroundColor: [
+                            '#E53935', // Red
+                            '#0069C2', // Medium Blue
+                            '#F7B538', // Gold/Yellow
+                            '#9E9E9E'  // Grey
+                        ],
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 100,
+                            grid: {
+                                color: '#e0e0e0'
+                            },
+                             ticks: { color: '#00449E' }
+                        },
+                        y: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#00449E',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                             callbacks: {
+                                title: tooltipTitleCallback
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
