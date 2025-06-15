@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インフォグラフィック：エクソソームとがん研究の最前線</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chosen Palette: Brilliant Blues -->
+    <!-- Application Structure Plan: A single-page, narrative-driven infographic structure is chosen to guide the user through a complex topic. The story flows from fundamental science to market application: 1. Hero (Hook), 2. What are Exosomes? (Basic Info), 3. The Metastasis Process (Core Scientific Concept), 4. Market Landscape: Diagnostics vs. Therapeutics (Key Market Stat), 5. Therapeutic Platforms (Technology Deep Dive), 6. Key Players (Competitive Landscape), 7. Future Outlook (SWOT/Challenges). This linear, storytelling approach simplifies the dense report content, using visualizations to explain key data points at each step. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Exosome size -> Goal: Inform -> Viz: Single Big Number -> Justification: Creates an immediate, memorable data point.
+        - Report Info: Metastasis Process (PMN) -> Goal: Organize/Explain Process -> Viz: HTML/CSS Flow Chart -> Justification: Visually breaks down a complex biological process into a simple, easy-to-follow sequence without requiring complex libraries.
+        - Report Info: Clinical Trial numbers (Diag vs. Therapy) -> Goal: Compare -> Viz: Chart.js Donut Chart -> Justification: Provides a high-impact visual comparison of market focus, highlighting the lead of diagnostics.
+        - Report Info: Therapeutic Platform Stages -> Goal: Compare -> Viz: Chart.js Bar Chart -> Justification: Allows for a quick comparison of the development maturity across different competing technologies.
+        - Report Info: Key Researchers/Companies -> Goal: Organize -> Viz: HTML Table -> Justification: Presents competitive landscape data in a structured, clear, and easy-to-reference format.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Helvetica Neue', 'Arial', 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Meiryo', sans-serif;
+            background-color: #f0f8ff;
+        }
+        .bg-primary { background-color: #0044cc; }
+        .text-primary { color: #0044cc; }
+        .bg-secondary { background-color: #007bff; }
+        .text-secondary { color: #007bff; }
+        .bg-accent { background-color: #33aaff; }
+        .text-accent { color: #33aaff; }
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease-in-out;
+        }
+        .card:hover {
+            transform: translateY(-10px);
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #007bff, #0044cc);
+            color: white;
+            border-radius: 1rem;
+            padding: 2rem;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            max-width: 500px;
+            margin: auto;
+        }
+        .flow-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .flow-arrow {
+            font-size: 2.5rem;
+            color: #33aaff;
+            margin: 0 1rem;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Header -->
+    <header class="bg-primary text-white p-4 text-center shadow-lg">
+        <h1 class="text-3xl md:text-4xl font-bold">エクソソーム：がん研究と市場のフロンティア</h1>
+        <p class="mt-2 text-lg opacity-90">細胞から放たれる微小なメッセンジャーが拓く、診断と治療の未来</p>
+    </header>
+
+    <main class="max-w-6xl mx-auto p-4 md:p-8">
+        
+        <!-- Section 1: Introduction -->
+        <section class="my-16">
+            <div class="text-center">
+                <h2 class="text-3xl font-bold text-primary mb-4">エクソソームとは何か？</h2>
+                <p class="max-w-3xl mx-auto text-lg text-gray-600 mb-8">
+                    エクソソームは、ほぼ全ての細胞が放出する極めて小さなカプセルです。内部に由来細胞の遺伝情報やタンパク質を内包し、体中を駆け巡ることで、細胞間のコミュニケーションを担っています。この性質が、がんの転移を促進する「悪役」として、また、がんを発見し治療する「主役」として、注目を集める理由です。
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="stat-card flex flex-col justify-center items-center">
+                        <span class="text-6xl font-extrabold">40-100</span>
+                        <span class="text-xl font-semibold">ナノメートル</span>
+                        <p class="mt-2 opacity-80">ウイルスの大きさに匹敵する極小サイズ</p>
+                    </div>
+                    <div class="card p-6 flex items-center justify-center">
+                        <div class="text-center">
+                           <h3 class="text-2xl font-bold text-secondary mb-3">情報の運び屋</h3>
+                           <p>DNA, RNA, タンパク質など、細胞の「分子スナップショット」を内包し、遠くの細胞へ届ける。</p>
+                        </div>
+                    </div>
+                     <div class="card p-6 flex items-center justify-center">
+                        <div class="text-center">
+                           <h3 class="text-2xl font-bold text-secondary mb-3">高い安定性</h3>
+                           <p>脂質二重膜に守られ、血液などの体液中でも内包物が分解されにくい。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Mechanism of Metastasis -->
+        <section class="my-24">
+            <div class="text-center">
+                <h2 class="text-3xl font-bold text-primary mb-4">転移の黒幕：転移前ニッチの形成</h2>
+                <p class="max-w-3xl mx-auto text-lg text-gray-600 mb-12">
+                    がんは、エクソソームを「斥候」として放ち、転移先の臓器に前もって準備をさせます。この「転移前ニッチ」と呼ばれる土壌作りが、転移の成功率を劇的に高めることが、David Lyden博士らの研究で明らかになりました。
+                </p>
+            </div>
+            <div class="card p-8 md:p-12">
+                <div class="flex flex-col md:flex-row items-center justify-around">
+                    <div class="flow-step">
+                        <div class="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center border-4 border-blue-300 mb-3"><span class="text-3xl">①</span></div>
+                        <h4 class="font-bold">放出</h4>
+                        <p class="text-sm w-40">原発巣のがんがエクソソームを放出</p>
+                    </div>
+                    <div class="flow-arrow hidden md:block">→</div>
+                    <div class="flow-arrow block md:hidden my-4">↓</div>
+                    <div class="flow-step">
+                        <div class="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center border-4 border-blue-300 mb-3"><span class="text-3xl">②</span></div>
+                        <h4 class="font-bold">循環</h4>
+                        <p class="text-sm w-40">血流に乗り全身へ</p>
+                    </div>
+                    <div class="flow-arrow hidden md:block">→</div>
+                    <div class="flow-arrow block md:hidden my-4">↓</div>
+                    <div class="flow-step">
+                        <div class="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center border-4 border-blue-300 mb-3"><span class="text-3xl">③</span></div>
+                        <h4 class="font-bold">標的へ到達</h4>
+                        <p class="text-sm w-40">特定の臓器へホーミング</p>
+                    </div>
+                    <div class="flow-arrow hidden md:block">→</div>
+                    <div class="flow-arrow block md:hidden my-4">↓</div>
+                    <div class="flow-step">
+                        <div class="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center border-4 border-blue-300 mb-3"><span class="text-3xl">④</span></div>
+                        <h4 class="font-bold">環境構築</h4>
+                        <p class="text-sm w-40">転移しやすい「土壌」を準備</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Market Landscape -->
+        <section class="my-24">
+             <div class="text-center">
+                <h2 class="text-3xl font-bold text-primary mb-4">市場動向：診断が治療をリード</h2>
+                <p class="max-w-3xl mx-auto text-lg text-gray-600 mb-12">
+                    エクソソーム技術の商業化は、治療薬よりも診断ツールで先行しています。臨床試験の数を見ると、その傾向は明らかです。血液一滴からがんを発見する「リキッドバイオプシー」は、規制や製造のハードルが比較的低く、実用化への道筋が見えやすい分野です。
+                </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div class="card p-8">
+                     <h3 class="text-2xl font-bold text-secondary mb-4 text-center">臨床試験の応用分野</h3>
+                    <div class="chart-container">
+                        <canvas id="marketChart"></canvas>
+                    </div>
+                </div>
+                <div class="p-8">
+                    <h3 class="text-2xl font-bold text-secondary mb-4">リキッドバイオプシーの利点</h3>
+                    <ul class="space-y-4 text-lg">
+                        <li class="flex items-start">
+                            <span class="text-accent text-2xl font-bold mr-3">✔</span>
+                            <div><strong class="text-gray-900">非侵襲性:</strong> 患者の負担が少ない採血のみで検査可能。</div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-accent text-2xl font-bold mr-3">✔</span>
+                            <div><strong class="text-gray-900">リアルタイム性:</strong> 治療効果や再発を継続的にモニタリング。</div>
+                        </li>
+                         <li class="flex items-start">
+                            <span class="text-accent text-2xl font-bold mr-3">✔</span>
+                            <div><strong class="text-gray-900">網羅性:</strong> 腫瘍全体の情報を反映し、不均一性を捉える。</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Therapeutic Platforms -->
+        <section class="my-24">
+            <div class="text-center">
+                <h2 class="text-3xl font-bold text-primary mb-4">治療の最前線：エクソソーム工学</h2>
+                <p class="max-w-3xl mx-auto text-lg text-gray-600 mb-12">
+                   エクソソームを遺伝子工学などで改変し、治療ツールとして活用する研究が世界中で進んでいます。薬剤をがんに届ける「運び屋」から、免疫を活性化する「兵器」まで、多様なアプローチが臨床応用を目指しています。
+                </p>
+            </div>
+             <div class="card p-8">
+                <h3 class="text-2xl font-bold text-secondary mb-6 text-center">主要な治療プラットフォームの開発段階</h3>
+                <div class="chart-container" style="height:450px;">
+                    <canvas id="therapeuticsChart"></canvas>
+                </div>
+                <p class="text-center text-gray-600 mt-4">
+                    台湾のShine-On社が開発する「SOBプラットフォーム」は第I相臨床試験に進んでおり、この分野をリードしています。多くの技術はまだ前臨床段階ですが、大きなポテンシャルを秘めています。
+                </p>
+            </div>
+        </section>
+        
+        <!-- Section 5: Key Players -->
+        <section class="my-24">
+             <div class="text-center">
+                <h2 class="text-3xl font-bold text-primary mb-4">競争環境：イノベーションを牽引するプレイヤー</h2>
+                <p class="max-w-3xl mx-auto text-lg text-gray-600 mb-12">
+                    エクソソーム研究は、北米の基礎研究とアジアの臨床応用が両輪となり、世界的なエコシステムを形成しています。学術界のスター研究者と、その成果を商業化するバイオテック企業が緊密に連携しています。
+                </p>
+            </div>
+            <div class="card overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-blue-100">
+                            <tr>
+                                <th class="p-4 font-bold text-primary">プレイヤー</th>
+                                <th class="p-4 font-bold text-primary">拠点</th>
+                                <th class="p-4 font-bold text-primary">主要な貢献</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-blue-100">
+                            <tr class="hover:bg-blue-50">
+                                <td class="p-4 font-semibold">David C. Lyden博士</td>
+                                <td class="p-4">米国 (学術)</td>
+                                <td class="p-4">転移前ニッチの概念を確立</td>
+                            </tr>
+                            <tr class="hover:bg-blue-50">
+                                <td class="p-4 font-semibold">Thomas Kislinger博士</td>
+                                <td class="p-4">カナダ (学術)</td>
+                                <td class="p-4">プロテオミクスによるTME解析</td>
+                            </tr>
+                            <tr class="hover:bg-blue-50">
+                                <td class="p-4 font-semibold">卓徳陽 (Der-Yang Cho) 院長</td>
+                                <td class="p-4">台湾 (学術/臨床)</td>
+                                <td class="p-4">HLA-G標的DDSの開発</td>
+                            </tr>
+                            <tr class="hover:bg-blue-50">
+                                <td class="p-4 font-semibold text-accent">Shine-On Biomedical</td>
+                                <td class="p-4">台湾 (企業)</td>
+                                <td class="p-4">SOBプラットフォームの臨床開発 (Phase I)</td>
+                            </tr>
+                            <tr class="hover:bg-blue-50">
+                                <td class="p-4 font-semibold text-accent">Aethlon Medical</td>
+                                <td class="p-4">米国 (企業)</td>
+                                <td class="p-4">エクソソーム除去装置の開発</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 6: Future Outlook -->
+        <section class="my-24">
+            <div class="text-center">
+                <h2 class="text-3xl font-bold text-primary mb-4">今後の展望：期待と乗り越えるべき壁</h2>
+                <p class="max-w-3xl mx-auto text-lg text-gray-600 mb-12">
+                    エクソソームは「診断と治療の融合（セラノスティクス）」を実現し、個別化医療を新たな高みへ導く可能性を秘めています。しかし、そのポテンシャルを完全に解き放つには、製造技術や規制など、いくつかの重要な課題を克服する必要があります。
+                </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="card p-8 border-t-4 border-green-400">
+                    <h3 class="text-2xl font-bold text-green-600 mb-4">大きな期待 (Hype)</h3>
+                    <ul class="space-y-3 list-disc list-inside text-gray-700">
+                        <li>個別化医療の究極形「セラノスティクス」の実現</li>
+                        <li>副作用の少ない高精度な標的型治療</li>
+                        <li>超早期発見とリアルタイムな再発モニタリング</li>
+                        <li>アルツハイマー病など他疾患への応用拡大</li>
+                    </ul>
+                </div>
+                <div class="card p-8 border-t-4 border-red-400">
+                    <h3 class="text-2xl font-bold text-red-600 mb-4">現実的な課題 (Reality)</h3>
+                    <ul class="space-y-3 list-disc list-inside text-gray-700">
+                        <li>大規模製造と品質管理(QC)技術の標準化</li>
+                        <li>作用機序（細胞への取り込みなど）の完全な解明</li>
+                        <li>新規モダリティに対する規制ガイドラインの確立</li>
+                        <li>生物学的な複雑性のさらなる理解</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer class="bg-primary text-white text-center p-6 mt-16">
+        <p>このインフォグラフィックは提供されたレポートに基づき、教育目的で生成されたものです。</p>
+        <p class="text-sm opacity-80 mt-1">Data Visualization by Gemini</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const wrapLabel = (label, maxLength = 16) => {
+                if (typeof label !== 'string' || label.length <= maxLength) {
+                    return label;
+                }
+                const words = label.split(' ');
+                const lines = [];
+                let currentLine = '';
+                words.forEach(word => {
+                    if ((currentLine + ' ' + word).length > maxLength) {
+                        lines.push(currentLine.trim());
+                        currentLine = word;
+                    } else {
+                        currentLine += (currentLine ? ' ' : '') + word;
+                    }
+                });
+                if (currentLine) {
+                    lines.push(currentLine.trim());
+                }
+                return lines;
+            };
+            
+            const tooltipTitleCallback = (tooltipItems) => {
+                const item = tooltipItems[0];
+                let label = item.chart.data.labels[item.dataIndex];
+                if (Array.isArray(label)) {
+                    return label.join(' ');
+                }
+                return label;
+            };
+
+            const commonTooltipConfig = {
+                callbacks: {
+                    title: tooltipTitleCallback
+                }
+            };
+
+            // Market Chart (Donut)
+            const marketCtx = document.getElementById('marketChart').getContext('2d');
+            new Chart(marketCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['診断関連 (がん)', '治療関連 (がん)', 'その他診断'],
+                    datasets: [{
+                        data: [108, 59, 100],
+                        backgroundColor: ['#0044cc', '#007bff', '#99ddff'],
+                        borderColor: '#ffffff',
+                        borderWidth: 4,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '60%',
+                    plugins: {
+                        legend: { position: 'bottom', labels: { padding: 20 } },
+                        tooltip: commonTooltipConfig
+                    }
+                }
+            });
+
+            // Therapeutics Chart (Bar)
+            const therapeuticsCtx = document.getElementById('therapeuticsChart').getContext('2d');
+            const therapeuticsLabels = [
+                'SOBプラットフォーム (台湾)',
+                'DEXワクチン (フランス)',
+                '磁気ハイパーサーミア',
+                '光免疫療法 (香港)',
+                'CAR-Tエクソソーム'
+            ];
+            new Chart(therapeuticsCtx, {
+                type: 'bar',
+                data: {
+                    labels: therapeuticsLabels.map(label => wrapLabel(label)),
+                    datasets: [{
+                        label: '開発段階',
+                        data: [2, 3, 1, 1, 1],
+                        backgroundColor: ['#0044cc', '#007bff', '#33aaff', '#33aaff', '#33aaff'],
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            ticks: {
+                                callback: function(value, index, values) {
+                                    const stages = { 1: '前臨床', 2: 'Phase I', 3: 'Phase II' };
+                                    return stages[value] || '';
+                                }
+                            },
+                            grid: { display: false }
+                        },
+                        y: {
+                            grid: { display: true, color: '#e6f7ff' }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            ...commonTooltipConfig,
+                            callbacks: {
+                                ...commonTooltipConfig.callbacks,
+                                label: function(context) {
+                                    const stages = { 1: '前臨床', 2: 'Phase I', 3: 'Phase II' };
+                                    return `段階: ${stages[context.raw] || '不明'}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

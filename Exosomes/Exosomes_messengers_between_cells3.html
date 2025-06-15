@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インタラクティブ・スライド：エクソソームとがん研究の最前線</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', 'Arial', 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Meiryo', sans-serif;
+            background-color: #f0f4f8; /* Light blue-gray background */
+        }
+        #slider-container {
+            width: 100%;
+            max-width: 1100px;
+            /* aspect-ratio: 16 / 9; REMOVED FOR RESPONSIVENESS */
+            height: 85vh; /* Use viewport height */
+            max-height: 680px; /* Set a max height */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.6s ease-in-out, visibility 0.6s;
+            display: flex;
+            flex-direction: column;
+        }
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            z-index: 10;
+        }
+        .slide-content {
+            flex-grow: 1;
+            padding: 1.5rem;
+            sm:padding: 2rem;
+            md:padding: 3rem 4rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow-y: auto; /* Allow content to scroll if it overflows */
+        }
+        .narration-box {
+            background-color: #1e293b; /* slate-800 */
+            color: #e2e8f0; /* slate-200 */
+            padding: 1.5rem 2rem;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            height: 130px; /* Slightly increased height */
+            overflow-y: auto;
+            flex-shrink: 0;
+            border-top: 1px solid #334155;
+        }
+        .nav-arrow {
+            position: absolute;
+            top: calc(50% - 65px); /* Adjust position to be above narration */
+            transform: translateY(-50%);
+            z-index: 20;
+            background-color: rgba(0, 0, 0, 0.4);
+            color: white;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .nav-arrow:hover {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+        #prev { left: 20px; }
+        #next { right: 20px; }
+        .pagination {
+            position: absolute;
+            bottom: 145px; /* Adjust position to be above narration */
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            display: flex;
+            gap: 10px;
+        }
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .dot.active {
+            background-color: white;
+        }
+        .slide-title {
+            font-size: 2rem; /* Responsive font size */
+            md:font-size: 2.75rem;
+            font-weight: bold;
+            color: #1e3a8a; /* Indigo-800 */
+            margin-bottom: 1.5rem;
+            flex-shrink: 0;
+        }
+        .flow-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .flow-arrow {
+            font-size: 2.5rem;
+            color: #60a5fa; /* blue-400 */
+            margin: 0 1rem;
+            align-self: center;
+        }
+        .chart-container {
+            position: relative;
+            min-height: 250px;
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-2 sm:p-4 md:p-8">
+
+    <div id="slider-container" class="rounded-lg">
+        <!-- Slides will be injected here by JS -->
+    </div>
+
+    <div class="flex items-center mt-4">
+        <button id="prev-btn-bottom" class="p-3 rounded-full bg-white shadow-md hover:bg-gray-100 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+        </button>
+        <div id="pagination-bottom" class="flex space-x-2 mx-4">
+            <!-- Dots will be injected here -->
+        </div>
+        <button id="next-btn-bottom" class="p-3 rounded-full bg-white shadow-md hover:bg-gray-100 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+        </button>
+    </div>
+
+    <script>
+        const slidesData = [
+            // Slide 1: Title
+            {
+                type: 'title',
+                content: {
+                    title: 'エクソソームとがん',
+                    subtitle: '細胞間のメッセンジャーが拓く、診断と治療の最前線',
+                },
+                narration: 'かつては細胞の「ゴミ袋」と見なされていたエクソソーム。しかし今、その認識は根本から覆され、がんの診断から治療まで、医療を根底から変える可能性を秘めたキープレイヤーとして、世界中から熱い視線が注がれています。このプレゼンテーションでは、エクソソームとがんを巡る研究開発の最前線を、インフォグラフィックと共に紐解いていきます。'
+            },
+            // Slide 2: What are Exosomes?
+            {
+                type: 'infographic',
+                content: `
+                    <h2 class="slide-title">エクソソームとは？</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center h-full">
+                        <div class="text-base md:text-lg space-y-4 text-gray-700">
+                            <p>ほぼ全ての細胞から分泌される、直径40-100ナノメートルの極めて小さなカプセルです。</p>
+                            <p>内部には、由来する細胞のDNA、RNA、タンパク質など、細胞の「分子的なスナップショット」が詰まっています。</p>
+                            <p>この情報を保護しながら体液中を移動し、遠くの細胞にメッセージを伝える「細胞間の運び屋」として機能します。</p>
+                        </div>
+                        <div class="flex flex-col items-center justify-center p-4 bg-blue-50 rounded-lg h-full">
+                           <div class="text-center mb-4">
+                                <p class="text-sm text-gray-500">赤血球 (7,000nm)</p>
+                                <div class="w-40 h-40 md:w-48 md:h-48 bg-red-300 rounded-full flex items-center justify-center relative">
+                                     <div class="w-8 h-8 md:w-10 md:h-10 bg-green-300 rounded-full absolute top-1/2 left-1/2" style="transform: translate(40px, 30px);"><p class="text-xs text-center text-green-800 leading-tight">ウイルス (100nm)</p></div>
+                                     <div class="w-1 h-1 bg-blue-500 rounded-full absolute top-1/2 left-1/2" style="transform: translate(-30px, -20px);"></div>
+                                     <p class="text-xs text-blue-800 absolute top-1/2 left-1/2" style="transform: translate(-50px, -40px);">エクソソーム<br>(~100nm)</p>
+                                </div>
+                           </div>
+                           <p class="font-bold text-lg md:text-xl text-blue-800">ウイルスに匹敵する極小サイズ</p>
+                        </div>
+                    </div>
+                `,
+                narration: 'エクソソームは、ほぼ全ての細胞から分泌される細胞外小胞の一種です。その直径は約40から100ナノメートル。これはウイルスに匹敵する小ささです。エクソソームの最も重要な特徴は、その内包物にあります。DNA、RNA、タンパク質といった、由来する細胞の内部状態を色濃く反映した多様な生体分子が含まれており、いわば細胞の「分子的なスナップショット」なのです。'
+            },
+            // Slide 3: Dual Role
+            {
+                type: 'infographic',
+                 content: `
+                    <h2 class="slide-title">がんにおける「善と悪」の二面性</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center h-full">
+                        <div class="p-4 md:p-6 border-4 border-red-300 rounded-lg text-center h-full flex flex-col justify-center bg-red-50">
+                            <h3 class="text-xl md:text-2xl font-bold text-red-700 mb-4">悪役 (がんを促進)</h3>
+                            <ul class="text-left text-sm md:text-base space-y-2 text-gray-700 list-disc list-inside">
+                                <li>がんの増殖と浸潤をサポート</li>
+                                <li>転移しやすい環境（土壌）を準備</li>
+                                <li>免疫システムからの攻撃を回避</li>
+                                <li>薬剤耐性を獲得させる</li>
+                            </ul>
+                        </div>
+                        <div class="p-4 md:p-6 border-4 border-green-300 rounded-lg text-center h-full flex flex-col justify-center bg-green-50">
+                            <h3 class="text-xl md:text-2xl font-bold text-green-700 mb-4">主役 (がんと闘う)</h3>
+                             <ul class="text-left text-sm md:text-base space-y-2 text-gray-700 list-disc list-inside">
+                                <li>がんの存在を知らせる「バイオマーカー」</li>
+                                <li>薬剤をがんに届ける「運び屋(DDS)」</li>
+                                <li>免疫を活性化させる「ワクチン」</li>
+                                <li>がん細胞を直接攻撃するツール</li>
+                            </ul>
+                        </div>
+                    </div>
+                 `,
+                narration: 'エクソソームは、がんの進行において、文脈によって促進的にも抑制的にも働く二面性を持ちます。がん細胞が放出するエクソソームは、周囲の環境を自身に有利なように作り変え、転移や薬剤耐性を引き起こす「悪役」として機能します。一方で、その特性を逆手に取り、がんの早期発見マーカーとして、あるいは薬剤をがんに届ける運び屋や、免疫を活性化するワクチンとして利用する研究が、世界中で進められています。'
+            },
+            // Slide 4: Metastasis
+            {
+                type: 'infographic',
+                content: `
+                    <h2 class="slide-title">転移の黒幕：転移前ニッチの形成</h2>
+                    <p class="text-center text-gray-600 mb-4 md:mb-6 text-base md:text-lg">がん細胞は、転移する「前」にエクソソームを斥候として放ち、遠隔臓器に転移しやすい「土壌」を準備させます。</p>
+                    <div class="flex flex-col md:flex-row items-stretch justify-around h-full">
+                        <div class="flow-step p-2">
+                            <div class="w-20 h-20 md:w-24 md:h-24 bg-blue-100 rounded-full flex items-center justify-center border-4 border-blue-300 mb-3 text-2xl md:text-3xl font-bold text-blue-800">①</div>
+                            <h4 class="font-bold">放出</h4>
+                            <p class="text-sm w-32 md:w-40">原発巣のがんがエクソソームを放出</p>
+                        </div>
+                        <div class="flow-arrow hidden md:flex">→</div>
+                        <div class="flow-arrow flex md:hidden rotate-90 my-2">→</div>
+                        <div class="flow-step p-2">
+                            <div class="w-20 h-20 md:w-24 md:h-24 bg-blue-100 rounded-full flex items-center justify-center border-4 border-blue-300 mb-3 text-2xl md:text-3xl font-bold text-blue-800">②</div>
+                            <h4 class="font-bold">循環 & 標的化</h4>
+                            <p class="text-sm w-32 md:w-40">血流に乗り、特定の臓器へ到達</p>
+                        </div>
+                        <div class="flow-arrow hidden md:flex">→</div>
+                        <div class="flow-arrow flex md:hidden rotate-90 my-2">→</div>
+                        <div class="flow-step p-2">
+                            <div class="w-20 h-20 md:w-24 md:h-24 bg-blue-100 rounded-full flex items-center justify-center border-4 border-blue-300 mb-3 text-2xl md:text-3xl font-bold text-blue-800">③</div>
+                            <h4 class="font-bold">環境構築</h4>
+                            <p class="text-sm w-32 md:w-40">血管新生や免疫抑制を引き起こす</p>
+                        </div>
+                        <div class="flow-arrow hidden md:flex">→</div>
+                        <div class="flow-arrow flex md:hidden rotate-90 my-2">→</div>
+                        <div class="flow-step p-2">
+                            <div class="w-20 h-20 md:w-24 md:h-24 bg-green-200 rounded-full flex items-center justify-center border-4 border-green-400 mb-3 text-2xl md:text-3xl font-bold text-green-800">④</div>
+                            <h4 class="font-bold">転移成立</h4>
+                            <p class="text-sm w-32 md:w-40">準備された土壌にがん細胞が生着</p>
+                        </div>
+                    </div>
+                `,
+                narration: 'がんによる死亡の最大の原因は転移です。Weill Cornell MedicineのDavid Lyden博士は、「転移前ニッチ」という画期的な概念を提唱しました。これは、原発巣のがん細胞が転移する前に、そこから放出されたエクソソームが遠隔臓器に到達し、来るべき転移細胞が着床・増殖しやすいように、あらかじめ「土壌」を耕しておくという考え方です。'
+            },
+            // Slide 5: Organ Specificity
+            {
+                type: 'infographic',
+                content: `
+                    <h2 class="slide-title">転移の謎を解く「分子の郵便番号」</h2>
+                    <p class="text-center text-gray-600 mb-6 text-base md:text-lg">なぜ特定のがんは特定の臓器に転移しやすいのか？答えはエクソソーム表面のタンパク質にありました。</p>
+                    <div class="flex flex-col md:flex-row items-center justify-center h-full">
+                        <div class="text-center mb-4 md:mb-0">
+                            <p class="text-lg md:text-xl font-bold text-blue-800">原発巣</p>
+                            <div class="w-20 h-20 md:w-24 md:h-24 bg-blue-200 rounded-full mx-auto mb-2"></div>
+                        </div>
+                        <div class="w-full md:w-1/2 relative mx-4 md:mx-8 my-4 md:my-0">
+                             <div class="h-px bg-gray-300 my-2"></div>
+                             <p class="text-sm text-center text-red-600">インテグリンA</p>
+                             <div class="h-px bg-gray-300 my-2"></div>
+                             <p class="text-sm text-center text-green-600">インテグリンB</p>
+                             <div class="h-px bg-gray-300 my-2"></div>
+                             <p class="text-sm text-center text-purple-600">インテグリンC</p>
+                             <div class="h-px bg-gray-300 my-2"></div>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex items-center">
+                                <div class="w-16 h-16 md:w-20 md:h-20 bg-red-100 border-2 border-red-300 rounded-md mr-4 flex items-center justify-center font-bold text-red-700">肺</div>
+                                <p class="text-sm md:text-base">← 赤い郵便番号を持つエクソソームが到達</p>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-16 h-16 md:w-20 md:h-20 bg-green-100 border-2 border-green-300 rounded-md mr-4 flex items-center justify-center font-bold text-green-700">肝臓</div>
+                                <p class="text-sm md:text-base">← 緑の郵便番号を持つエクソソームが到達</p>
+                            </div>
+                             <div class="flex items-center">
+                                <div class="w-16 h-16 md:w-20 md:h-20 bg-purple-100 border-2 border-purple-300 rounded-md mr-4 flex items-center justify-center font-bold text-purple-700">骨</div>
+                                <p class="text-sm md:text-base">← 紫の郵便番号を持つエクソソームが到達</p>
+                            </div>
+                        </div>
+                    </div>
+                `,
+                narration: 'Lyden博士の研究は、なぜ特定のがんが特定の臓器に転移しやすいのかという、臓器特異性の謎にも光を当てました。彼らは、エクソソームの表面に発現している「インテグリン」というタンパク質が、いわば「分子の郵便番号」として機能し、エクソソームがどの臓器にホーミングするかを決定づけていることを発見しました。'
+            },
+            // Slide 6: Liquid Biopsy
+            {
+                type: 'chart',
+                chartType: 'doughnut',
+                content: {
+                    title: '診断への応用：リキッドバイオプシー',
+                    description: '血液や尿からがんの情報を得る「リキッドバイオプシー」。エクソソームは、その安定性と情報量の多さから、この分野の主役として期待されています。',
+                    chartData: {
+                        labels: ['がん診断関連', 'その他診断', '治療関連'],
+                        datasets: [{
+                            label: 'エクソソーム臨床試験',
+                            data: [108, 100, 59],
+                            backgroundColor: ['#2563eb', '#60a5fa', '#a5b4fc'],
+                            borderColor: '#ffffff',
+                            borderWidth: 5
+                        }]
+                    }
+                },
+                narration: 'エクソソームを用いたリキッドバイオプシーは、がんの早期発見、治療効果の判定、そして再発サーベイランスなど、がん診療のあらゆる場面を変える可能性を秘めています。臨床開発も活発に進められており、CASのレポートによると、診断目的の臨床試験は208件にのぼり、その半数以上ががんに関連するものです。これは治療目的の試験数を大幅に上回っており、診断分野での実用化が先行する可能性を示唆しています。'
+            },
+            // Slide 7: Therapeutics DDS
+            {
+                type: 'infographic',
+                content: `
+                    <h2 class="slide-title">治療への応用①：標的型ドラッグデリバリー</h2>
+                    <p class="text-center text-gray-600 mb-6 text-base md:text-lg">エクソソームを遺伝子改変し、薬剤をがん細胞へ正確に届ける「運び屋」として利用する研究が活発です。</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center h-full">
+                        <div class="text-center p-4">
+                            <p class="font-bold text-lg md:text-xl text-blue-800 mb-4">台湾発・世界初の標的型DDS<br>「SOBプラットフォーム」</p>
+                            <div class="relative w-48 h-48 md:w-64 md:h-64 mx-auto">
+                                <div class="absolute inset-0 border-4 border-blue-400 rounded-full animate-pulse"></div>
+                                <div class="absolute inset-4 border-4 border-blue-300 rounded-full animate-pulse" style="animation-delay: 0.2s;"></div>
+                                <div class="w-full h-full flex items-center justify-center">
+                                    <div class="w-32 h-32 md:w-40 md:h-40 bg-blue-100 rounded-full flex flex-col items-center justify-center">
+                                        <p class="font-bold text-blue-900">改変エクソソーム</p>
+                                        <p class="text-xs md:text-sm text-blue-700 mt-1">抗がん剤・miRNA搭載</p>
+                                        <p class="text-2xl mt-2">🎯</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex items-center">
+                                <div class="w-12 h-12 md:w-16 md:h-16 rounded-lg bg-indigo-200 flex items-center justify-center text-2xl md:text-3xl font-bold text-indigo-700 mr-4 flex-shrink-0">1</div>
+                                <div>
+                                    <h4 class="font-bold text-base md:text-lg">標的認識</h4>
+                                    <p class="text-sm md:text-base">HLA-Gという分子を目印に、がん細胞に選択的に結合。</p>
+                                 </div>
+                            </div>
+                             <div class="flex items-center">
+                                <div class="w-12 h-12 md:w-16 md:h-16 rounded-lg bg-indigo-200 flex items-center justify-center text-2xl md:text-3xl font-bold text-indigo-700 mr-4 flex-shrink-0">2</div>
+                                <div>
+                                    <h4 class="font-bold text-base md:text-lg">薬剤送達</h4>
+                                    <p class="text-sm md:text-base">内包する抗がん剤やmiRNAを、がん細胞内部に放出。</p>
+                                 </div>
+                            </div>
+                             <div class="flex items-center">
+                                <div class="w-12 h-12 md:w-16 md:h-16 rounded-lg bg-indigo-200 flex items-center justify-center text-2xl md:text-3xl font-bold text-indigo-700 mr-4 flex-shrink-0">3</div>
+                                <div>
+                                    <h4 class="font-bold text-base md:text-lg">副作用低減</h4>
+                                    <p class="text-sm md:text-base">正常な細胞への影響を最小限に抑え、副作用を軽減。</p>
+                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                `,
+                narration: 'エクソソームを薬物の「運び屋」として利用するDDSは、最も活発に研究されている応用分野の一つです。中でも世界をリードしているのが、台湾のShine-On社が開発した「SOBプラットフォーム」です。これは、多くのがん細胞が持つHLA-Gという分子を特異的に標的とするエクソソームに、抗がん剤やmiRNAを搭載するもの。副作用を抑えつつ高い治療効果が期待され、2025年には米国FDAから第I相臨床試験の承認を得ています。'
+            },
+            // Slide 8: Therapeutics Immuno
+            {
+                type: 'chart',
+                chartType: 'bar',
+                content: {
+                    title: '治療への応用②：新規免疫療法',
+                    description: 'エクソソームは、免疫システムを直接操作するツールとしても有望です。様々なアプローチが研究されています。',
+                     chartData: {
+                        labels: ['樹状細胞エクソソーム(DEX)', ['CAR-T細胞', 'エクソソーム'], '自己免疫増強ワクチン'],
+                        datasets: [{
+                            label: '期待される効果',
+                            data: [3, 2, 4],
+                            backgroundColor: ['#1d4ed8', '#3b82f6', '#60a5fa'],
+                            borderRadius: 5
+                        }]
+                    },
+                    yAxisLabels: {1: '安全性向上', 2: '固形がんへの効果', 3: '抗腫瘍免疫の誘導', 4: '完全個別化'}
+                },
+                narration: 'DDSだけでなく、エクソソームは免疫システムを直接操作するツールとしても注目されています。例えば、免疫の司令塔である樹状細胞から作る「DEXワクチン」や、強力な細胞療法であるCAR-T療法の副作用を低減し、固形がんへの効果を高めることが期待される「CAR-Tエクソソーム」など、多様な免疫療法プラットフォームの開発が進められています。'
+            },
+            // Slide 9: Key Players
+            {
+                type: 'infographic',
+                content: `
+                    <h2 class="slide-title">イノベーションのエコシステム</h2>
+                    <p class="text-center text-gray-600 mb-6 text-base md:text-lg">エクソソーム研究は、北米の基礎研究とアジアの臨床応用が両輪となり、世界的なエコシステムを形成しています。</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center h-full">
+                        <div class="w-full h-full min-h-[250px]">
+                            <div class="bg-blue-50 w-full h-full rounded-lg p-4 flex flex-col justify-center items-center relative">
+                               <p class="text-3xl md:text-4xl">🌎</p>
+                               <p class="text-base md:text-lg font-bold text-blue-800 mt-4">グローバルな分業体制</p>
+                               <div class="absolute top-1/4 left-4 md:left-1/4 bg-white p-2 md:p-3 rounded-lg shadow-lg">
+                                 <p class="font-bold text-sm md:text-base">北米（米・加）</p>
+                                 <p class="text-xs md:text-sm">基礎研究をリード</p>
+                               </div>
+                               <div class="absolute bottom-1/4 right-4 md:right-1/4 bg-white p-2 md:p-3 rounded-lg shadow-lg">
+                                 <p class="font-bold text-sm md:text-base">アジア（台湾など）</p>
+                                 <p class="text-xs md:text-sm">臨床応用・商業化を加速</p>
+                               </div>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="font-bold text-lg md:text-xl mb-4 text-gray-800">主要プレイヤー</h3>
+                            <ul class="space-y-2 text-sm md:text-base">
+                                <li class="bg-gray-100 p-3 rounded-md"><strong>D. Lyden博士 (米):</strong> 転移前ニッチの概念確立</li>
+                                <li class="bg-gray-100 p-3 rounded-md"><strong>T. Kislinger博士 (加):</strong> TMEのプロテオミクス解析</li>
+                                <li class="bg-gray-100 p-3 rounded-md"><strong>卓徳陽院長 (台):</strong> HLA-G標的DDS開発</li>
+                                <li class="bg-green-100 p-3 rounded-md text-green-800"><strong>Shine-On Biomedical (台):</strong> SOBプラットフォーム臨床開発</li>
+                            </ul>
+                        </div>
+                    </div>
+                `,
+                narration: 'エクソソームがん研究は、分野の基礎を築いたスターサイエンティストが率いる学術機関と、その成果を迅速に商業化へと繋げるバイオテック企業との共生関係によって駆動されています。地理的には、基礎研究をリードする北米と、臨床応用で目覚ましい進展を見せるアジア、特に台湾が、二大イノベーションハブとして台頭しています。'
+            },
+            // Slide 10: Future
+            {
+                type: 'infographic',
+                 content: `
+                    <h2 class="slide-title">未来への展望と課題</h2>
+                    <p class="text-center text-gray-600 mb-6 text-base md:text-lg">エクソソームは「診断と治療の融合」を実現する鍵ですが、実用化にはまだ壁があります。</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center h-full">
+                        <div class="p-4 md:p-6 bg-green-50 border-l-4 border-green-500 h-full">
+                            <h3 class="text-xl md:text-2xl font-bold text-green-700 mb-4">期待 (Hype)</h3>
+                            <ul class="text-left text-sm md:text-base space-y-2 text-gray-700 list-disc list-inside">
+                                <li>究極の個別化医療の実現</li>
+                                <li>副作用の少ない標的型治療</li>
+                                <li>超早期発見とリアルタイムモニタリング</li>
+                                <li>アルツハイマー病など他疾患への応用</li>
+                            </ul>
+                        </div>
+                        <div class="p-4 md:p-6 bg-red-50 border-l-4 border-red-500 h-full">
+                            <h3 class="text-xl md:text-2xl font-bold text-red-700 mb-4">課題 (Reality)</h3>
+                             <ul class="text-left text-sm md:text-base space-y-2 text-gray-700 list-disc list-inside">
+                                <li>大規模製造・品質管理(QC)技術の確立</li>
+                                <li>作用機序の完全な解明</li>
+                                <li>新規治療法に対する規制ガイドラインの策定</li>
+                                <li>生物学的な複雑性のさらなる理解</li>
+                            </ul>
+                        </div>
+                    </div>
+                 `,
+                 narration: 'エクソソームが、がん医療における多くの未解決課題に対するソリューションを提供する大きな可能性を秘めていることは間違いありません。しかし、その臨床応用が本格化するには、製造、作用機序の解明、規制のハードルといった、いくつかの重要な課題を克服する必要があります。この分野は現在、科学的な「可能性の実証」フェーズから、工学的・規制的な「実用化への挑戦」フェーズへと移行する、重要な転換点にあります。'
+            },
+            // Slide 11: Final
+            {
+                type: 'final',
+                content: `
+                    <h2 class="slide-title text-center">YouTube動画制作用アセット</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-left text-sm">
+                        <div>
+                            <h3 class="text-base md:text-lg font-bold text-blue-700 border-b-2 border-blue-200 pb-2 mb-3">タイトル案</h3>
+                            <ul class="space-y-2 list-disc list-inside">
+                                <li>【がん治療の未来】細胞の運び屋「エクソソーム」とは？最新研究を徹底解説</li>
+                                <li>もう「ゴミ袋」とは呼ばせない！エクソソームが拓く、がん診断と治療の革命</li>
+                                <li>台湾が世界をリード？遺伝子改変エクソソームによる次世代がん治療の最前線</li>
+                            </ul>
+                        </div>
+                         <div>
+                            <h3 class="text-base md:text-lg font-bold text-blue-700 border-b-2 border-blue-200 pb-2 mb-3">サムネイル生成プロンプト案</h3>
+                            <ul class="space-y-2 list-disc list-inside">
+                                <li>CG, 3D, a microscopic view of futuristic exosomes flowing through blood vessels towards a glowing cancer cell, dramatic lighting, vibrant blue and orange, "がん治療の未来" text overlay.</li>
+                                <li>Photorealistic, a scientist in a modern lab holding a glowing test tube labeled 'EXOSOME', with a background of complex biological diagrams on a screen, hopeful expression, "診断と治療の革命" text overlay.</li>
+                                <li>Infographic style, a central glowing exosome with arrows pointing to icons representing 'DDS', 'Diagnosis', 'Immunity', 'Metastasis', clean and modern design, dark background, "エクソソームの全て" text overlay.</li>
+                            </ul>
+                        </div>
+                         <div>
+                            <h3 class="text-base md:text-lg font-bold text-blue-700 border-b-2 border-blue-200 pb-2 mb-3">Suno AI用 BGMプロンプト案</h3>
+                            <ul class="space-y-2 list-disc list-inside">
+                                <li>Hopeful and inspiring cinematic orchestra, science documentary, uplifting, sense of discovery, gentle piano melody with sweeping strings, instrumental.</li>
+                                <li>Minimalist and futuristic electronic ambient, tech and innovation, steady rhythm, pulsing synth pads, calm but focused, background for narration.</li>
+                                <li>Intriguing and slightly tense underscore, investigative, mysterious, subtle synth arpeggios, deep bass tones, builds anticipation, for explaining complex mechanisms.</li>
+                            </ul>
+                        </div>
+                         <div class="md:col-span-3">
+                            <h3 class="text-base md:text-lg font-bold text-blue-700 border-b-2 border-blue-200 pb-2 mb-3">概要欄</h3>
+                            <p class="text-sm">
+かつては細胞の「ゴミ袋」と見なされていたエクソソーム。しかし今、その小さなカプセルが、がんの診断から治療まで、医療を根底から変える可能性を秘めていることがわかってきました。
+この動画では、エクソソームとは何か？という基本から、がんの転移にどう関わっているのか、そして血液一滴でがんを発見する「リキッドバイオプシー」や、薬剤をがんに直接届ける「ドラッグデリバリーシステム」といった最新の応用研究まで、世界の最前線をインフォグラフィックで分かりやすく解説します。
+
+#エクソソーム #がん治療 #最新医療 #リキッドバイオプシー #DDS
+
+目次:
+00:00 オープニング
+00:45 エクソソームとは？
+02:10 がんにおける善と悪の二面性
+03:30 転移の黒幕「転移前ニッチ」
+05:05 診断への応用：リキッドバイオプシー
+06:40 治療への応用：次世代の運び屋と兵器
+08:20 世界の研究開発競争
+09:50 未来への展望と課題
+                            </p>
+                        </div>
+                    </div>
+                `,
+                narration: 'このプレゼンテーションで解説した内容は、YouTube動画としてさらに多くの方へ届けることが可能です。こちらのタイトル案、概要欄、サムネイルやBGMのプロンプトなどを活用し、エクソソーム研究の興奮と可能性を、ぜひ発信してみてください。ご清聴ありがとうございました。'
+            }
+        ];
+
+        const sliderContainer = document.getElementById('slider-container');
+        const paginationContainer = document.getElementById('pagination-bottom');
+        const prevBtn = document.getElementById('prev-btn-bottom');
+        const nextBtn = document.getElementById('next-btn-bottom');
+
+        let currentSlide = 0;
+
+        function renderSlides() {
+            sliderContainer.innerHTML = '';
+            paginationContainer.innerHTML = '';
+            
+            // Add static arrows to slider
+            const prevArrow = document.createElement('button');
+            prevArrow.id = 'prev';
+            prevArrow.className = 'nav-arrow';
+            prevArrow.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>`;
+            prevArrow.onclick = () => goToPrevSlide();
+            sliderContainer.appendChild(prevArrow);
+            
+            const nextArrow = document.createElement('button');
+            nextArrow.id = 'next';
+            nextArrow.className = 'nav-arrow';
+            nextArrow.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>`;
+            nextArrow.onclick = () => goToNextSlide();
+            sliderContainer.appendChild(nextArrow);
+
+            // Add static pagination dots to slider
+            const topPagination = document.createElement('div');
+            topPagination.className = 'pagination';
+            topPagination.id = 'pagination-top';
+            sliderContainer.appendChild(topPagination);
+
+            slidesData.forEach((slideData, index) => {
+                const slideEl = document.createElement('div');
+                slideEl.className = 'slide';
+                if (index === 0) slideEl.classList.add('active');
+
+                let innerHTML = '';
+                let narrationBoxHTML = '';
+                
+                if (slideData.type === 'title') {
+                    innerHTML = `
+                        <div class="slide-content text-center bg-gray-50">
+                            <h1 class="text-5xl lg:text-6xl font-extrabold text-blue-900 mb-4">${slideData.content.title}</h1>
+                            <p class="text-xl lg:text-2xl text-gray-600">${slideData.content.subtitle}</p>
+                        </div>
+                    `;
+                } else if (slideData.type === 'infographic') {
+                    innerHTML = `<div class="slide-content">${slideData.content}</div>`;
+                } else if (slideData.type === 'final') {
+                    innerHTML = `<div class="slide-content" style="justify-content: flex-start; padding-top: 2.5rem;">${slideData.content}</div>`;
+                } else if (slideData.type === 'chart') {
+                    innerHTML = `
+                        <div class="slide-content">
+                             <h2 class="slide-title">${slideData.content.title}</h2>
+                             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center h-full">
+                                <p class="text-base md:text-lg text-gray-700 leading-relaxed">${slideData.content.description}</p>
+                                <div class="chart-container"><canvas id="chart-${index}"></canvas></div>
+                             </div>
+                        </div>
+                    `;
+                }
+                
+                if(slideData.type !== 'final'){
+                    narrationBoxHTML = `<div class="narration-box"><p>${slideData.narration}</p></div>`;
+                }
+                
+                slideEl.innerHTML = innerHTML + narrationBoxHTML;
+                sliderContainer.appendChild(slideEl);
+
+                // Create dots for both top and bottom pagination
+                const dotTop = document.createElement('div');
+                dotTop.className = 'dot';
+                if (index === 0) dotTop.classList.add('active');
+                dotTop.addEventListener('click', () => goToSlide(index));
+                topPagination.appendChild(dotTop);
+
+                const dotBottom = document.createElement('div');
+                dotBottom.className = 'dot';
+                dotBottom.style.backgroundColor = '#a0aec0'; // gray-400
+                if (index === 0) dotBottom.classList.add('active');
+                dotBottom.addEventListener('click', () => goToSlide(index));
+                paginationContainer.appendChild(dotBottom);
+            });
+
+            renderCharts();
+        }
+
+        function renderCharts() {
+            slidesData.forEach((slideData, index) => {
+                if (slideData.type === 'chart') {
+                    const ctx = document.getElementById(`chart-${index}`).getContext('2d');
+                    
+                    const chartOptions = {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    padding: 20,
+                                    font: { size: 14 }
+                                }
+                            }
+                        }
+                    };
+                    
+                    if (slideData.chartType === 'bar' && slideData.content.yAxisLabels) {
+                        chartOptions.indexAxis = 'y';
+                        chartOptions.scales = {
+                            x: {
+                                ticks: {
+                                    callback: function(value) {
+                                        return slideData.content.yAxisLabels[value] || '';
+                                    }
+                                },
+                            }
+                        };
+                        chartOptions.plugins.tooltip = {
+                            callbacks: {
+                                label: function(context) {
+                                    return slideData.content.yAxisLabels[context.raw] || '';
+                                }
+                            }
+                        }
+                    }
+
+                    new Chart(ctx, {
+                        type: slideData.chartType,
+                        data: slideData.content.chartData,
+                        options: chartOptions,
+                    });
+                }
+            });
+        }
+        
+        function updateSlider() {
+            const slides = document.querySelectorAll('.slide');
+            const dotsTop = document.querySelectorAll('#pagination-top .dot');
+            const dotsBottom = document.querySelectorAll('#pagination-bottom .dot');
+            slides.forEach((slide, index) => {
+                slide.classList.toggle('active', index === currentSlide);
+            });
+            dotsTop.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSlide);
+            });
+            dotsBottom.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSlide);
+            });
+        }
+
+        function goToSlide(slideNumber) {
+            currentSlide = slideNumber;
+            updateSlider();
+        }
+
+        function goToPrevSlide() {
+            currentSlide = (currentSlide > 0) ? currentSlide - 1 : slidesData.length - 1;
+            updateSlider();
+        }
+
+        function goToNextSlide() {
+            currentSlide = (currentSlide < slidesData.length - 1) ? currentSlide + 1 : 0;
+            updateSlider();
+        }
+
+        prevBtn.addEventListener('click', goToPrevSlide);
+        nextBtn.addEventListener('click', goToNextSlide);
+
+        renderSlides();
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>エクソソームとがん：インタラクティブ・レポート</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chosen Palette: "Calm Biotech" - A professional and calm theme with a light neutral background, muted blue/teal accents, and soft grays for text. -->
+    <!-- Application Structure Plan: A single-page, thematic dashboard design is chosen over a linear report structure for better usability. The flow is: 1. Hero Introduction (What & Why), 2. Sticky Navigation for non-linear exploration, 3. Thematic Sections (Metastasis Mechanism, Diagnostics, Therapeutics, Key Players, Future Outlook). This structure allows users to either follow a narrative scroll or jump directly to topics of interest. Key interactions include a step-by-step diagram for the complex metastasis concept, an interactive chart for clinical trial data, and clickable cards for therapeutic approaches to manage information density and encourage user engagement. This design transforms passive reading into active exploration. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Exosome Biology -> Goal: Inform -> Viz: HTML/CSS Diagram -> Interaction: Static Visual Flow -> Justification: Clearly explain a fundamental concept without user input.
+        - Report Info: Pre-metastatic Niche -> Goal: Explain Process -> Viz: HTML/CSS Step-Diagram -> Interaction: Click-to-reveal steps -> Justification: Breaks down a complex process into digestible, user-controlled steps.
+        - Report Info: Clinical Trial Stats (Diagnosis vs. Therapy) -> Goal: Quantify & Compare -> Viz: Chart.js Doughnut Chart -> Interaction: Hover for tooltips -> Justification: Provides a quick, clear visual comparison of quantitative data.
+        - Report Info: Therapeutic Platforms (Table 2) -> Goal: Explore & Compare -> Viz: Interactive HTML Cards -> Interaction: Click to expand for details -> Justification: Presents a large amount of detailed information in a compact, user-initiated way, preventing overwhelm.
+        - Report Info: Key Researchers & Trials (Tables 1 & 3) -> Goal: Organize & Reference -> Viz: HTML Table -> Interaction: Static display -> Justification: Simple, effective presentation for referential data.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Helvetica Neue', 'Arial', 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Meiryo', sans-serif;
+            background-color: #f8fafc;
+            color: #1f2937;
+        }
+        .section-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: #0d9488;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .section-intro {
+            text-align: center;
+            max-width: 48rem;
+            margin: 0 auto 3rem auto;
+            color: #4b5563;
+            font-size: 1.125rem;
+            line-height: 1.75;
+        }
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            overflow: hidden;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #0d9488;
+            border-bottom-color: #0d9488;
+        }
+        .step-diagram .step {
+            opacity: 0.3;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .step-diagram .step.active {
+            opacity: 1;
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        .modal-overlay.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            max-width: 90%;
+            width: 50rem;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.95);
+            transition: transform 0.3s;
+        }
+        .modal-overlay.visible .modal-content {
+            transform: scale(1);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header & Navigation -->
+    <header class="bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-40">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl font-bold text-teal-700">エクソソームとがん</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#intro" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700">はじめに</a>
+                        <a href="#metastasis" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700">転移のメカニズム</a>
+                        <a href="#diagnosis" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700">診断への応用</a>
+                        <a href="#therapeutics" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700">治療への応用</a>
+                        <a href="#players" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700">主要プレイヤー</a>
+                        <a href="#future" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700">未来と課題</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <!-- Hero Section -->
+        <section class="text-center mb-24">
+            <h2 class="text-4xl md:text-6xl font-extrabold text-teal-800 leading-tight">
+                細胞間のメッセンジャー<br>エクソソームが拓く、がん研究の新時代
+            </h2>
+            <p class="mt-6 max-w-3xl mx-auto text-lg text-gray-600">
+                かつては細胞の「ゴミ袋」と見なされていたエクソソーム。今や、がんの診断から治療まで、医療を根底から変える可能性を秘めたキープレイヤーとして注目されています。このインタラクティブ・レポートで、その最前線を探ります。
+            </p>
+        </section>
+
+        <!-- 1. Introduction Section -->
+        <section id="intro" class="py-16">
+            <h3 class="section-title">はじめに：エクソソームとは何か？</h3>
+            <p class="section-intro">
+                このセクションでは、エクソソームの基本的な性質と、がんという病気の中でどのようにして「善玉」にも「悪玉」にもなりうるのか、その二面性について解説します。細胞間の情報伝達を担う、この微小なカプセルの驚くべき役割を理解することが、がん研究の新たな地平を理解する第一歩です。
+            </p>
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="card p-8">
+                    <h4 class="text-2xl font-bold text-teal-700 mb-4">基礎生物学</h4>
+                    <p class="text-gray-600 leading-relaxed">
+                        エクソソームは、ほぼ全ての細胞から分泌される直径40-100nmの微小なカプセルです。内部には、由来する細胞のDNA、RNA、タンパク質などが含まれており、いわば細胞の「分子的なスナップショット」です。この内包物を脂質二重膜で保護しながら体液中を移動し、遠くの細胞に情報を伝達します。この安定性と情報伝達能力が、エクソソームを医療応用の有望な候補にしています。
+                    </p>
+                </div>
+                <div class="p-8">
+                    <div class="flex flex-col items-center space-y-4">
+                        <div class="text-center">
+                             <div class="w-24 h-24 bg-sky-100 border-2 border-sky-300 rounded-full flex items-center justify-center shadow-md">
+                                <span class="font-bold text-sky-800">細胞</span>
+                             </div>
+                             <p class="text-sm text-gray-500 mt-1">Cell</p>
+                        </div>
+                        <div class="text-5xl text-teal-400">↓</div>
+                        <div class="text-center">
+                             <div class="w-24 h-24 bg-teal-100 border-2 border-teal-300 rounded-lg flex items-center justify-center shadow-md">
+                                <span class="font-bold text-teal-800 text-center text-xs">多胞体 (MVB) 形成</span>
+                             </div>
+                              <p class="text-sm text-gray-500 mt-1">Formation</p>
+                        </div>
+                        <div class="text-5xl text-teal-400">↓</div>
+                         <div class="text-center">
+                             <div class="w-24 h-24 bg-rose-100 border-2 border-rose-300 rounded-full flex items-center justify-center shadow-md">
+                                <span class="font-bold text-rose-800">エクソソーム放出</span>
+                             </div>
+                             <p class="text-sm text-gray-500 mt-1">Release</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Metastasis Mechanism Section -->
+        <section id="metastasis" class="py-16 bg-white rounded-2xl my-16 p-8 md:p-12">
+            <h3 class="section-title">転移のメカニズム</h3>
+            <p class="section-intro">
+                がんによる死亡の最大の原因は転移です。このセクションでは、エクソソームがどのようにして、がん細胞が転移する「前」に遠隔の臓器環境を整え、転移しやすい「土壌」を作り出すか（転移前ニッチ形成）を解説します。Weill Cornell MedicineのDavid Lyden博士が提唱したこの画期的な概念を、ステップバイステップの図解で探ります。
+            </p>
+            <div id="metastasis-diagram" class="step-diagram max-w-5xl mx-auto">
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-4 text-center items-start">
+                    <div class="step p-4" data-step="1">
+                        <div class="text-6xl mb-2">①</div>
+                        <h4 class="font-bold text-teal-800 text-lg mb-2">エクソソーム放出</h4>
+                        <p class="text-sm text-gray-600">原発巣のがん細胞が、インテグリン（分子の郵便番号）を持つエクソソームを放出する。</p>
+                    </div>
+                    <div class="flex items-center justify-center text-4xl text-teal-300 mt-8 md:mt-12">→</div>
+                    <div class="step p-4" data-step="2">
+                        <div class="text-6xl mb-2">②</div>
+                        <h4 class="font-bold text-teal-800 text-lg mb-2">血流に乗る</h4>
+                        <p class="text-sm text-gray-600">エクソソームが血流に乗り、全身を循環する。</p>
+                    </div>
+                    <div class="flex items-center justify-center text-4xl text-teal-300 mt-8 md:mt-12">→</div>
+                     <div class="step p-4" data-step="3">
+                        <div class="text-6xl mb-2">③</div>
+                        <h4 class="font-bold text-teal-800 text-lg mb-2">遠隔臓器へ到達</h4>
+                        <p class="text-sm text-gray-600">インテグリンに導かれ、特定の遠隔臓器（例：肺、肝臓）にホーミングする。</p>
+                    </div>
+                </div>
+                <div class="flex justify-center my-4">
+                     <div class="text-6xl text-teal-300 transform -rotate-90 md:rotate-0">↓</div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                     <div class="step p-4 text-center" data-step="4">
+                        <div class="text-6xl mb-2">④</div>
+                        <h4 class="font-bold text-teal-800 text-lg mb-2">「土壌」を耕す</h4>
+                        <p class="text-sm text-gray-600">エクソソームが臓器の細胞に作用し、血管新生や免疫抑制を引き起こし、転移しやすい環境（転移前ニッチ）を形成する。</p>
+                    </div>
+                     <div class="step p-4 text-center" data-step="5">
+                        <div class="text-6xl mb-2">⑤</div>
+                        <h4 class="font-bold text-teal-800 text-lg mb-2">転移成立</h4>
+                        <p class="text-sm text-gray-600">後からやってきたがん細胞が、準備された「土壌」に効率よく生着し、増殖を開始する。</p>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-8">
+                <button id="metastasis-stepper" class="bg-teal-600 text-white font-bold py-2 px-6 rounded-full hover:bg-teal-700 transition">ステップを進める</button>
+            </div>
+        </section>
+
+        <!-- 3. Diagnosis Section -->
+        <section id="diagnosis" class="py-16">
+            <h3 class="section-title">診断への応用：リキッドバイオプシーの夜明け</h3>
+             <p class="section-intro">
+                エクソソームは、がん診断に革命をもたらす可能性を秘めています。血液や尿といった体液から、がんの存在や性質を非侵襲的に、かつリアルタイムで把握する「リキッドバイオプシー」。このセクションでは、その原理と臨床応用の現状を、実際の臨床試験データと共に紹介します。
+            </p>
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="card p-8">
+                    <h4 class="text-2xl font-bold text-teal-700 mb-4">なぜ診断に使えるのか？</h4>
+                    <ul class="space-y-4 text-gray-600">
+                        <li class="flex items-start">
+                            <span class="text-teal-500 font-bold mr-3">✔</span>
+                            <span><strong>特異的シグネチャー:</strong> がん細胞由来のエクソソームは、がん特有の遺伝子変異やタンパク質を内包しており、がんの「指紋」となる。</span>
+                        </li>
+                        <li class="flex items-start">
+                           <span class="text-teal-500 font-bold mr-3">✔</span>
+                           <span><strong>安定性:</strong> 膜に守られているため、体液中で内包物が分解されにくく、安定して検出できる。</span>
+                        </li>
+                         <li class="flex items-start">
+                           <span class="text-teal-500 font-bold mr-3">✔</span>
+                           <span><strong>非侵襲性:</strong> 採血や採尿のみで済むため、患者の身体的負担が非常に少ない。早期発見から再発モニタリングまで、繰り返し検査が可能。</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="chart-container relative h-96 w-full max-w-md mx-auto">
+                     <p class="text-center font-semibold text-gray-700 mb-2">臨床試験におけるエクソソームの応用分野</p>
+                    <canvas id="diagnosisChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Therapeutics Section -->
+        <section id="therapeutics" class="py-16 bg-white rounded-2xl my-16 p-8 md:p-12">
+            <h3 class="section-title">治療への応用：未来の「運び屋」と「兵器」</h3>
+            <p class="section-intro">
+               エクソソームの最もエキサイティングな応用分野が治療です。薬剤をがん細胞へ正確に届ける「運び屋（DDS）」として、また免疫システムを活性化させる「兵器」として、世界中で革新的な研究が進んでいます。ここでは、主要な治療アプローチをインタラクティブなカード形式で紹介します。カードをクリックして詳細をご覧ください。
+            </p>
+            <div id="therapeutics-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Cards will be injected here by JS -->
+            </div>
+        </section>
+
+        <!-- 5. Key Players Section -->
+        <section id="players" class="py-16">
+            <h3 class="section-title">イノベーションを牽引する主要プレイヤー</h3>
+             <p class="section-intro">
+                エクソソームとがんの研究は、世界中の大学、研究機関、バイオテック企業が競い合うダイナミックな分野です。このセクションでは、基礎研究から臨床開発まで、このエコシステムを形成する主要な研究者、機関、そして企業を一覧で紹介し、イノベーションの全体像を明らかにします。
+            </p>
+            <div class="card p-6 md:p-8">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="p-4 font-semibold text-gray-600">研究者／企業</th>
+                                <th class="p-4 font-semibold text-gray-600">所属機関</th>
+                                <th class="p-4 font-semibold text-gray-600">主要な研究焦点</th>
+                            </tr>
+                        </thead>
+                        <tbody id="players-table-body" class="divide-y">
+                           <!-- Rows will be injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. Future & Challenges Section -->
+        <section id="future" class="py-16 bg-white rounded-2xl my-16 p-8 md:p-12">
+            <h3 class="section-title">未来と課題：期待と現実</h3>
+            <p class="section-intro">
+                エクソソームががん医療に大きな変革をもたらすことは間違いありませんが、実用化までには乗り越えるべき課題も存在します。この最終セクションでは、分野が直面する「期待（Hype）」と「現実（Reality）」を比較し、真に個別化された未来の医療へのインパクトを展望します。
+            </p>
+            <div class="grid md:grid-cols-2 gap-12">
+                <div class="p-6">
+                    <h4 class="text-2xl font-bold text-green-600 mb-4">期待 (Hype)</h4>
+                     <ul class="space-y-3 text-gray-700">
+                        <li class="flex"><span class="mr-3 text-green-500">✅</span>診断と治療の融合（セラノスティクス）の実現</li>
+                        <li class="flex"><span class="mr-3 text-green-500">✅</span>副作用の少ない標的型治療</li>
+                        <li class="flex"><span class="mr-3 text-green-500">✅</span>非侵襲的な超早期発見と再発モニタリング</li>
+                        <li class="flex"><span class="mr-3 text-green-500">✅</span>アルツハイマー病など他疾患への応用</li>
+                    </ul>
+                </div>
+                 <div class="p-6">
+                    <h4 class="text-2xl font-bold text-amber-600 mb-4">現実 (Reality) & 課題</h4>
+                     <ul class="space-y-3 text-gray-700">
+                        <li class="flex"><span class="mr-3 text-amber-500">⚠️</span>大規模製造と品質管理（QC）技術の確立</li>
+                        <li class="flex"><span class="mr-3 text-amber-500">⚠️</span>作用機序の完全な解明（標的細胞への取り込みメカニズムなど）</li>
+                        <li class="flex"><span class="mr-3 text-amber-500">⚠️</span>規制当局の評価基準・ガイドラインの策定</li>
+                        <li class="flex"><span class="mr-3 text-amber-500">⚠️</span>生物学的な複雑さに対するさらなる理解</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white mt-16">
+        <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 text-center">
+            <p>このページは提供されたレポートに基づき、教育目的で生成されたものです。</p>
+            <p class="text-sm text-gray-400 mt-2">インタラクティブ・レポート by Gemini</p>
+        </div>
+    </footer>
+    
+    <!-- Modal for Therapeutics -->
+    <div id="modal" class="modal-overlay">
+        <div id="modal-content" class="modal-content">
+            <!-- Modal content will be injected by JS -->
+        </div>
+    </div>
+
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        
+        // --- Data from Report ---
+        const therapeuticsData = [
+            {
+                title: 'SOBプラットフォーム',
+                short_desc: 'HLA-Gを標的とする世界初の標的型DDS。薬剤をがん細胞に選択的に送達。',
+                details: {
+                    '作用機序': 'HLA-Gを特異的に標的とするナノボディをエクソソーム表面に提示し、抗がん剤やmiRNAを搭載して送達する。',
+                    '標的がん種': '固形がん（乳、脳、卵巣など）',
+                    '開発段階': '第I相臨床試験',
+                    '主要開発者': '中国医薬大学病院 / Shine-On Biomedical'
+                }
+            },
+            {
+                title: '磁気ハイパーサーミア',
+                short_desc: '酸化鉄ナノ粒子を搭載し、磁場で発熱させてがん細胞を死滅させる物理療法。',
+                 details: {
+                    '作用機序': '間葉系幹細胞由来のエクソソームに酸化鉄ナノ粒子を搭載。体外から交流磁場をかけることで腫瘍内で発熱させ、がん細胞を選択的に破壊する。',
+                    '標的がん種': '固形がん（脳腫瘍など）',
+                    '開発段階': '前臨床',
+                    '主要開発者': '不明（YouTube上の研究）'
+                }
+            },
+            {
+                title: '光免疫療法',
+                short_desc: '光に反応する薬剤と免疫細胞由来エクソソームを融合させたハイブリッド治療。',
+                 details: {
+                    '作用機序': '光増感剤（クロリンe6）とヒトγδ-T細胞由来エクソソームを融合。腫瘍に集積後、光を照射して活性酸素を発生させ細胞を破壊。免疫応答も誘導する。',
+                    '標的がん種': 'メラノーマ',
+                    '開発段階': '前臨床',
+                    '主要開発者': '香港大学'
+                }
+            },
+            {
+                title: 'CAR-Tエクソソーム',
+                short_desc: 'CAR-T細胞の能力を持つエクソソーム。細胞療法より安全性が高い可能性。',
+                 details: {
+                    '作用機序': 'CAR-T細胞が放出する、がん細胞を標的化するCARを発現したエクソソームを利用。サイトカイン放出症候群のリスク低減が期待される。',
+                    '標的がん種': 'MUC16陽性卵巣がんなど',
+                    '開発段階': '前臨床',
+                    '主要開発者': 'Memorial Sloan Kettering Cancer Centerなど'
+                }
+            },
+            {
+                title: '樹状細胞由来エクソソーム(DEX)',
+                short_desc: '免疫の司令塔である樹状細胞由来のエクソソームを用いたがんワクチン。',
+                 details: {
+                    '作用機序': '樹状細胞（DC）から作製したエクソソーム（DEX）にがん抗原を搭載し、ワクチンとして投与することで抗腫瘍免疫を誘導する。',
+                    '標的がん種': '非小細胞肺がん（NSCLC）など',
+                    '開発段階': '第II相臨床試験',
+                    '主要開発者': 'フランスの研究機関'
+                }
+            },
+            {
+                title: '自己免疫応答の増強',
+                short_desc: '患者自身の免疫細胞からエクソソームを精製し、ワクチンとして再投与する個別化医療。',
+                details: {
+                    '作用機序': '患者自身の免疫細胞からエクソソームを抽出し、それをワクチンとして体内に戻すことで、がんに対する特異的な免疫応答を増強する。',
+                    '標的がん種': '各種がん',
+                    '開発段階': '臨床研究',
+                    '主要開発者': 'フランスの研究機関'
+                }
+            }
+        ];
+
+        const playersData = [
+            { name: 'David C. Lyden博士', org: 'Weill Cornell Medicine (米国)', focus: '転移前ニッチの概念確立、転移の臓器特異性メカニズム解明' },
+            { name: 'Thomas Kislinger博士', org: 'トロント大学 / PMCC (カナダ)', focus: 'プロテオミクスを用いたTMEとエクソソームの解析' },
+            { name: '卓徳陽 (Der-Yang Cho) 院長', org: '中国医薬大学病院 (台湾)', focus: 'HLA-G標的DDSプラットフォームの開発、臨床応用への橋渡し' },
+            { name: '香港大学の研究チーム', org: '香港大学 (香港)', focus: '光免疫療法など工学的アプローチによる新規治療法開発' },
+            { name: 'Shine-On Biomedical Co.', org: '台湾 (企業)', focus: 'HLA-G標的エクソソームプラットフォームの臨床開発' },
+            { name: 'Aethlon Medical', org: '米国 (企業)', focus: '血中エクソソームを標的とする血液浄化装置の開発' }
+        ];
+
+        // --- Navigation Logic ---
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('.nav-link');
+        
+        window.onscroll = () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= sectionTop - 80) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').substring(1) === current) {
+                    link.classList.add('active');
+                }
+            });
+        };
+        
+        // --- Metastasis Diagram Stepper ---
+        const metastasisDiagram = document.getElementById('metastasis-diagram');
+        const steps = metastasisDiagram.querySelectorAll('.step');
+        const stepperButton = document.getElementById('metastasis-stepper');
+        let currentStep = 0;
+
+        function updateSteps() {
+            steps.forEach((step, index) => {
+                if (index < currentStep) {
+                    step.classList.add('active');
+                } else {
+                    step.classList.remove('active');
+                }
+            });
+            if (currentStep > steps.length) {
+                currentStep = 0;
+            }
+        }
+        
+        stepperButton.addEventListener('click', () => {
+            currentStep++;
+            updateSteps();
+        });
+        updateSteps(); // Initial state
+
+        // --- Diagnosis Chart ---
+        const ctx = document.getElementById('diagnosisChart').getContext('2d');
+        const diagnosisChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['がん診断関連', 'その他診断', '治療関連'],
+                datasets: [{
+                    label: 'エクソソーム臨床試験',
+                    data: [108, 100, 59],
+                    backgroundColor: [
+                        '#0d9488', // teal-600
+                        '#0f766e', // teal-700
+                        '#115e59'  // teal-800
+                    ],
+                    borderColor: '#f8fafc',
+                    borderWidth: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                           color: '#4b5563',
+                           font: {
+                               size: 14
+                           }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed !== null) {
+                                    label += context.parsed + '件';
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // --- Therapeutics Cards & Modal ---
+        const therapeuticsGrid = document.getElementById('therapeutics-grid');
+        const modal = document.getElementById('modal');
+        const modalContent = document.getElementById('modal-content');
+        
+        therapeuticsData.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'card p-6 flex flex-col cursor-pointer';
+            card.innerHTML = `
+                <h4 class="text-xl font-bold text-teal-700 mb-3">${item.title}</h4>
+                <p class="text-gray-600 flex-grow">${item.short_desc}</p>
+                <div class="mt-4 text-right text-teal-600 font-semibold">詳細を見る →</div>
+            `;
+            card.addEventListener('click', () => {
+                let detailsHtml = `<h3 class="text-3xl font-bold text-teal-700 mb-6">${item.title}</h3>`;
+                for (const [key, value] of Object.entries(item.details)) {
+                    detailsHtml += `
+                        <div class="mb-4">
+                            <p class="font-bold text-gray-700">${key}</p>
+                            <p class="text-gray-600">${value}</p>
+                        </div>
+                    `;
+                }
+                detailsHtml += `<button id="closeModal" class="mt-6 bg-teal-600 text-white font-bold py-2 px-6 rounded-full hover:bg-teal-700 transition w-full">閉じる</button>`;
+
+                modalContent.innerHTML = detailsHtml;
+                modal.classList.add('visible');
+            });
+            therapeuticsGrid.appendChild(card);
+        });
+        
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal || e.target.id === 'closeModal' || e.target.parentElement.id === 'closeModal') {
+                modal.classList.remove('visible');
+            }
+        });
+
+        // --- Key Players Table ---
+        const playersTableBody = document.getElementById('players-table-body');
+        playersData.forEach(player => {
+            const row = document.createElement('tr');
+            row.className = 'hover:bg-gray-50';
+            row.innerHTML = `
+                <td class="p-4 font-medium">${player.name}</td>
+                <td class="p-4 text-gray-600">${player.org}</td>
+                <td class="p-4 text-gray-600">${player.focus}</td>
+            `;
+            playersTableBody.appendChild(row);
+        });
+
+    });
+    </script>
+</body>
+</html>
