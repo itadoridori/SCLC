@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インフォグラフィック：水素医療の最前線 - 市場と科学の融合</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Brilliant Blues -->
+    <!-- Narrative Plan: The infographic tells a story, starting with a bold header to grab attention. It then moves through five distinct sections: 1. "Market Overview," which debunks the common pH myth and establishes the true target (TME), framing it as market clarification. 2. "Core Technology Analysis," which explains the mechanisms of H2 as if they were a product's features. 3. "Clinical Trial Performance," an interactive chart section visualizing key clinical data like market performance metrics (QOL, survival). 4. "Mechanism of Action," a flowchart showing how the technology tackles the core problem. 5. "Future Outlook & Risk Analysis," which presents the "double-edged sword" finding and future challenges as a market forecast. This narrative guides the user from a broad misconception to a nuanced, data-driven understanding. -->
+    <!-- Visualization Choices: 1. Market Overview (Inform/Compare): Uses large, bold text and styled HTML cards to contrast the pH myth with the TME reality, acting as a high-impact market entry point. (Method: HTML/CSS, Confirmed NO SVG). 2. Core Technology (Inform): Uses Material Design cards (HTML/CSS) to break down complex mechanisms into digestible feature points. (Method: HTML/CSS, Confirmed NO SVG). 3. Clinical Performance (Compare/Change): An interactive Chart.js bar chart (Canvas) with buttons to switch between datasets (QOL, Survival, Side Effects), allowing users to explore performance data dynamically. (Method: Chart.js Canvas, Confirmed NO SVG). 4. Mechanism Flowchart (Organize): A responsive flowchart built with HTML/CSS and Tailwind's flexbox/grid, showing how H2 counters the negative effects of the TME. (Method: HTML/CSS, Confirmed NO SVG/Mermaid). 5. Risk Analysis (Inform): Uses a prominent warning-style card (HTML/CSS) for the "double-edged sword" data and a clean summary list for the future outlook, providing a balanced forecast. (Method: HTML/CSS, Confirmed NO SVG). -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Noto Sans JP', sans-serif; background-color: #F8F9FA; }
+        .chart-container { position: relative; width: 100%; max-width: 800px; margin-left: auto; margin-right: auto; height: 320px; max-height: 45vh; }
+        @media (min-width: 768px) { .chart-container { height: 400px; } }
+        .stat-card { transition: all 0.3s ease-in-out; }
+        .stat-card:hover { transform: translateY(-6px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); }
+        .nav-link { transition: color 0.3s ease; }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <header class="bg-white/90 backdrop-blur-lg shadow-md sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <h1 class="text-2xl font-bold" style="color: #0A2463;">水素医療の最前線</h1>
+            <div class="hidden md:flex space-x-8">
+                <a href="#market" class="nav-link text-gray-600 hover:text-[#3E92CC]">市場概観</a>
+                <a href="#technology" class="nav-link text-gray-600 hover:text-[#3E92CC]">技術分析</a>
+                <a href="#performance" class="nav-link text-gray-600 hover:text-[#3E92CC]">臨床成績</a>
+                <a href="#outlook" class="nav-link text-gray-600 hover:text-[#3E92CC]">将来展望</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+
+        <section class="text-center mb-20">
+            <h2 class="text-4xl md:text-5xl font-extrabold mb-4" style="color: #0A2463;">科学的データで解き明かす、<br>次世代がん治療のポテンシャル</h2>
+            <p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">本レポートは、分子状水素（H₂）のがん治療における役割を、市場調査の視点から再構築したものです。一般的な誤解を解き、科学的根拠に基づく作用機序と臨床データを可視化することで、その真の価値と将来性を探ります。</p>
+        </section>
+
+        <section id="market" class="mb-20 scroll-mt-20">
+            <h3 class="text-3xl font-bold text-center mb-2" style="color: #0A2463;">市場概観：誤解から真の標的へ</h3>
+            <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">市場に流布する「体質改善」という曖昧な概念から脱却し、科学が示す真の治療標的「腫瘍微小環境（TME）」に焦点を当てます。</p>
+            <div class="grid md:grid-cols-2 gap-8 items-stretch">
+                <div class="stat-card bg-white p-8 rounded-xl shadow-lg border border-gray-200">
+                    <h4 class="text-xl font-bold mb-3 text-red-600">市場の誤解：全身の酸性化</h4>
+                    <p class="text-4xl font-extrabold mb-4 text-red-500">pH神話</p>
+                    <p class="text-gray-600">「体が酸性に傾く」という説は、科学的根拠に乏しいことが示されています。人体の血液pHは7.4前後に厳密に維持されており、食事等で変動する「酸性体質」は存在しません。これは誤った市場認識です。</p>
+                </div>
+                <div class="stat-card bg-white p-8 rounded-xl shadow-lg border border-gray-200">
+                     <h4 class="text-xl font-bold mb-3 text-green-600">真の市場機会：局所的酸性環境</h4>
+                    <p class="text-4xl font-extrabold mb-4 text-green-700">TME</p>
+                    <p class="text-gray-600">真の標的は、がん細胞自身が作り出すpH 6.0-6.8の「酸性腫瘍微小環境（TME）」です。これが免疫抑制や転移を促進するため、このTMEを攻略することが新たな市場機会となります。</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="technology" class="mb-20 scroll-mt-20">
+            <h3 class="text-3xl font-bold text-center mb-12" style="color: #0A2463;">コア技術分析：水素の多角的アプローチ</h3>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="stat-card bg-white p-6 rounded-xl shadow-lg text-center">
+                    <div class="text-5xl mb-4" style="color: #3E92CC;">🎯</div>
+                    <h4 class="text-xl font-bold mb-2">選択的抗酸化</h4>
+                    <p class="text-gray-600">有害な活性酸素（•OH）のみを選択的に除去。正常な細胞機能は維持しつつ、がんの悪性化を促進する酸化ストレスを低減します。</p>
+                </div>
+                <div class="stat-card bg-white p-6 rounded-xl shadow-lg text-center">
+                     <div class="text-5xl mb-4" style="color: #3E92CC;">🛡️</div>
+                    <h4 class="text-xl font-bold mb-2">免疫システムの再起動</h4>
+                    <p class="text-gray-600">酸性TMEで疲弊した免疫細胞（T細胞）の機能を回復させ、がんへの攻撃力を再活性化。免疫療法との相乗効果が期待されます。</p>
+                </div>
+                <div class="stat-card bg-white p-6 rounded-xl shadow-lg text-center">
+                     <div class="text-5xl mb-4" style="color: #3E92CC;">🔧</div>
+                    <h4 class="text-xl font-bold mb-2">シグナル伝達の調節</h4>
+                    <p class="text-gray-600">抗炎症、抗アポトーシス作用に加え、がんの増殖や転移に関わる細胞内の情報伝達経路を阻害し、多角的にがんの成長を抑制します。</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="performance" class="mb-20 scroll-mt-20">
+            <h3 class="text-3xl font-bold text-center mb-2" style="color: #0A2463;">臨床成績：市場価値の証明</h3>
+             <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">実際の臨床試験データは、水素療法の市場における価値を明確に示しています。特に標準治療との併用において、その効果は顕著です。</p>
+            <div class="bg-white rounded-xl shadow-2xl p-4 md:p-8">
+                <div class="text-center mb-6 space-x-2">
+                    <button id="btn-qol" class="px-5 py-2 text-sm font-medium rounded-full transition-colors duration-300 bg-[#0A2463] text-white">QOL改善効果</button>
+                    <button id="btn-pfs" class="px-5 py-2 text-sm font-medium rounded-full transition-colors duration-300 bg-gray-200 text-gray-700 hover:bg-gray-300">生存期間への影響</button>
+                    <button id="btn-sideeffect" class="px-5 py-2 text-sm font-medium rounded-full transition-colors duration-300 bg-gray-200 text-gray-700 hover:bg-gray-300">副作用軽減効果</button>
+                </div>
+                <div class="chart-container">
+                    <canvas id="performanceChart"></canvas>
+                </div>
+                <p id="chart-context" class="text-center text-sm text-gray-500 mt-4 max-w-2xl mx-auto"></p>
+            </div>
+        </section>
+
+        <section id="flow" class="mb-20 scroll-mt-20">
+            <h3 class="text-3xl font-bold text-center mb-12" style="color: #0A2463;">メカニズム・フロー：TMEへの介入プロセス</h3>
+            <div class="bg-white rounded-xl shadow-lg p-8">
+                <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4 text-center">
+                    <div class="p-4 bg-red-100 rounded-lg w-full md:w-1/4">
+                        <p class="font-bold text-red-700">① 酸性TME</p>
+                        <p class="text-sm text-red-600">免疫抑制 & 酸化ストレス</p>
+                    </div>
+                    <div class="text-2xl font-bold text-gray-400 transform md:rotate-0 rotate-90">&rarr;</div>
+                    <div class="p-4 rounded-lg w-full md:w-1/3" style="background-color: #D8DDEF;">
+                        <p class="font-bold" style="color: #0A2463;">② 水素（H₂）の介入</p>
+                        <p class="text-sm" style="color: #0A2463;">選択的抗酸化 & 免疫細胞の代謝回復</p>
+                    </div>
+                    <div class="text-2xl font-bold text-gray-400 transform md:rotate-0 rotate-90">&rarr;</div>
+                    <div class="p-4 bg-green-100 rounded-lg w-full md:w-1/4">
+                        <p class="font-bold text-green-700">③ 環境改善</p>
+                        <p class="text-sm text-green-600">免疫機能の正常化 & がん増殖抑制</p>
+                    </div>
+                </div>
+                 <p class="text-center text-gray-600 mt-6 max-w-3xl mx-auto">水素はTMEのpHを直接変えるのではなく、酸性環境が引き起こす生物学的な悪影響（免疫抑制や酸化ストレス）に直接対抗します。これにより、免疫システムが再び機能できる環境を整え、がんの増殖を抑制するのです。</p>
+            </div>
+        </section>
+
+        <section id="outlook" class="scroll-mt-20">
+             <h3 class="text-3xl font-bold text-center mb-2" style="color: #0A2463;">将来展望とリスク分析</h3>
+             <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">高いポテンシャルを持つ一方、すべてのケースに有効なわけではありません。今後の市場展開には、科学的根拠に基づいた慎重なアプローチが求められます。</p>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-yellow-100 border-l-4 border-yellow-500 p-6 rounded-lg">
+                    <h4 class="text-xl font-bold text-yellow-800 mb-3">リスク分析：「両刃の剣」の可能性</h4>
+                    <p class="text-yellow-900">一部の基礎研究では、特定の代謝特性を持つがん細胞（ミトコンドリア活性が高いタイプ）において、水素が逆に増殖を促進したとの報告があります。これは、適用対象を慎重に選ぶ必要があることを示唆する重要なリスク要因です。</p>
+                </div>
+                 <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h4 class="text-xl font-bold text-gray-800 mb-3">今後の市場展開</h4>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li><strong>補助療法としての確立：</strong>標準治療の副作用軽減と効果増強が主要な市場。</li>
+                        <li><strong>バイオマーカーの探索：</strong>効果が期待できる患者層を特定する技術開発。</li>
+                        <li><strong>大規模臨床試験：</strong>有効性を確立するための、より質の高いエビデンス構築。</li>
+                         <li><strong>投与法の標準化：</strong>効果を最大化する最適な投与プロトコルの確立。</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-12 text-center bg-gray-800 text-white p-8 rounded-xl shadow-2xl">
+                <h4 class="text-2xl font-bold mb-2">結論</h4>
+                <p class="max-w-3xl mx-auto">分子状水素は、pHを直接変える「魔法の弾丸」ではありません。しかし、TMEの生物学的特性に多角的にアプローチすることで、特に標準治療の補助として、がん治療のパラダイムを大きく変えるポテンシャルを秘めた、科学的根拠に基づく有望な次世代医療技術です。</p>
+            </div>
+        </section>
+    </main>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    const chartDatasets = {
+        qol: {
+            title: 'QOL改善効果：肝臓がん放射線治療',
+            context: '放射線治療中に水素豊富水を飲用した群は、プラセボ群と比較して生活の質（QOL）スコアが有意に改善しました。（典拠: Kang KM, et al. 2011）',
+            labels: [['QOLスコア変化', '(治療6週後)']],
+            datasets: [
+                {
+                    label: '水素群',
+                    data: [7.8], 
+                    backgroundColor: '#3E92CC',
+                    borderColor: '#0A2463',
+                    borderWidth: 2
+                },
+                {
+                    label: 'プラセボ群',
+                    data: [-8.8],
+                    backgroundColor: '#D8DDEF',
+                    borderColor: '#A0AEC0',
+                    borderWidth: 2
+                }
+            ]
+        },
+        pfs: {
+            title: '生存期間への影響：進行非小細胞肺がん',
+            context: '標準治療を拒否した患者において、水素吸入群はプラセボ群と比較して無増悪生存期間（PFS）が有意に延長しました。（典拠: Chen JB, et al. 2020）',
+            labels: ['無増悪生存期間 (中央値)'],
+            datasets: [
+                {
+                    label: '水素吸入群 (ヶ月)',
+                    data: [7.9],
+                    backgroundColor: '#3E92CC',
+                    borderColor: '#0A2463',
+                    borderWidth: 2
+                },
+                {
+                    label: 'プラセボ群 (ヶ月)',
+                    data: [4.4],
+                    backgroundColor: '#D8DDEF',
+                    borderColor: '#A0AEC0',
+                    borderWidth: 2
+                }
+            ]
+        },
+        sideeffect: {
+            title: '副作用軽減効果：放射線誘発性骨髄障害',
+            context: '放射線治療と水素吸入を併用した群は、対照群と比較して重篤な白血球・血小板減少の発生率が大幅に低下しました。（典拠: Hirano S, et al. 2021）',
+            labels: ['白血球減少 (G2+)', '血小板減少 (G1+)'],
+            datasets: [
+                {
+                    label: '水素併用群 (%)',
+                    data: [13, 8.7],
+                    backgroundColor: '#3E92CC',
+                    borderColor: '#0A2463',
+                    borderWidth: 2
+                },
+                {
+                    label: '対照群 (%)',
+                    data: [40.9, 31.8],
+                    backgroundColor: '#D8DDEF',
+                    borderColor: '#A0AEC0',
+                    borderWidth: 2
+                }
+            ]
+        }
+    };
+
+    const ctx = document.getElementById('performanceChart').getContext('2d');
+    const chartContextP = document.getElementById('chart-context');
+    let performanceChart;
+
+    const wrapLabel = (label) => {
+        if (typeof label === 'string' && label.length > 16) {
+            const words = label.split(' ');
+            const lines = [];
+            let currentLine = '';
+            words.forEach(word => {
+                if ((currentLine + word).length > 16) {
+                    lines.push(currentLine.trim());
+                    currentLine = '';
+                }
+                currentLine += word + ' ';
+            });
+            lines.push(currentLine.trim());
+            return lines;
+        }
+        return label;
+    };
+
+    function createOrUpdateChart(dataKey) {
+        if (performanceChart) {
+            performanceChart.destroy();
+        }
+        
+        const dataConfig = chartDatasets[dataKey];
+        chartContextP.textContent = dataConfig.context;
+
+        performanceChart = new Chart(ctx, {
+            type: 'bar',
+            data: dataConfig,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: dataConfig.title,
+                        font: { size: 18, weight: 'bold', family: "'Noto Sans JP', sans-serif" },
+                        color: '#0A2463',
+                        padding: { top: 10, bottom: 25 }
+                    },
+                    legend: {
+                        position: 'top',
+                         labels: {
+                            font: { size: 12, family: "'Noto Sans JP', sans-serif" },
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: '#0A2463',
+                        titleFont: { size: 14, weight: 'bold' },
+                        bodyFont: { size: 12 },
+                        callbacks: {
+                            title: function(tooltipItems) {
+                                const item = tooltipItems[0];
+                                let label = item.chart.data.labels[item.dataIndex];
+                                if (Array.isArray(label)) {
+                                  return label.join(' ');
+                                } else {
+                                  return label;
+                                }
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: dataKey !== 'qol',
+                        grid: { color: '#E2E8F0' },
+                        ticks: { color: '#4A5568' }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#4A5568' }
+                    }
+                },
+                animation: {
+                    duration: 1000,
+                    easing: 'easeInOutQuart'
+                }
+            }
+        });
+    }
+
+    const buttons = {
+        qol: document.getElementById('btn-qol'),
+        pfs: document.getElementById('btn-pfs'),
+        sideeffect: document.getElementById('btn-sideeffect'),
+    };
+
+    function setActiveButton(activeKey) {
+        Object.keys(buttons).forEach(key => {
+            const button = buttons[key];
+            if (key === activeKey) {
+                button.classList.add('bg-[#0A2463]', 'text-white');
+                button.classList.remove('bg-gray-200', 'text-gray-700', 'hover:bg-gray-300');
+            } else {
+                button.classList.remove('bg-[#0A2463]', 'text-white');
+                button.classList.add('bg-gray-200', 'text-gray-700', 'hover:bg-gray-300');
+            }
+        });
+    }
+
+    Object.keys(buttons).forEach(key => {
+        buttons[key].addEventListener('click', () => {
+            createOrUpdateChart(key);
+            setActiveButton(key);
+        });
+    });
+    
+    createOrUpdateChart('qol');
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インタラクティブ・スライド：水素とがんの科学的真実</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #f0f4f8;
+        }
+        .slider-container {
+            width: 100%;
+            max-width: 1100px;
+            aspect-ratio: 16 / 9;
+            margin: 1rem auto;
+            position: relative;
+            overflow: hidden;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            background-color: #ffffff;
+        }
+        .slider {
+            display: flex;
+            height: 100%;
+            transition: transform 0.5s ease-in-out;
+        }
+        .slide {
+            flex: 0 0 100%;
+            width: 100%;
+            height: 100%;
+            padding: 3rem 4rem;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            gap: 1.5rem;
+        }
+        .slide h2 {
+            font-size: 2.75rem;
+            font-weight: 900;
+            color: #1e3a8a;
+            line-height: 1.2;
+        }
+        .slide p {
+            font-size: 1.125rem;
+            color: #334155;
+            max-width: 80%;
+        }
+        .nav-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.4);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.3s;
+        }
+        .nav-button:hover {
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+        #prevBtn { left: 15px; }
+        #nextBtn { right: 15px; }
+        .pagination {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 14px;
+            z-index: 10;
+        }
+        .narration-box {
+            width: 100%;
+            max-width: 1100px;
+            margin: 1rem auto;
+            background-color: #1e293b;
+            color: #e2e8f0;
+            padding: 1.5rem 2rem;
+            border-radius: 0.75rem;
+            min-height: 100px;
+            font-size: 1rem;
+            line-height: 1.7;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .infographic-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 900px;
+        }
+        .info-card {
+            background-color: #eef2ff;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            border: 1px solid #c7d2fe;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .info-card .icon { font-size: 2.5rem; }
+        .info-card h3 { font-size: 1.25rem; font-weight: 700; color: #312e81; }
+        .info-card p { font-size: 0.95rem; color: #4338ca; }
+    </style>
+</head>
+<body>
+
+    <div class="slider-container">
+        <div class="slider">
+            <!-- Slide 1: Introduction -->
+            <div class="slide" style="background-color: #dbeafe;">
+                <h2 class="text-5xl">「体が酸性になると、がんになる」<br>その俗説、科学の目で見てみませんか？</h2>
+                <p>本日は、がん研究の最前線から「pHと水素」の真実に迫ります。</p>
+            </div>
+
+            <!-- Slide 2: pH Myth vs. Reality -->
+            <div class="slide">
+                <h2 class="text-blue-900">誤解と真実：全身のpHは揺るがない</h2>
+                <div class="flex gap-8 items-center w-full justify-center">
+                    <div class="text-center p-6 bg-red-100 rounded-lg border-2 border-red-300 w-1/3">
+                        <p class="text-lg font-bold text-red-700">俗説</p>
+                        <p class="text-4xl font-black text-red-500">体が酸性化</p>
+                        <p class="text-sm text-red-600">食生活で体液が酸性になる</p>
+                    </div>
+                    <div class="text-5xl font-bold text-gray-400">&ne;</div>
+                    <div class="text-center p-6 bg-green-100 rounded-lg border-2 border-green-300 w-1/3">
+                        <p class="text-lg font-bold text-green-700">科学的真実</p>
+                        <p class="text-4xl font-black text-green-600">pH 7.4</p>
+                        <p class="text-sm text-green-700">血液は弱アルカリ性に厳密制御</p>
+                    </div>
+                </div>
+                 <p>私たちの体には強力な調整機能があり、血液のpHは常に弱アルカリ性に保たれています。</p>
+            </div>
+
+            <!-- Slide 3: The Real Battlefield: TME -->
+            <div class="slide">
+                 <h2>真の戦場は「がんの局所環境」</h2>
+                 <div class="flex items-center justify-center gap-4 w-full">
+                    <div class="text-center">
+                        <p class="text-2xl font-bold">がん細胞</p>
+                        <div class="text-8xl">🦠</div>
+                    </div>
+                    <div class="text-4xl font-bold text-blue-500 animate-pulse">&rarr;</div>
+                    <div class="text-center p-4 bg-yellow-100 rounded-full border-4 border-yellow-300">
+                        <p class="text-xl font-bold text-yellow-800">大量の乳酸を放出</p>
+                        <p class="text-sm">(ワールブルク効果)</p>
+                    </div>
+                     <div class="text-4xl font-bold text-blue-500 animate-pulse">&rarr;</div>
+                     <div class="text-center p-6 bg-red-200 rounded-xl shadow-inner w-1/3">
+                        <p class="text-2xl font-bold text-red-800">腫瘍微小環境(TME)</p>
+                        <p class="text-4xl font-black text-red-600">pH 6.5</p>
+                        <p class="text-sm text-red-700">がんの周囲だけが酸性化</p>
+                     </div>
+                 </div>
+                 <p>問題は全身ではなく、がん細胞自身が作り出す「酸性の局所環境」にあります。</p>
+            </div>
+            
+            <!-- Slide 4: Consequences of Acidic TME -->
+            <div class="slide">
+                <h2>酸性環境が、がんを凶悪化させる</h2>
+                <div class="infographic-grid">
+                    <div class="info-card">
+                        <div class="icon">🛡️</div>
+                        <h3>免疫抑制</h3>
+                        <p>免疫細胞の攻撃を無力化</p>
+                    </div>
+                    <div class="info-card">
+                        <div class="icon">🚀</div>
+                        <h3>転移・浸潤の促進</h3>
+                        <p>周囲への侵入を助ける</p>
+                    </div>
+                    <div class="info-card">
+                        <div class="icon">💊</div>
+                        <h3>治療抵抗性</h3>
+                        <p>抗がん剤や放射線の効果を減弱</p>
+                    </div>
+                </div>
+                 <p>この酸性の「盾」が、がんの増殖と悪性化を強力に後押ししています。</p>
+            </div>
+
+            <!-- Slide 5: Hydrogen's Role - Debunking Alkalization -->
+            <div class="slide">
+                <h2>では水素は？<br>アルカリ化はしません。</h2>
+                <div class="flex items-center justify-center gap-8 w-full">
+                    <div class="text-center p-6 bg-blue-100 rounded-lg w-2/5">
+                        <p class="text-2xl font-bold text-blue-800">分子状水素 (H₂)</p>
+                        <p class="text-gray-600">化学的に中性のガス</p>
+                    </div>
+                    <div class="text-4xl font-bold text-gray-400">&ne;</div>
+                     <div class="text-center p-6 bg-red-100 rounded-lg w-2/5">
+                        <p class="text-2xl font-bold text-red-800">アルカリ化剤</p>
+                        <p class="text-gray-600">体液のpHを直接変化させない</p>
+                    </div>
+                </div>
+                <p>水素は体液のpHを直接変えるのではなく、全く異なるアプローチで作用します。</p>
+            </div>
+            
+            <!-- Slide 6: Hydrogen's True Mechanisms -->
+            <div class="slide">
+                <h2>水素の真実：3つの多角的な攻撃</h2>
+                 <div class="infographic-grid">
+                    <div class="info-card">
+                        <div class="icon">🔥</div>
+                        <h3>選択的抗酸化</h3>
+                        <p>悪玉活性酸素だけを無害化</p>
+                    </div>
+                    <div class="info-card">
+                        <div class="icon">🌿</div>
+                        <h3>抗炎症作用</h3>
+                        <p>がんの進行を煽る炎症を抑制</p>
+                    </div>
+                    <div class="info-card">
+                        <div class="icon">⚙️</div>
+                        <h3>シグナル調節</h3>
+                        <p>がんの増殖や生存の命令系統を妨害</p>
+                    </div>
+                </div>
+                <p>水素は、がんが増殖しにくい体内環境を、生物学的なレベルで作り出します。</p>
+            </div>
+
+            <!-- Slide 7: Reawakening the Immune System -->
+            <div class="slide">
+                <h2>最重要作用：免疫システムの再覚醒</h2>
+                <div class="flex items-center justify-center gap-8 w-full">
+                    <div class="text-center p-6 rounded-lg bg-gray-200">
+                        <p class="text-xl font-bold text-gray-700">Before: 疲弊したT細胞</p>
+                        <div class="text-7xl opacity-50">😴</div>
+                        <p class="text-red-600 font-semibold">酸性TMEで機能不全</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-lg font-bold text-blue-600">水素(H₂)</p>
+                        <div class="text-5xl font-bold text-blue-500 animate-pulse">&rarr;</div>
+                    </div>
+                    <div class="text-center p-6 rounded-lg bg-green-200">
+                        <p class="text-xl font-bold text-green-800">After: 回復したT細胞</p>
+                         <div class="text-7xl">💪</div>
+                        <p class="text-green-700 font-semibold">がんへの攻撃力を取り戻す</p>
+                    </div>
+                </div>
+                 <p>水素は、酸性環境で眠っていた免疫細胞を目覚めさせ、再び戦える状態にします。</p>
+            </div>
+
+            <!-- Slide 8: Clinical Evidence -->
+            <div class="slide">
+                <h2>臨床データの証拠</h2>
+                <div style="width: 80%; max-width: 700px; height: 350px; margin: 0 auto;">
+                    <canvas id="clinicalChart"></canvas>
+                </div>
+                <p>実際の臨床研究で、標準治療と併用した際のQOL改善や副作用軽減効果が報告されています。</p>
+            </div>
+            
+            <!-- Slide 9: A Double-Edged Sword -->
+            <div class="slide">
+                <h2>注意点：両刃の剣としての側面</h2>
+                <div class="p-8 rounded-xl bg-yellow-100 border-4 border-yellow-400 w-full max-w-2xl">
+                    <h3 class="text-3xl font-black text-yellow-800 mb-4">警告</h3>
+                    <p class="text-yellow-900 text-lg">ごく一部の研究で、特定のタイプのがん細胞の増殖を促進したという報告もあります。がんの種類や性質によって効果が異なる可能性があり、自己判断での使用は危険です。</p>
+                </div>
+            </div>
+
+            <!-- Slide 10: Conclusion -->
+            <div class="slide" style="background-color: #1e3a8a; color: white;">
+                <h2 style="color: white;">結論：水素とがんの科学的真実</h2>
+                <ul class="text-left text-xl list-disc pl-8 space-y-4 max-w-3xl">
+                    <li>全身が「酸性」になるは誤解。問題はがん局所の「酸性TME」。</li>
+                    <li>水素はpHを変えない。生物学的なメカニズムで作用する。</li>
+                    <li>最重要作用は「免疫の再覚醒」。標準治療の補助として有望。</li>
+                    <li class="font-bold text-yellow-300">必ず主治医に相談し、専門家の指導のもとで検討することが不可欠。</li>
+                </ul>
+            </div>
+        </div>
+
+        <button id="prevBtn" class="nav-button">&lt;</button>
+        <button id="nextBtn" class="nav-button">&gt;</button>
+        <div id="pagination" class="pagination">1 / 10</div>
+    </div>
+
+    <div class="narration-box">
+        <p id="narrationText"></p>
+    </div>
+
+    <script>
+        const slider = document.querySelector('.slider');
+        const slides = document.querySelectorAll('.slide');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const pagination = document.getElementById('pagination');
+        const narrationText = document.getElementById('narrationText');
+
+        let currentIndex = 0;
+        const totalSlides = slides.length;
+
+        const narrations = [
+            `皆さんは、「体が酸性に傾くと、がんになりやすい」という話を聞いたことはありませんか？今回は、広く信じられているこの俗説に、科学のメスを入れ、がん研究の最前線で明らかになっている「pHと水素」の本当の関係について、分かりやすく解説していきます。`,
+            `まず、大前提となる誤解を解いておきましょう。私たちの体には、ホメオスタシスという強力な恒常性維持機能が備わっています。これにより、血液のpHは7.4前後の非常に狭い弱アルカリ性の範囲に厳密に保たれており、食事や生活習慣で全身が「酸性体質」になるということは、科学的にはありえません。`,
+            `では、がんと酸性度の関係は全くの嘘なのでしょうか？いいえ、そうではありません。問題は全身ではなく、もっと局所的な場所で起きています。がん細胞は、ワールブルク効果という特殊なエネルギー代謝によって、大量の乳酸を細胞の外に放出します。これにより、がん細胞の周囲だけがpH6.5前後の強い酸性状態になるのです。これが「腫瘍微小環境」、通称TMEと呼ばれる、真の戦場です。`,
+            `この局所的な酸性環境は、がん細胞にとって非常に都合の良いものです。まず、がんを攻撃するはずの免疫細胞の働きを鈍らせ、無力化します。さらに、がん細胞が周囲の組織に侵入し、他の臓器へ転移する手助けをします。そして、抗がん剤や放射線といった標準治療の効果をも弱めてしまうのです。酸性TMEは、がんを悪性化させる強力な要因となっています。`,
+            `ここで、水素の役割に目を向けてみましょう。「水素は体液をアルカリ性に戻してくれるのでは？」と考える方がいるかもしれませんが、それは誤解です。分子状水素、H2は、化学的に中性のガスであり、体液のpHを直接変化させることはありません。水素の役割は、アルカリ化という単純なものではなく、もっと複雑で巧妙なメカニズムによるものなのです。`,
+            `水素の真の力は、その多面的な生物学的作用にあります。一つ目は、選択的抗酸化作用。体内で特に有害な悪玉活性酸素だけを選んで無害化します。二つ目は、抗炎症作用。がんの増殖を後押しする慢性的な炎症を抑えます。そして三つ目は、シグナル調節作用。がん細胞の増殖や生存に関わる細胞内の命令系統を直接妨害し、その成長にブレーキをかけるのです。`,
+            `そして、数ある作用の中でも最も注目されているのが、免疫システムへの影響です。酸性のTMEによって疲弊し、眠ってしまったT細胞などの免疫細胞。水素は、これらの免疫細胞の代謝機能を回復させ、再びがん細胞と戦える状態に「再覚醒」させる可能性が、研究で示されています。これは、免疫療法の効果を高める上でも非常に重要なポイントと考えられています。`,
+            `これらの作用は、机上の空論ではありません。実際の患者さんを対象とした臨床研究も進められています。特に、放射線治療や化学療法といった標準治療と水素を併用することで、治療による倦怠感などの副作用が軽減され、患者さんの生活の質、QOLが改善したというデータが報告されています。これは、水素が標準治療の強力なサポーターとなりうることを示唆しています。`,
+            `しかし、良い話ばかりではありません。水素の効果を議論する上で、非常に重要な注意点があります。ごく一部の基礎研究では、ミトコンドリアの活性が高い特定のタイプのがん細胞に対して、水素が逆に増殖を促進してしまったという報告も存在します。これは、水素の効果ががんの性質によって異なる「両刃の剣」となりうることを示しており、自己判断での安易な使用は絶対に避けるべきです。`,
+            `それでは、本日のまとめです。全身が酸性になるという俗説は誤りであり、問題はがんが作る局所的な酸性環境「TME」にあります。水素は、pHを変えるのではなく、免疫の再覚醒など、生物学的なメカニズムを通じて、このTMEがもたらす悪影響に対抗します。標準治療の補助療法として非常に有望ですが、その効果は文脈依存的でもあります。水素療法を検討する際は、必ず専門家である主治医に相談し、その指導のもとで行うことが絶対条件です。`
+        ];
+
+        function updateSlider() {
+            slider.style.transform = `translateX(-${currentIndex * 100}%)`;
+            pagination.textContent = `${currentIndex + 1} / ${totalSlides}`;
+            narrationText.textContent = narrations[currentIndex];
+            if (currentIndex === 7) { // Clinical data slide
+                renderChart();
+            }
+        }
+        
+        let chartInstance = null;
+        function renderChart() {
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+            const ctx = document.getElementById('clinicalChart').getContext('2d');
+            chartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['QOLスコア改善', '副作用(骨髄障害)軽減'],
+                    datasets: [{
+                        label: 'プラセボ/対照群',
+                        data: [0, 100],
+                        backgroundColor: '#cbd5e1',
+                        borderColor: '#94a3b8',
+                        borderWidth: 1
+                    }, {
+                        label: '水素併用群',
+                        data: [118, 48],
+                        backgroundColor: '#60a5fa',
+                        borderColor: '#2563eb',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: { display: true, text: '相対値 (プラセボ/対照群 = 基準値)' }
+                        }
+                    },
+                    plugins: {
+                        title: { display: true, text: '標準治療との併用における臨床データ例' },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) { label += ': '; }
+                                    if (context.parsed.x !== null) {
+                                        if(context.datasetIndex === 0 && context.dataIndex === 0) label += '低下(-8.8%)';
+                                        else if(context.datasetIndex === 1 && context.dataIndex === 0) label += '改善(+7.8%)';
+                                        else if(context.datasetIndex === 0 && context.dataIndex === 1) label += '発生率 40.9%';
+                                        else if(context.datasetIndex === 1 && context.dataIndex === 1) label += '発生率 13.0%';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+
+        nextBtn.addEventListener('click', () => {
+            currentIndex = (currentIndex + 1) % totalSlides;
+            updateSlider();
+        });
+
+        prevBtn.addEventListener('click', () => {
+            currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+            updateSlider();
+        });
+
+        // Initial setup
+        updateSlider();
+    </script>
+</body>
+</html>
