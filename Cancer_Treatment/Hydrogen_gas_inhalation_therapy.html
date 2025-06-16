@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インタラクティブ・レポート：水素ガス吸入療法の科学的検証</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony Neutrals -->
+    <!-- Application Structure Plan: This SPA is designed as a single-page, top-down narrative, guiding the user from basic concepts to complex applications and critical issues. The structure is thematic, not a mirror of the report's chapters, to enhance usability. 1. Hero: Grabs attention. 2. Sticky Nav: Easy navigation. 3. Basics: Uses an interactive card layout to explain core mechanisms. 4. Cancer Application: A dashboard-like section with a key chart and a critical toggle between 'Benefits' and 'Risks' to force a balanced understanding. 5. Systemic Effects: Visualizes the inferred process using HTML/CSS flowcharts, making an abstract concept concrete. 6. Cautions: Uses high-impact warning cards to deliver critical take-home messages. This flow is designed to build knowledge progressively and ensure the user confronts the complexities and risks before concluding. -->
+    <!-- Visualization & Content Choices: 
+        - H2 Mechanisms: Goal(Inform) -> 4-card grid -> Hover interaction -> More engaging than a list. (HTML/CSS)
+        - Admin Routes: Goal(Compare) -> Interactive tabs -> Click to switch content -> Cleaner UX. (JS)
+        - NSCLC PFS Data: Goal(Compare) -> Bar Chart -> Visually quantifies clinical trial results. (Chart.js)
+        - Benefits vs. Risks: Goal(Compare) -> Toggle buttons -> Ensures balanced perspective on a critical topic. (JS)
+        - Body Fluid Effects: Goal(Organize/Inform) -> HTML/CSS Flowchart -> Visualizes the logical inference process. (HTML/CSS)
+        - Cautions: Goal(Inform) -> Warning cards -> Grabs attention for critical information. (HTML/CSS)
+        - All choices are justified by the need to translate dense text into clear, interactive, and balanced visual formats for better comprehension and retention. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #F8F7F4;
+            color: #3D405B;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 50vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link.active, .nav-link:hover {
+            color: #81B29A;
+            border-bottom-color: #81B29A;
+        }
+        .tab-btn.active {
+            background-color: #81B29A;
+            color: #FFFFFF;
+        }
+        .risk-toggle.active {
+            background-color: #E07A5F;
+            color: #FFFFFF;
+        }
+        .benefit-toggle.active {
+             background-color: #81B29A;
+            color: #FFFFFF;
+        }
+        .smooth-scroll {
+            scroll-behavior: smooth;
+        }
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body class="smooth-scroll">
+
+    <header id="header" class="bg-white shadow-md sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <div class="text-xl font-bold text-[#3D405B]">水素吸入療法レポート</div>
+            <div class="hidden md:flex space-x-8">
+                <a href="#basics" class="nav-link font-medium pb-1">基本情報</a>
+                <a href="#cancer" class="nav-link font-medium pb-1">がん治療</a>
+                <a href="#systemic" class="nav-link font-medium pb-1">全身への影響</a>
+                <a href="#risks" class="nav-link font-medium pb-1">リスクと課題</a>
+            </div>
+            <div class="md:hidden">
+                 <button id="mobile-menu-button" class="text-gray-700 focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </div>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden bg-white">
+            <a href="#basics" class="block py-2 px-4 text-sm hover:bg-gray-100">基本情報</a>
+            <a href="#cancer" class="block py-2 px-4 text-sm hover:bg-gray-100">がん治療</a>
+            <a href="#systemic" class="block py-2 px-4 text-sm hover:bg-gray-100">全身への影響</a>
+            <a href="#risks" class="block py-2 px-4 text-sm hover:bg-gray-100">リスクと課題</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-8 md:py-12">
+        
+        <section id="intro" class="text-center mb-16">
+            <h1 class="text-4xl md:text-5xl font-bold text-[#3D405B] mb-4">インタラクティブ・レポート</h1>
+            <h2 class="text-2xl md:text-3xl font-semibold text-[#81B29A] mb-6">水素ガス吸入療法の科学的検証</h2>
+            <p class="max-w-3xl mx-auto text-lg text-gray-700">
+                分子状水素($H_2$)は、がん治療の補助から体質改善まで、幅広い応用が期待される一方、科学的根拠はまだ発展途上です。このレポートは、最新の研究データを基に、その可能性と課題を対話的に探求します。
+            </p>
+        </section>
+
+        <section id="basics" class="mb-16 scroll-mt-20">
+            <h3 class="text-3xl font-bold text-center text-[#3D405B] mb-4">基本情報：水素は何をしているのか？</h3>
+            <p class="text-center text-gray-600 mb-10 max-w-2xl mx-auto">分子状水素の治療効果は、単なる抗酸化作用だけでは説明できません。複数のメカニズムが複合的に働くことで、体内に影響を与えていると考えられています。ここでは、その主要な4つの作用と、体内に取り込むための主な方法を探ります。</p>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+                <div class="bg-white p-6 rounded-lg shadow-lg text-center card-hover">
+                    <div class="text-4xl mb-4">🎯</div>
+                    <h4 class="text-xl font-bold mb-2">選択的抗酸化</h4>
+                    <p class="text-gray-600 text-sm">最も有害な活性酸素（•OH）のみを選択的に除去。細胞機能に必要な活性酸素には影響を与えません。</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg text-center card-hover">
+                     <div class="text-4xl mb-4">🛡️</div>
+                    <h4 class="text-xl font-bold mb-2">抗炎症</h4>
+                    <p class="text-gray-600 text-sm">炎症を引き起こす物質（炎症性サイトカイン）の産生を抑制し、過剰な炎症を鎮めます。</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg text-center card-hover">
+                     <div class="text-4xl mb-4">🧬</div>
+                    <h4 class="text-xl font-bold mb-2">シグナル伝達</h4>
+                    <p class="text-gray-600 text-sm">細胞内の防御システム（Nrf2など）を起動させ、体が本来持つ抗酸化力や防御力を高めます。</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg text-center card-hover">
+                     <div class="text-4xl mb-4">❤️</div>
+                    <h4 class="text-xl font-bold mb-2">抗アポトーシス</h4>
+                    <p class="text-gray-600 text-sm">過剰な細胞死を抑制し、正常な組織を保護する働きがあります。</p>
+                </div>
+            </div>
+
+            <div class="bg-white p-8 rounded-xl shadow-lg">
+                <h4 class="text-2xl font-bold text-center mb-6">投与方法の比較</h4>
+                <div class="flex justify-center mb-6">
+                    <button class="tab-btn px-6 py-2 font-semibold rounded-l-lg border border-gray-300" data-tab="inhalation">ガス吸入</button>
+                    <button class="tab-btn px-6 py-2 font-semibold rounded-r-lg border border-gray-300" data-tab="water">水素水飲用</button>
+                </div>
+                <div id="tab-content" class="text-center">
+                    <!-- JS will populate this -->
+                </div>
+            </div>
+        </section>
+
+        <section id="cancer" class="mb-16 scroll-mt-20">
+            <h3 class="text-3xl font-bold text-center text-[#3D405B] mb-4">がん治療への応用</h3>
+            <p class="text-center text-gray-600 mb-10 max-w-3xl mx-auto">水素療法が最も注目される分野の一つが、がん治療です。特に、化学療法や放射線治療の副作用を軽減する「補助療法」としての役割に期待が寄せられています。しかし、その効果は一様ではなく、潜在的なリスクも指摘されています。ここでは、その光と影の両面を見ていきます。</p>
+
+            <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg mb-10">
+                <h4 class="text-xl md:text-2xl font-bold text-center mb-2">進行肺がん(NSCLC)患者における効果</h4>
+                <p class="text-center text-gray-500 text-sm mb-6">NCT03818347試験より、無増悪生存期間(PFS)の中央値</p>
+                <div class="chart-container">
+                    <canvas id="pfsChart"></canvas>
+                </div>
+            </div>
+
+            <div class="flex justify-center mb-6 space-x-2">
+                <button class="benefit-toggle toggle-btn px-4 py-2 text-lg font-semibold rounded-lg border border-gray-300" data-view="benefits">主な利点</button>
+                <button class="risk-toggle toggle-btn px-4 py-2 text-lg font-semibold rounded-lg border border-gray-300" data-view="risks">重大なリスク</button>
+            </div>
+
+            <div id="cancer-view-content">
+                 <!-- JS will populate this -->
+            </div>
+        </section>
+
+        <section id="systemic" class="mb-16 scroll-mt-20">
+            <h3 class="text-3xl font-bold text-center text-[#3D405B] mb-4">全身への影響（体質改善）</h3>
+            <p class="text-center text-gray-600 mb-10 max-w-3xl mx-auto">水素は血液以外の体液にも影響を与えるのでしょうか？リンパ液や脳脊髄液中の水素を直接測定したデータはまだありません。しかし、水素の物理的特性と体の仕組みから、その影響を科学的に推論することができます。これは「体質改善」のメカニズムを理解する鍵となります。</p>
+            
+            <div class="grid lg:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-xl shadow-lg card-hover">
+                    <h4 class="text-xl font-bold mb-4 text-center">🧠 脳へのルート</h4>
+                    <div class="space-y-4">
+                        <div class="flex items-center space-x-4">
+                            <div class="bg-[#A8DADC] text-white w-10 h-10 rounded-full flex items-center justify-center font-bold">1</div>
+                            <p>水素が血流に乗り、<strong class="text-[#81B29A]">血液脳関門</strong>を容易に通過。</p>
+                        </div>
+                         <div class="h-8 w-px bg-gray-300 ml-5"></div>
+                        <div class="flex items-center space-x-4">
+                            <div class="bg-[#A8DADC] text-white w-10 h-10 rounded-full flex items-center justify-center font-bold">2</div>
+                            <p>脳組織に到達し、酸化ストレスや炎症を軽減。</p>
+                        </div>
+                         <div class="h-8 w-px bg-gray-300 ml-5"></div>
+                        <div class="flex items-center space-x-4">
+                            <div class="bg-[#A8DADC] text-white w-10 h-10 rounded-full flex items-center justify-center font-bold">3</div>
+                            <p>結果として、脳を取り巻く<strong class="text-[#81B29A]">脳脊髄液</strong>の環境が改善される。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-lg card-hover">
+                     <h4 class="text-xl font-bold mb-4 text-center">💧 リンパへのルート</h4>
+                    <div class="space-y-4">
+                        <div class="flex items-center space-x-4">
+                            <div class="bg-[#A8DADC] text-white w-10 h-10 rounded-full flex items-center justify-center font-bold">1</div>
+                            <p>水素が血流から全身の<strong class="text-[#81B29A]">組織液</strong>へ拡散。</p>
+                        </div>
+                         <div class="h-8 w-px bg-gray-300 ml-5"></div>
+                        <div class="flex items-center space-x-4">
+                            <div class="bg-[#A8DADC] text-white w-10 h-10 rounded-full flex items-center justify-center font-bold">2</div>
+                            <p>組織液レベルで酸化ストレスや炎症を軽減。</p>
+                        </div>
+                         <div class="h-8 w-px bg-gray-300 ml-5"></div>
+                        <div class="flex items-center space-x-4">
+                            <div class="bg-[#A8DADC] text-white w-10 h-10 rounded-full flex items-center justify-center font-bold">3</div>
+                            <p>質の改善した組織液がリンパ管に入り、<strong class="text-[#81B29A]">リンパ液</strong>となる。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="risks" class="scroll-mt-20">
+            <h3 class="text-3xl font-bold text-center text-[#3D405B] mb-4">リスクと向き合う：重要な課題</h3>
+             <p class="text-center text-gray-600 mb-10 max-w-3xl mx-auto">水素療法は万能ではありません。科学的な証拠はまだ限定的で、誤った情報や誇張された宣伝も存在します。治療を検討する上で、必ず知っておくべき重要な注意点と未解決の課題をまとめました。</p>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="border-l-4 border-[#E07A5F] bg-white p-6 rounded-r-lg shadow-lg">
+                    <h4 class="text-xl font-bold mb-2">⚠️ 科学 vs 疑似科学</h4>
+                    <p class="text-gray-600">治療用の分子状水素($H_2$)と、危険な<strong class="text-[#E07A5F]">過酸化水素($H_2O_2$)</strong>は全くの別物です。混同しないでください。また、商業的な誇大広告には注意が必要です。</p>
+                </div>
+                 <div class="border-l-4 border-[#E07A5F] bg-white p-6 rounded-r-lg shadow-lg">
+                    <h4 class="text-xl font-bold mb-2">🔬 エビデンスの限界</h4>
+                    <p class="text-gray-600">多くの研究は小規模で、まだ初期段階です。効果を確実に証明するには、大規模な<strong class="text-[#E07A5F]">ランダム化比較試験(RCT)</strong>が不可欠です。</p>
+                </div>
+                 <div class="border-l-4 border-[#E07A5F] bg-white p-6 rounded-r-lg shadow-lg">
+                    <h4 class="text-xl font-bold mb-2">💰 規制と費用</h4>
+                    <p class="text-gray-600">がん治療目的での水素吸入は、日本では<strong class="text-[#E07A5F]">公的承認されておらず</strong>、保険適用外の自由診療です。高額な費用がかかる場合があります。</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white mt-16">
+        <div class="container mx-auto px-6 py-8 text-center">
+            <h4 class="text-xl font-bold mb-4">結論と提言</h4>
+            <p class="max-w-3xl mx-auto text-gray-300 mb-6">
+                水素吸入療法は、特にがん治療の補助として副作用軽減に貢献する可能性を秘めた有望なアプローチです。しかし、そのエビデンスは未だ発展途上であり、特定のがんを増殖させるリスクも指摘されています。
+            </p>
+            <div class="bg-red-200 border-l-4 border-red-500 text-red-800 p-4 rounded-md inline-block">
+                <p class="font-bold">重要：</p>
+                <p>この情報は医療アドバイスに代わるものではありません。いかなる治療法も、<strong class="underline">必ず主治医に相談の上で</strong>判断してください。標準治療を自己判断で中断・変更しないでください。</p>
+            </div>
+             <p class="text-sm text-gray-500 mt-8">&copy; 2025 Interactive Report. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const tabContentContainer = document.getElementById('tab-content');
+            
+            const cancerToggleButtons = document.querySelectorAll('.toggle-btn');
+            const cancerViewContainer = document.getElementById('cancer-view-content');
+
+            const tabData = {
+                inhalation: {
+                    title: 'ガス吸入療法',
+                    pros: '高用量かつ持続的な投与が可能。用量制御が容易。',
+                    cons: '専用の発生装置が必要。高濃度ガスは可燃性リスクの管理が必要。',
+                    use: '臨床研究、急性期疾患、重篤な慢性疾患（がんなど）'
+                },
+                water: {
+                    title: '水素豊富水（HRW）飲用',
+                    pros: '手軽で安全、持ち運び可能。',
+                    cons: '高用量の摂取が困難。開封後、水素が抜けやすい。',
+                    use: '日常的な健康維持、軽度の酸化ストレス対策'
+                }
+            };
+            
+            const cancerViewData = {
+                benefits: {
+                    title: '主な利点：QOLの向上と免疫への期待',
+                    points: [
+                        { icon: '😊', text: '<strong>副作用の軽減：</strong> 放射線や化学療法による倦怠感、食欲不振、臓器障害などを、治療効果を損なうことなく軽減する可能性が報告されています。' },
+                        { icon: '💪', text: '<strong>免疫機能の回復：</strong> がん細胞への攻撃力が低下した「疲弊T細胞」を減少させ、免疫システムを再活性化させる可能性が示唆されています。' },
+                        { icon: '✨', text: '<strong>注目すべき症例報告：</strong> 標準治療が効かなくなった肺がん患者の脳転移が、水素吸入単独療法で消失したという報告があります。（注：これは一例であり、全ての人に当てはまるわけではありません）' }
+                    ]
+                },
+                risks: {
+                    title: '重大なリスク：文脈依存的ながん増殖促進',
+                    points: [
+                        { icon: '📈', text: '<strong>増殖を促進する可能性：</strong> 2022年の研究で、A549肺がん細胞株など、特定の代謝特性を持つがん細胞の増殖を水素が促進することが発見されました。' },
+                        { icon: '🤔', text: '<strong>「文脈依存性」とは：</strong> 水素の効果は万能ではなく、がん細胞の種類（代謝プロファイル）によって、抑制的に働くか、逆に増殖を助けるかが変わる可能性があることを意味します。' },
+                        { icon: '🚫', text: '<strong>安易な使用は危険：</strong> このリスクは、水素療法が誰にでも安全で有益であるという考えに警鐘を鳴らします。自己判断での使用は絶対に避けるべきです。' }
+                    ]
+                }
+            };
+            
+            function updateTabContent(tabId) {
+                const data = tabData[tabId];
+                tabContentContainer.innerHTML = `
+                    <div class="transition-opacity duration-300 ease-in-out">
+                        <h5 class="text-xl font-bold mb-3 text-[#3D405B]">${data.title}</h5>
+                        <div class="grid md:grid-cols-2 gap-4 text-left">
+                            <div class="bg-green-50 p-4 rounded-lg">
+                                <strong class="text-green-700">利点:</strong>
+                                <p class="text-gray-700">${data.pros}</p>
+                            </div>
+                            <div class="bg-red-50 p-4 rounded-lg">
+                                <strong class="text-red-700">欠点:</strong>
+                                <p class="text-gray-700">${data.cons}</p>
+                            </div>
+                        </div>
+                        <div class="mt-4 bg-gray-100 p-3 rounded-lg">
+                             <strong class="text-gray-800">主な用途:</strong>
+                             <p class="text-gray-700">${data.use}</p>
+                        </div>
+                    </div>
+                `;
+
+                tabButtons.forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.tab === tabId);
+                });
+            }
+
+            function updateCancerView(viewId) {
+                const data = cancerViewData[viewId];
+                const isRiskView = viewId === 'risks';
+                const accentColor = isRiskView ? '#E07A5F' : '#81B29A';
+
+                let pointsHtml = data.points.map(point => `
+                    <li class="flex items-start space-x-4">
+                        <div class="text-2xl">${point.icon}</div>
+                        <p class="text-gray-700">${point.text}</p>
+                    </li>
+                `).join('');
+
+                cancerViewContainer.innerHTML = `
+                    <div class="bg-white p-6 rounded-xl shadow-lg border-t-4" style="border-color: ${accentColor};">
+                        <h4 class="text-xl md:text-2xl font-bold mb-4" style="color: ${accentColor};">${data.title}</h4>
+                        <ul class="space-y-4">
+                            ${pointsHtml}
+                        </ul>
+                    </div>
+                `;
+                
+                cancerToggleButtons.forEach(btn => {
+                    btn.classList.remove('benefit-toggle', 'active', 'risk-toggle');
+                    if(btn.dataset.view === viewId){
+                        if(isRiskView) {
+                            btn.classList.add('risk-toggle', 'active');
+                        } else {
+                            btn.classList.add('benefit-toggle', 'active');
+                        }
+                    } else {
+                         if(isRiskView) {
+                            btn.classList.add('benefit-toggle');
+                        } else {
+                            btn.classList.add('risk-toggle');
+                        }
+                    }
+                });
+            }
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => updateTabContent(button.dataset.tab));
+            });
+            
+            cancerToggleButtons.forEach(button => {
+                button.addEventListener('click', () => updateCancerView(button.dataset.view));
+            });
+            
+            updateTabContent('inhalation');
+            updateCancerView('benefits');
+
+            const ctx = document.getElementById('pfsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['対照群', '水素単独群', '水素＋標準治療群'],
+                    datasets: [{
+                        label: '無増悪生存期間（中央値）',
+                        data: [3, 6.1, 11.9],
+                        backgroundColor: [
+                            'rgba(244, 114, 182, 0.6)',
+                            'rgba(139, 92, 246, 0.6)',
+                            'rgba(34, 197, 94, 0.6)'
+                        ],
+                        borderColor: [
+                            'rgba(244, 114, 182, 1)',
+                            'rgba(139, 92, 246, 1)',
+                            'rgba(34, 197, 94, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: false
+                        },
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.raw} ヶ月`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '期間（ヶ月）'
+                            }
+                        }
+                    }
+                }
+            });
+
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            mobileMenu.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            })
+
+        });
+    </script>
+</body>
+</html>

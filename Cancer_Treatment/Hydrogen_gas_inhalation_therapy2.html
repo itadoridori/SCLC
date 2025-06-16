@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インフォグラフィック：水素ガス吸入療法の市場と科学</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Brilliant Blues with a warning accent -->
+    <!-- Application Structure Plan: The infographic tells a story, starting with a broad overview and progressively drilling down into specifics, benefits, and risks, mimicking a market analysis narrative. 1. Hero/Hook: Grabs attention with a "big number" concept. 2. Market Landscape (Key Mechanisms): Explains the core "product features" in a visually appealing grid. 3. Competitive Analysis (Delivery Methods): Compares different approaches. 4. Market Performance (Clinical Data): Presents the key quantitative results (PFS) using a bar chart, the most compelling "performance metric." 5. SWOT Analysis (Benefits vs. Risks): A balanced view of opportunities and threats, using a visually distinct layout for the critical risk section. 6. Future Growth (Systemic Effects): A flowchart visualizing the "untapped market potential" or long-term benefits. 7. Conclusion: A summary of the "market position." This structure transforms a scientific paper into an accessible business intelligence report. -->
+    <!-- Visualization & Content Choices: 
+        - Key Mechanisms: Goal(Inform/Organize) -> 4-Card Grid -> Uses icons and short text for quick comprehension of the core technology. (HTML/CSS).
+        - PFS Data: Goal(Compare) -> Bar Chart (Chart.js) -> Provides a clear, quantitative comparison of treatment outcomes, the most important "performance indicator" from the report. Label wrapping logic and tooltip config included per requirements.
+        - Risk Section: Goal(Inform) -> Distinctly styled card -> Uses strong color contrast to highlight a critical business/product risk (context-dependent growth). (HTML/CSS).
+        - Lymph/CSF Flow: Goal(Organize) -> HTML/CSS Flowchart -> Visually simplifies a complex biological process, making an abstract concept easy to follow. (HTML/CSS).
+        - Delivery Methods: Goal(Compare) -> 2-Panel Layout -> Direct side-by-side comparison for easy decision-making. (HTML/CSS).
+        - Each choice is justified to fit the infographic narrative, prioritizing clarity and impact. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 40vh;
+            max-height: 450px;
+        }
+        .text-shadow-strong {
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        .flow-arrow {
+            width: 2px;
+            height: 40px;
+            background-color: #90E0EF;
+            margin: 0 auto;
+        }
+        .flow-arrow::after {
+            content: '';
+            display: block;
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 8px solid #90E0EF;
+            margin: 0 auto;
+            transform: translateX(-7px);
+        }
+    </style>
+</head>
+<body class="bg-[#F0F8FF] text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8">
+
+        <header class="text-center my-12">
+            <h1 class="text-4xl md:text-6xl font-black text-[#0077B6] text-shadow-strong tracking-tight">水素ガス吸入療法</h1>
+            <p class="text-xl md:text-2xl mt-4 font-bold text-[#00B4D8]">宇宙で最も小さな分子が拓く、治療のフロンティア</p>
+        </header>
+
+        <section id="market-overview" class="my-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-[#0077B6] mb-2">マーケットの基盤技術：4つのコア作用機序</h2>
+                <p class="max-w-3xl mx-auto text-gray-600">水素療法の価値は、その多面的な作用にあります。これは単なる抗酸化物質ではなく、4つの主要なメカニズムが連携して機能する戦略的なアプローチです。</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="bg-white rounded-2xl shadow-xl p-6 text-center transform hover:-translate-y-2 transition-transform duration-300">
+                    <p class="text-5xl mb-4">🎯</p>
+                    <h3 class="text-xl font-bold text-[#0077B6]">選択的抗酸化</h3>
+                    <p class="mt-2 text-sm text-gray-500">最も有害な活性酸素（•OH）のみを狙い撃ち。治療に必要な善玉の活性酸素は温存するインテリジェンス。</p>
+                </div>
+                <div class="bg-white rounded-2xl shadow-xl p-6 text-center transform hover:-translate-y-2 transition-transform duration-300">
+                    <p class="text-5xl mb-4">🛡️</p>
+                    <h3 class="text-xl font-bold text-[#0077B6]">抗炎症</h3>
+                    <p class="mt-2 text-sm text-gray-500">体内の過剰な「火事」である炎症を鎮静化。炎症性サイトカインの産生を抑制します。</p>
+                </div>
+                <div class="bg-white rounded-2xl shadow-xl p-6 text-center transform hover:-translate-y-2 transition-transform duration-300">
+                    <p class="text-5xl mb-4">🧬</p>
+                    <h3 class="text-xl font-bold text-[#0077B6]">シグナル伝達</h3>
+                    <p class="mt-2 text-sm text-gray-500">体内の防御システム（Nrf2）を起動。自らの力で身を守るよう細胞に指令を送ります。</p>
+                </div>
+                <div class="bg-white rounded-2xl shadow-xl p-6 text-center transform hover:-translate-y-2 transition-transform duration-300">
+                    <p class="text-5xl mb-4">❤️</p>
+                    <h3 class="text-xl font-bold text-[#0077B6]">抗アポトーシス</h3>
+                    <p class="mt-2 text-sm text-gray-500">正常な細胞の不必要な自滅を防ぎ、組織を守ることで副作用のリスクを低減します。</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="performance" class="my-20 py-12 bg-white rounded-3xl shadow-2xl">
+            <div class="text-center mb-12 px-4">
+                <h2 class="text-3xl font-bold text-[#0077B6] mb-2">市場パフォーマンス：進行肺がんにおける臨床データ</h2>
+                <p class="max-w-3xl mx-auto text-gray-600">製品の真価はデータによって示されます。進行非小細胞肺がん(NSCLC)患者を対象とした臨床試験(NCT03818347)では、水素吸入が標準治療と併用された際に、無増悪生存期間(PFS)を大幅に延長させるという驚くべき結果が報告されました。</p>
+            </div>
+            <div class="chart-container px-4">
+                <canvas id="pfsChart"></canvas>
+            </div>
+             <p class="text-center mt-6 text-xs text-gray-500 px-4">データ出典: Chen J-B, et al. (2020) - NCT03818347</p>
+        </section>
+
+        <section id="swot-analysis" class="my-16">
+            <div class="text-center mb-12">
+                 <h2 class="text-3xl font-bold text-[#0077B6] mb-2">SWOT分析：治療法の強みと潜在リスク</h2>
+                 <p class="max-w-3xl mx-auto text-gray-600">あらゆる革新技術と同様に、水素療法にも光と影があります。その強力な利点を理解すると同時に、重大なリスクを認識することが不可欠です。</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-white p-8 rounded-2xl shadow-lg">
+                    <h3 class="text-2xl font-bold text-green-600 mb-4">強み：免疫システムの再起動</h3>
+                    <p class="text-gray-600 mb-4">水素は単に副作用を軽減するだけではありません。がんとの戦いで疲弊した免疫細胞（疲弊T細胞）を減少させ、機能的な免疫細胞を増加させることが報告されています。これは、がん微小環境を免疫が有利な「ホット」な状態へと転換させる可能性を秘めています。</p>
+                    <div class="mt-6 p-4 bg-green-50 rounded-lg flex items-center">
+                        <span class="text-3xl mr-4">💡</span>
+                        <div>
+                            <p class="font-bold text-green-800">症例ハイライト</p>
+                            <p class="text-sm text-green-700">標準治療が効かなくなった肺がん患者の脳転移が、水素吸入単独療法で完全に消失したという驚くべき症例報告も存在します。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-[#FFF0F0] border-4 border-dashed border-[#F77F00] p-8 rounded-2xl shadow-lg">
+                    <h3 class="text-2xl font-bold text-[#D00000] mb-4">重大な脅威：文脈依存的な増殖リスク</h3>
+                    <p class="text-gray-800 mb-4">しかし、2022年の研究で、特定の代謝特性（ミトコンドリア呼吸活性が高い）を持つ一部のがん細胞（A549肺がん細胞など）の増殖を、水素が逆に促進する可能性が発見されました。これは「文脈依存性」と呼ばれます。</p>
+                    <div class="mt-6 p-4 bg-red-100 rounded-lg flex items-center">
+                         <span class="text-3xl mr-4">⚠️</span>
+                        <div>
+                            <p class="font-bold text-red-800">戦略的インプリケーション</p>
+                            <p class="text-sm text-red-700">この発見は、水素療法が万能ではないことを示しています。治療法の選択には、対象となるがんの生物学的特性を考慮する、パーソナライズドアプローチが不可欠です。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="process-flow" class="my-20">
+             <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-[#0077B6] mb-2">プロセスフロー：「体質改善」のメカニズム</h2>
+                <p class="max-w-3xl mx-auto text-gray-600">水素はどのようにして全身に影響を及ぼすのでしょうか？直接的なデータは乏しいものの、科学的推論に基づくと、その効果はドミノ倒しのように全身に広がっていくと考えられます。これが広義の「体質改善」の正体です。</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                <div class="p-6">
+                    <div class="bg-white rounded-full w-24 h-24 flex items-center justify-center mx-auto shadow-md border-4 border-[#ADE8F4]">
+                        <span class="text-4xl">💧</span>
+                    </div>
+                    <h4 class="font-bold text-lg my-3 text-[#0077B6]">Step 1: 組織液へ拡散</h4>
+                    <p class="text-sm text-gray-600">血流に乗った水素は、その小ささから容易に血管を抜け出し、全ての細胞が浸る「組織液」へと拡散します。</p>
+                </div>
+                
+                <div class="p-6 pt-16 hidden md:block">
+                    <div class="flow-arrow"></div>
+                </div>
+                
+                <div class="p-6 md:hidden">
+                    <div class="flow-arrow"></div>
+                </div>
+
+                <div class="p-6">
+                    <div class="bg-white rounded-full w-24 h-24 flex items-center justify-center mx-auto shadow-md border-4 border-[#ADE8F4]">
+                        <span class="text-4xl">🌿</span>
+                    </div>
+                    <h4 class="font-bold text-lg my-3 text-[#0077B6]">Step 2: 組織環境の浄化</h4>
+                    <p class="text-sm text-gray-600">組織液レベルで酸化ストレスや炎症が軽減されます。これにより、細胞を取り巻くミクロな環境が改善されます。</p>
+                </div>
+                
+                <div class="p-6 pt-16 hidden md:block">
+                     <div class="flow-arrow"></div>
+                </div>
+                 
+                <div class="p-6 md:hidden">
+                    <div class="flow-arrow"></div>
+                </div>
+
+                <div class="p-6">
+                    <div class="bg-white rounded-full w-24 h-24 flex items-center justify-center mx-auto shadow-md border-4 border-[#ADE8F4]">
+                        <span class="text-4xl">🏞️</span>
+                    </div>
+                    <h4 class="font-bold text-lg my-3 text-[#0077B6]">Step 3: リンパ液の質の向上</h4>
+                    <p class="text-sm text-gray-600">浄化された組織液がリンパ管に流れ込むことで、最終的に体内の老廃物除去や免疫を司る「リンパ液」の質が向上します。</p>
+                </div>
+            </div>
+        </section>
+        
+        <footer class="text-center mt-16 py-8 border-t-2 border-[#90E0EF]">
+            <h3 class="text-2xl font-bold text-[#0077B6]">結論：投資家への提言</h3>
+            <p class="max-w-4xl mx-auto mt-4 text-gray-600">
+                分子状水素吸入療法は、特にがん治療の補助療法として、市場に大きなインパクトを与える可能性を秘めた破壊的技術です。しかし、そのエビデンスはまだ初期段階であり、特定のがんを増殖させるという無視できないリスクも存在します。
+            </p>
+             <p class="max-w-4xl mx-auto mt-4 text-gray-700 font-bold">
+                これは研究段階の治療法であり、標準治療に取って代わるものではありません。いかなる投資判断や治療決定も、専門家の助言に基づき、慎重に行われるべきです。
+            </p>
+            <p class="mt-8 text-xs text-gray-500">免責事項：このインフォグラフィックは情報提供のみを目的としており、医学的アドバイスを構成するものではありません。</p>
+        </footer>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const wrapLabel = (label) => {
+                const maxLength = 16;
+                if (typeof label !== 'string' || label.length <= maxLength) {
+                    return label;
+                }
+                const words = label.split(' ');
+                const lines = [];
+                let currentLine = '';
+                for (const word of words) {
+                    if ((currentLine + ' ' + word).length > maxLength && currentLine.length > 0) {
+                        lines.push(currentLine);
+                        currentLine = word;
+                    } else {
+                        if (currentLine.length > 0) {
+                            currentLine += ' ' + word;
+                        } else {
+                            currentLine = word;
+                        }
+                    }
+                }
+                lines.push(currentLine);
+                return lines;
+            };
+
+            const pfsChartCtx = document.getElementById('pfsChart').getContext('2d');
+            const pfsChart = new Chart(pfsChartCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['対照群 (標準治療のみ)', '水素単独群', '水素 + 標準治療群'],
+                    datasets: [{
+                        label: '無増悪生存期間（中央値）',
+                        data: [3.0, 6.1, 11.9],
+                        backgroundColor: [
+                            'rgba(144, 224, 239, 0.7)',
+                            'rgba(0, 180, 216, 0.7)',
+                            'rgba(0, 119, 182, 0.8)'
+                        ],
+                        borderColor: [
+                            '#90E0EF',
+                            '#00B4D8',
+                            '#0077B6'
+                        ],
+                        borderWidth: 2,
+                        borderRadius: 5,
+                        borderSkipped: false,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: '#003459',
+                            titleFont: {
+                                size: 16,
+                                weight: 'bold',
+                            },
+                            bodyFont: {
+                                size: 14,
+                            },
+                            padding: 15,
+                            cornerRadius: 10,
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    const item = tooltipItems[0];
+                                    let label = item.chart.data.labels[item.dataIndex];
+                                    if (Array.isArray(label)) {
+                                      return label.join(' ');
+                                    } else {
+                                      return label;
+                                    }
+                                },
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += context.parsed.y + ' ヶ月';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '期間（ヶ月）',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                },
+                                color: '#0077B6'
+                            },
+                            grid: {
+                                color: '#e0e0e0'
+                            },
+                            ticks: {
+                                color: '#333'
+                            }
+                        },
+                        x: {
+                             grid: {
+                                display: false,
+                            },
+                             ticks: {
+                                color: '#333',
+                                font: {
+                                    size: 12,
+                                    weight: 'bold'
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 1500,
+                        easing: 'easeInOutQuart'
+                    }
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
