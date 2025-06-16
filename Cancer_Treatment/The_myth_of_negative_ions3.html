@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>「マイナスイオン」の神話と危険な真実：インタラクティブスライド</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #f0f4f8;
+        }
+        .slide {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .slide.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .narration {
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            border-radius: 0 0 0.5rem 0.5rem;
+        }
+        .chart-container {
+            position: relative;
+            margin: auto;
+            height: 40vh;
+            width: 80vw;
+            max-width: 600px;
+            max-height: 400px;
+        }
+        .youtube-prompt-card {
+            background-color: #1e293b;
+            color: #e2e8f0;
+            border-left: 4px solid #f59e0b;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-4">
+
+    <div id="slideshow-container" class="w-full max-w-4xl bg-white rounded-lg shadow-2xl">
+        
+        <!-- Slide Content Area -->
+        <div id="slide-content" class="p-6 md:p-10 min-h-[60vh] flex flex-col justify-center">
+            
+            <!-- Slide 1: Title -->
+            <div id="slide-1" class="slide active">
+                <div class="text-center">
+                    <h1 class="text-3xl md:text-5xl font-bold text-gray-800">「マイナスイオン」の神話と<span class="text-red-600">危険な真実</span></h1>
+                    <p class="mt-4 text-lg md:text-xl text-gray-600">その健康効果、信じて大丈夫？科学が暴く裏側</p>
+                    <div class="mt-8 text-6xl flex justify-center gap-8">
+                        <span title="健康">🌿</span>
+                        <span class="text-gray-400">→</span>
+                        <span class="text-red-500" title="危険">⚠️</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 2: The Promise -->
+            <div id="slide-2" class="slide">
+                <h2 class="text-2xl md:text-3xl font-bold text-center text-blue-800 mb-8">魅力的な約束：「奇跡」の健康効果</h2>
+                <div class="grid md:grid-cols-2 gap-8 text-center">
+                    <div class="p-6 bg-blue-50 rounded-lg">
+                        <div class="text-5xl mb-4">🩹</div>
+                        <h3 class="text-xl font-bold text-blue-900">痛みの緩和</h3>
+                        <p class="mt-2 text-gray-700">体内の有害な「プラスイオン」を中和し、つらい痛みを和らげると謳われます。</p>
+                    </div>
+                    <div class="p-6 bg-green-50 rounded-lg">
+                        <div class="text-5xl mb-4">✨</div>
+                        <h3 class="text-xl font-bold text-green-900">アンチエイジング</h3>
+                        <p class="mt-2 text-gray-700">老化の原因「活性酸素」を抑制し、若々しさを保つとされています。</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 3: The Trick -->
+            <div id="slide-3" class="slide">
+                <h2 class="text-2xl md:text-3xl font-bold text-center text-purple-800 mb-8">言葉のトリック：科学か、マーケティングか？</h2>
+                <div class="overflow-x-auto bg-white p-4 rounded-lg border">
+                     <table class="w-full text-left">
+                        <thead>
+                            <tr class="bg-purple-100">
+                                <th class="p-3 font-bold text-purple-900"></th>
+                                <th class="p-3 font-bold text-gray-700">科学の世界 (陰イオン)</th>
+                                <th class="p-3 font-bold text-red-700">マーケティングの世界 (マイナスイオン)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-t">
+                                <td class="p-3 font-medium">正体</td>
+                                <td class="p-3">明確に定義された原子・分子</td>
+                                <td class="p-3">「空気のビタミン」など曖昧な表現</td>
+                            </tr>
+                            <tr class="border-t bg-gray-50">
+                                <td class="p-3 font-medium">発生原理</td>
+                                <td class="p-3">物理的に説明可能なプロセス</td>
+                                <td class="p-3">「鉱石から自然に放出」など比喩的</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Slide 4: The Truth -->
+            <div id="slide-4" class="slide">
+                <h2 class="text-2xl md:text-3xl font-bold text-center text-indigo-800 mb-8">効果の正体は？：強力な「思い込み」の力</h2>
+                 <div class="p-6 bg-indigo-50 rounded-lg">
+                    <h3 class="text-xl font-bold text-indigo-900 text-center">プラセボ効果の仕組み</h3>
+                    <div class="mt-4 flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-8 text-center">
+                        <div class="p-3 bg-white rounded shadow">製品への「期待」</div>
+                        <div class="text-2xl font-bold text-indigo-400">→</div>
+                        <div class="p-3 bg-white rounded shadow">脳が鎮痛物質を放出</div>
+                        <div class="text-2xl font-bold text-indigo-400">→</div>
+                        <div class="p-3 bg-white rounded shadow font-bold">痛みが和らいだように感じる</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 5: The Danger -->
+            <div id="slide-5" class="slide">
+                <h2 class="text-2xl md:text-3xl font-bold text-center text-red-800 mb-6">隠された危険：見過ごされた放射線リスク</h2>
+                <p class="text-center text-gray-600 mb-6">一部の製品は、国の安全基準を超えるレベルの放射性物質を含んでいます。</p>
+                <div class="chart-container">
+                    <canvas id="radiationChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- Slide 6: Global Alert -->
+            <div id="slide-6" class="slide">
+                <h2 class="text-2xl md:text-3xl font-bold text-center text-orange-800 mb-8">世界からの警告：危険性は国際的な共通認識</h2>
+                <div class="p-4 bg-orange-50 rounded-lg">
+                    <div class="relative w-full max-w-2xl mx-auto p-4 rounded-lg">
+                        <p class="text-center font-bold text-orange-900 mb-4">各国の規制当局が販売禁止やリコールなどの措置を実施</p>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+                            <div class="p-2 bg-white rounded shadow">🇳🇱 オランダ</div>
+                            <div class="p-2 bg-white rounded shadow">🇺🇸 アメリカ</div>
+                            <div class="p-2 bg-white rounded shadow">🇦🇺 オーストラリア</div>
+                            <div class="p-2 bg-white rounded shadow">🇯🇵 日本</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 7: Conclusion -->
+            <div id="slide-7" class="slide">
+                <h2 class="text-2xl md:text-3xl font-bold text-center text-teal-800 mb-8">結論：賢い消費者になるために</h2>
+                <div class="grid md:grid-cols-3 gap-6 text-center">
+                    <div class="p-4 bg-teal-50 rounded-lg">
+                        <div class="text-4xl mb-3">🤔</div>
+                        <h3 class="font-bold text-teal-900">常に疑う</h3>
+                        <p class="text-sm">科学的に聞こえる曖昧な言葉に注意。</p>
+                    </div>
+                    <div class="p-4 bg-red-50 rounded-lg">
+                        <div class="text-4xl mb-3">☢️</div>
+                        <h3 class="font-bold text-red-900">リスクを知る</h3>
+                        <p class="text-sm">鉱石由来の製品は放射線の可能性を認識し、避ける。</p>
+                    </div>
+                    <div class="p-4 bg-blue-50 rounded-lg">
+                        <div class="text-4xl mb-3">🔬</div>
+                        <h3 class="font-bold text-blue-900">根拠を求める</h3>
+                        <p class="text-sm">体験談ではなく、信頼できる科学的証拠を重視。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 8: For YouTube -->
+            <div id="slide-8" class="slide">
+                <h2 class="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-6">YouTube配信用コンテンツ案</h2>
+                <div class="space-y-6 text-sm md:text-base">
+                    <div>
+                        <h3 class="font-bold text-lg text-gray-700 mb-2">タイトル案</h3>
+                        <ul class="list-disc list-inside space-y-1 text-gray-600">
+                            <li>【警告】その健康グッズ、実は危険かも？「マイナスイオン」の正体を科学的に暴く</li>
+                            <li>知らないと損する！「マイナスイオン」製品に隠された放射線リスクと嘘</li>
+                            <li>【暴露】なぜ「マイナスイオン」は体に良いと信じられているのか？専門家が徹底解説</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg text-gray-700 mb-2">概要欄</h3>
+                        <p class="p-3 bg-gray-100 rounded text-gray-600">
+                            「マイナスイオンで健康に！」その言葉、本当に信じて大丈夫？この動画では、ブレスレットや寝具など、身の回りにある「マイナスイオン」製品が謳う健康効果の科学的根拠を徹底検証。実は効果がないどころか、放射線による健康被害のリスクがあるという衝撃の事実を、国内外の公的機関のデータを基に分かりやすく解説します。あなたの健康とお金を守るために、ぜひ最後までご覧ください。
+                        </p>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg text-gray-700 mb-2">サムネイル生成プロンプト (AI画像生成用)</h3>
+                        <ul class="space-y-2">
+                           <li class="youtube-prompt-card p-3 rounded">A health bracelet with a glowing mineral, split in half. One side shows a happy, healthy person (symbol: 🌿). The other side shows a radiation warning symbol (☢️) and a worried face. Big, bold text in Japanese: 「危険な真実」 (Dangerous Truth). High contrast, eye-catching, infographic style.</li>
+                           <li class="youtube-prompt-card p-3 rounded">A magnifying glass examining the word "マイナスイオン" (Minus Ion). Under the lens, instead of ions, there are question marks and skulls. Dramatic lighting, a sense of investigation and revealing a secret. Text: 「その効果、ウソでした」 (That effect was a lie).</li>
+                           <li class="youtube-prompt-card p-3 rounded">A before-and-after comparison. "Before": A person happily wearing a health product. "After": The same person looking shocked, holding a Geiger counter showing a high reading from the product. Text: 「良かれと思ったのに…」 (I thought it was good for me...). Emotional and impactful.</li>
+                        </ul>
+                    </div>
+                     <div>
+                        <h3 class="font-bold text-lg text-gray-700 mb-2">BGM生成プロンプト (Suno AI用)</h3>
+                        <ul class="space-y-2">
+                           <li class="youtube-prompt-card p-3 rounded">An investigative documentary-style track. Starts with a slightly mysterious and hopeful piano melody, gradually builds tension with low strings and a steady, subtle synth beat. Becomes more dramatic and urgent in the middle section, then resolves with a clear, thought-provoking, and slightly cautionary piano theme. Instrumental.</li>
+                           <li class="youtube-prompt-card p-3 rounded">Corporate explainer video background music. Calm, neutral, and clean electric piano with a simple, unobtrusive drum machine beat. Professional, informative, and slightly serious tone, without being overly dramatic. Good for clear narration.</li>
+                           <li class="youtube-prompt-card p-3 rounded">A lo-fi hip hop track with a sense of uncovering a mystery. A slightly melancholic piano loop, vinyl crackle, a boom-bap drum pattern. The mood is inquisitive and a little bit somber, perfect for a deep-dive analysis.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Narration Area -->
+        <div id="narration-area" class="p-4 md:p-6 text-sm md:text-base narration min-h-[15vh]">
+            <p id="narration-text"></p>
+        </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="flex items-center justify-between w-full max-w-4xl mt-4">
+        <button id="prevBtn" class="px-6 py-2 bg-gray-300 text-gray-800 rounded-lg shadow hover:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed">前へ</button>
+        <div id="slide-indicator" class="text-gray-700 font-medium"></div>
+        <button id="nextBtn" class="px-6 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700">次へ</button>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const slides = document.querySelectorAll('.slide');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const slideIndicator = document.getElementById('slide-indicator');
+    const narrationText = document.getElementById('narration-text');
+    let currentSlide = 0;
+    const totalSlides = slides.length;
+
+    const narrations = [
+        "近年、健康への関心の高まりとともに、「マイナスイオン」を謳う製品が数多く販売されています。しかし、その魅力的な効果の裏には、科学的に解明されていない部分や、見過ごされがちな危険が潜んでいます。このプレゼンテーションでは、その神話と真実に迫ります。",
+        "ブレスレットや寝具、さらには空気清浄機まで。これらの製品は、痛みを和らげ、若々しさを保つといった、私たちの誰もが願う効果を約束します。しかし、その約束は本当に果たされるのでしょうか？",
+        "まず、言葉の定義から見ていきましょう。「マイナスイオン」という言葉は、実は科学の世界で厳密に定義されたものではなく、主にマーケティング目的で使われる、いわば「イメージ戦略」の言葉なのです。",
+        "では、なぜ一部の人は「効果があった」と感じるのでしょうか。その多くは、「プラセボ効果」と呼ばれる、心理的な思い込みによるものと考えられています。これは、製品への期待が、脳に痛みを和らげる物質を放出させることで起こる、実在の生物学的現象です。",
+        "問題は、効果がないことだけではありません。より深刻なのは、安全性の問題です。一部の製品からは、国の定める一般公衆の安全基準を超えるレベルの放射線が検出されています。これは、健康になるために買った製品が、逆に健康を害する可能性があることを示しています。",
+        "この危険性は、日本国内だけの問題ではありません。オランダ、アメリカ、オーストラリアなど、世界各国の規制当局が、同様の製品に対して販売禁止やリコールといった厳しい措置を取っており、国際的な問題となっています。",
+        "これらの事実を踏まえ、私たちは賢い消費者として、どのように行動すべきでしょうか。大切なのは、科学的な響きを持つ曖昧な言葉に惑わされず、潜在的なリスクを理解し、個人の体験談よりも信頼できる科学的根拠を重視することです。",
+        "このスライドで解説した内容を、より多くの方に知っていただくためのYouTube配信用コンテンツ案です。タイトルや概要、サムネイルのアイデアを元に、ぜひ情報発信にご協力ください。"
+    ];
+
+    function showSlide(index) {
+        slides.forEach((slide, i) => {
+            slide.classList.toggle('active', i === index);
+        });
+        narrationText.textContent = narrations[index];
+        slideIndicator.textContent = `${index + 1} / ${totalSlides}`;
+        prevBtn.disabled = index === 0;
+        nextBtn.disabled = index === totalSlides - 1;
+
+        if (index === 4) { // Chart slide
+            renderChart();
+        }
+    }
+
+    let chartInstance = null;
+    function renderChart() {
+        if (chartInstance) {
+            chartInstance.destroy();
+        }
+        const ctx = document.getElementById('radiationChart').getContext('2d');
+        chartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['国の安全基準 (年間)', 'ある製品の推定値 (年間)'],
+                datasets: [{
+                    label: '放射線量 (mSv)',
+                    data: [1, 1.22],
+                    backgroundColor: [
+                        'rgba(59, 130, 246, 0.6)',
+                        'rgba(239, 68, 68, 0.6)'
+                    ],
+                    borderColor: [
+                        'rgba(59, 130, 246, 1)',
+                        'rgba(239, 68, 68, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return ` ${context.raw} mSv`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '年間推定被ばく線量 (mSv)'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    prevBtn.addEventListener('click', () => {
+        if (currentSlide > 0) {
+            currentSlide--;
+            showSlide(currentSlide);
+        }
+    });
+
+    nextBtn.addEventListener('click', () => {
+        if (currentSlide < totalSlides - 1) {
+            currentSlide++;
+            showSlide(currentSlide);
+        }
+    });
+
+    showSlide(currentSlide);
+});
+</script>
+
+</body>
+</html>

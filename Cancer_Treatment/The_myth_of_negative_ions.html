@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>「マイナスイオン」の神話と真実：科学的根拠・有効性・安全性のインタラクティブ分析</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony (Warm Neutral, Muted Teal, Cautionary Amber) -->
+    <!-- Application Structure Plan: A narrative-driven, single-page application designed to guide users on a journey from alluring marketing myths to critical scientific realities. The structure progresses logically: 1. Deconstructing the term "Minus Ion". 2. Evaluating health claims against scientific evidence (pain relief, antioxidant). 3. Unveiling the hidden safety risks of radiation via an interactive map and impactful chart. 4. Concluding with clear, actionable recommendations. This flow prioritizes user understanding and critical awareness over simply mirroring the report's layout, making the complex information digestible and memorable. -->
+    <!-- Visualization & Content Choices: The application uses interactive elements to engage users. 1) A toggle switch visualizes the contrast between vague marketing terms and precise scientific definitions (Goal: Inform/Compare). 2) Clickable cards break down complex scientific arguments against health claims, using progressive disclosure (Goal: Organize/Inform). 3) A powerful Bar Chart (Chart.js) compares radiation doses from products to safety limits, providing a stark visual warning (Goal: Compare/Inform). 4) An interactive map (HTML/CSS/JS) displays international regulatory actions, making the global scale of the problem tangible (Goal: Organize/Inform). 5) Text content is structured in JS objects for dynamic rendering. These choices turn a static report into an exploratory experience. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #F8F7F4;
+            color: #333333;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 50vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #4A908E;
+            border-bottom-color: #4A908E;
+        }
+        .icon-box {
+            background-color: #E6F0F0;
+            color: #4A908E;
+        }
+        .world-map-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin: auto;
+            aspect-ratio: 2 / 1;
+            background-color: #DDEAEA;
+            border-radius: 1rem;
+        }
+        .map-point {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: #F5A623;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .map-point:hover {
+            transform: scale(1.3);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        .popup {
+            display: none;
+            position: absolute;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 10;
+            width: 280px;
+            bottom: 120%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s, visibility 0.3s;
+            visibility: hidden;
+        }
+        .popup.show {
+            display: block;
+            opacity: 1;
+            visibility: visible;
+        }
+        .popup::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -8px;
+            border-width: 8px;
+            border-style: solid;
+            border-color: white transparent transparent transparent;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-20">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl font-bold text-gray-800">「マイナスイオン」の神話と真実</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#intro" class="nav-link px-3 py-2 rounded-md text-sm font-medium">序論</a>
+                        <a href="#debunk" class="nav-link px-3 py-2 rounded-md text-sm font-medium">用語の解体</a>
+                        <a href="#claims" class="nav-link px-3 py-2 rounded-md text-sm font-medium">主張 vs 科学</a>
+                        <a href="#danger" class="nav-link px-3 py-2 rounded-md text-sm font-medium">隠れた危険</a>
+                        <a href="#conclusion" class="nav-link px-3 py-2 rounded-md text-sm font-medium">結論</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="intro" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-6 lg:px-8 text-center">
+                <h2 class="text-3xl md:text-4xl font-bold tracking-tight text-[#4A908E]">自然由来の健康製品、その裏側へ</h2>
+                <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-600">
+                    ラジウム鉱石などから発生すると謳われる「マイナスイオン」。鎮痛効果やアンチエイジングを約束するこれらの製品は、本当に安全で効果的なのでしょうか？このアプリケーションは、漠然としたイメージやマーケティングの言葉に隠された科学的真実と、見過ごされがちな安全性のリスクを、対話的に探求するためのガイドです。
+                </p>
+            </div>
+        </section>
+
+        <section id="debunk" class="py-16 md:py-24">
+            <div class="container mx-auto px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-gray-800">1. 用語の解体：科学か、マーケティングか？</h2>
+                    <p class="mt-4 max-w-2xl mx-auto text-lg text-gray-600">
+                        すべての混乱は、言葉の定義から始まります。「マイナスイオン」という言葉が、科学の世界と製品の広告でどのように使い分けられているのかを知ることが、真実を理解する第一歩です。下のスイッチで、二つの世界を比較してみましょう。
+                    </p>
+                </div>
+                <div id="definition-container" class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8">
+                </div>
+            </div>
+        </section>
+
+        <section id="claims" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-gray-800">2. 主張 vs 科学：その効果は本物か？</h2>
+                    <p class="mt-4 max-w-2xl mx-auto text-lg text-gray-600">
+                        「痛みが和らぐ」「老化を防ぐ」— これらの魅力的な健康効果は、科学的に証明されているのでしょうか。製品が掲げる主要な主張と、現代の生物学・神経科学の知見を比較し、その妥当性を検証します。
+                    </p>
+                </div>
+                <div id="claims-container" class="grid md:grid-cols-2 gap-8">
+                </div>
+            </div>
+        </section>
+        
+        <section id="danger" class="py-16 md:py-24">
+            <div class="container mx-auto px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-gray-800">3. 隠れた危険：見過ごされた放射線リスク</h2>
+                    <p class="mt-4 max-w-2xl mx-auto text-lg text-gray-600">
+                        有効性が証明されていないだけでなく、これらの製品には深刻な安全上の懸念が存在します。多くの製品が、イオンを発生させるために意図的に放射性物質を含有しているのです。そのリスクの大きさを、データと国際的な警告から明らかにします。
+                    </p>
+                </div>
+
+                <div class="grid lg:grid-cols-2 gap-12 items-center">
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-xl font-bold text-center mb-4 text-red-700">放射線被ばく線量比較</h3>
+                        <div class="chart-container">
+                            <canvas id="radiationChart"></canvas>
+                        </div>
+                         <p class="text-sm text-gray-500 mt-4 text-center">
+                            一部の製品を年間通して使用した場合、一般公衆の年間被ばく線量限度（1mSv）を超える可能性があることが報告されています。
+                        </p>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-xl font-bold text-center mb-4 text-blue-700">世界の規制当局からの警告</h3>
+                        <p class="text-center text-gray-600 mb-4">地図上のマーカーをクリックして、各国の規制当局が発表した警告や措置を確認してください。</p>
+                        <div id="map-container" class="relative">
+                           <div class="world-map-container">
+                                <!-- Map points will be injected here by JS -->
+                           </div>
+                           <div id="map-popup" class="popup"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="conclusion" class="py-16 md:py-24 bg-white">
+             <div class="container mx-auto px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-gray-800">4. 結論と提言：賢い消費者であるために</h2>
+                    <p class="mt-4 max-w-2xl mx-auto text-lg text-gray-600">
+                        ここまでの分析を通して、鉱石由来「マイナスイオン」製品の実態が明らかになりました。この最終セクションでは、調査結果を総括し、消費者、医療従事者、そして規制当局それぞれへの具体的な提言を提示します。
+                    </p>
+                </div>
+                <div id="recommendations-container" class="space-y-8">
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white">
+        <div class="container mx-auto px-6 lg:px-8 py-8 text-center">
+            <p>このアプリケーションは、公開されている「自然由来の『マイナスイオン』製品の科学的根拠、有効性、安全性に関する包括的国際分析」レポートに基づき、教育目的で作成されました。</p>
+            <p class="mt-2 text-sm text-gray-400">&copy; 2024 Interactive Analysis. All rights reserved.</p>
+        </div>
+    </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    const definitions = {
+        marketing: {
+            title: "マーケティング上の定義",
+            name: "「マイナスイオン」",
+            identity: "曖昧で定義されない「健康によい粒子」、「空気のビタミン」、水のクラスターなど、比喩的で科学的実体がない。",
+            mechanism: "「特殊な鉱石から自然に放出される」「滝のように発生する」といった、レナード効果などの良性な自然現象のイメージを借用した説明。",
+            context: "健康、ウェルネス、美容。消費者の購買意欲を刺激することが目的。"
+        },
+        science: {
+            title: "科学的定義",
+            name: "陰イオン / 負の大気イオン",
+            identity: "電子を過剰に持つ特定の原子・分子（例：$O_2^{-}$）。その正体は明確に特定・測定可能。",
+            mechanism: "放射線による電離、コロナ放電など、物理的に説明・再現可能なプロセス。",
+            context: "化学、物理学、大気科学。客観的な事実を記述することが目的。"
+        }
+    };
+
+    const claimsData = [
+        {
+            title: "主張1：鎮痛効果",
+            claim: "体内の有害な「プラスイオン」を「マイナスイオン」が中和し、痛みを緩和する。",
+            realityTitle: "科学的現実：ゲートコントロール理論とプラセボ効果",
+            reality: "痛みは神経系の複雑な信号伝達（ゲートコントロール理論）によって制御され、『イオンの中和』という単純な原理では説明できません。報告される鎮痛効果は、製品への期待が脳の内因性鎮痛システムを活性化させる『プラセボ効果』で最も合理的に説明可能です。"
+        },
+        {
+            title: "主張2：抗酸化作用（アンチエイジング）",
+            claim: "老化や病気の原因となる「活性酸素」を「マイナスイオン」が除去・抑制する。",
+            realityTitle: "科学的現実：基礎研究の不適切な引用",
+            reality: "高濃度の負イオンが細胞レベルで抗酸化作用を示唆する基礎研究はありますが、これを鉱石製品を身につける日常的な状況に当てはめるのは、科学的な飛躍です。ヒトの体内で臨床的に意味のある抗酸化効果を示した信頼性の高い研究は存在しません。"
+        }
+    ];
+
+    const recommendationsData = {
+        summary: {
+            title: "最終的な結論",
+            points: [
+                { icon: '🔬', text: "<strong>原理は非科学的：</strong>製品が謳う作用機序は、確立された物理学や生物学の知見と矛盾する疑似科学です。" },
+                { icon: '📉', text: "<strong>有効性は未証明：</strong>質の高い臨床試験による有効性の証拠は存在せず、効果はプラセボ効果による可能性が極めて高いです。" },
+                { icon: '☢️', text: "<strong>深刻な安全リスク：</strong>多くの製品が、公衆の安全基準を超える可能性のある放射性物質を含んでおり、健康被害のリスクを伴います。" }
+            ]
+        },
+        groups: [
+            {
+                audience: "消費者の方へ",
+                icon: "👤",
+                color: "teal",
+                recommendations: [
+                    "曖昧な科学用語（例：「量子エネルギー」）を謳う製品には懐疑的になる。",
+                    "個人の体験談ではなく、信頼できる臨床試験の結果を根拠として求める。",
+                    "鉱物（トルマリン、ラジウム等）を含む製品の放射線リスクを認識し、使用を避ける。"
+                ]
+            },
+            {
+                audience: "医療従事者の方へ",
+                icon: "🩺",
+                color: "blue",
+                recommendations: [
+                    "患者からの質問には、共感的に対応し、エビデンスの欠如と安全性のリスクを丁寧に説明する。",
+                    "プラセボ効果の概念や、根拠に基づく医療の重要性を教育する機会とする。"
+                ]
+            },
+            {
+                audience: "規制当局へ",
+                icon: "🏛️",
+                color: "gray",
+                recommendations: [
+                    "意図的に放射性物質を含む消費者製品への規制を強化・国際協調する。",
+                    "誤解を招く健康主張広告への法執行を厳格化する。",
+                    "放射性物質を含む製品には、含有核種とレベルの明確な表示を義務付ける。"
+                ]
+            }
+        ]
+    };
+    
+    const mapPointsData = [
+        { id: 'nl', top: '25%', left: '48%', name: 'オランダ', details: '<strong>措置：販売禁止・リコール勧告 (2021)</strong><br>「アンチ5G」等を謳う宝飾品10製品が有害な電離放射線を放出。継続使用で皮膚の被ばくが法的限度を超える可能性があると指摘。' },
+        { id: 'us', top: '35%', left: '20%', name: '米国', details: '<strong>措置：廃棄助言・違法販売の指摘</strong><br>多くの製品が販売に許可が必要な量のウランやトリウムを含有。原子力規制委員会(NRC)は廃棄を助言。' },
+        { id: 'au', top: '75%', left: '80%', name: 'オーストラリア', details: '<strong>措置：是正措置命令</strong><br>「パワーバランス」ブレスレットなどに対し、競争・消費者委員会(ACCC)が科学的根拠のない主張を認めさせた。' },
+        { id: 'jp', top: '35%', left: '85%', name: '日本', details: '<strong>措置：景品表示法違反で措置命令</strong><br>消費者庁がウイルス除去等を謳うイオン発生器に対し、合理的根拠がないとして措置命令や課徴金納付命令。' },
+        { id: 'my', top: '60%', left: '72%', name: 'マレーシア', details: '<strong>調査：科学的論文によるリスク指摘</strong><br>市販のネックレス製品の分析で、年間被ばく線量が公衆の限度(1mSv/年)を超える1.22mSvと推計されるものがあった。' }
+    ];
+
+    function renderDefinitions(mode = 'marketing') {
+        const data = definitions[mode];
+        const container = document.getElementById('definition-container');
+        container.innerHTML = `
+            <div class="flex items-center justify-center mb-6">
+                <span class="mr-3 font-medium ${mode === 'science' ? 'text-gray-400' : 'text-[#4A908E]'}">マーケティング</span>
+                <label for="definition-toggle" class="inline-flex relative items-center cursor-pointer">
+                    <input type="checkbox" id="definition-toggle" class="sr-only peer" ${mode === 'science' ? 'checked' : ''}>
+                    <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-teal-300 peer-checked:bg-[#4A908E]"></div>
+                    <div class="absolute left-1 top-1 bg-white border-gray-300 border rounded-full h-4 w-4 transition-transform peer-checked:translate-x-full"></div>
+                </label>
+                <span class="ml-3 font-medium ${mode === 'marketing' ? 'text-gray-400' : 'text-[#4A908E]'}">科学</span>
+            </div>
+            <div class="text-center md:text-left">
+                <h3 class="text-2xl font-bold text-[#4A908E] mb-4">${data.name} <span class="text-lg text-gray-500 font-normal">- ${data.title}</span></h3>
+                <dl class="space-y-4">
+                    <div>
+                        <dt class="font-bold text-gray-700">正体：</dt>
+                        <dd class="text-gray-600 ml-4">${data.identity}</dd>
+                    </div>
+                    <div>
+                        <dt class="font-bold text-gray-700">発生機序：</dt>
+                        <dd class="text-gray-600 ml-4">${data.mechanism}</dd>
+                    </div>
+                    <div>
+                        <dt class="font-bold text-gray-700">文脈：</dt>
+                        <dd class="text-gray-600 ml-4">${data.context}</dd>
+                    </div>
+                </dl>
+            </div>
+        `;
+        document.getElementById('definition-toggle').addEventListener('change', (e) => {
+            renderDefinitions(e.target.checked ? 'science' : 'marketing');
+        });
+    }
+
+    function renderClaims() {
+        const container = document.getElementById('claims-container');
+        container.innerHTML = claimsData.map(item => `
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden transition-shadow duration-300 hover:shadow-2xl">
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-800">${item.title}</h3>
+                    <p class="mt-2 text-gray-600 italic">“${item.claim}”</p>
+                </div>
+                <div class="bg-gray-50 p-6 border-t border-gray-200">
+                    <h4 class="font-bold text-[#4A908E]">${item.realityTitle}</h4>
+                    <p class="mt-2 text-gray-700">${item.reality}</p>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function renderRecommendations() {
+        const container = document.getElementById('recommendations-container');
+        const summaryHtml = `
+            <div class="bg-white p-8 rounded-xl shadow-lg border-l-4 border-red-500">
+                <h3 class="text-2xl font-bold text-gray-800 mb-4">${recommendationsData.summary.title}</h3>
+                <ul class="space-y-3">
+                    ${recommendationsData.summary.points.map(p => `
+                        <li class="flex items-start">
+                            <span class="text-2xl mr-3">${p.icon}</span>
+                            <span class="text-gray-700">${p.text}</span>
+                        </li>
+                    `).join('')}
+                </ul>
+            </div>
+        `;
+
+        const groupsHtml = recommendationsData.groups.map(group => `
+            <div class="bg-white p-8 rounded-xl shadow-lg border-l-4" style="border-color: ${group.color === 'teal' ? '#4A908E' : (group.color === 'blue' ? '#3B82F6' : '#6B7280')};">
+                <div class="flex items-center mb-4">
+                     <div class="icon-box rounded-full p-3 mr-4 text-2xl" style="background-color: ${group.color === 'teal' ? '#E6F0F0' : (group.color === 'blue' ? '#DBEAFE' : '#F3F4F6')}; color: ${group.color === 'teal' ? '#4A908E' : (group.color === 'blue' ? '#3B82F6' : '#4B5563')};">${group.icon}</div>
+                     <h3 class="text-2xl font-bold text-gray-800">${group.audience}</h3>
+                </div>
+                <ul class="list-disc list-inside space-y-2 text-gray-700">
+                    ${group.recommendations.map(r => `<li>${r}</li>`).join('')}
+                </ul>
+            </div>
+        `).join('');
+
+        container.innerHTML = summaryHtml + '<div class="grid md:grid-cols-3 gap-8 mt-12">' + groupsHtml + '</div>';
+    }
+
+    function renderRadiationChart() {
+        const ctx = document.getElementById('radiationChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['一般公衆の年間線量限度', '問題のネックレス製品（推定）'],
+                datasets: [{
+                    label: '年間実効線量 (mSv)',
+                    data: [1, 1.22],
+                    backgroundColor: [
+                        'rgba(74, 144, 142, 0.6)', // Muted Teal
+                        'rgba(245, 166, 35, 0.6)'  // Cautionary Amber
+                    ],
+                    borderColor: [
+                        'rgba(74, 144, 142, 1)',
+                        'rgba(245, 166, 35, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.x !== null) {
+                                    label += context.parsed.x + ' mSv';
+                                }
+                                return label;
+                            }
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: '年間被ばく線量の比較'
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '線量 (mSv/年)'
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+    function renderMap() {
+        const mapContainer = document.querySelector('.world-map-container');
+        const popup = document.getElementById('map-popup');
+        
+        mapPointsData.forEach(point => {
+            const pointEl = document.createElement('div');
+            pointEl.className = 'map-point';
+            pointEl.style.top = point.top;
+            pointEl.style.left = point.left;
+            pointEl.dataset.name = point.name;
+            pointEl.dataset.details = point.details;
+            pointEl.title = point.name;
+            
+            pointEl.addEventListener('mouseenter', () => {
+                popup.innerHTML = `<strong>${point.name}</strong><br><p class="text-sm mt-1">${point.details}</p>`;
+                
+                const pointRect = pointEl.getBoundingClientRect();
+                const mapRect = mapContainer.getBoundingClientRect();
+                
+                popup.style.left = `${pointRect.left - mapRect.left + (pointRect.width / 2)}px`;
+                popup.style.top = `${pointRect.top - mapRect.top}px`;
+                
+                popup.classList.add('show');
+            });
+            
+            pointEl.addEventListener('mouseleave', () => {
+                popup.classList.remove('show');
+            });
+
+            mapContainer.appendChild(pointEl);
+        });
+    }
+
+    function setupSmoothScrolling() {
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    }
+    
+    function setupScrollSpy() {
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.getAttribute('id');
+                    navLinks.forEach(link => {
+                        link.classList.toggle('active', link.getAttribute('href') === `#${id}`);
+                    });
+                }
+            });
+        }, { rootMargin: '-50% 0px -50% 0px' });
+
+        sections.forEach(section => observer.observe(section));
+    }
+
+    renderDefinitions();
+    renderClaims();
+    renderRecommendations();
+    renderRadiationChart();
+    renderMap();
+    setupSmoothScrolling();
+    setupScrollSpy();
+});
+</script>
+
+</body>
+</html>
