@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インタラクティブスライド：肝臓ハブ仮説</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .slide {
+            display: none;
+            animation: fadeIn 0.8s;
+        }
+        .slide.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 350px;
+            max-height: 45vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+                max-height: 50vh;
+            }
+        }
+        .narration-box {
+            background-color: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+        .final-slide-item {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            height: 100%;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen items-center justify-center p-4">
+
+    <div class="w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden">
+        <div id="slides-container" class="p-6 md:p-10 flex items-center justify-center" style="min-height: 550px;">
+            <!-- Slides will be injected here by JavaScript -->
+        </div>
+
+        <div class="px-6 md:px-10 py-4 bg-gray-100 border-t border-gray-200">
+            <div id="narration" class="narration-box text-white p-4 rounded-lg min-h-[120px] flex items-center justify-center text-center">
+                <!-- Narration text will be injected here -->
+            </div>
+        </div>
+
+        <div id="pagination" class="flex items-center justify-between p-4 bg-gray-50">
+            <button id="prev-btn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed">前へ</button>
+            <div id="slide-counter" class="text-sm font-medium text-gray-600"></div>
+            <button id="next-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed">次へ</button>
+        </div>
+    </div>
+
+<script>
+const slidesData = [
+    {
+        content: `
+            <div class="text-center">
+                <h1 class="text-3xl md:text-5xl font-bold text-gray-800">がん転移の黒幕？</h1>
+                <h2 class="text-xl md:text-3xl font-semibold text-blue-600 mt-4">肝臓ハブ仮説を解き明かす</h2>
+                <div class="mt-8 text-6xl animate-bounce">🎬</div>
+            </div>
+        `,
+        narration: "皆さん、こんにちは。がんが転移するという現象は、多くの人にとって大きな恐怖です。しかし、そのメカニズムには、まだ多くの謎が残されています。今日は、その謎を解く鍵となるかもしれない、最新の『肝臓ハブ仮説』について、分かりやすく解説していきます。"
+    },
+    {
+        content: `
+            <div class="w-full">
+                <h3 class="text-2xl font-bold text-center mb-8">細胞間のメッセージが、がん転移の「土壌」を作る</h3>
+                <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div class="text-center flex-1">
+                        <div class="text-5xl">💬</div>
+                        <h4 class="font-semibold mt-2">細胞からの<br>メッセージ</h4>
+                        <p class="text-sm text-gray-500">エクソソーム</p>
+                    </div>
+                    <div class="text-3xl text-gray-400 animate-pulse transform md:rotate-0 rotate-90">➡️</div>
+                    <div class="text-center flex-1">
+                        <div class="text-5xl">🌱</div>
+                        <h4 class="font-semibold mt-2">転移しやすい<br>環境（土壌）</h4>
+                        <p class="text-sm text-gray-500">転移前ニッチ</p>
+                    </div>
+                    <div class="text-3xl text-gray-400 animate-pulse transform md:rotate-0 rotate-90">➡️</div>
+                    <div class="text-center flex-1">
+                        <div class="text-5xl">🦠</div>
+                        <h4 class="font-semibold mt-2">がん細胞（種）<br>の生着</h4>
+                        <p class="text-sm text-gray-500">転移成立</p>
+                    </div>
+                </div>
+            </div>
+        `,
+        narration: "がんの転移は、がん細胞という「種」が、転移しやすい「土壌」に根付くことで成立します。この「土壌」を作る鍵となるのが、細胞同士が送り合う『エクソソーム』という小さなメッセージカプセルです。原発のがん細胞は、このエクソソームを使って、遠くの臓器を自分たちが住みやすいように改造してしまうのです。"
+    },
+    {
+        content: `
+            <div class="w-full">
+                 <h3 class="text-2xl font-bold text-center mb-6">システムの乗っ取り犯：ウイルスと細菌</h3>
+                 <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">しかし、この巧妙なシステムを悪用するのは、がん細胞だけではありませんでした。</p>
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-center">
+                    <div class="bg-red-50 p-6 rounded-xl border border-red-200">
+                        <h4 class="font-bold text-red-700">ウイルス感染</h4>
+                        <p class="text-sm mt-2">自身のコピーをエクソソームに詰め込み、免疫から隠れながら感染を広げます。</p>
+                    </div>
+                    <div class="bg-green-50 p-6 rounded-xl border border-green-200">
+                        <h4 class="font-bold text-green-700">細菌（腸内細菌など）</h4>
+                        <p class="text-sm mt-2">毒素をエクソソームに乗せ、腸から体内に送り込み、遠くの臓器で炎症を引き起こします。</p>
+                    </div>
+                 </div>
+            </div>
+        `,
+        narration: "実は、私たちの体内にいるウイルスや細菌も、このエクソソームの仕組みを乗っ取ることが分かってきました。ウイルスは免疫から逃れるために、細菌は毒素をばらまくために、エクソソームを「運び屋」として利用するのです。これが、今回の仮説の出発点となります。"
+    },
+    {
+        content: `
+             <div class="w-full">
+                <h3 class="text-2xl font-bold text-center mb-8">エクソソームの終着駅：肝臓</h3>
+                <div class="flex items-center justify-center relative h-64">
+                    <div class="text-6xl absolute left-0 opacity-50">🦠</div>
+                    <div class="text-5xl absolute left-10 top-20 opacity-40">💬</div>
+                    <div class="text-4xl absolute left-5 bottom-10 opacity-60">🦠</div>
+                    <div class="absolute left-1/4 h-0.5 w-1/4 bg-gray-300 top-1/2"></div>
+                    <div class="absolute left-1/4 top-1/2 -mt-2 -ml-2 w-4 h-4 rounded-full bg-blue-400 animate-ping"></div>
+                    <div class="text-8xl">🫀</div>
+                    <p class="absolute bottom-10 text-lg font-semibold text-gray-700">肝臓に集積</p>
+                </div>
+             </div>
+        `,
+        narration: "体内を巡るエクソソームは、どこへ向かうのでしょうか。その多くは、体のフィルターである『肝臓』にたどり着きます。がん由来であろうと、ウイルスや細菌由来であろうと、エクソソームはまず肝臓に集められ、処理されるのです。この肝臓の性質が、物語の重要な舞台となります。"
+    },
+    {
+        content: `
+            <div class="w-full text-center">
+                <h3 class="text-2xl font-bold mb-2">「肝臓ハブ」仮説</h3>
+                <p class="text-gray-600 mb-8">病原体が肝臓を「転移の司令塔」に変える５ステップ</p>
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-center">
+                    <div class="step-item" style="--delay: 0s;"><span>1.EV放出<br>(病原体)</span></div>
+                    <div class="arrow md:block hidden">→</div>
+                    <div class="arrow-down md:hidden block">↓</div>
+                    <div class="step-item" style="--delay: 0.2s;"><span>2.肝臓へ<br>蓄積</span></div>
+                    <div class="arrow md:block hidden">→</div>
+                    <div class="arrow-down md:hidden block">↓</div>
+                    <div class="step-item" style="--delay: 0.4s;"><span>3.肝臓が<br>変化</span></div>
+                    <div class="arrow md:block hidden">→</div>
+                    <div class="arrow-down md:hidden block">↓</div>
+                    <div class="step-item" style="--delay: 0.6s;"><span>4.新たな<br>EV放出</span></div>
+                    <div class="arrow md:block hidden">→</div>
+                    <div class="arrow-down md:hidden block">↓</div>
+                    <div class="step-item" style="--delay: 0.8s;"><span>5.全身へ<br>転移準備</span></div>
+                </div>
+            </div>
+            <style>
+            .step-item {
+                opacity: 0;
+                animation: popIn 0.5s ease-out forwards;
+                animation-delay: var(--delay);
+                background-color: #e0f2fe; border: 2px solid #3b82f6; border-radius: 0.75rem; padding: 1rem 0.5rem;
+                display: flex; align-items: center; justify-content: center; height: 80px;
+            }
+            .arrow, .arrow-down { font-size: 2rem; color: #9ca3af; text-align: center; }
+            @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+            </style>
+        `,
+        narration: "ここからが本題の『肝臓ハブ仮説』です。まず、病原体がエクソソームを放出します。それが肝臓に蓄積し、肝臓の性質を悪く変えてしまいます。すると今度は、病的に変化した肝臓自身が、新たな『悪い』エクソソームを全身に放出するようになります。これが全身の臓器に届き、がんが転移しやすい土壌を準備してしまうのです。肝臓が、まるで悪の司令塔『ハブ』のように機能するというわけです。"
+    },
+    {
+        content: `
+            <div class="w-full">
+                <h3 class="text-2xl font-bold text-center mb-6">仮説の証拠レベルは？</h3>
+                <div class="chart-container"><canvas id="evidenceChart"></canvas></div>
+            </div>
+        `,
+        narration: "では、この仮説はどのくらい確かなのでしょうか？このグラフは、各ステップの証拠の強さを示しています。ステップ１から４までは、既にある研究から高い確からしさで支持されています。しかし、最後のステップ５、つまり『肝臓由来のシグナルが、実際に他の臓器へのがん転移を促進する』という点については、まだ直接的な証拠がなく、これからの研究が待たれる最大の謎となっています。"
+    },
+    {
+        content: `
+            <div class="w-full text-center">
+                <h3 class="text-2xl font-bold mb-4">結論：新たな視点</h3>
+                <div class="bg-blue-50 p-6 rounded-xl text-lg text-gray-700 max-w-2xl mx-auto">
+                肝臓は単なる転移の<span class="font-bold text-blue-600">「受け皿」</span>ではなく、<br>
+                全身の転移を操る<span class="font-bold text-red-600">「司令塔」</span>になりうる。
+                </div>
+                <p class="mt-6 text-gray-600">慢性的な感染症や腸内環境が、なぜ全身のがんリスクに関わるのか。そのミッシングリンクを埋める、説得力のあるモデルです。</p>
+            </div>
+        `,
+        narration: "『肝臓ハブ仮説』は、私たちに新しい視点を与えてくれます。肝臓は、単に転移されるだけの受動的な臓器ではなく、ウイルスや細菌の影響を受けて、自らが積極的に全身の転移を操る司令塔になりうる、ということです。これは、慢性的な炎症がなぜ危険なのかを、分子レベルで説明する画期的な考え方なのです。"
+    },
+    {
+        content: `
+            <div class="w-full h-full bg-gray-800 text-white p-6 rounded-lg">
+                <h3 class="text-2xl font-bold text-center mb-6 text-yellow-400">YouTube動画用素材案</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+                    <div class="flex flex-col">
+                        <div class="final-slide-item flex-1">
+                            <h4 class="font-bold mb-2">【タイトル案】</h4>
+                            <ul class="list-disc list-inside space-y-1">
+                                <li>がん転移の黒幕は肝臓にいた！最新科学が解き明かす「肝臓ハブ仮説」</li>
+                                <li>あなたの腸内環境が、がん転移を招く？専門家が解説する衝撃のメカニズム</li>
+                                <li>【科学解説】ウイルスが仕掛ける巧妙な罠「エクソソーム」とがん転移の最新研究</li>
+                            </ul>
+                        </div>
+                        <div class="final-slide-item flex-1">
+                            <h4 class="font-bold mb-2">【概要欄】</h4>
+                            <p>がん転移の謎を解く鍵「エクソソーム」。ウイルスや細菌がこのシステムを乗っ取り、肝臓を「転移の司令塔」へと変貌させる…！？最新の「肝臓ハブ仮説」をインフォグラフィックスで分かりやすく解説します。慢性炎症がなぜ危険なのか、その答えがここにあります。</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-col">
+                        <div class="final-slide-item flex-1">
+                            <h4 class="font-bold mb-2">【サムネイル生成プロンプト】</h4>
+                            <ul class="list-disc list-inside space-y-1">
+                                <li>A human liver with glowing lines radiating outwards to other organs like lungs and bones. Text overlay: "衝撃！がん転移の黒幕". Style: photorealistic, medical illustration, dramatic lighting.</li>
+                                <li>A microscopic view of exosomes (glowing spheres) being released from bacteria and viruses, targeting a large liver icon. Text overlay: "あなたの体内で起きている脅威". Style: 3D render, vibrant, high contrast.</li>
+                                <li>A silhouette of a person with a glowing liver highlighted. Arrows point from the liver to the brain, lungs, and bones. Text overlay: "肝臓が全身を操る". Style: minimalist, infographic, blue and red neon glow.</li>
+                            </ul>
+                        </div>
+                        <div class="final-slide-item flex-1">
+                            <h4 class="font-bold mb-2">【BGM生成プロンプト (Suno AI)】</h4>
+                            <ul class="list-disc list-inside space-y-1">
+                                <li>Investigative documentary, mysterious, science, slightly tense but hopeful, minimalist electronic beat, atmospheric pads, subtle piano melody.</li>
+                                <li>Inspirational corporate, technology, discovery, medium tempo, uplifting synth chords, clean drum machine, optimistic feeling.</li>
+                                <li>Ambient, cinematic, thoughtful, slow-building, evolving soundscape, deep bass drone, shimmering textures, sense of wonder and discovery.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `,
+        narration: "ご視聴ありがとうございました。この内容を動画として発信する際の、タイトルや概要、サムネイルのアイデアもまとめてみました。この研究は、がんとの戦いにおける新たな希望の光となるかもしれません。今後の進展に、ぜひご注目ください。"
+    }
+];
+
+let currentSlide = 0;
+const slidesContainer = document.getElementById('slides-container');
+const narrationBox = document.getElementById('narration');
+const prevBtn = document.getElementById('prev-btn');
+const nextBtn = document.getElementById('next-btn');
+const slideCounter = document.getElementById('slide-counter');
+
+function renderSlide(index) {
+    let slideElement = document.getElementById('slide-content');
+    if (!slideElement) {
+        slideElement = document.createElement('div');
+        slideElement.id = 'slide-content';
+        slideElement.className = 'slide w-full';
+        slidesContainer.appendChild(slideElement);
+    }
+    
+    slideElement.innerHTML = slidesData[index].content;
+    slideElement.classList.add('active');
+
+    narrationBox.textContent = slidesData[index].narration;
+    slideCounter.textContent = `${index + 1} / ${slidesData.length}`;
+    
+    prevBtn.disabled = index === 0;
+    nextBtn.disabled = index === slidesData.length - 1;
+    
+    if (index === 5) { // Evidence chart slide
+        setTimeout(() => { // Ensure canvas is in the DOM
+            const ctx = document.getElementById('evidenceChart')?.getContext('2d');
+            if(ctx) {
+                // Destroy previous chart instance if it exists
+                if(window.evidenceChartInstance) {
+                    window.evidenceChartInstance.destroy();
+                }
+                window.evidenceChartInstance = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: [
+                            '1. EVが肝臓に蓄積',
+                            '2. 肝臓がPMN様に変化',
+                            '3. 新たなEVを分泌',
+                            '4. 全身へ到達',
+                            '5. 転移を促進'
+                        ],
+                        datasets: [{
+                            label: '証拠レベル（100%満点）',
+                            data: [100, 85, 80, 75, 20],
+                            backgroundColor: [
+                                '#10b981', // green-500
+                                '#3b82f6', // blue-500
+                                '#3b82f6', // blue-500
+                                '#3b82f6', // blue-500
+                                '#ef4444'  // red-500
+                            ],
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: { max: 100, beginAtZero: true },
+                        },
+                        plugins: {
+                            legend: { display: false }
+                        }
+                    }
+                });
+            }
+        }, 50);
+    }
+}
+
+function updateSlide(newIndex) {
+    const slideElement = document.getElementById('slide-content');
+    if (slideElement) {
+        slideElement.classList.remove('active');
+    }
+    currentSlide = newIndex;
+    setTimeout(() => renderSlide(currentSlide), 50); // Small delay for fade out effect
+}
+
+prevBtn.addEventListener('click', () => {
+    if (currentSlide > 0) {
+        updateSlide(currentSlide - 1);
+    }
+});
+
+nextBtn.addEventListener('click', () => {
+    if (currentSlide < slidesData.length - 1) {
+        updateSlide(currentSlide + 1);
+    }
+});
+
+// Initial Render
+renderSlide(currentSlide);
+</script>
+
+</body>
+</html>

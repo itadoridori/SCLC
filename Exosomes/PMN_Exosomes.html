@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インタラクティブ・レポート：エクソソームと肝臓ハブ仮説</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals (bg-gray-50, white, teal-600/700) -->
+    <!-- Application Structure Plan: A single-page, vertical storytelling flow. The user scrolls through thematic sections that build the "Liver Hub Hypothesis" step-by-step. This narrative structure is more engaging than a static report layout. It starts with fundamentals (exosomes, PMN), introduces the key players (liver, pathogens), presents the core hypothesis via an animated diagram ("Hub-and-Spoke"), visualizes the evidence strength with an interactive chart, and concludes with future implications. This structure was chosen to guide the user through a complex scientific argument in a logical, digestible, and visually compelling manner, prioritizing understanding over a literal translation of the report's sections. -->
+    <!-- Visualization & Content Choices: 
+        1. Pathogen Payload Comparison (Report Table 1): Report Info -> Comparison of exosome payloads. Goal -> Compare. Viz/Method -> Interactive card display updated by buttons (Tumor, Virus, Bacteria). Interaction -> User clicks to switch views. Justification -> More engaging and focused than a static table. Library -> Vanilla JS DOM manipulation.
+        2. Hub-and-Spoke Model: Report Info -> Core hypothesis of liver reprogramming and re-secretion. Goal -> Explain a process. Viz/Method -> Multi-stage animated diagram built with HTML/CSS. Interaction -> Scroll-triggered animations. Justification -> Visually breaks down the complex multi-step mechanism into a clear, dynamic flow. Library -> Vanilla JS (IntersectionObserver).
+        3. Evidence Matrix (Report Table 2): Report Info -> Confidence levels for each step of the hypothesis. Goal -> Show strength of evidence. Viz/Method -> Interactive horizontal bar chart. Interaction -> User can see confidence levels visually and hover/click for details. Justification -> Quantifies the qualitative assessment of the report, making the state of the research immediately clear. Library -> Chart.js.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+            background-color: #F9FAFB;
+            color: #1F2937;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 500px;
+                max-height: 70vh;
+            }
+        }
+        .flow-line {
+            position: absolute;
+            background-color: #d1d5db;
+            z-index: 0;
+        }
+        .flow-dot {
+            position: absolute;
+            width: 1rem;
+            height: 1rem;
+            border-radius: 9999px;
+            background-color: #9ca3af;
+            z-index: 10;
+            transition: all 1s ease-in-out;
+        }
+        .section-fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .section-fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+
+        <header id="top" class="min-h-screen flex flex-col items-center justify-center text-center section-fade-in">
+            <h1 class="text-4xl md:text-6xl font-bold text-gray-800 leading-tight">
+                <span class="block">肝臓：全身転移の</span>
+                <span class="block bg-gradient-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent">隠れた司令塔</span>
+            </h1>
+            <p class="mt-6 max-w-3xl text-lg md:text-xl text-gray-600">
+                ウイルスや細菌由来の微小なメッセンジャー「エクソソーム」が、いかにして肝臓を乗っ取り、がんの全身転移を遠隔操作するのか。最新の「肝臓ハブ仮説」をインタラクティブに探ります。
+            </p>
+            <div class="mt-12">
+                <a href="#section-what-are-exosomes" class="inline-block bg-teal-600 text-white font-bold py-3 px-8 rounded-full hover:bg-teal-700 transition-colors duration-300">
+                    探索を始める
+                </a>
+            </div>
+        </header>
+
+        <main>
+            <section id="section-what-are-exosomes" class="min-h-screen py-20 flex items-center section-fade-in">
+                <div class="w-full grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                    <div class="text-left">
+                        <h2 class="text-3xl font-bold text-gray-800">始まりは、小さな運び屋</h2>
+                        <p class="mt-4 text-lg text-gray-600">私たちの体内で、細胞たちは絶えず対話しています。そのコミュニケーションを担うのが「エクソソーム」。細胞から放出されるナノサイズのカプセルで、タンパク質や遺伝情報(RNA)といった「積み荷」を他の細胞へ届けます。</p>
+                        <p class="mt-4 text-lg text-gray-600">これはいわば、細胞間の郵便システム。エクソソームは血流に乗り、遠く離れた臓器にメッセージを届け、受け取った細胞の振る舞いを変える力を持っています。</p>
+                    </div>
+                    <div class="flex items-center justify-center p-8 bg-white rounded-2xl shadow-lg h-96 relative overflow-hidden">
+                        <div class="absolute w-48 h-48 bg-blue-100 rounded-full animate-pulse"></div>
+                        <div class="z-10 text-center">
+                            <div class="text-xl font-bold text-blue-800">親細胞</div>
+                            <p class="text-sm text-blue-600">メッセージを出す</p>
+                        </div>
+                        <div class="absolute top-1/2 left-1/2 w-4 h-4 bg-teal-500 rounded-full z-20" style="animation: exosome-path1 6s linear infinite;"></div>
+                        <div class="absolute top-1/2 left-1/2 w-3 h-3 bg-teal-400 rounded-full z-20" style="animation: exosome-path2 8s linear infinite;"></div>
+                        <div class="absolute top-1/2 left-1/2 w-2 h-2 bg-teal-300 rounded-full z-20" style="animation: exosome-path3 7s linear infinite;"></div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="section-hijackers" class="min-h-screen py-20 flex flex-col justify-center section-fade-in">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold text-gray-800">システムの乗っ取り</h2>
+                    <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-600">この便利な郵便システムは、時に悪用されます。がん細胞や病原体は、自身に有利な情報をエクソソームに詰め込み、体を欺きます。これにより、がん細胞が転移しやすい環境（転移前ニッチ）が遠隔臓器に作られます。</p>
+                </div>
+
+                <div class="mt-12 w-full max-w-4xl mx-auto">
+                    <div class="flex justify-center space-x-2 md:space-x-4 mb-6" id="payload-selector">
+                        <button data-payload="tumor" class="payload-btn active-btn font-semibold py-2 px-4 md:px-6 rounded-full transition-all duration-300">腫瘍細胞</button>
+                        <button data-payload="virus" class="payload-btn inactive-btn font-semibold py-2 px-4 md:px-6 rounded-full transition-all duration-300">ウイルス</button>
+                        <button data-payload="bacteria" class="payload-btn inactive-btn font-semibold py-2 px-4 md:px-6 rounded-full transition-all duration-300">細菌</button>
+                    </div>
+                    <div id="payload-display" class="bg-white rounded-2xl shadow-xl p-8 transition-all duration-500 min-h-[350px]">
+                        <div id="payload-content">
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="section-hub-and-spoke" class="min-h-screen py-20 flex flex-col justify-center items-center section-fade-in">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-gray-800">肝臓ハブ仮説：5つのステップ</h2>
+                    <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-600">病原体に由来するエクソソームが、いかにして肝臓を「転移の司令塔」に変えるのか。そのプロセスを追ってみましょう。</p>
+                </div>
+                <div class="w-full max-w-6xl mx-auto relative h-[600px] md:h-[400px]">
+                    
+                    <div class="flow-line top-1/2 left-0 w-full h-1 hidden md:block"></div>
+                    <div class="flow-line left-1/2 top-0 h-full w-1 md:hidden"></div>
+                    
+                    <div class="absolute md:top-1/2 md:left-[10%] top-[10%] left-1/2 -translate-x-1/2 -translate-y-1/2 text-center z-10 step-container" data-step="1">
+                        <div class="step-circle bg-white border-2 border-gray-300 w-24 h-24 rounded-full flex flex-col items-center justify-center mx-auto transition-all duration-500">
+                            <span class="text-3xl">🦠</span>
+                            <span class="font-bold text-sm mt-1">病原体</span>
+                        </div>
+                        <p class="mt-2 text-sm font-semibold w-32">1. EV放出</p>
+                    </div>
+                    <div class="absolute md:top-1/2 md:left-1/4 top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center z-10 step-container" data-step="2">
+                        <div class="step-circle bg-white border-2 border-gray-300 w-24 h-24 rounded-full flex flex-col items-center justify-center mx-auto transition-all duration-500">
+                           <span class="text-3xl">📥</span>
+                            <span class="font-bold text-sm mt-1">肝臓</span>
+                        </div>
+                        <p class="mt-2 text-sm font-semibold w-32">2. 肝臓へ蓄積</p>
+                    </div>
+                     <div class="absolute md:top-1/2 md:left-1/2 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center z-10 step-container" data-step="3">
+                        <div class="step-circle bg-white border-2 border-gray-300 w-24 h-24 rounded-full flex flex-col items-center justify-center mx-auto transition-all duration-500">
+                            <span class="text-3xl">🧪</span>
+                             <span class="font-bold text-sm mt-1">肝臓(変化)</span>
+                        </div>
+                        <p class="mt-2 text-sm font-semibold w-32">3. 再プログラミング</p>
+                    </div>
+                     <div class="absolute md:top-1/2 md:left-3/4 top-3/4 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center z-10 step-container" data-step="4">
+                        <div class="step-circle bg-white border-2 border-gray-300 w-24 h-24 rounded-full flex flex-col items-center justify-center mx-auto transition-all duration-500">
+                            <span class="text-3xl">📤</span>
+                            <span class="font-bold text-sm mt-1">肝臓(放出)</span>
+                        </div>
+                        <p class="mt-2 text-sm font-semibold w-32">4. 新たなEV放出</p>
+                    </div>
+                     <div class="absolute md:top-1/2 md:left-[90%] top-[90%] left-1/2 -translate-x-1/2 -translate-y-1/2 text-center z-10 step-container" data-step="5">
+                        <div class="step-circle bg-white border-2 border-gray-300 w-24 h-24 rounded-full flex flex-col items-center justify-center mx-auto transition-all duration-500">
+                           <span class="text-3xl">🌱</span>
+                            <span class="font-bold text-sm mt-1">遠隔臓器</span>
+                        </div>
+                        <p class="mt-2 text-sm font-semibold w-32">5. 転移土壌の準備</p>
+                    </div>
+                </div>
+                <div id="step-description" class="mt-12 text-center max-w-3xl mx-auto min-h-[100px] p-4 bg-gray-100 rounded-lg">
+                    <p class="text-lg text-gray-700 font-medium">上のステップにカーソルを合わせると説明が表示されます。</p>
+                </div>
+            </section>
+            
+            <section id="section-evidence" class="min-h-screen py-20 flex flex-col justify-center section-fade-in">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold text-gray-800">仮説の確からしさは？</h2>
+                    <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-600">この魅力的な仮説は、どの程度科学的証拠に裏付けられているのでしょうか。各ステップの確からしさを視覚化しました。</p>
+                </div>
+                <div class="mt-12 w-full">
+                    <div class="chart-container">
+                        <canvas id="evidenceChart"></canvas>
+                    </div>
+                    <p class="text-center mt-4 text-sm text-gray-500">バーにカーソルを合わせると詳細が表示されます。</p>
+                </div>
+            </section>
+
+            <section id="section-conclusion" class="min-h-screen py-20 flex flex-col justify-center items-center text-center section-fade-in">
+                 <h2 class="text-3xl font-bold text-gray-800">結論と今後の展望</h2>
+                 <p class="mt-6 max-w-3xl text-lg text-gray-600">
+                    「肝臓ハブ仮説」は、ウイルス感染や腸内環境といった要因が、いかにして全身のがん転移に関わるかを説明する、説得力のあるモデルです。肝臓を単なる転移の「標的」ではなく、プロセスを増幅させる「共謀者」と捉え直す、新たな視点を提供します。
+                 </p>
+                 <div class="mt-10 w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-8">
+                     <div class="bg-white p-6 rounded-2xl shadow-lg text-left">
+                        <h3 class="font-bold text-xl text-teal-700">明らかになったこと</h3>
+                        <ul class="mt-4 space-y-3 text-gray-600 list-disc list-inside">
+                            <li>病原体EVが優先的に肝臓に集まることは確実。</li>
+                            <li>病原体EVが肝臓で炎症や線維化を起こす仕組みは、がんによるものと酷似している。</li>
+                            <li>病的な肝臓が、変化したエクソソームを放出することは示されている。</li>
+                             <li>肝臓由来エクソソームが遠隔臓器に到達する原理も証明済み。</li>
+                        </ul>
+                     </div>
+                     <div class="bg-white p-6 rounded-2xl shadow-lg text-left">
+                        <h3 class="font-bold text-xl text-cyan-700">今後の課題</h3>
+                         <ul class="mt-4 space-y-3 text-gray-600 list-disc list-inside">
+                            <li>仮説の最終ステップ（転移促進）を直接証明する研究が必要。</li>
+                            <li>病的な肝臓由来エクソソームの「指紋」となるバイオマーカーの探索。</li>
+                            <li>エクソソームの分離・解析技術のさらなる向上が不可欠。</li>
+                             <li>このメカニズムを標的とした、新しいがん予防・治療法の開発。</li>
+                        </ul>
+                     </div>
+                 </div>
+                 <p class="mt-12 max-w-3xl text-md text-gray-500">
+                    この研究はまだ途上ですが、がんを全身病として理解し、新たな治療戦略を切り拓く大きな可能性を秘めています。
+                 </p>
+            </section>
+        </main>
+    </div>
+
+    <style>
+        @keyframes exosome-path1 {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(150px, -100px) scale(0.5); opacity: 0; }
+        }
+        @keyframes exosome-path2 {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(-120px, 80px) scale(0.5); opacity: 0; }
+        }
+        @keyframes exosome-path3 {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(80px, 150px) scale(0.5); opacity: 0; }
+        }
+        .active-btn {
+            background-color: #0d9488;
+            color: white;
+            box-shadow: 0 4px 14px 0 rgb(13 148 136 / 39%);
+        }
+        .inactive-btn {
+            background-color: #f3f4f6;
+            color: #4b5563;
+        }
+    </style>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        const payloadData = {
+            tumor: {
+                title: '腫瘍細胞由来のエクソソーム',
+                description: '原発巣のがん細胞は、転移先の環境を自分たちが住みやすいように「耕す」ため、エクソソームを放出します。',
+                items: [
+                    { label: '主要カーゴ', value: 'MIF、インテグリン、マイクロRNAなど' },
+                    { label: '肝臓の標的細胞', value: 'クッパー細胞、肝星細胞' },
+                    { label: '活性化経路', value: 'TGF-β、S100/Srcなど' },
+                    { label: '結果', value: '転移前ニッチ形成（線維化、炎症）' }
+                ]
+            },
+            virus: {
+                title: 'ウイルス感染細胞由来のエクソソーム',
+                description: '肝炎ウイルスなどは、宿主の免疫から逃れ、感染を広げるためにエクソソームを「トロイの木馬」として利用します。',
+                items: [
+                    { label: '主要カーゴ', value: 'ウイルスDNA/RNA、ウイルス関連タンパク質' },
+                    { label: '肝臓の標的細胞', value: '肝細胞、免疫細胞(NK細胞など)' },
+                    { label: '活性化経路', value: 'RIG-I、NF-κBなど' },
+                    { label: '結果', value: 'ウイルス持続感染、免疫逃避、炎症' }
+                ]
+            },
+            bacteria: {
+                title: '細菌由来の細胞外小胞 (BEV)',
+                description: '特に腸内細菌は、大量の小胞を放出します。これらは腸の壁を越え、門脈を通って真っ先に肝臓に到達します。',
+                items: [
+                    { label: '主要カーゴ', value: 'LPS（リポ多糖）、細菌DNAなど' },
+                    { label: '肝臓の標的細胞', value: 'クッパー細胞、肝細胞' },
+                    { label: '活性化経路', value: 'LPS/TLR4、TGF-βなど' },
+                    { label: '結果', value: '慢性炎症、代謝異常、線維化' }
+                ]
+            }
+        };
+
+        const payloadSelector = document.getElementById('payload-selector');
+        const payloadContent = document.getElementById('payload-content');
+        const buttons = payloadSelector.querySelectorAll('.payload-btn');
+
+        function updatePayloadDisplay(type) {
+            const data = payloadData[type];
+            let contentHtml = `
+                <h3 class="text-2xl font-bold text-gray-800 text-center">${data.title}</h3>
+                <p class="mt-2 text-md text-gray-500 text-center">${data.description}</p>
+                <div class="mt-6 border-t border-gray-200 pt-6">
+                    <dl class="space-y-4">
+                        ${data.items.map(item => `
+                            <div class="flex flex-col sm:flex-row">
+                                <dt class="w-full sm:w-1/3 font-medium text-gray-500">${item.label}</dt>
+                                <dd class="w-full sm:w-2/3 mt-1 sm:mt-0 text-gray-900">${item.value}</dd>
+                            </div>
+                        `).join('')}
+                    </dl>
+                </div>
+            `;
+            payloadContent.innerHTML = contentHtml;
+
+            buttons.forEach(button => {
+                button.classList.remove('active-btn', 'inactive-btn');
+                if (button.dataset.payload === type) {
+                    button.classList.add('active-btn');
+                } else {
+                    button.classList.add('inactive-btn');
+                }
+            });
+        }
+        
+        payloadSelector.addEventListener('click', (e) => {
+            if (e.target.classList.contains('payload-btn')) {
+                updatePayloadDisplay(e.target.dataset.payload);
+            }
+        });
+
+        updatePayloadDisplay('tumor');
+        
+        const evidenceData = {
+            labels: [
+                '5. 転移を促進',
+                '4. 全身へ到達',
+                '3. 新たなEVを分泌',
+                '2. PMN様状態を誘導',
+                '1. 肝臓に蓄積'
+            ],
+            datasets: [{
+                label: 'エビデンスの確からしさ (%)',
+                data: [20, 75, 80, 85, 100],
+                backgroundColor: (context) => {
+                    const value = context.raw;
+                    if (value > 90) return 'rgba(13, 148, 136, 0.7)'; // teal-600
+                    if (value > 70) return 'rgba(15, 118, 110, 0.7)'; // teal-700
+                    if (value > 50) return 'rgba(107, 114, 128, 0.7)'; // gray-500
+                    return 'rgba(249, 115, 22, 0.7)'; // orange-500
+                },
+                borderColor: (context) => {
+                    const value = context.raw;
+                    if (value > 90) return 'rgb(13, 148, 136)';
+                    if (value > 70) return 'rgb(15, 118, 110)';
+                    if (value > 50) return 'rgb(107, 114, 128)';
+                    return 'rgb(249, 115, 22)';
+                },
+                borderWidth: 2,
+                borderRadius: 4,
+                borderSkipped: false,
+            }]
+        };
+
+        const evidenceTooltips = [
+            '最大の推論的飛躍。このステップを直接証明した研究はなく、最重要の今後の研究課題。',
+            '原理は確立済み。HBV感染肝細胞や肝臓がん由来EVでの直接的証拠あり。非がん性の病的肝臓由来でのデータは限定的。',
+            '能動的な再プログラミングを示唆する強い状況証拠あり。病理的刺激でEVの内容が変化することは示されている。',
+            '強力な証拠あり。病原体EVと腫瘍EVで、類似のシグナル伝達経路の活性化（機能的収束）が見られる。',
+            '確固たる証拠あり。エクソソームの生体内分布研究で一貫して示される基本的な生理現象。'
+        ].reverse();
+        
+        const ctx = document.getElementById('evidenceChart').getContext('2d');
+        const evidenceChart = new Chart(ctx, {
+            type: 'bar',
+            data: evidenceData,
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%'
+                            },
+                            font: {
+                                family: "'Inter', sans-serif"
+                            }
+                        },
+                        grid: {
+                           color: '#e5e7eb'
+                        }
+                    },
+                    y: {
+                        ticks: {
+                           font: {
+                                family: "'Noto Sans JP', sans-serif",
+                                size: 14
+                           }
+                        },
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: '#1f2937',
+                        titleFont: { size: 16, family: "'Noto Sans JP', sans-serif" },
+                        bodyFont: { size: 12, family: "'Noto Sans JP', sans-serif" },
+                        padding: 12,
+                        callbacks: {
+                            label: function(context) {
+                                return `確からしさ: ${context.raw}%`;
+                            },
+                            afterBody: function(context) {
+                                return evidenceTooltips[context[0].dataIndex];
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        const stepContainers = document.querySelectorAll('.step-container');
+        const stepDescription = document.getElementById('step-description');
+        const stepDetails = {
+            1: "腸内細菌などの病原体が、自身の遺伝子やタンパク質を詰めた細胞外小胞(EV)を放出する。",
+            2: "門脈や血流に乗ったEVは、体のフィルターである肝臓に優先的に捕捉され、蓄積していく。",
+            3: "肝臓はEVを取り込むことで再プログラミングされ、炎症や線維化といった、転移に有利な病的状態に変化する。",
+            4: "病的状態になった肝臓は、今度は自らが、変化したシグナルを乗せた新しいEVを全身の血流へ放出する「ハブ」となる。",
+            5: "肝臓から放出されたEVは肺や骨などの遠隔臓器に到達し、がん細胞が着床しやすい「肥沃な土壌」を準備する。"
+        };
+
+        stepContainers.forEach(container => {
+            container.addEventListener('mouseenter', () => {
+                const step = container.dataset.step;
+                stepDescription.innerHTML = `<p class="text-lg text-gray-800 font-semibold">${step}. ${stepDetails[step]}</p>`;
+                container.querySelector('.step-circle').classList.add('bg-teal-100', 'border-teal-500', 'scale-110');
+            });
+            container.addEventListener('mouseleave', () => {
+                 stepDescription.innerHTML = `<p class="text-lg text-gray-700 font-medium">上のステップにカーソルを合わせると説明が表示されます。</p>`;
+                container.querySelector('.step-circle').classList.remove('bg-teal-100', 'border-teal-500', 'scale-110');
+            });
+        });
+
+        const sections = document.querySelectorAll('.section-fade-in');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            rootMargin: "0px 0px -100px 0px"
+        });
+
+        sections.forEach(section => {
+            observer.observe(section);
+        });
+    });
+    </script>
+</body>
+</html>
