@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>廣瀬幸雄教授のイノベーションの軌跡</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals (Stone, with a muted accent) -->
+    <!-- Application Structure Plan: A single-page narrative journey that guides the user from Prof. Hirose's foundational science to his diverse applications. This story-driven approach uses thematic sections (Scientist, Coffeeologist, Inventor, Visionary) and a central interactive "Innovation Hub" to make the non-obvious connections between materials science, coffee, and public health clear and engaging. This is more intuitive for a general audience than a rigid, report-like structure. -->
+    <!-- Visualization & Content Choices: 1. Academic Career -> Goal: Inform -> Viz: Interactive vertical timeline (HTML/JS) -> Interaction: Scroll-based highlighting -> Justification: Shows progression over time dynamically. 2. Roasting Process -> Goal: Compare -> Viz: Toggleable diagram (HTML/JS) -> Interaction: User clicks to switch between "Oxidation" and "Reduction" views -> Justification: Makes a core scientific concept understandable through direct comparison. 3. Product Shelf-Life -> Goal: Compare -> Viz: Bar Chart (Chart.js/Canvas) -> Interaction: Hover for tooltips -> Justification: Provides clear quantitative evidence for a key product claim. 4. Innovation Portfolio -> Goal: Organize/Explore -> Viz: Tabbed content hub (HTML/JS) -> Interaction: Click tabs for "Coffee", "Silica Coffee", "Toilets" -> Justification: Manages complexity by grouping related innovations and revealing details on demand, reinforcing the "core tech -> application" model. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #F5F5F4; /* stone-100 */
+            color: #44403C; /* stone-800 */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 40vh;
+        }
+        .nav-button {
+            transition: all 0.3s ease;
+        }
+        .nav-button.active {
+            background-color: #78716C; /* stone-500 */
+            color: #FFFFFF;
+        }
+        .content-panel {
+            display: none;
+        }
+        .content-panel.active {
+            display: block;
+        }
+        .timeline-item {
+            transition: all 0.3s ease;
+            opacity: 0.5;
+            transform: scale(0.95);
+        }
+        .timeline-item.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+        .roast-diagram {
+            transition: opacity 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-stone-100">
+
+    <header class="text-center py-12 md:py-20 bg-white">
+        <div class="container mx-auto px-4">
+            <h1 class="text-3xl md:text-5xl font-bold text-stone-800 mb-2">廣瀬幸雄の探求</h1>
+            <p class="text-lg md:text-xl text-stone-600">一人の科学者が繋ぐ、材料科学・コーヒー・公衆衛生の世界</p>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-8">
+        
+        <!-- Section 1: The Scientist -->
+        <section id="scientist" class="my-16">
+            <h2 class="text-3xl font-bold text-center mb-4">科学者としての原点</h2>
+            <p class="max-w-3xl mx-auto text-center text-stone-600 mb-12">
+                すべての革新は、一つの強固な学術的基盤から始まりました。廣瀬氏のキャリアの原点は「破壊工学」。物質がなぜ、どのように壊れるのかを解明するこの学問が、後にあらゆるものを「壊れないようにする」技術へと繋がります。ここではその歩みを辿ります。
+            </p>
+            <div id="timeline" class="relative max-w-3xl mx-auto">
+                <!-- Timeline Line -->
+                <div class="absolute left-1/2 top-0 h-full w-0.5 bg-stone-300 transform -translate-x-1/2"></div>
+            </div>
+        </section>
+
+        <!-- Section 2: The Coffeeologist -->
+        <section id="coffee" class="my-16 py-16 bg-white rounded-lg">
+             <h2 class="text-3xl font-bold text-center mb-4">コーヒー博士の誕生</h2>
+             <p class="max-w-3xl mx-auto text-center text-stone-600 mb-12">
+                一杯のコーヒーへの情熱が、新たな学問「コーヒー学」を創設させました。廣瀬氏は、コーヒーの風味が「破壊」される原因である「酸化」に着目し、自身の専門知識を応用してそのプロセスを根本から覆す方法を模索します。
+            </p>
+            <div class="max-w-4xl mx-auto">
+                <div class="flex justify-center mb-8 space-x-2">
+                    <button id="btn-traditional" class="roast-btn nav-button px-4 py-2 rounded-md bg-stone-200">従来焙煎 (酸化)</button>
+                    <button id="btn-hydrogen" class="roast-btn nav-button px-4 py-2 rounded-md bg-stone-200 active">水素焙煎 (還元)</button>
+                </div>
+                <div id="roast-diagram-container" class="relative min-h-[300px]">
+                    <!-- Traditional Roasting Diagram -->
+                    <div id="diagram-traditional" class="roast-diagram absolute w-full h-full opacity-0">
+                        <div class="flex flex-col md:flex-row items-center justify-center p-4 border-2 border-amber-600 rounded-lg bg-amber-50 h-full">
+                            <div class="text-center md:text-left md:w-1/2 p-4">
+                                <h3 class="text-xl font-bold text-amber-800 mb-2">従来焙煎：酸化プロセス</h3>
+                                <p class="text-amber-700">空気中の酸素と熱がコーヒー豆の油分を結びつき、酸化を引き起こします。これが、時間と共に風味や香りが劣化する主な原因です。</p>
+                            </div>
+                             <div class="md:w-1/2 flex items-center justify-center p-4">
+                                <div class="text-3xl flex items-center space-x-2">
+                                    <span class="p-3 bg-green-200 rounded-full">豆</span>
+                                    <span>+</span>
+                                    <span class="p-3 bg-red-200 rounded-full">熱/O₂</span>
+                                    <span>→</span>
+                                    <span class="p-3 bg-yellow-600 text-white rounded-full">酸化豆</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Hydrogen Roasting Diagram -->
+                    <div id="diagram-hydrogen" class="roast-diagram absolute w-full h-full opacity-100">
+                        <div class="flex flex-col md:flex-row items-center justify-center p-4 border-2 border-sky-600 rounded-lg bg-sky-50 h-full">
+                           <div class="text-center md:text-left md:w-1/2 p-4">
+                                <h3 class="text-xl font-bold text-sky-800 mb-2">水素焙煎：還元プロセス</h3>
+                                <p class="text-sky-700">過熱水蒸気と水素を利用し、酸化の逆である「還元」状態で焙煎。豆の酸化を抑制し、風味と鮮度を長期間保ちます。</p>
+                            </div>
+                             <div class="md:w-1/2 flex items-center justify-center p-4">
+                                <div class="text-3xl flex items-center space-x-2">
+                                    <span class="p-3 bg-green-200 rounded-full">豆</span>
+                                    <span>+</span>
+                                    <span class="p-3 bg-blue-200 rounded-full">熱/H₂</span>
+                                    <span>→</span>
+                                    <span class="p-3 bg-blue-600 text-white rounded-full">還元豆</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: The Inventor -->
+        <section id="innovator" class="my-16">
+            <h2 class="text-3xl font-bold text-center mb-4">イノベーション・エコシステム</h2>
+            <p class="max-w-3xl mx-auto text-center text-stone-600 mb-12">
+                「劣化を防ぐ」という中核技術は、コーヒーの世界を越えて様々な分野へと展開します。ここでは、廣瀬氏の主要な発明がどのように関連し、社会に価値を提供しているかを探ります。下のタブをクリックして各技術をご覧ください。
+            </p>
+            <div class="max-w-5xl mx-auto">
+                <div class="flex flex-wrap justify-center border-b border-stone-300 mb-8">
+                    <button data-target="panel-hydrogen-coffee" class="nav-button px-4 py-3 text-lg font-medium active">水素焙煎コーヒー</button>
+                    <button data-target="panel-silica-coffee" class="nav-button px-4 py-3 text-lg font-medium">機能性コーヒー</button>
+                    <button data-target="panel-toilet" class="nav-button px-4 py-3 text-lg font-medium">感染予防トイレ</button>
+                </div>
+
+                <!-- Hydrogen Coffee Panel -->
+                <div id="panel-hydrogen-coffee" class="content-panel active">
+                    <div class="grid md:grid-cols-2 gap-8 items-center">
+                        <div>
+                            <h3 class="text-2xl font-bold mb-4">驚異的な鮮度持続</h3>
+                            <p class="text-stone-700 mb-6">水素焙煎技術は、コーヒーの最大の敵である酸化を抑制することで、その風味と香りを劇的に長持ちさせます。一般的なコーヒー豆の賞味期限が約1ヶ月であるのに対し、水素焙煎豆は約3ヶ月。抽出後の液体でさえ、その差は歴然です。</p>
+                            <div class="p-4 bg-white rounded-lg shadow">
+                                <h4 class="font-bold text-center mb-2">抽出後の風味持続期間の比較</h4>
+                                <div class="chart-container">
+                                    <canvas id="freshnessChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-8 bg-stone-200 rounded-lg text-center">
+                           <h4 class="text-lg font-semibold mb-2">主な特徴</h4>
+                            <ul class="space-y-3 text-left">
+                                <li class="flex items-start"><span class="text-green-500 mr-2">✓</span><span>苦味や酸味がまろやかで、飲みやすい風味</span></li>
+                                <li class="flex items-start"><span class="text-green-500 mr-2">✓</span><span>カフェイン含有量を約1/3に低減</span></li>
+                                <li class="flex items-start"><span class="text-green-500 mr-2">✓</span><span>豆本来の抗酸化作用を高く維持</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Silica Coffee Panel -->
+                <div id="panel-silica-coffee" class="content-panel">
+                     <div class="text-center">
+                        <h3 class="text-2xl font-bold mb-4">コーヒー × 地域資源：シリカコーヒー</h3>
+                        <p class="text-stone-700 mb-8 max-w-3xl mx-auto">水素焙煎技術は、コーヒーに新たな機能を付加するプラットフォームとなりました。特に注目されるのが、地元・石川県産の籾殻から抽出した「シリカ（ケイ素）」を添加した機能性コーヒーです。</p>
+                        <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-8 text-lg font-semibold">
+                            <div class="p-4 bg-green-100 rounded-lg">石川県産<br>籾殻</div>
+                            <div class="text-2xl text-stone-400">→</div>
+                            <div class="p-4 bg-yellow-100 rounded-lg">燃焼・抽出</div>
+                             <div class="text-2xl text-stone-400">→</div>
+                            <div class="p-4 bg-blue-100 rounded-lg">非結晶<br>シリカ</div>
+                             <div class="text-2xl text-stone-400">→</div>
+                            <div class="p-4 bg-stone-200 rounded-lg">コーヒー生豆へ<br>特殊技術で含有</div>
+                        </div>
+                         <div class="mt-8 p-6 bg-white rounded-lg shadow-md max-w-2xl mx-auto">
+                           <h4 class="text-lg font-semibold mb-2">期待される効果</h4>
+                            <p class="text-stone-600">シリカは美容、関節の健康、ダイエットなどへの貢献が期待されるミネラル。地域の農業副産物を価値ある健康成分へと転換する、持続可能な製品開発モデルです。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Toilet Panel -->
+                <div id="panel-toilet" class="content-panel">
+                     <div class="text-center">
+                        <h3 class="text-2xl font-bold mb-4">技術移転：コーヒーから、世界を救うトイレへ</h3>
+                        <p class="text-stone-700 mb-8 max-w-3xl mx-auto">「微生物や化学反応による劣化を防ぐ」という発想は、全く異なる社会課題の解決に応用されました。コーヒーの保存技術が、災害時やイベントで活躍する「感染予防型仮設トイレ」の心臓部となったのです。</p>
+                        <div class="grid md:grid-cols-2 gap-8 text-left">
+                            <div class="p-6 bg-red-50 border border-red-200 rounded-lg">
+                                <h4 class="font-bold text-xl text-red-800 mb-2">課題：従来の仮設トイレ</h4>
+                                <ul class="space-y-2 text-red-700 list-disc list-inside">
+                                    <li>細菌の分解による悪臭</li>
+                                    <li>病原菌の繁殖による感染リスク</li>
+                                    <li>不衛生な環境による利用者ストレス</li>
+                                </ul>
+                            </div>
+                            <div class="p-6 bg-green-50 border border-green-200 rounded-lg">
+                                <h4 class="font-bold text-xl text-green-800 mb-2">解決策：ZoneZeroトイレ</h4>
+                                 <ul class="space-y-2 text-green-700 list-disc list-inside">
+                                    <li>イオンとオゾンで細菌活動を抑制</li>
+                                    <li>臭気分子を中和し、悪臭を元から断つ</li>
+                                    <li>清潔で安全な環境を提供（能登半島地震でも実証）</li>
+                                </ul>
+                            </div>
+                        </div>
+                         <p class="mt-8 text-stone-600 max-w-3xl mx-auto">これは、ある問題（コーヒーの酸化）の解決策の根底にある科学原理を抽出し、全く別の問題（トイレの衛生）に再適用する、廣瀬氏の「システム思考」を象徴する事例です。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+         <!-- Section 4: The Visionary -->
+        <section id="visionary" class="my-16 py-16 bg-white rounded-lg">
+            <h2 class="text-3xl font-bold text-center mb-4">21世紀の発明家像</h2>
+            <p class="max-w-3xl mx-auto text-center text-stone-600 mb-12">
+                廣瀬氏のキャリアは、単なる研究や発明の連続ではありません。それは、一貫したイノベーションモデルの実践です。研究室の知見を市場に繋げ、社会課題の解決にまで昇華させるその姿は、現代の「教授兼起業家」の理想像を示しています。
+            </p>
+            <div class="max-w-4xl mx-auto grid md:grid-cols-2 lg:grid-cols-4 gap-4 text-center">
+                <div class="p-4 bg-stone-50 rounded-lg">
+                    <div class="text-4xl mb-2">好奇心</div>
+                    <p class="text-sm">日常の「なぜ？」から探求を開始</p>
+                </div>
+                <div class="p-4 bg-stone-50 rounded-lg">
+                    <div class="text-4xl mb-2">科学</div>
+                    <p class="text-sm">問題を基本原理にまで分解し分析</p>
+                </div>
+                <div class="p-4 bg-stone-50 rounded-lg">
+                    <div class="text-4xl mb-2">逆転</div>
+                    <p class="text-sm">破壊プロセスを反転させ解決策を設計</p>
+                </div>
+                <div class="p-4 bg-stone-50 rounded-lg">
+                    <div class="text-4xl mb-2">実装</div>
+                    <p class="text-sm">地域資源を活用し、積極的に事業化</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="text-center py-8 bg-stone-800 text-stone-300">
+        <p>このページは提供されたレポートに基づき、廣瀬幸雄氏の功績をインタラクティブに紹介するために作成されました。</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- Timeline Data and Generation ---
+            const timelineData = [
+                { year: '1963', event: '金沢大学理学部 卒業', side: 'left' },
+                { year: '1985', event: '金沢大学 教授に就任', side: 'right' },
+                { year: '1997', event: '「コーヒー学入門」講座を開始', side: 'left' },
+                { year: '2003', event: 'イグノーベル化学賞 受賞', side: 'right', highlight: true },
+                { year: '2009', event: '文部科学大臣表彰 科学技術賞 受賞', side: 'left', highlight: true },
+                { year: '2021', event: '瑞宝中綬章 受章', side: 'right', highlight: true }
+            ];
+
+            const timelineContainer = document.getElementById('timeline');
+            timelineData.forEach((item, index) => {
+                const sideClass = item.side === 'left' ? 'md:mr-auto md:ml-0' : 'md:ml-auto md:mr-0';
+                const textAlign = item.side === 'left' ? 'md:text-right' : 'md:text-left';
+                const itemHtml = `
+                    <div class="timeline-item mb-8 flex flex-col items-center md:flex-row" data-index="${index}">
+                        <div class="w-full md:w-5/12 ${sideClass}">
+                            <div class="p-4 bg-white rounded-lg shadow-md ${textAlign}">
+                                <h3 class="font-bold text-lg">${item.year}</h3>
+                                <p class="text-stone-600">${item.event}</p>
+                                ${item.highlight ? '<div class="absolute -top-2 -right-2 w-5 h-5 bg-amber-400 rounded-full"></div>' : ''}
+                            </div>
+                        </div>
+                        <div class="absolute left-1/2 -translate-x-1/2 w-4 h-4 bg-stone-500 rounded-full border-4 border-white"></div>
+                    </div>
+                `;
+                timelineContainer.innerHTML += itemHtml;
+            });
+            
+            // --- Timeline Scroll Animation ---
+            const timelineItems = document.querySelectorAll('.timeline-item');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            timelineItems.forEach(item => {
+                observer.observe(item);
+            });
+
+            // --- Roasting Diagram Toggle ---
+            const roastBtns = document.querySelectorAll('.roast-btn');
+            const diagramTraditional = document.getElementById('diagram-traditional');
+            const diagramHydrogen = document.getElementById('diagram-hydrogen');
+            
+            roastBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    roastBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    if (btn.id === 'btn-traditional') {
+                        diagramTraditional.style.opacity = '1';
+                        diagramHydrogen.style.opacity = '0';
+                    } else {
+                        diagramTraditional.style.opacity = '0';
+                        diagramHydrogen.style.opacity = '1';
+                    }
+                });
+            });
+
+            // --- Innovator Panel Tabs ---
+            const navButtons = document.querySelectorAll('.nav-button');
+            const contentPanels = document.querySelectorAll('.content-panel');
+
+            navButtons.forEach(button => {
+                if(button.dataset.target) {
+                    button.addEventListener('click', () => {
+                        const targetPanelId = button.dataset.target;
+                        
+                        navButtons.forEach(btn => {
+                            if(btn.dataset.target) btn.classList.remove('active');
+                        });
+                        button.classList.add('active');
+
+                        contentPanels.forEach(panel => {
+                            if (panel.id === targetPanelId) {
+                                panel.classList.add('active');
+                            } else {
+                                panel.classList.remove('active');
+                            }
+                        });
+                    });
+                }
+            });
+
+            // --- Freshness Chart.js ---
+            const ctx = document.getElementById('freshnessChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['従来コーヒー', '水素焙煎コーヒー'],
+                    datasets: [{
+                        label: '風味持続期間',
+                        data: [1, 42], // 1 hour vs 2-3 weeks (approx 42 hours * 24 / 24) -> simplified to show magnitude
+                        backgroundColor: [
+                            'rgba(234, 179, 8, 0.6)', // amber-500
+                            'rgba(2, 132, 199, 0.6)' // sky-600
+                        ],
+                        borderColor: [
+                            'rgba(234, 179, 8, 1)',
+                            'rgba(2, 132, 199, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '期間（相対値）'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                             callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.x !== null) {
+                                       if(context.label === '従来コーヒー'){
+                                           label += '約1時間';
+                                       } else {
+                                           label += '約2~3週間';
+                                       }
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

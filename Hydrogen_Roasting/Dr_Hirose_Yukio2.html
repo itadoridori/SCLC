@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インフォグラフィック：廣瀬幸雄の革新の軌跡</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Brilliant Blues -->
+    <!-- Plan Narrative & Structure: This infographic tells the story of Prof. Hirose in a linear, scrolling narrative. It starts with his academic foundation in "Fracture Engineering," pivots to his passion for coffee and the invention of "Hydrogen Roasting," showcases the product ecosystem built on this technology, climaxes with the technology transfer to sanitation, and concludes with his overall innovation model. This narrative structure makes the complex connections between disparate fields clear and engaging for a general audience. -->
+    <!-- Visualization & Content Choices: 1. Career Timeline (Goal: Change) -> Viz: HTML/CSS Timeline -> Justification: Clearly shows the progression of his academic and public recognition over time. 2. Roasting Comparison (Goal: Compare) -> Viz: HTML/CSS Diagram -> Justification: A simple visual flow effectively contrasts the chemical processes of "Oxidation" vs. "Reduction" without needing complex charts. 3. Freshness Data (Goal: Compare) -> Viz: Bar Chart (Chart.js) -> Justification: A bar chart provides a direct, powerful visual comparison of the product's core benefit (shelf life). 4. Tech Transfer Flow (Goal: Organize/Relationships) -> Viz: HTML/CSS Flowchart -> Justification: A simple, non-SVG flowchart visually demonstrates the abstract but crucial concept of transferring a core scientific principle from one application (coffee) to another (toilets). 5. Key Stats (Goal: Inform) -> Viz: Large Number Displays -> Justification: Big, bold numbers immediately convey key performance indicators like awards and global research reach. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #F3F3F3;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 50vh;
+        }
+        .flow-arrow {
+            font-size: 2.5rem;
+            color: #4192D9;
+            line-height: 1;
+        }
+    </style>
+</head>
+<body class="text-[#111111]">
+
+    <div class="container mx-auto px-4 py-8 md:py-12">
+
+        <header class="text-center mb-16">
+            <h1 class="text-4xl md:text-6xl font-bold text-[#004E89] mb-4">廣瀬幸雄の革新の軌跡</h1>
+            <p class="text-lg md:text-xl text-[#0074D9]">一人の科学者が繋ぐ、材料科学・コーヒー・公衆衛生の世界</p>
+        </header>
+
+        <section class="mb-20">
+            <h2 class="text-3xl font-bold text-center mb-12 text-[#004E89]">すべては「破壊」の科学から始まった</h2>
+            <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <p class="text-lg font-medium text-[#0074D9]">専門分野</p>
+                    <p class="text-4xl font-bold text-[#004E89]">破壊工学</p>
+                    <p class="mt-2 text-gray-600">物質がなぜ、どのように壊れるかを研究する学問</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <p class="text-lg font-medium text-[#0074D9]">受賞歴</p>
+                    <p class="text-4xl font-bold text-[#004E89]">3<span class="text-2xl">つ</span></p>
+                    <p class="mt-2 text-gray-600">イグノーベル賞、文部科学大臣表彰、瑞宝中綬章</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <p class="text-lg font-medium text-[#0074D9]">コーヒー研究</p>
+                    <p class="text-4xl font-bold text-[#004E89]">40<span class="text-2xl">カ国以上</span></p>
+                    <p class="mt-2 text-gray-600">コーヒーベルト地帯の生産国を訪問調査</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-20">
+            <h2 class="text-3xl font-bold text-center mb-4 text-[#004E89]">情熱の応用：なぜコーヒーは劣化するのか？</h2>
+            <p class="text-center max-w-3xl mx-auto mb-12 text-gray-700">廣瀬氏は自身の専門知識をコーヒーに応用。風味劣化の「破壊」プロセスである「酸化」を、化学的に逆の「還元」プロセスで防ぐという画期的な発想に至りました。</p>
+            <div class="bg-white p-8 rounded-lg shadow-lg">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="border-r-0 md:border-r border-gray-200 pr-0 md:pr-8">
+                        <h3 class="text-2xl font-bold text-center text-red-600 mb-4">従来焙煎：酸化プロセス</h3>
+                        <div class="flex items-center justify-center space-x-4">
+                            <div class="text-center">
+                                <div class="text-4xl p-4 bg-green-100 rounded-full">🌿</div>
+                                <p class="mt-2 font-medium">生豆</p>
+                            </div>
+                            <div class="text-4xl text-red-500">+</div>
+                            <div class="text-center">
+                                <div class="text-4xl p-4 bg-red-100 rounded-full">🔥</div>
+                                <p class="mt-2 font-medium">酸素と熱</p>
+                            </div>
+                             <div class="text-4xl text-red-500">→</div>
+                            <div class="text-center">
+                                <div class="text-4xl p-4 bg-yellow-600 text-white rounded-full">😖</div>
+                                <p class="mt-2 font-medium">酸化した豆</p>
+                            </div>
+                        </div>
+                        <p class="mt-6 text-gray-600">空気中の酸素と熱が反応し、油分が酸化。時間と共に風味や香りが劣化します。</p>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-center text-[#0074D9] mb-4">水素焙煎：還元プロセス</h3>
+                        <div class="flex items-center justify-center space-x-4">
+                            <div class="text-center">
+                                <div class="text-4xl p-4 bg-green-100 rounded-full">🌿</div>
+                                <p class="mt-2 font-medium">生豆</p>
+                            </div>
+                            <div class="text-4xl text-[#0074D9]">+</div>
+                            <div class="text-center">
+                                <div class="text-4xl p-4 bg-blue-100 rounded-full">💨</div>
+                                <p class="mt-2 font-medium">水素と蒸気</p>
+                            </div>
+                            <div class="text-4xl text-[#0074D9]">→</div>
+                            <div class="text-center">
+                                <div class="text-4xl p-4 bg-[#0074D9] text-white rounded-full">😌</div>
+                                <p class="mt-2 font-medium">還元された豆</p>
+                            </div>
+                        </div>
+                        <p class="mt-6 text-gray-600">酸化を防ぎ、豆が持つ本来の風味と鮮度を長期間キープします。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-20">
+            <h2 class="text-3xl font-bold text-center mb-4 text-[#004E89]">成果：驚異的な鮮度持続</h2>
+            <p class="text-center max-w-3xl mx-auto mb-12 text-gray-700">水素焙煎技術は、コーヒー豆の賞味期限を劇的に延ばすことに成功。消費者にも事業者にも大きなメリットをもたらします。</p>
+            <div class="bg-white p-8 rounded-lg shadow-lg">
+                <h3 class="text-2xl font-bold text-center mb-6">コーヒー豆の賞味期限比較</h3>
+                <div class="chart-container">
+                    <canvas id="freshnessChart"></canvas>
+                </div>
+                <p class="text-center mt-4 text-gray-600">水素焙煎豆は、通常の焙煎豆と比較して約3倍の期間、鮮度を保つとされています。</p>
+            </div>
+        </section>
+
+        <section class="mb-20">
+            <h2 class="text-3xl font-bold text-center mb-4 text-[#004E89]">エコシステムの構築：地域資源との融合</h2>
+            <p class="text-center max-w-3xl mx-auto mb-12 text-gray-700">廣瀬氏の技術は、地元の資源と結びつき、新たな価値を創造します。石川県産の「籾殻」は、最先端の機能性コーヒーへと生まれ変わりました。</p>
+            <div class="bg-white p-8 rounded-lg shadow-lg">
+                <h3 class="text-2xl font-bold text-center mb-8">「水素焙煎シリカコーヒー」誕生のプロセス</h3>
+                <div class="flex flex-col md:flex-row items-center justify-around space-y-4 md:space-y-0">
+                    <div class="text-center">
+                        <div class="text-5xl p-5 bg-yellow-100 rounded-full">🌾</div>
+                        <p class="mt-2 font-semibold">石川県産<br>籾殻</p>
+                    </div>
+                    <div class="flow-arrow transform md:rotate-0 rotate-90">→</div>
+                    <div class="text-center">
+                        <div class="text-5xl p-5 bg-orange-100 rounded-full">🔥</div>
+                        <p class="mt-2 font-semibold">燃焼・抽出</p>
+                    </div>
+                    <div class="flow-arrow transform md:rotate-0 rotate-90">→</div>
+                    <div class="text-center">
+                        <div class="text-5xl p-5 bg-gray-100 rounded-full">💎</div>
+                        <p class="mt-2 font-semibold">非結晶シリカ<br>(健康成分)</p>
+                    </div>
+                    <div class="flow-arrow transform md:rotate-0 rotate-90">→</div>
+                    <div class="text-center">
+                        <div class="text-5xl p-5 bg-[#004E89] text-white rounded-full">☕</div>
+                        <p class="mt-2 font-semibold">機能性コーヒー<br>製品化</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2 class="text-3xl font-bold text-center mb-4 text-[#004E89]">技術移転：コーヒーから世界を救うトイレへ</h2>
+            <p class="text-center max-w-3xl mx-auto mb-12 text-gray-700">「劣化を防ぐ」という中核技術は、全く異なる社会課題の解決に応用されました。コーヒーの保存技術が、災害時やイベントで活躍する「感染予防型仮設トイレ」の心臓部となったのです。</p>
+            <div class="bg-white p-8 rounded-lg shadow-lg">
+                <h3 class="text-2xl font-bold text-center mb-8">課題解決の原理</h3>
+                 <div class="max-w-3xl mx-auto flex flex-col items-center justify-center space-y-4">
+                    <div class="w-full p-4 border-2 border-red-400 bg-red-50 rounded-lg text-center">
+                        <p class="font-bold text-red-700">問題：コーヒーの酸化</p>
+                        <p class="text-sm text-red-600">化学反応による品質劣化</p>
+                    </div>
+                    <div class="text-2xl font-bold text-[#0074D9]">↓</div>
+                    <div class="w-full p-4 border-2 border-[#4192D9] bg-blue-50 rounded-lg text-center">
+                        <p class="font-bold text-[#004E89]">中核原理：化学・生物的活動の制御</p>
+                        <p class="text-sm text-[#0074D9]">水素やイオンで望ましくない反応を抑制する</p>
+                    </div>
+                     <div class="text-2xl font-bold text-[#0074D9]">↓</div>
+                     <div class="w-full p-4 border-2 border-green-400 bg-green-50 rounded-lg text-center">
+                        <p class="font-bold text-green-700">応用：トイレの衛生</p>
+                        <p class="text-sm text-green-600">細菌分解による悪臭・病原菌を抑制</p>
+                    </div>
+                </div>
+                 <p class="text-center mt-8 text-gray-700 font-medium">この「ZoneZero」トイレは能登半島地震の被災地でも活躍し、その有効性を実証しました。</p>
+            </div>
+        </section>
+
+    </div>
+    
+    <footer class="text-center mt-16 py-6 bg-[#004E89] text-white">
+        <p>このインフォグラフィックは、公開情報に基づき廣瀬幸雄氏の功績を紹介する目的で作成されました。</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const freshnessData = {
+                labels: ['従来焙煎豆', '水素焙煎豆'],
+                datasets: [{
+                    label: '賞味期限（月）',
+                    data: [1, 3],
+                    backgroundColor: [
+                        'rgba(255, 159, 64, 0.6)',
+                        'rgba(65, 146, 217, 0.6)'
+                    ],
+                    borderColor: [
+                        'rgb(255, 159, 64)',
+                        'rgb(65, 146, 217)'
+                    ],
+                    borderWidth: 2
+                }]
+            };
+
+            const freshnessConfig = {
+                type: 'bar',
+                data: freshnessData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '期間（ヶ月）',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    const item = tooltipItems[0];
+                                    let label = item.chart.data.labels[item.dataIndex];
+                                    if (Array.isArray(label)) {
+                                      return label.join(' ');
+                                    } else {
+                                      return label;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+            };
+
+            const freshnessChart = new Chart(
+                document.getElementById('freshnessChart'),
+                freshnessConfig
+            );
+        });
+    </script>
+</body>
+</html>
