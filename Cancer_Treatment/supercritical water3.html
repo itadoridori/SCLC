@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>スライド：がん治療と「奇跡の水」の科学的真実 (AI機能追加版)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.4.0"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #f0f2f5;
+        }
+        .slide {
+            display: none;
+            height: 100%;
+        }
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+        }
+        .slide-content-wrapper {
+            flex-grow: 1;
+            min-height: 0;
+        }
+        .slide-content {
+            height: 100%;
+            overflow-y: auto;
+        }
+        .narration {
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            line-height: 1.7;
+            height: 120px;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 100%;
+            max-height: 50vh;
+        }
+    </style>
+</head>
+<body class="flex flex-col h-screen antialiased">
+
+    <div id="slides-container" class="flex-grow w-full max-w-5xl mx-auto py-5 px-4 md:px-0 min-h-0">
+
+        <!-- Slide 1 -->
+        <div class="slide active">
+            <div class="slide-content-wrapper">
+                <div class="slide-content bg-white rounded-lg shadow-xl flex flex-col justify-center items-center text-center p-8">
+                    <p class="text-2xl text-blue-600 font-bold">科学的検証シリーズ</p>
+                    <h1 class="text-4xl md:text-6xl font-extrabold my-4 text-gray-800">がん治療と「奇跡の水」</h1>
+                    <p class="text-xl text-gray-600">超臨界水・ナノ水・シリカ水の言説を徹底解剖</p>
+                </div>
+            </div>
+            <div class="narration mt-5">
+                がんという困難な病に直面し、あらゆる可能性を模索する方々へ。本日は、インターネットなどで見られる「特定の水ががんを治す」という言説について、科学の光を当ててその真実を解き明かしていきます。希望と科学的根拠の狭間で、私たちが知るべきことは何なのでしょうか。
+            </div>
+        </div>
+
+        <!-- Slide 2 -->
+        <div class="slide">
+             <div class="slide-content-wrapper">
+                <div class="slide-content bg-white rounded-lg shadow-xl flex flex-col justify-center items-center text-center p-8">
+                    <span class="text-7xl mb-6">❓</span>
+                    <h2 class="text-3xl md:text-5xl font-bold text-gray-800">「特別な水で、がんは消える」</h2>
+                    <p class="text-lg md:text-xl text-gray-600 mt-4 max-w-2xl">「超臨界水やナノ水を飲むと、がん細胞から出る活性酸素やエクソソームが除去され、がんが消失する」…この希望に満ちた仮説は、果たして本当なのでしょうか？</p>
+                </div>
+            </div>
+            <div class="narration mt-5">
+                まず、検証の対象となる仮説を確認しましょう。それは「超臨界水、ナノ水、シリカ水などと呼ばれる特別な水を飲むことで、がん細胞から出る有害物質が取り除かれ、その結果がんが消える」というものです。この説は、希望を求める人々にとって、非常に魅力的に聞こえるかもしれません。
+            </div>
+        </div>
+        
+        <!-- Slide 3 -->
+        <div class="slide">
+            <div class="slide-content-wrapper">
+                <div class="slide-content bg-white rounded-lg shadow-xl flex flex-col justify-center items-center text-center p-8">
+                    <p class="text-2xl font-bold text-red-600">結論から申し上げます</p>
+                    <div class="my-6 text-9xl">❌</div>
+                    <h2 class="text-3xl md:text-4xl font-extrabold text-gray-800 max-w-3xl">特定の水を飲んでがんが治るという<br>科学的・医学的証拠は<span class="text-red-600">一切ありません</span>。</h2>
+                </div>
+            </div>
+             <div class="narration mt-5">
+                皆様に最初に、そして最も重要な事実をお伝えします。現時点において、「特定の水を飲むことで、がんが治癒したり、小さくなったりする」ことを証明した、信頼できる科学的・医学的な証拠は、世界中を探しても一つも存在しません。この後のスライドで、その理由を詳しく解説していきます。
+            </div>
+        </div>
+        
+        <!-- Slide 4 -->
+        <div class="slide">
+            <div class="slide-content-wrapper">
+                <div class="slide-content bg-white rounded-lg shadow-xl flex flex-col justify-around items-center text-center p-8">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-800">言説の解体①：超臨界水</h2>
+                     <div class="grid md:grid-cols-2 gap-8 items-center w-full max-w-3xl">
+                        <div class="text-left">
+                            <h3 class="font-bold text-xl mb-2 text-blue-700">科学的実態</h3>
+                            <p>温度374℃、圧力22.1MPa以上の超高温・超高圧状態にある、産業用の特殊な水。コーヒーのカフェイン除去などに使われます。</p>
+                        </div>
+                        <div class="bg-gray-100 p-6 rounded-lg">
+                            <p class="text-8xl">🏭</p>
+                            <p class="text-2xl font-bold text-red-600 mt-2">飲用は物理的に不可能</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+             <div class="narration mt-5">
+                まず「超臨界水」です。これは、摂氏374度以上、22メガパスカル以上の超高温・高圧状態にある、特殊な産業技術用の水です。コーヒーのカフェイン抜きなどに利用されるもので、人間が飲むことは物理的に不可能です。「超臨界」という最先端のイメージだけが、マーケティングに利用されているのです。
+            </div>
+        </div>
+        
+        <!-- Slide 5 -->
+        <div class="slide">
+            <div class="slide-content-wrapper">
+                <div class="slide-content bg-white rounded-lg shadow-xl flex flex-col justify-around items-center text-center p-8">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-800">言説の解体②：ナノ水</h2>
+                    <div class="grid md:grid-cols-2 gap-8 items-center w-full max-w-3xl">
+                        <div class="text-left">
+                            <h3 class="font-bold text-xl mb-2 text-blue-700">科学的実態</h3>
+                            <p>極小の泡（ナノバブル）を含む水のこと。洗浄技術などに使われます。一部の研究では、仮説とは逆に活性酸素を「取り除く」のではなく<span class="font-bold text-red-600">「作り出す」</span>可能性が示唆されています。</p>
+                        </div>
+                        <div class="bg-gray-100 p-6 rounded-lg">
+                             <p class="text-8xl">🔄</p>
+                            <p class="text-2xl font-bold text-red-600 mt-2">仮説と真逆の作用？</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="narration mt-5">
+                次に「ナノ水」です。これは科学的には「ナノバブル水」に近い概念ですが、がんを治す証拠はありません。それどころか、一部の研究では、ナノバブルが壊れる際に活性酸素を「取り除く」のではなく、逆に「作り出す」可能性が指摘されています。これは、がんが治るという仮説と全く逆の作用です。
+            </div>
+        </div>
+        
+        <!-- Slide 6 -->
+        <div class="slide">
+            <div class="slide-content-wrapper">
+                <div class="slide-content bg-white rounded-lg shadow-xl flex flex-col justify-around items-center text-center p-8">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-800">言説の解体③：シリカ水</h2>
+                     <div class="grid md:grid-cols-2 gap-8 items-center w-full max-w-3xl">
+                        <div class="text-left">
+                            <h3 class="font-bold text-xl mb-2 text-blue-700">科学的実態</h3>
+                            <p>ミネラルの一種「ケイ素」を含む水。美容や健康効果を謳う広告もありますが、がん治療効果は証明されておらず、あくまで嗜好品です。消費者庁から景品表示法違反で措置命令を受けた事例もあります。</p>
+                        </div>
+                        <div class="bg-gray-100 p-6 rounded-lg">
+                            <p class="text-8xl">🧴</p>
+                            <p class="text-2xl font-bold text-red-600 mt-2">治療薬ではない</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+             <div class="narration mt-5">
+                最後に「シリカ水」です。これはミネラルの一種であるケイ素を含む水で、市販されています。しかし、その効果は美容や健康に関するものが主で、がん治療効果は証明されていません。科学的根拠が乏しい過大な宣伝に対し、消費者庁が措置命令を出した事例もある、あくまで嗜好品です。
+            </div>
+        </div>
+        
+        <!-- Slide 7 -->
+        <div class="slide">
+            <div class="slide-content-wrapper">
+                <div class="slide-content bg-white rounded-lg shadow-xl flex flex-col justify-center items-center text-center p-8">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-8">活性酸素は「諸刃の剣」</h2>
+                    <div class="grid grid-cols-2 gap-12 w-full max-w-3xl">
+                        <div class="bg-red-50 p-6 rounded-lg border-l-4 border-red-500">
+                            <p class="text-6xl">😠</p>
+                            <h3 class="text-2xl font-bold mt-2">悪玉の顔</h3>
+                            <p class="mt-2">過剰になると細胞を傷つけ、がんや老化の原因になる。</p>
+                        </div>
+                        <div class="bg-green-50 p-6 rounded-lg border-l-4 border-green-500">
+                             <p class="text-6xl">😇</p>
+                            <h3 class="text-2xl font-bold mt-2">善玉の顔</h3>
+                            <p class="mt-2">免疫細胞が細菌などを攻撃する武器になる。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="narration mt-5">
+                仮説に出てくる「活性酸素」は、一般に悪者だと思われがちですが、実は二つの顔を持っています。過剰になれば細胞を傷つけ、がんの原因にもなる「悪玉」の顔。その一方で、体内に侵入した病原体を攻撃する、免疫の重要な武器となる「善玉」の顔も持っているのです。
+            </div>
+        </div>
+        
+        <!-- Slide 8 -->
+        <div class="slide">
+            <div class="slide-content-wrapper">
+                <div class="slide-content bg-white rounded-lg shadow-xl flex flex-col justify-center items-center p-8">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-8">実際の「がん治療」は活性酸素を武器にする</h2>
+                    <div class="flex flex-col md:flex-row items-center justify-center gap-4 text-center w-full max-w-4xl">
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <p class="text-3xl">⚡️</p>
+                            <p class="font-bold text-lg">放射線治療<br>一部の抗がん剤</p>
+                        </div>
+                        <div class="text-4xl font-sans text-blue-500 mx-4">→</div>
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <p class="text-3xl">💥</p>
+                            <p class="font-bold text-lg">がん細胞内で<br>活性酸素を大量発生</p>
+                        </div>
+                        <div class="text-4xl font-sans text-blue-500 mx-4">→</div>
+                         <div class="bg-red-50 p-4 rounded-lg">
+                            <p class="text-3xl">🎯</p>
+                            <p class="font-bold text-lg">がん細胞を<br>攻撃・破壊</p>
+                        </div>
+                    </div>
+                    <p class="mt-8 text-lg text-red-700 font-bold max-w-3xl text-center">自己判断で抗酸化サプリを摂ると、治療の武器を消してしまい、効果を弱める危険性があります。</p>
+                </div>
+            </div>
+            <div class="narration mt-5">
+                ここで非常に重要な事実があります。実は、放射線治療や一部の抗がん剤といった標準的ながん治療は、意図的にがん細胞の中で大量の活性酸素を発生させ、それを「武器」としてがんを攻撃しているのです。もし治療中に自己判断で抗酸化サプリなどを摂ると、この武器を消してしまい、治療効果を弱める危険さえあります。
+            </div>
+        </div>
+        
+        <!-- Slide 9 -->
+        <div class="slide">
+            <div class="slide-content-wrapper">
+                 <div class="slide-content bg-white rounded-lg shadow-xl flex flex-col justify-center items-center p-8 text-center">
+                     <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-8">証拠の天秤：科学 vs 体験談</h2>
+                     <p class="mb-4 max-w-3xl">科学的な主張は、証拠の「質」と「量」で評価されます。「特別な水」を支持する証拠はどれくらいあるのでしょうか？</p>
+                     <div class="chart-container flex items-center justify-center">
+                        <canvas id="evidenceChart"></canvas>
+                    </div>
+                 </div>
+            </div>
+             <div class="narration mt-5">
+                科学的な主張の信頼性は、証拠の質と量で決まります。グラフが示す通り、「特別な水でがんが治る」という主張を裏付ける、専門家による査読を経た科学論文は「ゼロ」です。一方、インターネット上には個人の体験談が溢れていますが、これらは科学的な証拠にはなりません。
+            </div>
+        </div>
+
+        <!-- Slide 10 -->
+        <div class="slide">
+            <div class="slide-content-wrapper">
+                <div class="slide-content bg-white rounded-lg shadow-xl flex flex-col justify-center items-center p-8 text-center">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-8">なぜ「効いた」と感じるのか？</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-4xl">
+                        <div class="bg-gray-100 p-6 rounded-lg">
+                            <p class="text-6xl mb-2">🧠</p>
+                            <h3 class="text-xl font-bold">プラセボ効果</h3>
+                            <p class="text-sm mt-1">「効く」と信じること自体で、痛みが和らぐなどの変化が起きる現象。</p>
+                        </div>
+                        <div class="bg-gray-100 p-6 rounded-lg">
+                            <p class="text-6xl mb-2">🏥</p>
+                            <h3 class="text-xl font-bold">標準治療の効果</h3>
+                            <p class="text-sm mt-1">病院の治療が効いたのを、併用していた民間療法の効果だと誤認する。</p>
+                        </div>
+                        <div class="bg-gray-100 p-6 rounded-lg">
+                            <p class="text-6xl mb-2">📢</p>
+                            <h3 class="text-xl font-bold">生存者バイアス</h3>
+                            <p class="text-sm mt-1">効果がなかった大勢は声を上げず、「効いた」という声だけが目立つ。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+             <div class="narration mt-5">
+                では、なぜ「効いた」という体験談が存在するのでしょうか。それには心理的な「バイアス」が関係しています。「効く」と信じることで実際に症状が和らぐ「プラセボ効果」、病院の治療が効いたのを誤認するケース、そして効果がなかった多くの人は声を上げないため、うまくいった話だけが目立つ、といった理由が考えられます。
+            </div>
+        </div>
+        
+        <!-- Slide 11 -->
+        <div class="slide">
+            <div class="slide-content-wrapper">
+                <div class="slide-content bg-white rounded-lg shadow-xl flex flex-col justify-center items-center p-8 text-center">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-8">結論：信頼できる羅針盤を</h2>
+                     <div class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-4xl">
+                        <div class="text-center">
+                            <div class="bg-blue-600 text-white rounded-full w-24 h-24 flex items-center justify-center mx-auto text-5xl">💬</div>
+                            <h3 class="text-xl font-bold mt-4">主治医に相談する</h3>
+                            <p class="mt-1">気になることは専門家へ。</p>
+                        </div>
+                        <div class="text-center">
+                             <div class="bg-blue-600 text-white rounded-full w-24 h-24 flex items-center justify-center mx-auto text-5xl">🏥</div>
+                            <h3 class="text-xl font-bold mt-4">標準治療を信頼する</h3>
+                            <p class="mt-1">科学的根拠のある治療を柱に。</p>
+                        </div>
+                        <div class="text-center">
+                             <div class="bg-blue-600 text-white rounded-full w-24 h-24 flex items-center justify-center mx-auto text-5xl">📚</div>
+                            <h3 class="text-xl font-bold mt-4">公的情報を確認する</h3>
+                            <p class="mt-1">国立がん研究センター等を参照。</p>
+                        </div>
+                    </div>
+                     <p class="mt-8 text-lg text-gray-700 font-bold">不確かな情報に惑わされず、最善の選択を。</p>
+                </div>
+            </div>
+             <div class="narration mt-5">
+                結論です。不確かな情報に惑わされず、最善の選択をするために、信頼できる羅針盤を持ちましょう。第一に、気になることは必ず主治医に相談すること。第二に、科学的根拠のある標準治療を信頼すること。そして第三に、国立がん研究センターなど、公的機関の情報を確認すること。この三つが、あなた自身を守るための重要な指針となります。
+            </div>
+        </div>
+
+        <!-- Slide 12 -->
+        <div class="slide">
+            <div class="slide-content-wrapper">
+                <div class="slide-content bg-gray-800 text-white rounded-lg shadow-xl flex flex-col justify-start items-start p-8 md:p-12">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-6 sticky top-0 bg-gray-800 w-full pb-4 -mt-8 pt-8 -ml-12 pl-12">YouTube配信用コンテンツ</h2>
+                    
+                    <div class="w-full space-y-5 text-left mb-8">
+                        <div>
+                            <h3 class="text-xl font-bold text-blue-300 mb-2">タイトル案</h3>
+                            <ul class="list-disc list-inside bg-gray-700 p-3 rounded">
+                                <li>【医師が解説】「がんに効く水」は本当か？超臨界水・ナノ水の科学的真実</li>
+                                <li>【だまされないで】がんが治る「奇跡の水」のウソ。科学的根拠ゼロの真相とは</li>
+                                <li>活性酸素はがんの敵？味方？「抗酸化サプリ」の罠と正しいがん情報</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-blue-300 mb-2">概要欄</h3>
+                            <p class="bg-gray-700 p-3 rounded text-sm">「超臨界水」「ナノ水」「シリカ水」…これらの水ががんを治すという話、聞いたことありませんか？この動画では、科学的根拠（エビデンス）に基づき、その言説が本当なのかを徹底的に検証・解説します。活性酸素やエクソソームといった専門用語の正しい意味から、実際の標準的ながん治療がどのように行われるのか、そしてなぜ「効いた」という体験談が存在するのかまで、専門的な内容を分かりやすくお伝えします。がんという病と向き合うすべての方へ、不確かな情報に惑わされず、信頼できる知識を得るための一助となれば幸いです。
+                            </p>
+                        </div>
+                         <div>
+                            <h3 class="text-xl font-bold text-blue-300 mb-2">サムネイル生成用プロンプト案</h3>
+                            <ul class="list-disc list-inside bg-gray-700 p-3 rounded">
+                                <li>A thumbnail for a medical science explainer video. A doctor in a white coat pointing to a large red 'X' mark over an image of a 'miracle water' bottle. Text overlay says '「がんに効く水」はウソ？' (Does water for cancer work? Is it a lie?). Bold, clear, high contrast.</li>
+                                <li>Split-screen YouTube thumbnail. Left side shows a glowing, mystical water bottle with text '奇跡の水？' (Miracle Water?). Right side shows a microscope and DNA helix with text '科学的真実' (The Scientific Truth). A clear dividing line in the middle. Professional and intriguing.</li>
+                                <li>An infographic-style thumbnail. A large question mark in the center. Surrounding it are small icons of a water bottle, a cancer cell, and a DNA strand. The main title text is 'その水、本当に効く？' (Does that water really work?). Clean, modern design with a blue and white color scheme.</li>
+                            </ul>
+                        </div>
+                         <div>
+                            <h3 class="text-xl font-bold text-blue-300 mb-2">BGM生成用Suno AIプロンプト案</h3>
+                            <ul class="list-disc list-inside bg-gray-700 p-3 rounded">
+                                <li>A calm, thoughtful, and slightly serious corporate background track. Piano and soft strings, minimalist, providing a sense of clarity and reliability. For a science explainer video.</li>
+                                <li>Hopeful and inspiring instrumental music. Gentle acoustic guitar melody with a slow, steady tempo. Evokes a feeling of understanding and quiet confidence. Not overly dramatic.</li>
+                                <li>Neutral, atmospheric, lo-fi beats. A simple electronic loop with a focus on creating a non-distracting, focused environment for learning. Good for educational content.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="w-full border-t border-gray-600 pt-6 text-center">
+                        <h3 class="text-2xl font-bold text-white mb-3">さらに詳しく知りたいですか？</h3>
+                        <p class="text-blue-200 mb-4">AIアシスタントがあなたの質問にお答えします。</p>
+                        <button id="askAiBtn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-lg text-lg transition-transform transform hover:scale-105">
+                            AIアシスタントに質問する
+                        </button>
+                    </div>
+                </div>
+            </div>
+             <div class="narration mt-5">
+                このスライドは、本日の内容をYouTubeなどで発信する際に活用できるコンテンツ案です。さらに詳しい情報や疑問点があれば、新しく追加されたAIアシスタント機能をご利用ください。ボタンをクリックして、あなたの質問を入力できます。
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Pagination -->
+    <div class="w-full max-w-5xl mx-auto px-4 md:px-0 pb-5">
+        <div class="flex justify-between items-center bg-white p-3 rounded-lg shadow-md">
+            <button id="prevBtn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded-lg transition-colors">前へ</button>
+            <div id="pagination" class="font-bold text-gray-700"></div>
+            <button id="nextBtn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg transition-colors">次へ</button>
+        </div>
+    </div>
+
+    <!-- AI Modal -->
+    <div id="aiModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex justify-center items-center p-4">
+        <div class="bg-white rounded-lg shadow-2xl w-full max-w-2xl transform transition-all" id="aiModalContent">
+            <div class="flex justify-between items-center p-4 border-b">
+                <h3 class="text-xl font-bold text-gray-800">AIアシスタントに質問</h3>
+                <button id="closeModalBtn" class="text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
+            </div>
+            <div class="p-6">
+                <textarea id="aiQueryInput" class="w-full border border-gray-300 rounded-lg p-3" rows="3" placeholder="例：標準治療とは具体的に何ですか？"></textarea>
+                <button id="submitAiQueryBtn" class="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg transition-colors flex justify-center items-center">
+                    <span id="submitBtnText">質問を送信</span>
+                    <div id="aiLoadingSpinner" class="hidden animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                </button>
+            </div>
+            <div id="aiResponseArea" class="p-6 bg-gray-50 max-h-64 overflow-y-auto">
+                <p class="text-gray-500">ここにAIからの回答が表示されます。</p>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const slides = document.querySelectorAll('.slide');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const pagination = document.getElementById('pagination');
+            let currentSlide = 0;
+            const totalSlides = slides.length;
+            let evidenceChartInstance = null;
+
+            function updateSlides() {
+                slides.forEach((slide, index) => {
+                    slide.classList.toggle('active', index === currentSlide);
+                });
+
+                if (currentSlide === 8) { // Evidence Chart Slide (index 8)
+                    if (!evidenceChartInstance) {
+                        const ctx = document.getElementById('evidenceChart').getContext('2d');
+                        evidenceChartInstance = new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels: ['査読を経た科学論文', '逸話・個人の体験談'],
+                                datasets: [{
+                                    data: [0.5, 100],
+                                    backgroundColor: ['#ef4444', '#3b82f6'],
+                                }]
+                            },
+                            options: {
+                                indexAxis: 'y',
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                scales: {
+                                    x: { display: false, max: 100 },
+                                    y: { ticks: { font: { size: 14, weight: 'bold' }}}
+                                },
+                                plugins: {
+                                    legend: { display: false },
+                                    tooltip: { enabled: false },
+                                    annotation: {
+                                        annotations: {
+                                            label1: { type: 'label', xValue: 20, yValue: 0, content: '0件', font: {size: 20, weight: 'bold'}, color: 'white' },
+                                            label2: { type: 'label', xValue: 80, yValue: 1, content: '多数', font: {size: 20, weight: 'bold'}, color: 'white' }
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }
+
+                pagination.textContent = `${currentSlide + 1} / ${totalSlides}`;
+                prevBtn.disabled = currentSlide === 0;
+                nextBtn.disabled = currentSlide === totalSlides - 1;
+                prevBtn.classList.toggle('opacity-50', currentSlide === 0);
+                nextBtn.classList.toggle('opacity-50', currentSlide === totalSlides - 1);
+            }
+
+            nextBtn.addEventListener('click', () => {
+                if (currentSlide < totalSlides - 1) {
+                    currentSlide++;
+                    updateSlides();
+                }
+            });
+
+            prevBtn.addEventListener('click', () => {
+                if (currentSlide > 0) {
+                    currentSlide--;
+                    updateSlides();
+                }
+            });
+
+            updateSlides();
+
+            // AI Modal Logic
+            const aiModal = document.getElementById('aiModal');
+            const askAiBtn = document.getElementById('askAiBtn');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            const submitAiQueryBtn = document.getElementById('submitAiQueryBtn');
+            const aiQueryInput = document.getElementById('aiQueryInput');
+            const aiResponseArea = document.getElementById('aiResponseArea');
+            const submitBtnText = document.getElementById('submitBtnText');
+            const aiLoadingSpinner = document.getElementById('aiLoadingSpinner');
+            
+            askAiBtn.addEventListener('click', () => {
+                aiModal.classList.remove('hidden');
+            });
+
+            closeModalBtn.addEventListener('click', () => {
+                aiModal.classList.add('hidden');
+            });
+
+            aiModal.addEventListener('click', (e) => {
+                if (e.target === aiModal) {
+                    aiModal.classList.add('hidden');
+                }
+            });
+
+            submitAiQueryBtn.addEventListener('click', async () => {
+                const userQuery = aiQueryInput.value.trim();
+                if (!userQuery) {
+                    aiResponseArea.innerHTML = '<p class="text-red-500">質問を入力してください。</p>';
+                    return;
+                }
+
+                submitBtnText.classList.add('hidden');
+                aiLoadingSpinner.classList.remove('hidden');
+                submitAiQueryBtn.disabled = true;
+                aiResponseArea.innerHTML = '<p class="text-gray-500">AIが回答を生成中です...</p>';
+
+                try {
+                    const prompt = `あなたは、がん治療に関する情報を一般の方に分かりやすく説明する医療情報アシスタントです。科学的根拠に基づき、以下の前提を踏まえて、ユーザーからの質問に誠実に、そして共感的に回答してください。
+
+前提：
+1. 「特別な水（超臨界水、ナノ水、シリカ水など）を飲むことでがんが治る」という主張には、科学的・医学的な証拠は存在しません。
+2. 標準治療（手術、放射線治療、薬物療法）が、科学的に有効性が証明された最も信頼できる治療法です。
+3. 補完代替医療を利用する際は、必ず主治医に相談することが重要です。
+
+以上の点を守り、不安を煽ったり、未証明の治療法を推奨したりすることなく、中立的で正確な情報を提供してください。
+
+ユーザーの質問：
+「${userQuery}」`;
+
+                    let chatHistory = [];
+                    chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                    const payload = { contents: chatHistory };
+                    const apiKey = "";
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                    
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`API Error: ${response.statusText}`);
+                    }
+
+                    const result = await response.json();
+                    
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        const text = result.candidates[0].content.parts[0].text;
+                        aiResponseArea.innerHTML = '<p>' + text.replace(/\\n/g, '<br>') + '</p>';
+                    } else {
+                         throw new Error("予期しない形式の応答がAPIから返されました。");
+                    }
+
+                } catch (error) {
+                    console.error("Error calling Gemini API:", error);
+                    aiResponseArea.innerHTML = '<p class="text-red-500">エラーが発生しました。しばらくしてからもう一度お試しください。</p>';
+                } finally {
+                    submitBtnText.classList.remove('hidden');
+                    aiLoadingSpinner.classList.add('hidden');
+                    submitAiQueryBtn.disabled = false;
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
