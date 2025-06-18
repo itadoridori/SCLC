@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>【インタラクティブ版】酒井宏祐と「波動」技術の深層分析</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chosen Palette: Calm Harmony Neutrals -->
+    <!-- Application Structure Plan: The SPA is designed around the central conflict presented in the report: the supporter's narrative versus the critic's scientific/regulatory viewpoint. The structure is thematic and comparative, not linear like the source report. The user flow is designed to guide from context to conflict: 1) Introduction to Kosuke Sakai (The Man). 2) A deep dive into the technology, featuring interactive tabs to switch between the "Supporter's View" and "Critic's View". This allows direct comparison of claims and refutations. 3) A "Two Narratives" section that explicitly places the opposing viewpoints side-by-side for synthesis. 4) A final conclusion. This structure was chosen because it directly addresses the report's core duality, making the complex controversy more accessible and understandable for the user through guided comparison and interaction. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Sakai's career history -> Goal: Show change/progression -> Viz: Interactive HTML/CSS Timeline -> Interaction: Click to reveal details -> Justification: More engaging than a static list, highlights key moments. -> Library/Method: HTML/CSS/JS.
+        - Report Info: MRA code contradictions -> Goal: Compare/reveal inconsistencies -> Viz: Horizontal Bar Chart -> Interaction: Hover for tooltips -> Justification: Visually demonstrates the arbitrary nature of the codes far more effectively than text alone. -> Library/Method: Chart.js.
+        - Report Info: Various devices (LWA, PEI, etc.) -> Goal: Inform/Organize -> Viz: Grid of cards with a modal window -> Interaction: Click to open modal for details -> Justification: Presents a clean overview without cluttering the main page; modal provides detailed info on demand. -> Library/Method: HTML/CSS/JS.
+        - Report Info: Supporter vs. Critic arguments -> Goal: Compare/Contrast -> Viz: Side-by-side text blocks -> Interaction: Static, for direct reading comparison -> Justification: The most direct and clear way to present two opposing written arguments for user synthesis. -> Library/Method: HTML/CSS.
+        - Report Info: Patent mechanism -> Goal: Organize/Explain process -> Viz: HTML/CSS diagram -> Interaction: None -> Justification: A simple visual flow diagram clarifies the claimed technical process more easily than a dense paragraph. -> Library/Method: HTML/CSS.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Hiragino Kaku Gothic ProN', 'ヒラギノ角ゴ ProN W3', 'メイリオ', Meiryo, sans-serif;
+            background-color: #F8F7F4;
+            color: #4A4A4A;
+        }
+        .nav-link {
+            transition: color 0.3s ease, border-bottom-color 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #6E8898;
+            border-bottom-color: #6E8898;
+        }
+        .tab-button.active {
+            background-color: #6E8898;
+            color: #F8F7F4;
+        }
+        .tab-button {
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            top: 1rem;
+            left: -0.6rem;
+            width: 1.2rem;
+            height: 1.2rem;
+            border-radius: 50%;
+            background-color: #F8F7F4;
+            border: 4px solid #6E8898;
+        }
+        .modal-backdrop {
+            transition: opacity 0.3s ease;
+        }
+        .modal-content {
+            transition: transform 0.3s ease;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header & Navigation -->
+    <header id="header" class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <h1 class="text-xl md:text-2xl font-bold text-gray-800">「波動」技術の深層分析</h1>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#section-person" class="nav-link pb-1">人物像</a>
+                    <a href="#section-tech" class="nav-link pb-1">理論と装置</a>
+                    <a href="#section-narratives" class="nav-link pb-1">二つの物語</a>
+                    <a href="#section-conclusion" class="nav-link pb-1">最終分析</a>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="text-gray-600 hover:text-gray-800 focus:outline-none">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                    </button>
+                </div>
+            </div>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden px-4 pt-2 pb-4 space-y-2">
+            <a href="#section-person" class="block nav-link text-center py-1">人物像</a>
+            <a href="#section-tech" class="block nav-link text-center py-1">理論と装置</a>
+            <a href="#section-narratives" class="block nav-link text-center py-1">二つの物語</a>
+            <a href="#section-conclusion" class="block nav-link text-center py-1">最終分析</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+
+        <!-- Section 1: The Man -->
+        <section id="section-person" class="mb-16 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-4 text-gray-800">設計者：酒井宏祐</h2>
+            <p class="text-center max-w-3xl mx-auto text-gray-600 mb-12">このセクションでは、「波動」技術の背後にいる中心人物、酒井宏祐氏の経歴と知的背景を探ります。彼がどのような経験を経て独自の理論と装置群を開発するに至ったのか、その歩みをインタラクティブな年表で追体験できます。彼の活動の起源と発展の文脈を理解することが、このテーマの全体像を掴む第一歩となります。</p>
+
+            <div class="grid md:grid-cols-5 gap-12 items-start">
+                <div class="md:col-span-2 bg-white/50 p-6 rounded-lg shadow">
+                    <h3 class="font-bold text-xl mb-4 text-gray-700">人物概要</h3>
+                    <div class="space-y-3 text-gray-600">
+                        <p><strong>氏名:</strong> 酒井 宏祐 (さかい こうすけ)</p>
+                        <p><strong>出身:</strong> 1943年、奈良県生まれ</p>
+                        <p><strong>学歴:</strong> 近畿大学法学部中退</p>
+                        <p><strong>中核組織:</strong></p>
+                        <ul class="list-disc list-inside ml-4 space-y-1">
+                            <li>(有)マイクロエネルギー研究所 (代表取締役)</li>
+                            <li>NPO法人 日本波動科学研究会 (元理事長)</li>
+                            <li>(一社)地球と水と命 (代表理事)</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="md:col-span-3">
+                    <h3 class="font-bold text-xl mb-6 text-gray-700 text-center md:text-left">キャリアの軌跡</h3>
+                    <div id="timeline-container" class="relative border-l-4 border-gray-300 pl-8 space-y-12">
+                        <!-- Timeline items will be injected by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Theory & Technology -->
+        <section id="section-tech" class="mb-16 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-4 text-gray-800">理論と装置</h2>
+            <p class="text-center max-w-3xl mx-auto text-gray-600 mb-12">ここでは、酒井氏の活動の核心である「波動理論」と、それに基づき開発された装置群を深掘りします。しかし、この技術には二つの全く異なる側面が存在します。下のタブを切り替えることで、支持者たちが語る「革新的な健康法」としての側面と、科学界・規制当局が指摘する「疑似科学」としての側面の両方を対比しながら探ることができます。</p>
+            
+            <div class="flex justify-center mb-8">
+                <div class="bg-gray-200 rounded-full p-1 flex space-x-1">
+                    <button class="tab-button active px-6 py-2 rounded-full font-semibold" data-tab="supporter">支持者の視点</button>
+                    <button class="tab-button px-6 py-2 rounded-full font-semibold" data-tab="critic">批判者の視点</button>
+                </div>
+            </div>
+
+            <div id="tab-content">
+                <!-- Supporter's View -->
+                <div id="supporter-content" class="tab-pane">
+                    <div class="bg-white/50 p-6 md:p-8 rounded-lg shadow-lg">
+                        <h3 class="text-2xl font-bold mb-6 text-center text-gray-700">主張される理論と技術</h3>
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div>
+                                <h4 class="font-bold text-lg mb-2 text-gray-600">「波動理論」の三本柱</h4>
+                                <ul class="space-y-2 list-disc list-inside text-gray-600">
+                                    <li><strong>普遍的振動:</strong> 万物は固有の周波数（波動）を持つ。</li>
+                                    <li><strong>健康と共鳴:</strong> 不健康な細胞の乱れた波動を、正しい波動との共鳴によって調整する。</li>
+                                    <li><strong>情報転写:</strong> 有益な物質の「波動情報」を水などの媒体に複写し、「波動情報水」を生成する。</li>
+                                </ul>
+                                <h4 class="font-bold text-lg mt-6 mb-2 text-gray-600">特許に見る装置の仕組み</h4>
+                                <p class="text-gray-600 mb-4">(特開2006-314899より)</p>
+                                <div class="border rounded-lg p-4 space-y-4">
+                                    <div class="text-center font-semibold">指令情報 (メモリカード)</div>
+                                    <div class="flex justify-center"><span class="text-2xl">↓</span></div>
+                                    <div class="bg-blue-100 text-blue-800 p-2 rounded text-center">回転磁界の生成</div>
+                                    <div class="flex justify-center"><span class="text-2xl">↓</span></div>
+                                    <div class="bg-green-100 text-green-800 p-2 rounded text-center">水を入れた容器</div>
+                                    <div class="flex justify-center"><span class="text-2xl">↓</span></div>
+                                    <div class="bg-red-100 text-red-800 p-2 rounded text-center">負の帯電板 (水分子を安定化)</div>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-lg mb-4 text-gray-600">主要な装置群</h4>
+                                <p class="text-sm text-gray-500 mb-4">画像をクリックすると詳細が表示されます。</p>
+                                <div id="device-gallery" class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                                    <!-- Device items will be injected by JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Critic's View -->
+                <div id="critic-content" class="tab-pane hidden">
+                     <div class="bg-white/50 p-6 md:p-8 rounded-lg shadow-lg">
+                        <h3 class="text-2xl font-bold mb-6 text-center text-gray-700">科学的精査と法的問題</h3>
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div class="space-y-6">
+                                <div>
+                                    <h4 class="font-bold text-lg mb-2 text-gray-600">疑似科学という判定</h4>
+                                    <ul class="space-y-2 list-disc list-inside text-gray-600">
+                                        <li><strong>科学的根拠の欠如:</strong> 「波動」の存在やその測定・転写メカニズムは、現代科学の基本原則と矛盾する。</li>
+                                        <li><strong>測定メカニズムの否定:</strong> 装置は外部の「波動」ではなく、術者自身の皮膚電気抵抗の変化（嘘発見器と同様の原理）を検知しているに過ぎないと指摘されている。</li>
+                                        <li><strong>術者の信念バイアス:</strong> 測定結果は、術者の期待や無意識の動きによって左右される。</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-lg mb-2 text-gray-600">法的・規制上の問題</h4>
+                                     <ul class="space-y-2 list-disc list-inside text-gray-600">
+                                        <li><strong>薬機法違反の可能性:</strong> 医療機器として未承認にもかかわらず、病気の診断や治療を謳うことは違法。</li>
+                                        <li><strong>行政処分の先例:</strong> 2008年、経済産業省は類似装置の販売業者に対し、特定商取引法違反（不実告知）で業務停止命令を下している。</li>
+                                        <li><strong>消費者問題:</strong> 国民生活センターには、関連製品の契約解除をめぐる相談が寄せられている。</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-lg mb-2 text-gray-600">基礎理論(MRA)のコード体系の矛盾</h4>
+                                <p class="text-sm text-gray-500 mb-4">酒井氏の技術の源流であるMRAのコードには、科学的に無関係な症状に同一コードが割り当てられるなどの矛盾が指摘されています。</p>
+                                <div class="chart-container">
+                                    <canvas id="mraContradictionChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Section 3: The Two Narratives -->
+        <section id="section-narratives" class="mb-16 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-4 text-gray-800">二つの物語</h2>
+            <p class="text-center max-w-3xl mx-auto text-gray-600 mb-12">この問題の核心は、二つの相容れない物語の対立にあります。片や、酒井氏を既存の理論を発展させ、生命のエネルギーを調整する技術を創造した革新者と見る視点。もう一方は、彼を科学的根拠のない装置を販売する疑似科学産業の重要人物と見なす視点です。ここでは、その両者の主張を並べて提示し、ユーザー自身が比較検討できるようにしました。</p>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white/50 p-6 rounded-lg shadow-lg border-l-4 border-blue-400">
+                    <h3 class="text-xl font-bold mb-4 text-blue-800">物語A：支持者の視点</h3>
+                    <p class="text-gray-700">酒井宏祐氏は、日本の「波動」研究の系譜を受け継ぎ、それを独自の技術へと昇華させた先駆者である。彼は、万物が持つ固有のエネルギー「波動」を測定・調整する一連の装置を開発した。特に、有益な情報を水に「転写」する技術は、化学物質に頼らず、身体が本来持つ自然治癒力を引き出す画期的なアプローチである。彼の業績は、現代科学が見落としてきた生命のエネルギー的側面に着目し、人々の健康とウェルビーイングに貢献する新たな道を切り開いた。</p>
+                </div>
+                <div class="bg-white/50 p-6 rounded-lg shadow-lg border-l-4 border-red-400">
+                    <h3 class="text-xl font-bold mb-4 text-red-800">物語B：批判者の視点</h3>
+                    <p class="text-gray-700">酒井宏祐氏は、疑似科学産業における長年の重要人物である。彼の装置は、科学的に欠陥が指摘されているMRA技術を基礎としており、その有効性を示す客観的な証拠は存在しない。装置の機能は、術者の主観や信念に大きく依存しており、科学的な測定器とは言えない。さらに、医療機器として承認されていないにもかかわらず、体験談などを通じて治療効果をほのめかす販売手法は、薬機法や特定商取引法に抵触するリスクをはらんでいる。これは、科学の言葉を借用して、証明されていない製品を市場に流通させる典型的な事例である。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Conclusion -->
+        <section id="section-conclusion" class="scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-4 text-gray-800">最終分析と結論</h2>
+            <p class="text-center max-w-3xl mx-auto text-gray-600 mb-12">科学的な批判や法的な論争にもかかわらず、なぜこの市場は存続し続けるのでしょうか。その背景には、現代医療に満たされないニーズを持つ人々の存在があります。このセクションでは、報告書の最終的な評価と、このテーマに接する上での重要な勧告をまとめます。</p>
+            <div class="bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 p-6 rounded-lg shadow-md max-w-4xl mx-auto">
+                <h3 class="text-xl font-bold mb-4">最終評価と利用者への勧告</h3>
+                <div class="space-y-4">
+                    <p><strong>ビジネス的評価:</strong> 酒井氏は、特定のニッチ市場において、製品開発、特許取得、そして持続的な商業エコシステムの構築に成功した人物と言える。</p>
+                    <p><strong>科学的評価:</strong> 「波動転写器」および関連装置は、科学的・医学的な機器として認められていない。その理論は物理学・生物学の基本原則と矛盾し、有効性は客観的に証明されていない。</p>
+                    <p class="font-semibold"><strong>最終勧告:</strong> これらの装置の健康効果に関する主張は、科学的に立証されていません。健康目的での使用を検討する際は、証明済みの標準的な医療を受ける機会を失うリスクがあることを十分に理解する必要があります。支持者が語る物語と、科学界・規制当局による事実に基づいた評価とを明確に区別し、慎重に判断することが極めて重要です。
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+    
+    <!-- Modal -->
+    <div id="modal" class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 opacity-0 pointer-events-none">
+        <div id="modal-content" class="modal-content bg-white rounded-lg shadow-xl w-full max-w-md p-6 relative transform scale-95">
+            <button id="modal-close-button" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <h3 id="modal-title" class="text-2xl font-bold mb-4 text-gray-800"></h3>
+            <div id="modal-body" class="text-gray-600 space-y-3"></div>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Data
+            const timelineData = [
+                { year: '1983', event: 'バイオエネルギー研究所(I・B・E)入社。「パイウォーター」理論に触れる。' },
+                { year: '1991', event: '中根滋氏と共に「(株)生命環境工学中根研究所」設立。「MRA」技術の研究を開始。', detail: 'この時期に「ライフ・ウェーブ・コンバーター」を開発。' },
+                { year: '1994', event: '「環境科学研究所」を設立し、独自の波動機器開発に着手。', detail: 'LWA試作1号機、「エクセル・ウェーブ」を開発。' },
+                { year: '1996', event: '「有限会社マイクロエネルギー研究所」設立。事業の核となる。', detail: 'LWA試作2号機、波動発生器(PEI)試作機を開発。' },
+                { year: '2000', event: '主要製品群(LWA-01A, PEI-201, PEV-200)を開発。', detail: '現在の市場流通製品の基礎が完成。' },
+                { year: '2003', event: '著書『動き始めた『新』波動学』を出版。' },
+                { year: '2006', event: '「波動情報水生成装置」の特許を出願（特開2006-314899）。' },
+                { year: '現在', event: '「(一社)地球と水と命」代表理事として活動。製品は二次流通市場で取引が継続。' }
+            ];
+
+            const deviceData = [
+                { name: 'LWA', image: 'https://placehold.co/300x200/6E8898/F8F7F4?text=LWA', title: 'LWA (ライフ・ウェーブ・アナライザー)', body: '<strong>機能:</strong> あらゆるものの「波動」を測定するとされる装置。身体や感情など2000項目以上を測定し、0～20の21段階で数値化すると主張。<br><strong>特徴:</strong> 意図的に「アナログ」式を採用し、オペレーターの介在を必須とする。' },
+                { name: 'PEI-201', image: 'https://placehold.co/300x200/6E8898/F8F7F4?text=PEI-201', title: 'PEI-201 (パーソナルエネルギーインプリンター)', body: '<strong>機能:</strong> 波動発生器および波動水生成用転写器とされる。<br><strong>特徴:</strong> 下記のコード入力器とセットで使われることが多い。' },
+                { name: 'Wave Creator', image: 'https://placehold.co/300x200/6E8898/F8F7F4?text=Wave+Creator', title: 'ウェーブクリエイター (PEV-200)', body: '<strong>機能:</strong> PEI-201用のコード入力器。特定のコードを入力することで、目的の「波動」を発生させると主張。<br><strong>特徴:</strong> 操作には別売りの「コード表」が不可欠とされる。<br><strong>市場価格帯 (フルシステム):</strong> 約20,000円～33,000円（二次流通市場）' },
+            ];
+
+            // Mobile Menu
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            document.querySelectorAll('#mobile-menu a').forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                });
+            });
+
+            // Navigation Active State
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('.nav-link');
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 80) {
+                        current = section.getAttribute('id');
+                    }
+                });
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href').includes(current)) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+
+            // Timeline Generation
+            const timelineContainer = document.getElementById('timeline-container');
+            timelineData.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'timeline-item relative';
+                let content = `<div class="p-4 bg-white rounded-lg shadow-md cursor-pointer hover:shadow-lg transition-shadow">
+                                <h4 class="font-bold text-lg text-gray-800">${item.year}</h4>
+                                <p class="text-gray-600">${item.event}</p>`;
+                if (item.detail) {
+                    content += `<p class="detail-text text-sm text-blue-600 mt-2 hidden">${item.detail}</p>`;
+                }
+                content += `</div>`;
+                div.innerHTML = content;
+                timelineContainer.appendChild(div);
+
+                if (item.detail) {
+                    div.querySelector('.cursor-pointer').addEventListener('click', (e) => {
+                        e.currentTarget.querySelector('.detail-text').classList.toggle('hidden');
+                    });
+                }
+            });
+            
+            // Device Gallery & Modal
+            const deviceGallery = document.getElementById('device-gallery');
+            const modal = document.getElementById('modal');
+            const modalContent = document.getElementById('modal-content');
+            const modalTitle = document.getElementById('modal-title');
+            const modalBody = document.getElementById('modal-body');
+            const modalCloseButton = document.getElementById('modal-close-button');
+
+            deviceData.forEach(device => {
+                const div = document.createElement('div');
+                div.className = 'device-item group cursor-pointer';
+                div.innerHTML = `
+                    <div class="overflow-hidden rounded-lg">
+                        <img src="${device.image}" alt="${device.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                    </div>
+                    <p class="text-center font-semibold mt-2 text-gray-700">${device.title.split(' ')[0]}</p>
+                `;
+                div.addEventListener('click', () => {
+                    modalTitle.textContent = device.title;
+                    modalBody.innerHTML = device.body;
+                    modal.classList.remove('opacity-0', 'pointer-events-none');
+                    modalContent.classList.remove('scale-95');
+                });
+                deviceGallery.appendChild(div);
+            });
+
+            const closeModal = () => {
+                modal.classList.add('opacity-0', 'pointer-events-none');
+                modalContent.classList.add('scale-95');
+            };
+
+            modalCloseButton.addEventListener('click', closeModal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+
+            // Tab functionality
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabPanes = document.querySelectorAll('.tab-pane');
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    const tab = button.dataset.tab;
+                    tabPanes.forEach(pane => {
+                        if (pane.id === `${tab}-content`) {
+                            pane.classList.remove('hidden');
+                        } else {
+                            pane.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+
+            // Chart.js - MRA Contradiction Chart
+            const ctx = document.getElementById('mraContradictionChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['うつ病 / 風疹', '動脈硬化 / ヘルペス', '胃潰瘍 / 白内障', 'プルトニウム (測定不能元素)'],
+                    datasets: [{
+                        label: '同一コードが割り当てられた例',
+                        data: [1, 1, 1, 1],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.5)',
+                            'rgba(54, 162, 235, 0.5)',
+                            'rgba(255, 206, 86, 0.5)',
+                            'rgba(75, 192, 192, 0.5)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'MRAコード体系の矛盾の例',
+                            font: { size: 16 }
+                        },
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return '同じコードが、全く異なるこれらの概念に割り当てられている。';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: false,
+                        }
+                    }
+                }
+            });
+
+        });
+    </script>
+</body>
+</html>

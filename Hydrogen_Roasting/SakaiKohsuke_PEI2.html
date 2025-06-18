@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インフォグラフィック：酒井宏祐と「波動」技術の二面性</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chosen Palette: Energetic & Playful -->
+    <!-- Application Structure Plan: The infographic tells a linear story, guiding the user from the man to the myth, and finally to the reality. It starts with an introduction to Kosuke Sakai and his career timeline. It then explains the core theory and technology using a simple flowchart for the patent, showing how it supposedly works. The narrative then pivots to the commercial ecosystem and devices. The climax is the "Contradiction" section, which uses a bar chart to visually expose the illogical nature of the core MRA codes, a key piece of evidence from the report. This leads directly to the side-by-side comparison of the "Two Narratives" (supporter vs. critic), followed by a hard-hitting conclusion with key takeaway stats. This structure was chosen to build a narrative arc that first informs the user about the claims and then systematically deconstructs them with evidence, leading to a clear, impactful conclusion. -->
+    <!-- Visualization & Content Choices: 
+        - Data Point: Sakai's Career -> Goal: Change -> Viz: HTML/CSS Timeline -> Justification: Best for showing chronological progression. -> Library/Method: HTML/CSS.
+        - Data Point: Patent Mechanism -> Goal: Organize -> Viz: HTML/CSS Flowchart -> Justification: Simplifies the complex technical claim into an easy-to-follow process. -> Library/Method: HTML/CSS.
+        - Data Point: MRA Code Contradictions -> Goal: Compare -> Viz: Chart.js Bar Chart -> Justification: Visually powerful way to demonstrate the illogical and arbitrary nature of the codes, which is a core criticism. -> Library/Method: Chart.js.
+        - Data Point: Device Ecosystem -> Goal: Inform/Organize -> Viz: HTML/CSS Cards -> Justification: Clean, modular presentation of the different products. -> Library/Method: HTML/CSS.
+        - Data Point: Final Evaluation -> Goal: Inform -> Viz: Large Text Stats -> Justification: High-impact method to deliver the final verdict in a memorable way. -> Library/Method: HTML/CSS.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Hiragino Kaku Gothic ProN', 'ヒラギノ角ゴ ProN W3', 'メイリオ', Meiryo, sans-serif;
+            background-color: #F7F7F7;
+            color: #343434;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 40vh;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -0.65rem;
+            top: 0.25rem;
+            height: 1.25rem;
+            width: 1.25rem;
+            background-color: #FF5A5F;
+            border-radius: 9999px;
+            border: 3px solid #F7F7F7;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #007A7A 0%, #004D4D 100%);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-5xl">
+
+        <header class="text-center my-12">
+            <h1 class="text-4xl md:text-6xl font-extrabold text-[#343434] mb-2">「波動」技術の二面性</h1>
+            <p class="text-lg md:text-xl text-gray-600">設計者・酒井宏祐の理論と、科学が示す現実</p>
+        </header>
+
+        <main class="space-y-16 md:space-y-24">
+
+            <section id="architect">
+                <div class="grid md:grid-cols-5 gap-8 items-center">
+                    <div class="md:col-span-2 text-center">
+                        <div class="relative w-48 h-48 mx-auto">
+                           <div class="w-full h-full rounded-full bg-[#007A7A] flex items-center justify-center">
+                               <span class="text-6xl text-white font-bold">酒</span>
+                           </div>
+                           <div class="absolute -bottom-2 -right-2 bg-[#FFB400] text-black rounded-full w-16 h-16 flex items-center justify-center text-3xl font-bold shadow-lg">
+                               <span>?</span>
+                           </div>
+                        </div>
+                        <h2 class="text-3xl font-bold mt-4">酒井 宏祐</h2>
+                        <p class="text-gray-500">理論の設計者</p>
+                    </div>
+                    <div class="md:col-span-3">
+                         <h3 class="text-2xl font-bold mb-4 text-[#007A7A]">キャリアの軌跡</h3>
+                         <div class="relative border-l-4 border-gray-300 pl-8 space-y-8">
+                            <div class="timeline-item">
+                                <h4 class="font-bold text-lg">1983年: 「波動」との出会い</h4>
+                                <p class="text-gray-600">バイオエネルギー研究所入社。「パイウォーター」理論に触れる。</p>
+                            </div>
+                            <div class="timeline-item">
+                                <h4 class="font-bold text-lg">1991年: MRA技術の習得</h4>
+                                <p class="text-gray-600">中根滋氏と共同研究を開始し、「MRA（共鳴磁場分析器）」技術を学ぶ。</p>
+                            </div>
+                             <div class="timeline-item">
+                                <h4 class="font-bold text-lg">1996年: 独立と開発加速</h4>
+                                <p class="text-gray-600">「(有)マイクロエネルギー研究所」設立。独自の装置開発を本格化。</p>
+                            </div>
+                             <div class="timeline-item">
+                                <h4 class="font-bold text-lg">2006年: 特許出願</h4>
+                                <p class="text-gray-600">「波動情報水生成装置」の特許を出願。その理論を公にする。</p>
+                            </div>
+                         </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="theory" class="bg-white rounded-xl shadow-lg p-6 md:p-10">
+                <h2 class="text-3xl font-bold text-center mb-2">特許が語る「波動転写」の仕組み</h2>
+                <p class="text-center max-w-2xl mx-auto text-gray-600 mb-10">特許（特開2006-314899）では、特定の周波数を持つ磁場と電界を使い、水に「有益な情報」を記録すると主張されています。これは支持者が信じる理論の根幹です。</p>
+                <div class="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 text-center">
+                    <div class="bg-[#F7F7F7] p-4 rounded-lg shadow-inner w-full md:w-auto">
+                        <p class="text-2xl mb-2">📇</p>
+                        <h3 class="font-bold">指令情報</h3>
+                        <p class="text-sm text-gray-500">(メモリカード)</p>
+                    </div>
+                    <div class="text-3xl font-mono text-gray-400">→</div>
+                     <div class="bg-[#F7F7F7] p-4 rounded-lg shadow-inner w-full md:w-auto">
+                        <p class="text-2xl mb-2">🔄</p>
+                        <h3 class="font-bold">回転磁界の生成</h3>
+                        <p class="text-sm text-gray-500">(電磁石)</p>
+                    </div>
+                     <div class="text-3xl font-mono text-gray-400">→</div>
+                     <div class="bg-[#F7F7F7] p-4 rounded-lg shadow-inner w-full md:w-auto">
+                        <p class="text-2xl mb-2">💧</p>
+                        <h3 class="font-bold">被処理水</h3>
+                        <p class="text-sm text-gray-500">(分子を安定化)</p>
+                    </div>
+                     <div class="text-3xl font-mono text-gray-400">→</div>
+                     <div class="gradient-bg text-white p-4 rounded-lg shadow-lg w-full md:w-auto">
+                        <p class="text-2xl mb-2">✨</p>
+                        <h3 class="font-bold">波動情報水</h3>
+                        <p class="text-sm text-white/80">(完成)</p>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="contradiction">
+                <h2 class="text-3xl font-bold text-center mb-2 text-[#FF5A5F]">科学が示す「矛盾」</h2>
+                <p class="text-center max-w-2xl mx-auto text-gray-600 mb-10">一方、科学的な精査は、理論の根幹であるMRAのコード体系に深刻な矛盾を指摘しています。無関係な症状に同一のコードが割り振られるなど、その恣意性は明らかです。</p>
+                <div class="bg-white rounded-xl shadow-lg p-6 md:p-10">
+                    <div class="chart-container">
+                        <canvas id="contradictionChart"></canvas>
+                    </div>
+                    <p class="text-center text-sm text-gray-500 mt-4">このグラフは、科学的に全く関連のない複数の概念が、MRAのコード体系では同一の「波動コード」として扱われていることを示しています。これは、コードが客観的な物理法則ではなく、恣意的に作成されたものであることを強く示唆する証拠です。</p>
+                </div>
+            </section>
+
+            <section id="narratives">
+                 <h2 class="text-3xl font-bold text-center mb-10">二つの物語：信じる者と疑う者</h2>
+                 <div class="grid md:grid-cols-2 gap-8">
+                    <div class="bg-[#007A7A] text-white p-8 rounded-xl shadow-lg">
+                        <h3 class="text-2xl font-bold mb-4 border-b-2 border-white/50 pb-2">物語A：支持者の視点</h3>
+                        <p class="text-white/90">酒井氏は、生命のエネルギー「波動」を調整する画期的な技術を開発した革新者である。彼の装置は、化学物質に頼らず、水に情報を転写することで、体が本来持つ自然治癒力を引き出す。これは現代科学が見落としてきた、生命の新たな可能性を切り開くものである。</p>
+                    </div>
+                     <div class="bg-[#FF5A5F] text-white p-8 rounded-xl shadow-lg">
+                        <h3 class="text-2xl font-bold mb-4 border-b-2 border-white/50 pb-2">物語B：批判者の視点</h3>
+                        <p class="text-white/90">酒井氏は、疑似科学産業の重要人物である。彼の装置は科学的根拠に欠け、その機能は術者の主観に依存する。医療機器として未承認にもかかわらず、治療効果をほのめかす販売手法は、消費者を誤解させ、公衆衛生上のリスクを生じさせる。</p>
+                    </div>
+                 </div>
+            </section>
+
+            <section id="conclusion" class="text-center">
+                 <h2 class="text-3xl font-bold mb-10">最終評価</h2>
+                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <p class="text-6xl font-extrabold text-[#007A7A]">成功</p>
+                        <h3 class="text-xl font-bold mt-2">ビジネスとして</h3>
+                        <p class="text-gray-600 mt-2">ニッチ市場を開拓し、特許、製品、コミュニティから成る持続可能なエコシステムを構築した。</p>
+                    </div>
+                     <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <p class="text-6xl font-extrabold text-[#FFB400]">ゼロ</p>
+                        <h3 class="text-xl font-bold mt-2">科学的根拠</h3>
+                        <p class="text-gray-600 mt-2">理論は物理学の基本原則に反し、有効性を示す客観的で査読済みの証拠は存在しない。</p>
+                    </div>
+                     <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <p class="text-6xl font-extrabold text-[#FF5A5F]">警告</p>
+                        <h3 class="text-xl font-bold mt-2">利用者へのリスク</h3>
+                        <p class="text-gray-600 mt-2">証明済みの医療を受ける機会を失う危険性があり、法的に論争の多い分野である。</p>
+                    </div>
+                 </div>
+            </section>
+        </main>
+    </div>
+
+<script>
+    const ctx = document.getElementById('contradictionChart').getContext('2d');
+
+    const chartData = {
+        labels: [
+            ['うつ病', '風疹'], 
+            ['動脈硬化', 'ヘルペス'], 
+            ['胃潰瘍', '白内障'], 
+            'プルトニウム'
+        ],
+        datasets: [{
+            label: '同一コード',
+            data: [100, 100, 100, 100],
+            backgroundColor: '#FF5A5F',
+            borderColor: '#C81D25',
+            borderWidth: 2,
+            borderRadius: 5,
+            barPercentage: 0.6,
+        }]
+    };
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: chartData,
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    display: false,
+                    max: 120
+                },
+                y: {
+                    ticks: {
+                        font: {
+                            size: 14,
+                            weight: 'bold'
+                        },
+                        color: '#343434'
+                    },
+                    grid: {
+                        display: false
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                title: {
+                    display: true,
+                    text: 'MRAコード体系における矛盾の例',
+                    font: {
+                        size: 18,
+                        weight: 'bold'
+                    },
+                    color: '#343434',
+                    padding: {
+                        bottom: 20
+                    }
+                },
+                tooltip: {
+                    enabled: true,
+                    backgroundColor: '#343434',
+                    titleFont: {
+                        size: 16
+                    },
+                    bodyFont: {
+                        size: 14
+                    },
+                    callbacks: {
+                        title: function(tooltipItems) {
+                            const item = tooltipItems[0];
+                            let label = item.chart.data.labels[item.dataIndex];
+                            if (Array.isArray(label)) {
+                              return label.join(' / ');
+                            } else {
+                              return label;
+                            }
+                        },
+                        label: function(context) {
+                            return 'これらの全く異なる概念に、同一のコードが割り当てられています。';
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

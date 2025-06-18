@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>スライド形式：酒井宏祐と「波動」技術の深層分析</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Hiragino Kaku Gothic ProN', 'ヒラギノ角ゴ ProN W3', 'メイリオ', Meiryo, sans-serif;
+            background-color: #F0F2F5;
+        }
+        .slide {
+            display: none;
+            /* Set a min-height instead of a fixed height to allow for content growth */
+            min-height: 70vh;
+        }
+        .slide.active {
+            display: flex;
+        }
+        .narration-box {
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .nav-button {
+            transition: all 0.2s ease-in-out;
+        }
+        .nav-button:hover {
+            transform: scale(1.1);
+            background-color: #4B5563;
+        }
+        .dot {
+            transition: background-color 0.3s ease;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 90%;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center bg-gray-100 p-4 py-8">
+
+    <div class="w-full max-w-5xl bg-white shadow-2xl rounded-2xl overflow-hidden">
+        <div id="slides-container" class="relative">
+            <!-- Slides will be injected here -->
+        </div>
+    </div>
+    
+    <div id="narration-container" class="w-full max-w-5xl mt-2">
+        <!-- Narration will be injected here -->
+    </div>
+
+    <div id="navigation" class="w-full max-w-5xl flex items-center justify-between p-4 mt-2 bg-white rounded-2xl shadow-lg">
+        <button id="prevBtn" class="nav-button bg-gray-800 text-white rounded-full w-12 h-12 flex items-center justify-center shadow-md">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <div id="pagination-dots" class="flex space-x-2">
+            <!-- Dots will be injected here -->
+        </div>
+        <button id="nextBtn" class="nav-button bg-gray-800 text-white rounded-full w-12 h-12 flex items-center justify-center shadow-md">
+            <i class="fas fa-arrow-right"></i>
+        </button>
+    </div>
+
+<script>
+const slidesData = [
+    { // Slide 1: Title
+        content: `
+            <div class="w-full h-full flex flex-col justify-center items-center text-center p-8 bg-gray-800 text-white">
+                <div class="mb-4 text-3xl font-bold text-cyan-300">深層分析レポート</div>
+                <h1 class="text-4xl md:text-6xl font-extrabold mb-4">酒井宏祐と「波動」技術</h1>
+                <p class="text-xl md:text-2xl text-gray-300">科学か、疑似科学か。二つの物語を解き明かす。</p>
+            </div>
+        `,
+        narration: "本日は、「波動」ムーブメントの中心人物、酒井宏祐氏と彼が開発した装置群について、深層分析レポートをお届けします。このテーマには、革新的な健康技術という物語と、科学的根拠のない疑似科学という、二つの全く異なる評価が存在します。その実態に迫ります。"
+    },
+    { // Slide 2: Who is Kosuke Sakai?
+        content: `
+            <div class="w-full h-full flex flex-col md:flex-row items-center justify-center p-8 bg-gray-100">
+                <div class="md:w-1/3 text-center mb-8 md:mb-0">
+                    <div class="relative w-48 h-48 mx-auto bg-cyan-500 rounded-full flex items-center justify-center shadow-xl">
+                        <i class="fas fa-user-tie text-6xl text-white"></i>
+                    </div>
+                    <h2 class="text-3xl font-bold mt-4 text-gray-800">酒井 宏祐</h2>
+                    <p class="text-gray-600">「波動」技術の設計者</p>
+                </div>
+                <div class="md:w-2/3 space-y-4 text-lg">
+                    <div class="bg-white p-4 rounded-lg shadow-md flex items-center"><i class="fas fa-birthday-cake text-cyan-500 w-8"></i><span><strong>1943年</strong> 奈良県生まれ</span></div>
+                    <div class="bg-white p-4 rounded-lg shadow-md flex items-center"><i class="fas fa-university text-cyan-500 w-8"></i><span>近畿大学法学部 中退</span></div>
+                    <div class="bg-white p-4 rounded-lg shadow-md flex items-center"><i class="fas fa-building text-cyan-500 w-8"></i><span><strong>1983年</strong> バイオエネルギー研究所 入社</span></div>
+                    <div class="bg-white p-4 rounded-lg shadow-md flex items-center"><i class="fas fa-flask text-cyan-500 w-8"></i><span><strong>(有)マイクロエネルギー研究所</strong> 代表取締役</span></div>
+                </div>
+            </div>
+        `,
+        narration: "まず、中心人物である酒井宏祐氏のプロフィールです。1943年生まれ、大学中退後、1983年にバイオエネルギー研究所に入社し、キャリアをスタートさせました。後に、自身の研究開発拠点となるマイクロエネルギー研究所を設立し、代表取締役に就任します。"
+    },
+    { // Slide 3: Intellectual Lineage
+        content: `
+            <div class="w-full h-full flex flex-col justify-center items-center p-8 bg-gray-100">
+                <h2 class="text-3xl font-bold text-center mb-8 text-gray-800">知的系譜：理論はどこから来たか</h2>
+                <div class="flex flex-col md:flex-row items-center justify-around w-full">
+                    <div class="text-center p-4">
+                        <div class="bg-white rounded-full w-32 h-32 flex items-center justify-center shadow-lg mb-2"><i class="fas fa-water text-5xl text-blue-500"></i></div>
+                        <h3 class="font-bold">「パイウォーター」理論</h3>
+                        <p class="text-sm text-gray-500">(山下昭治 / 牧野伸治)</p>
+                    </div>
+                    <div class="text-4xl text-gray-400 mx-8 my-4 md:my-0">&plus;</div>
+                    <div class="text-center p-4">
+                        <div class="bg-white rounded-full w-32 h-32 flex items-center justify-center shadow-lg mb-2"><i class="fas fa-wave-square text-5xl text-purple-500"></i></div>
+                        <h3 class="font-bold">MRA技術</h3>
+                        <p class="text-sm text-gray-500">(中根滋)</p>
+                    </div>
+                    <div class="text-4xl text-gray-400 mx-8 my-4 md:my-0">→</div>
+                    <div class="text-center p-4">
+                        <div class="bg-cyan-500 text-white rounded-full w-40 h-40 flex items-center justify-center shadow-2xl mb-2"><i class="fas fa-cogs text-6xl"></i></div>
+                        <h3 class="font-bold text-xl">酒井氏の装置群</h3>
+                    </div>
+                </div>
+            </div>
+        `,
+        narration: "酒井氏の技術は、全くの独創ではありません。先行する二つの理論、すなわち、水がエネルギーを持つとする「パイウォーター理論」と、波動を測定するとされる「MRA技術」。これらを統合し、発展させたものが、彼の装置群の基礎となっています。"
+    },
+    { // Slide 4: Core Theory
+        content: `
+            <div class="w-full h-full flex flex-col justify-center items-center p-8 bg-gray-100">
+                 <h2 class="text-3xl font-bold text-center mb-8 text-gray-800">主張される「波動理論」の3つの柱</h2>
+                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-4xl">
+                    <div class="bg-white p-6 rounded-xl shadow-lg text-center"><i class="fas fa-globe-americas text-5xl text-green-500 mb-4"></i><h3 class="text-xl font-bold">普遍的振動</h3><p>万物は固有の周波数（波動）を持つという信念。</p></div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg text-center"><i class="fas fa-heartbeat text-5xl text-red-500 mb-4"></i><h3 class="text-xl font-bold">健康と共鳴</h3><p>乱れた波動を、正しい波動との共鳴で調整する。</p></div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg text-center"><i class="fas fa-exchange-alt text-5xl text-blue-500 mb-4"></i><h3 class="text-xl font-bold">情報転写</h3><p>有益な物質の「波動情報」を水などに複写する。</p></div>
+                 </div>
+            </div>
+        `,
+        narration: "彼らの理論の核心は、三つの概念に集約されます。第一に、万物は固有の周波数、すなわち波動を持つという「普遍的振動」。第二に、不健康な細胞の乱れた波動を正しい波動との共鳴で調整するという「健康と共鳴」。そして最も重要なのが、有益な物質の波動情報を水に複写するという「情報転写」です。"
+    },
+    { // Slide 5: Patented Mechanism
+        content: `
+             <div class="w-full h-full flex flex-col justify-center items-center p-8 bg-gray-100">
+                <h2 class="text-3xl font-bold text-center mb-8 text-gray-800">特許に見る「波動情報水」生成の仕組み</h2>
+                <div class="w-full max-w-3xl bg-white p-6 rounded-lg shadow-lg flex flex-col md:flex-row items-center justify-around gap-4">
+                    <div class="text-center"><i class="fas fa-sd-card text-4xl text-gray-500"></i><p class="font-bold mt-2">指令情報</p></div>
+                    <div class="text-2xl text-cyan-500 font-bold">→</div>
+                    <div class="text-center"><i class="fas fa-sync-alt fa-spin text-5xl text-purple-600"></i><p class="font-bold mt-2">回転磁界</p></div>
+                    <div class="text-2xl text-cyan-500 font-bold">→</div>
+                    <div class="text-center"><i class="fas fa-vial text-5xl text-blue-500"></i><p class="font-bold mt-2">被処理水</p></div>
+                    <div class="text-2xl text-cyan-500 font-bold">→</div>
+                    <div class="text-center"><i class="fas fa-star text-5xl text-yellow-400"></i><p class="font-bold mt-2">波動情報水</p></div>
+                </div>
+                <p class="mt-6 text-center text-gray-600 max-w-2xl">メモリカードの指令に基づき、回転磁界を発生させ、水に情報を記録すると主張されています。これが、彼らの技術の根幹です。</p>
+            </div>
+        `,
+        narration: "この理論を具現化したものが、酒井氏が取得した特許です。その仕組みは、メモリカードに記録された情報に基づき、回転する磁界を発生させ、容器内の水に情報を記録するというもの。これにより、「波動情報水」が生成されると主張されています。"
+    },
+    { // Slide 6: Contradiction
+        content: `
+             <div class="w-full h-full flex flex-col justify-center items-center p-8 bg-red-50">
+                <h2 class="text-3xl font-bold text-center mb-4 text-red-700">科学的精査が暴く「矛盾」</h2>
+                <p class="text-center text-gray-700 max-w-2xl mb-6">理論の基礎となったMRAのコード体系には、科学的に無関係な症状に同じコードが割り振られるなど、深刻な矛盾が指摘されています。</p>
+                <div class="w-full max-w-2xl h-64 bg-white p-4 rounded-lg shadow-lg">
+                    <div class="chart-container">
+                        <canvas id="contradictionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        `,
+        narration: "しかし、科学的な精査は、この理論の根幹に深刻な矛盾を指摘しています。グラフが示すように、理論の基礎となったMRAのコード体系では、例えば「うつ病」と「風疹」など、医学的に全く無関係な症状に、なぜか同じコードが割り当てられているのです。これは、コードが恣意的に作られたものであることを強く示唆しています。"
+    },
+    { // Slide 7: Two Narratives
+        content: `
+            <div class="w-full h-full flex flex-col md:flex-row">
+                <div class="w-full md:w-1/2 bg-cyan-600 text-white p-8 flex flex-col justify-center items-center text-center">
+                    <i class="fas fa-hands-helping text-6xl mb-4"></i>
+                    <h2 class="text-3xl font-bold mb-4">物語 A：支持者の視点</h2>
+                    <p>酒井氏は、身体のエネルギーを調整する技術を創造した革新者。自然治癒力を引き出し、ウェルネスに貢献する道を開いた。</p>
+                </div>
+                <div class="w-full md:w-1/2 bg-red-600 text-white p-8 flex flex-col justify-center items-center text-center">
+                     <i class="fas fa-exclamation-triangle text-6xl mb-4"></i>
+                    <h2 class="text-3xl font-bold mb-4">物語 B：批判者の視点</h2>
+                    <p>酒井氏は、疑似科学産業の重要人物。科学の言葉を借りて、未証明の装置を販売し、法的な問題も指摘されている。</p>
+                </div>
+            </div>
+        `,
+        narration: "この問題の核心は、二つの相容れない物語の対立にあります。片や、酒井氏を生命のエネルギーを調整する革新者と見る視点。もう一方は、彼を科学的根拠のない装置を販売する疑似科学産業の重要人物と見なす視点です。"
+    },
+    { // Slide 8: Final Verdict
+        content: `
+            <div class="w-full h-full flex flex-col justify-center items-center text-center p-8 bg-gray-800 text-white">
+                <h2 class="text-4xl font-bold mb-10">最終評価</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-4xl">
+                    <div class="bg-green-500 p-6 rounded-xl shadow-lg"><p class="text-5xl font-extrabold">成功</p><h3 class="text-xl font-bold mt-2">ビジネスとして</h3><p class="text-green-100 mt-2">ニッチ市場を開拓し、持続可能なエコシステムを構築した。</p></div>
+                    <div class="bg-yellow-500 p-6 rounded-xl shadow-lg"><p class="text-5xl font-extrabold">ゼロ</p><h3 class="text-xl font-bold mt-2">科学的根拠</h3><p class="text-yellow-100 mt-2">理論は物理学に反し、有効性を示す客観的証拠は存在しない。</p></div>
+                    <div class="bg-red-500 p-6 rounded-xl shadow-lg"><p class="text-5xl font-extrabold">警告</p><h3 class="text-xl font-bold mt-2">利用者へのリスク</h3><p class="text-red-100 mt-2">証明済みの医療を受ける機会を失う危険性がある。</p></div>
+                </div>
+            </div>
+        `,
+        narration: "最終的な評価です。ビジネスとしては、ニッチ市場を開拓し成功したと言えます。しかし、科学的根拠はゼロであり、その理論は物理学の基本原則と矛盾します。そして、利用者にとっては、証明済みの標準的な医療を受ける機会を失うという重大なリスクを伴います。"
+    },
+    { // Slide 9: For YouTube
+        content: `
+            <div class="w-full h-full flex flex-col justify-center p-8 bg-gray-100 text-gray-800 overflow-y-auto">
+                <h2 class="text-3xl font-bold text-center mb-6">YouTube動画制作用アセット</h2>
+                <div class="space-y-6 max-w-3xl mx-auto">
+                    <div>
+                        <h3 class="font-bold text-xl mb-2 text-cyan-600 border-b-2 border-cyan-200 pb-1">タイトル案 (3案)</h3>
+                        <ul class="list-disc list-inside space-y-1">
+                            <li>【暴露】水に情報を転写？「波動ビジネス」の黒幕・酒井宏祐の正体</li>
+                            <li>【科学vs疑似科学】「波動転写器」は本物か？専門家が語る危険なワナ</li>
+                            <li>信じたら人生終了…年間数万人がハマる「波動」の謎を徹底解剖</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-xl mb-2 text-cyan-600 border-b-2 border-cyan-200 pb-1">概要欄</h3>
+                        <p class="text-sm bg-gray-200 p-3 rounded-md">「波動」という言葉に、どんなイメージを持ちますか？今回は、日本の「波動」ムーブメントの中心人物、酒井宏祐氏と、彼が開発した「波動転写器」の謎に迫ります。支持者が語る「革新的な健康技術」という物語と、科学界が指摘する「疑似科学」という厳しい評価。本動画では、客観的な資料に基づき、その二つの側面を徹底的に分析・解説します。\n\n#波動 #疑似科学 #酒井宏祐 #解説</p>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-xl mb-2 text-cyan-600 border-b-2 border-cyan-200 pb-1">サムネイル生成用プロンプト (3案)</h3>
+                        <ul class="list-disc list-inside space-y-1 text-sm">
+                            <li>YouTube thumbnail, dramatic contrast, a mysterious man's silhouette on one side, glowing water in a beaker on the other, bold text '科学か？詐欺か？', vibrant blue and red lighting, photorealistic.</li>
+                            <li>An infographic style YouTube thumbnail, a brain divided in two. Left side is blue with icons of science and logic. Right side is purple with mystical symbols and waves. Title text '「波動」の正体'.</li>
+                            <li>Close-up of a hand dropping a glowing droplet into a glass of water, causing ripples of light. In the background, a person looking worried. Text overlay '警告：その水、危険です'. High-contrast, cinematic style.</li>
+                        </ul>
+                    </div>
+                     <div>
+                        <h3 class="font-bold text-xl mb-2 text-cyan-600 border-b-2 border-cyan-200 pb-1">BGM生成用Suno AIプロンプト (3案)</h3>
+                        <ul class="list-disc list-inside space-y-1 text-sm">
+                            <li>A mysterious and investigative background track, slightly tense electronic ambient music, with subtle digital glitches and a slow, thoughtful piano melody, instrumental, corporate investigation documentary style.</li>
+                            <li>Minimalist, slightly melancholic lofi hip hop, calm and focused, with a simple boom-bap drum pattern and a somber electric piano chord progression, perfect for a serious explainer video.</li>
+                            <li>Tense, cinematic underscore with a deep pulsing synth bass, sparse string pads, and a simple, repetitive synth arpeggio that builds slowly, creating a sense of uncovering a secret, instrumental.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        `,
+        narration: "こちらのスライドは、本日の内容をYouTube動画として制作される方向けのアイデアをまとめたものです。タイトル案、概要欄、そしてAIを使ったサムネイルやBGMの制作用プロンプトをご用意しました。ご自由にご活用ください。本日のレポートは以上です。ご清聴ありがとうございました。"
+    }
+];
+
+let currentSlide = 0;
+const slidesContainer = document.getElementById('slides-container');
+const narrationContainer = document.getElementById('narration-container');
+const paginationDots = document.getElementById('pagination-dots');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+
+function createChart() {
+    const ctx = document.getElementById('contradictionChart');
+    if (!ctx) return;
+    new Chart(ctx.getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: [['うつ病', '風疹'], ['動脈硬化', 'ヘルペス'], ['胃潰瘍', '白内障']],
+            datasets: [{
+                label: '同一コードが割り当てられた例',
+                data: [1, 1, 1],
+                backgroundColor: 'rgba(239, 68, 68, 0.6)',
+                borderColor: 'rgba(220, 38, 38, 1)',
+                borderWidth: 1,
+                borderRadius: 5
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                title: { display: true, text: 'MRAコード体系における矛盾の例', font: { size: 16 } },
+                tooltip: {
+                    callbacks: {
+                        title: (tooltipItems) => {
+                            const label = tooltipItems[0].label;
+                            return Array.isArray(label) ? label.join(' / ') : label;
+                        },
+                        label: (context) => 'これらの全く異なる概念に、同一のコードが割り当てられています。'
+                    }
+                }
+            },
+            scales: { x: { display: false } }
+        }
+    });
+}
+
+function showSlide(index) {
+    const slide = slidesData[index];
+    slidesContainer.innerHTML = `<div class="slide active w-full">${slide.content}</div>`;
+    narrationContainer.innerHTML = `<div class="narration-box text-white p-4 rounded-lg shadow-md"><p>${slide.narration}</p></div>`;
+    
+    // Update pagination dots
+    document.querySelectorAll('.dot').forEach((dot, dotIndex) => {
+        dot.classList.toggle('bg-gray-800', dotIndex === index);
+        dot.classList.toggle('bg-gray-300', dotIndex !== index);
+    });
+
+    // Handle button visibility
+    prevBtn.disabled = index === 0;
+    nextBtn.disabled = index === slidesData.length - 1;
+    prevBtn.classList.toggle('opacity-50', index === 0);
+    nextBtn.classList.toggle('opacity-50', index === slidesData.length - 1);
+    
+    // If the slide contains the chart, create it.
+    if (slide.content.includes('contradictionChart')) {
+        setTimeout(createChart, 50);
+    }
+}
+
+function nextSlide() {
+    if (currentSlide < slidesData.length - 1) {
+        currentSlide++;
+        showSlide(currentSlide);
+    }
+}
+
+function prevSlide() {
+    if (currentSlide > 0) {
+        currentSlide--;
+        showSlide(currentSlide);
+    }
+}
+
+// Initialize
+function init() {
+    slidesData.forEach((_, index) => {
+        const dot = document.createElement('button');
+        dot.classList.add('dot', 'w-3', 'h-3', 'rounded-full');
+        dot.addEventListener('click', () => {
+            currentSlide = index;
+            showSlide(currentSlide);
+        });
+        paginationDots.appendChild(dot);
+    });
+    
+    nextBtn.addEventListener('click', nextSlide);
+    prevBtn.addEventListener('click', prevSlide);
+    
+    showSlide(currentSlide);
+}
+
+init();
+
+</script>
+
+</body>
+</html>
