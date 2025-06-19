@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小細胞肺癌の痛みと向き合う：包括的ケアガイド</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #f0f4f8;
+        }
+        .slide-container {
+            max-width: 1100px;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .slide {
+            display: none;
+            width: 100%;
+            height: 100%;
+        }
+        .slide.active {
+            display: flex; /* Changed to flex for centering content */
+        }
+        .narration-box {
+            background-color: #e2e8f0;
+            border-top: 3px solid #4a5568;
+        }
+        .pagination-button {
+            transition: all 0.3s ease;
+        }
+        .pagination-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+        .info-card {
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(200, 200, 200, 0.5);
+        }
+        .icon {
+            width: 60px;
+            height: 60px;
+        }
+        .step-connector {
+            position: absolute;
+            width: 100%;
+            height: 4px;
+            background-color: #cbd5e0;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+            z-index: -1;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen p-4 md:p-8">
+
+    <div id="presentation" class="w-full max-w-5xl">
+        <!-- スライドコンテナ -->
+        <div class="slide-container mx-auto bg-white rounded-xl overflow-hidden relative">
+            
+            <!-- Slide 1: タイトル -->
+            <div id="slide-1" class="slide active flex-col justify-center items-center text-center p-8 bg-gradient-to-br from-blue-500 to-indigo-600 text-white">
+                <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mb-6">
+                    <i class="fa-solid fa-lungs-virus fa-2x"></i>
+                </div>
+                <h1 class="text-4xl md:text-5xl font-bold mb-4">小細胞肺癌の痛みと向き合う</h1>
+                <p class="text-xl md:text-2xl">包括的ケアガイド</p>
+            </div>
+
+            <!-- Slide 2: はじめに - 痛みの影響 -->
+            <div id="slide-2" class="slide flex-col lg:flex-row items-center p-8 bg-gray-50">
+                <div class="lg:w-1/2 w-full pr-8">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-4">なぜ「痛み」の管理が重要なのか？</h2>
+                    <p class="text-lg text-gray-600">小細胞肺癌（SCLC）に伴う痛みは、患者さんの生活の質（QOL）を大きく低下させます。コントロールされない痛みは、心と体に多岐にわたる影響を及ぼし、治療への意欲を妨げることもあります。</p>
+                </div>
+                <div class="lg:w-1/2 w-full mt-8 lg:mt-0 grid grid-cols-2 gap-4">
+                    <div class="info-card rounded-lg p-4 text-center">
+                       <i class="fa-solid fa-bed text-4xl text-blue-500 mb-2"></i>
+                       <h3 class="font-bold text-gray-700">睡眠障害</h3>
+                    </div>
+                    <div class="info-card rounded-lg p-4 text-center">
+                       <i class="fa-solid fa-utensils text-4xl text-green-500 mb-2"></i>
+                       <h3 class="font-bold text-gray-700">食欲不振</h3>
+                    </div>
+                    <div class="info-card rounded-lg p-4 text-center">
+                       <i class="fa-solid fa-person-walking-arrow-right text-4xl text-orange-500 mb-2"></i>
+                       <h3 class="font-bold text-gray-700">活動性の低下</h3>
+                    </div>
+                     <div class="info-card rounded-lg p-4 text-center">
+                       <i class="fa-solid fa-cloud-moon text-4xl text-indigo-500 mb-2"></i>
+                       <h3 class="font-bold text-gray-700">不安・抑うつ</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 3: 痛みの原因 -->
+            <div id="slide-3" class="slide flex-col p-8 bg-gray-50">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">痛みの原因は一つではありません</h2>
+                <div class="flex-grow flex items-center justify-center w-full">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full max-w-5xl">
+                        <div class="info-card p-4 rounded-lg text-center flex flex-col items-center">
+                            <div class="icon bg-red-100 text-red-500 rounded-full flex items-center justify-center mb-3"><i class="fa-solid fa-compress fa-2x"></i></div>
+                            <h3 class="font-bold">腫瘍の圧迫・浸潤</h3>
+                            <p class="text-sm text-gray-600">腫瘍が大きくなり、胸壁や気管支、神経などを圧迫します。</p>
+                        </div>
+                         <div class="info-card p-4 rounded-lg text-center flex flex-col items-center">
+                            <div class="icon bg-yellow-100 text-yellow-500 rounded-full flex items-center justify-center mb-3"><i class="fa-solid fa-bone fa-2x"></i></div>
+                            <h3 class="font-bold">骨への転移</h3>
+                            <p class="text-sm text-gray-600">がん細胞が骨に移り、持続的な痛みを引き起こします。</p>
+                        </div>
+                         <div class="info-card p-4 rounded-lg text-center flex flex-col items-center">
+                            <div class="icon bg-purple-100 text-purple-500 rounded-full flex items-center justify-center mb-3"><i class="fa-solid fa-bolt fa-2x"></i></div>
+                            <h3 class="font-bold">神経障害性疼痛</h3>
+                            <p class="text-sm text-gray-600">神経が傷つくことで、しびれや電気が走るような痛みが出ます。</p>
+                        </div>
+                        <div class="info-card p-4 rounded-lg text-center flex flex-col items-center">
+                            <div class="icon bg-cyan-100 text-cyan-500 rounded-full flex items-center justify-center mb-3"><i class="fa-solid fa-pills fa-2x"></i></div>
+                            <h3 class="font-bold">治療に伴う痛み</h3>
+                            <p class="text-sm text-gray-600">化学療法や放射線治療が原因で痛みが出ることがあります。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- All other slides here, with `class="slide"` and content -->
+            <div id="slide-4" class="slide flex-col lg:flex-row items-center p-8 bg-gray-50">
+                <div class="lg:w-1/2 w-full">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-4">あなたの痛みを「具体的に」伝えましょう</h2>
+                    <p class="text-lg text-gray-600 mb-6">痛みを我慢せず、医療チームに詳しく伝えることが、最適な治療への第一歩です。「痛み日記」も有効です。</p>
+                    <div class="p-4 bg-blue-100 border-l-4 border-blue-500 text-blue-700 rounded-r-lg">
+                        <p>「痛みの強さ」は0から10の数字で伝えると分かりやすいです。<br>0: 全く痛くない 〜 10: これ以上ない最悪の痛み</p>
+                    </div>
+                </div>
+                <div class="lg:w-1/2 w-full mt-8 lg:mt-0 grid grid-cols-2 gap-4">
+                    <div class="info-card rounded-lg p-3"> <i class="fa-solid fa-location-dot text-blue-500 mr-2"></i> どこが痛む？</div>
+                    <div class="info-card rounded-lg p-3"> <i class="fa-solid fa-fire text-red-500 mr-2"></i> どんな痛み？ (ズキズキ、ジンジン等)</div>
+                    <div class="info-card rounded-lg p-3"> <i class="fa-solid fa-clock text-green-500 mr-2"></i> いつ痛む？</div>
+                    <div class="info-card rounded-lg p-3"> <i class="fa-solid fa-arrow-up-right-dots text-orange-500 mr-2"></i> 何をすると強くなる？</div>
+                    <div class="info-card rounded-lg p-3"> <i class="fa-solid fa-person-shelter text-indigo-500 mr-2"></i> 何をすると和らぐ？</div>
+                    <div class="info-card rounded-lg p-3"> <i class="fa-solid fa-person-walking text-purple-500 mr-2"></i> 生活への影響は？</div>
+                </div>
+            </div>
+
+            <div id="slide-5" class="slide flex-col p-8 bg-gray-50">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">がんの痛みを和らげる治療の基本原則</h2>
+                 <div class="flex-grow flex flex-col justify-center items-center w-full">
+                    <div class="w-full max-w-4xl mb-8">
+                         <h3 class="text-xl font-bold text-center text-gray-700 mb-4">WHO方式3段階除痛ラダー</h3>
+                         <div class="relative flex justify-between items-end">
+                             <div class="step-connector"></div>
+                             <div class="relative text-center w-1/3">
+                                 <div class="bg-green-500 text-white rounded-lg p-4 h-24 flex flex-col justify-center items-center">
+                                    <p class="font-bold">第1段階</p>
+                                    <p class="text-sm">軽い痛み</p>
+                                 </div>
+                                 <p class="mt-2 text-sm">非オピオイド鎮痛薬<br>（NSAIDsなど）</p>
+                             </div>
+                             <div class="relative text-center w-1/3">
+                                 <div class="bg-yellow-500 text-white rounded-lg p-4 h-32 flex flex-col justify-center items-center">
+                                    <p class="font-bold">第2段階</p>
+                                    <p class="text-sm">中くらいの痛み</p>
+                                 </div>
+                                 <p class="mt-2 text-sm">弱オピオイド</p>
+                             </div>
+                             <div class="relative text-center w-1/3">
+                                  <div class="bg-red-500 text-white rounded-lg p-4 h-40 flex flex-col justify-center items-center">
+                                    <p class="font-bold">第3段階</p>
+                                    <p class="text-sm">強い痛み</p>
+                                 </div>
+                                 <p class="mt-2 text-sm">強オピオイド</p>
+                             </div>
+                         </div>
+                         <p class="text-center text-xs text-gray-500 mt-2">※痛みの強さによっては、第2段階を飛ばすこともあります。</p>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-5xl">
+                        <div class="info-card p-4 rounded-lg text-center"><i class="fa-solid fa-pills text-blue-500 text-2xl mb-2"></i><p><strong>経口的に:</strong> 飲み薬が基本</p></div>
+                        <div class="info-card p-4 rounded-lg text-center"><i class="fa-solid fa-clock text-green-500 text-2xl mb-2"></i><p><strong>時刻を決めて:</strong> 痛くなる前に予防</p></div>
+                        <div class="info-card p-4 rounded-lg text-center"><i class="fa-solid fa-user-doctor text-indigo-500 text-2xl mb-2"></i><p><strong>個別的な量で:</strong> その人に合った量を調整</p></div>
+                    </div>
+                 </div>
+            </div>
+
+            <div id="slide-6" class="slide flex-col justify-center p-8 bg-gray-50">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">薬物療法①：痛みの第一歩</h2>
+                <div class="flex-grow flex items-center justify-center w-full">
+                    <div class="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-teal-500">
+                            <h3 class="text-2xl font-bold text-teal-600 mb-3">NSAIDs (非ステロイド性抗炎症薬)</h3>
+                            <p class="mb-4">ロキソプロフェン、イブプロフェンなど。</p>
+                            <div class="space-y-2">
+                                <p><i class="fa-solid fa-check-circle text-teal-500 mr-2"></i>炎症や骨の痛みに特に有効</p>
+                                <p><i class="fa-solid fa-exclamation-triangle text-red-500 mr-2"></i>胃腸障害や腎機能への影響に注意が必要</p>
+                            </div>
+                        </div>
+                         <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-sky-500">
+                            <h3 class="text-2xl font-bold text-sky-600 mb-3">アセトアミノフェン</h3>
+                            <p class="mb-4">カロナールなど。</p>
+                            <div class="space-y-2">
+                                <p><i class="fa-solid fa-check-circle text-sky-500 mr-2"></i>炎症を抑える作用は弱いが、比較的安全</p>
+                                 <p><i class="fa-solid fa-check-circle text-sky-500 mr-2"></i>NSAIDsが使えない場合の選択肢</p>
+                                <p><i class="fa-solid fa-exclamation-triangle text-red-500 mr-2"></i>飲み過ぎによる肝障害に注意</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="slide-7" class="slide flex-col justify-center p-8 bg-gray-50">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">薬物療法②：中等度〜強い痛みに</h2>
+                <div class="flex-grow flex flex-col lg:flex-row items-center justify-center gap-8 w-full">
+                    <div class="lg:w-1/2 w-full bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold text-gray-700 mb-4 flex items-center"><i class="fa-solid fa-shield-halved text-blue-500 mr-3 fa-lg"></i>ベースの痛み（持続痛）の管理</h3>
+                        <div class="flex items-center">
+                            <i class="fa-solid fa-clock fa-3x text-blue-400 mr-4"></i>
+                            <div>
+                                <p class="font-bold">時間を決めて定期的に服用</p>
+                                <p class="text-sm text-gray-600">効果が長く続く「徐放性製剤」を使い、安定した血中濃度を保ちます。</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="lg:w-1/2 w-full bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold text-gray-700 mb-4 flex items-center"><i class="fa-solid fa-bolt-lightning text-orange-500 mr-3 fa-lg"></i>急な痛み（突出痛）の管理</h3>
+                         <div class="flex items-center">
+                            <i class="fa-solid fa-kit-medical fa-3x text-orange-400 mr-4"></i>
+                            <div>
+                                <p class="font-bold">頓用薬（レスキュー薬）を使用</p>
+                                <p class="text-sm text-gray-600">痛みが強くなった時に、即効性のある「速放性製剤」を追加で使います。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                 <p class="text-center text-gray-600 mt-8">オピオイドにはモルヒネ、オキシコドン、フェンタニルなど様々な種類があり、患者さんの状態に合わせて選択されます。</p>
+            </div>
+
+            <div id="slide-8" class="slide flex-col justify-center p-8 bg-gray-50">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">オピオイドの誤解と副作用対策</h2>
+                <div class="w-full max-w-4xl mx-auto mb-6 p-4 bg-green-100 border-l-4 border-green-500 text-green-700 rounded-r-lg">
+                    <h3 class="font-bold">知っておいてほしいこと</h3>
+                    <p>がんの痛みの治療で医師の指示通りに使う場合、精神的な依存（中毒）は極めてまれです。痛みを我慢せず、適切な治療を受けましょう。</p>
+                </div>
+                <div class="flex-grow grid md:grid-cols-2 gap-8 max-w-4xl mx-auto w-full">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold text-orange-600 mb-3"><i class="fa-solid fa-toilet-paper mr-2"></i>便秘</h3>
+                        <p class="mb-4">最も多く、持続しやすい副作用です。</p>
+                        <p class="font-bold text-gray-700">対策：</p>
+                        <ul class="list-disc list-inside text-gray-600 space-y-1 mt-2">
+                            <li>オピオイド開始時から下剤を併用する</li>
+                            <li>水分を十分に摂る</li>
+                            <li>動ける範囲で体を動かす</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold text-indigo-600 mb-3"><i class="fa-solid fa-face-frown-open mr-2"></i>吐き気・嘔吐</h3>
+                        <p class="mb-4">使い始めや増量時に見られますが、多くは1週間ほどで慣れます。</p>
+                        <p class="font-bold text-gray-700">対策：</p>
+                         <ul class="list-disc list-inside text-gray-600 space-y-1 mt-2">
+                            <li>吐き気止めを使う</li>
+                            <li>他の種類のオピオイドに変更する（オピオイドローテーション）</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="slide-9" class="slide flex-col justify-center p-8 bg-gray-50">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">薬物療法③：特殊な痛みの専門家たち</h2>
+                <p class="text-center text-gray-600 mb-8 max-w-3xl mx-auto">オピオイドだけでは効きにくい特定の痛みに対して、「鎮痛補助薬」という助っ人が活躍します。</p>
+                <div class="flex-grow grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto w-full">
+                    <div class="info-card p-6 rounded-lg text-center flex flex-col items-center">
+                        <div class="icon bg-purple-100 text-purple-500 rounded-full flex items-center justify-center mb-3"><i class="fa-solid fa-brain fa-2x"></i></div>
+                        <h3 class="text-lg font-bold">神経障害性疼痛に</h3>
+                        <p class="text-gray-600 text-sm mt-2">抗けいれん薬（プレガバリン等）<br>抗うつ薬（デュロキセチン等）</p>
+                    </div>
+                    <div class="info-card p-6 rounded-lg text-center flex flex-col items-center">
+                        <div class="icon bg-yellow-100 text-yellow-500 rounded-full flex items-center justify-center mb-3"><i class="fa-solid fa-bone fa-2x"></i></div>
+                        <h3 class="text-lg font-bold">骨の痛みに</h3>
+                        <p class="text-gray-600 text-sm mt-2">ビスフォスフォネート製剤<br>デノスマブ</p>
+                    </div>
+                    <div class="info-card p-6 rounded-lg text-center flex flex-col items-center">
+                        <div class="icon bg-red-100 text-red-500 rounded-full flex items-center justify-center mb-3"><i class="fa-solid fa-fire-flame-curved fa-2x"></i></div>
+                        <h3 class="text-lg font-bold">炎症や神経圧迫に</h3>
+                        <p class="text-gray-600 text-sm mt-2">ステロイド（デキサメタゾン等）</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="slide-10" class="slide flex-col justify-center p-8 bg-gray-50">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">薬以外の治療法（インターベンション）</h2>
+                <p class="text-center text-gray-600 mb-8 max-w-3xl mx-auto">薬物療法でコントロールが難しい痛みに対して、より直接的なアプローチも選択肢になります。</p>
+                <div class="flex-grow grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto w-full">
+                    <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                         <i class="fa-solid fa-radiation text-5xl text-blue-500 mb-4"></i>
+                        <h3 class="text-lg font-bold">放射線治療</h3>
+                        <p class="text-sm text-gray-600 mt-2">骨転移など、痛みの原因となっている場所に放射線を当てて腫瘍を小さくし、痛みを和らげます。</p>
+                    </div>
+                     <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                         <i class="fa-solid fa-syringe text-5xl text-green-500 mb-4"></i>
+                        <h3 class="text-lg font-bold">神経ブロック</h3>
+                        <p class="text-sm text-gray-600 mt-2">痛みを伝えている神経の近くに麻酔薬を注射し、痛みの信号を遮断します。</p>
+                    </div>
+                     <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                        <i class="fa-solid fa-diagram-project text-5xl text-indigo-500 mb-4"></i>
+                        <h3 class="text-lg font-bold">気管支ステント</h3>
+                        <p class="text-sm text-gray-600 mt-2">腫瘍で狭くなった気管支を広げ、呼吸困難やそれに伴う不快感を和らげます。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="slide-11" class="slide flex-col lg:flex-row items-center p-8 bg-teal-50">
+                <div class="lg:w-1/2 w-full flex justify-center mb-8 lg:mb-0">
+                     <div class="relative w-80 h-80">
+                        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-teal-500 text-white rounded-full w-32 h-32 flex flex-col items-center justify-center shadow-lg">
+                           <i class="fa-solid fa-hand-holding-heart fa-2x mb-1"></i>
+                           <span class="font-bold">緩和ケア</span>
+                        </div>
+                        <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 bg-white p-3 rounded-full shadow-md"><i class="fa-solid fa-user-doctor text-teal-600 fa-2x"></i></div>
+                        <div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-2 bg-white p-3 rounded-full shadow-md"><i class="fa-solid fa-user-friends text-teal-600 fa-2x"></i></div>
+                        <div class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 bg-white p-3 rounded-full shadow-md"><i class="fa-solid fa-user-nurse text-teal-600 fa-2x"></i></div>
+                        <div class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 bg-white p-3 rounded-full shadow-md"><i class="fa-solid fa-pills text-teal-600 fa-2x"></i></div>
+                        <div class="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 bg-white p-3 rounded-full shadow-md"><i class="fa-solid fa-comments text-teal-600 fa-2x"></i></div>
+                         <div class="absolute top-1/4 right-1/4 translate-x-1/2 -translate-y-1/2 bg-white p-3 rounded-full shadow-md"><i class="fa-solid fa-book-medical text-teal-600 fa-2x"></i></div>
+                         <div class="absolute bottom-1/4 left-1/4 -translate-x-1/2 translate-y-1/2 bg-white p-3 rounded-full shadow-md"><i class="fa-solid fa-house-medical text-teal-600 fa-2x"></i></div>
+                          <div class="absolute bottom-1/4 right-1/4 translate-x-1/2 translate-y-1/2 bg-white p-3 rounded-full shadow-md"><i class="fa-solid fa-seedling text-teal-600 fa-2x"></i></div>
+                     </div>
+                </div>
+                <div class="lg:w-1/2 w-full lg:pl-8">
+                     <h2 class="text-3xl font-bold text-teal-800 mb-4">緩和ケアは「いつでも」あなたの味方です</h2>
+                    <p class="text-lg text-gray-700 mb-4">緩和ケアは、終末期だけでなく、がんと診断された初期から受けられる、QOL（生活の質）を高めるためのケアです。</p>
+                    <ul class="list-none space-y-3">
+                        <li class="flex items-start"><i class="fa-solid fa-check-circle text-teal-600 mt-1 mr-3"></i><span>痛みだけでなく、心や社会的なつらさも含めて総合的にサポートします。</span></li>
+                        <li class="flex items-start"><i class="fa-solid fa-check-circle text-teal-600 mt-1 mr-3"></i><span>医師、看護師、薬剤師など多職種のチームで支えます。</span></li>
+                         <li class="flex items-start"><i class="fa-solid fa-check-circle text-teal-600 mt-1 mr-3"></i><span>積極的ながん治療と並行して行うことで、治療を続けやすくなる効果も期待できます。</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div id="slide-12" class="slide flex-col justify-center p-8 bg-gray-50">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">ご自宅でできるセルフケア</h2>
+                <p class="text-center text-gray-600 mb-8 max-w-3xl mx-auto">医療チームと相談の上、生活に工夫を取り入れることで、つらさが和らぐことがあります。</p>
+                <div class="flex-grow grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto w-full">
+                    <div class="bg-white p-4 rounded-lg shadow-md text-center">
+                        <i class="fa-solid fa-couch text-5xl text-blue-500 mb-3"></i>
+                        <h3 class="font-bold">安楽な姿勢</h3>
+                        <p class="text-xs text-gray-600">クッションを使い、上半身を少し起こすと呼吸が楽になります。</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow-md text-center">
+                       <i class="fa-solid fa-wind text-5xl text-green-500 mb-3"></i>
+                        <h3 class="font-bold">呼吸法</h3>
+                        <p class="text-xs text-gray-600">口をすぼめてゆっくり息を吐く「口すぼめ呼吸」で息苦しさを軽減。</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow-md text-center">
+                       <i class="fa-solid fa-temperature-half text-5xl text-orange-500 mb-3"></i>
+                        <h3 class="font-bold">温める・冷やす</h3>
+                        <p class="text-xs text-gray-600">筋肉の痛みは温め、炎症には冷やすなど使い分けます（医師に確認）。</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow-md text-center">
+                       <i class="fa-solid fa-leaf text-5xl text-indigo-500 mb-3"></i>
+                        <h3 class="font-bold">環境調整</h3>
+                        <p class="text-xs text-gray-600">適切な湿度を保ち、タバコの煙などの刺激物を避けます。</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="slide-13" class="slide flex-col justify-center items-center text-center p-8 bg-gradient-to-br from-green-400 to-teal-500 text-white">
+                 <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mb-6">
+                    <i class="fa-solid fa-handshake-angle fa-2x"></i>
+                </div>
+                <h2 class="text-4xl font-bold mb-4">痛みをあきらめないで</h2>
+                <p class="text-xl max-w-3xl mx-auto">小細胞肺癌の痛みには、様々な対処法があります。大切なのは、あなたに合った治療法を見つけることです。医療チームとよく話し合い、あなたらしい生活を送るためのサポートを受けましょう。</p>
+            </div>
+
+            <div id="slide-14" class="slide p-6 md:p-8 bg-gray-800 text-white overflow-y-auto">
+                <div class="w-full h-full flex flex-col">
+                    <h2 class="text-3xl font-bold mb-6 text-center">YouTube投稿用 素材案</h2>
+                    <div class="space-y-6 max-w-4xl mx-auto">
+                        <div class="bg-gray-700 p-4 rounded-lg">
+                            <h3 class="text-xl font-bold mb-2 text-cyan-400"><i class="fa-solid fa-closed-captioning mr-2"></i>タイトル案 (3案)</h3>
+                            <ul class="list-disc list-inside space-y-1">
+                                <li>【肺がん】痛みをあきらめないで！専門家が教える最新の緩和ケア戦略</li>
+                                <li>知っておきたい小細胞肺癌の痛み対策｜薬の種類からセルフケアまで徹底解説</li>
+                                <li>がんと痛みの向き合い方 - あなたと家族ができること【包括的ガイド】</li>
+                            </ul>
+                        </div>
+                        <div class="bg-gray-700 p-4 rounded-lg">
+                            <h3 class="text-xl font-bold mb-2 text-cyan-400"><i class="fa-solid fa-align-left mr-2"></i>概要欄</h3>
+                            <p class="text-sm">
+小細胞肺癌（SCLC）と診断され、痛みや今後の不安を抱えている患者さん、ご家族の方へ。この動画では、肺がんの痛みの原因から、最新の薬物療法、薬以外の治療法、そしてご自宅でできるセルフケアまでを、インフォグラフィックスを使って分かりやすく解説します。
+痛みの専門的な管理方法である「緩和ケア」は、診断初期から受けられる心強い味方です。オピオイド（医療用麻薬）への正しい理解、副作用への具体的な対策もご紹介。痛みを我慢せず、あなたらしい生活を取り戻すための一歩を、私たちと一緒に踏み出しましょう。
+
+#小細胞肺癌 #肺がん #痛み #緩和ケア #疼痛管理 #オピオイド #がんサバイバー
+                            </p>
+                        </div>
+                        <div class="bg-gray-700 p-4 rounded-lg">
+                            <h3 class="text-xl font-bold mb-2 text-cyan-400"><i class="fa-solid fa-image mr-2"></i>サムネイル生成プロンプト (3案)</h3>
+                            <ul class="list-disc list-inside space-y-2 text-sm">
+                                <li>A hopeful and informative YouTube thumbnail about managing lung cancer pain. A kind doctor in a white coat is showing a diagram of lungs to a patient. The background is bright and clean. Text overlay: '肺がんの痛み、あきらめないで！' in a clear, friendly font. Use a soft and warm color palette. --ar 16:9</li>
+                                <li>A close-up of a person's hands holding a supportive hand, symbolizing care and relief. In the background, a soft-focus image of a doctor and patient talking. Text on screen: "知っておきたい痛み対策". Minimalist, empathetic style, photo-realistic. --ar 16:9</li>
+                                <li>An infographic-style YouTube thumbnail. On the left, icons representing different pain relief methods (pills, radiation symbol, syringe). On the right, a large, bold title: "肺がんの痛み 完全ガイド". Bright, engaging colors like blue, green, and orange. Clear and easy-to-read layout. --ar 16:9</li>
+                            </ul>
+                        </div>
+                        <div class="bg-gray-700 p-4 rounded-lg">
+                            <h3 class="text-xl font-bold mb-2 text-cyan-400"><i class="fa-solid fa-music mr-2"></i>SUNO AI用 BGMプロンプト (3案)</h3>
+                            <ul class="list-disc list-inside space-y-2 text-sm">
+                                <li>[Style: Hopeful, gentle, instrumental] An uplifting and calming background music for a medical educational video. Acoustic piano melody with soft strings and a subtle acoustic guitar. Slow tempo, peaceful and reassuring mood.</li>
+                                <li>[Style: Corporate, motivational, background music] A slightly optimistic and clear instrumental track. Features a simple piano motif, light pads, and a gentle, steady beat. Not distracting, creates a feeling of clarity and support.</li>
+                                <li>[Style: Ambient, reflective, peaceful] A very soft and atmospheric instrumental piece. Flowing synth pads, delicate piano notes, no drums. Creates a calm and safe space for serious topics.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ナレーションと操作ボタン -->
+        <div class="w-full max-w-5xl mx-auto mt-4">
+             <!-- ナレーションボックス -->
+            <div id="sclc-narration-box" class="narration-box p-4 rounded-lg min-h-[100px] text-gray-800">
+                <!-- ナレーションがここに表示されます -->
+            </div>
+            
+            <!-- 操作ボタンとページ番号 -->
+            <div class="flex items-center justify-center mt-4 space-x-4">
+                <button id="sclc-prev-button" class="pagination-button bg-gray-600 text-white px-6 py-3 rounded-full shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
+                    <i class="fa-solid fa-arrow-left"></i> 前へ
+                </button>
+                <div id="sclc-page-indicator" class="text-lg font-bold text-gray-700">
+                    1 / 14
+                </div>
+                <button id="sclc-next-button" class="pagination-button bg-blue-600 text-white px-6 py-3 rounded-full shadow-md">
+                    次へ <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // This script is placed at the end of the body tag, so it will run after the DOM is parsed.
+        // No need for DOMContentLoaded wrapper.
+
+        const slides = document.querySelectorAll('.slide');
+        const prevButton = document.getElementById('sclc-prev-button');
+        const nextButton = document.getElementById('sclc-next-button');
+        const pageIndicator = document.getElementById('sclc-page-indicator');
+        const narrationBox = document.getElementById('sclc-narration-box');
+        
+        // Defensive check to ensure all elements are found
+        if (slides.length > 0 && prevButton && nextButton && pageIndicator && narrationBox) {
+            const totalSlides = slides.length;
+            let currentSlide = 1;
+
+            const narrations = {
+                1: "皆さん、こんにちは。このガイドでは、小細胞肺癌に伴う痛みの管理について、分かりやすく解説していきます。痛みを乗り越え、より良い生活を送るための一助となれば幸いです。",
+                2: "がんに伴う痛みは、眠れなくなったり、食事がとれなくなったりと、心と体に様々な影響を及ぼします。痛みを適切に管理することは、治療を続ける上でも、あなたらしい生活を守る上でも非常に重要です。",
+                3: "痛みの原因は、がんそのものが神経や組織を圧迫すること、骨に転移すること、あるいは治療の副作用など、多岐にわたります。原因を理解することが、適切な治療法の選択につながります。",
+                4: "「どんな痛みが、いつ、どこで、何をすると強くなるか」。このように具体的に伝えることで、医療チームはあなたの痛みをより深く理解し、効果的な対策を立てることができます。痛みを我慢せず、遠慮なく相談してください。",
+                5: "がんの痛みの治療には、世界保健機関、WHOが提唱する基本原則があります。痛みの強さに応じて段階的に薬を選び、痛くなる前に時間を決めて飲むことで、安定した状態を保つことを目指します。",
+                6: "痛みの治療は、まず非オピオイド鎮痛薬から始まることが多くあります。炎症を伴う痛みにはNSAIDs、胃腸が弱い方などにはアセトアミノフェン、というように特徴に応じて使い分けられます。",
+                7: "中等度から強い痛みには、オピオイドという鎮痛薬が中心となります。常に続く痛みには、長く効く薬を定期的に。そして、急に強くなる痛みには、すぐに効くレスキュー薬を追加で使う、という二段構えで痛みをコントロールします。",
+                8: "「オピオイドは中毒になる」という誤解がありますが、医師の管理のもと、痛みの治療で使う場合はその心配はほとんどありません。便秘や吐き気などの副作用は、お薬でしっかり対策できますので、安心して治療を受けましょう。",
+                9: "ピリピリ、ジンジンするような神経の痛みや、骨の痛みなど、特定の種類の痛みには、「鎮痛補助薬」という専門家がいます。オピオイドと組み合わせることで、より高い鎮痛効果が期待できます。",
+                10: "お薬だけが治療法ではありません。痛みの原因となっている場所に直接アプローチする、放射線治療や神経ブロックといった方法もあります。これらは薬物療法と組み合わせることで、より効果的な痛みのコントロールを可能にします。",
+                11: "緩和ケアは、決して終末期だけのものではありません。がんと診断された時から、痛みなどのつらい症状を和らげ、心と体の両面からあなたとご家族を支える、心強いパートナーです。",
+                12: "医療者と相談の上で、ご自身でできる工夫もあります。呼吸が楽になる姿勢をとったり、リラックスできる呼吸法を試したり、環境を整えたりすることで、つらさを和らげる助けになります。",
+                13: "小細胞肺癌の痛みは、多角的なアプローチで和らげることが可能です。一人で抱え込まず、医療チームを信頼し、共にあなたに最適なケアを見つけていきましょう。希望を持って、一歩ずつ進んでいきましょう。",
+                14: "このスライドは、YouTubeでの情報発信にもご活用いただけます。タイトルや概要、サムネイルのアイデアを参考に、より多くの方へ正確で希望の持てる情報を届ける一助となれば幸いです。"
+            };
+
+            function updateSlide() {
+                // Use a standard for loop to be explicit
+                for (let i = 0; i < slides.length; i++) {
+                    if ((i + 1) === currentSlide) {
+                        slides[i].classList.add('active');
+                    } else {
+                        slides[i].classList.remove('active');
+                    }
+                }
+                
+                pageIndicator.textContent = `${currentSlide} / ${totalSlides}`;
+                narrationBox.textContent = narrations[currentSlide];
+                prevButton.disabled = (currentSlide === 1);
+                nextButton.disabled = (currentSlide === totalSlides);
+                
+                if (currentSlide === totalSlides) {
+                    nextButton.innerHTML = '終了 <i class="fa-solid fa-check"></i>';
+                } else {
+                    nextButton.innerHTML = '次へ <i class="fa-solid fa-arrow-right"></i>';
+                }
+            }
+
+            nextButton.addEventListener('click', () => {
+                if (currentSlide < totalSlides) {
+                    currentSlide++;
+                    updateSlide();
+                }
+            });
+
+            prevButton.addEventListener('click', () => {
+                if (currentSlide > 1) {
+                    currentSlide--;
+                    updateSlide();
+                }
+            });
+
+            // Initial call
+            updateSlide();
+        } else {
+            // This will help in debugging if the elements are not found
+            console.error("One or more essential presentation elements were not found in the DOM.");
+        }
+    </script>
+</body>
+</html>
