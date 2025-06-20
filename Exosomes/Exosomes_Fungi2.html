@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インフォグラフィック：真菌の王国 - 味方か、敵か？</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Brilliant Blues (#0A2463, #3E92CC) with a strong accent (#D8315B) -->
+    <!-- Application Structure Plan: レポートの学術的な構成を、ストーリーテリングを重視した単一ページのインフォグラフィックに再設計。物語は「真菌とは何か？」という基本から始まり、「共生と対立」の二面性を探り、「主要な病原体」との戦いを描き、「未来への挑戦」で締めくくる。各セクションは大きな見出しとインパクトのあるビジュアル（大きな数字、チャート、ダイアグラム）で構成され、ユーザーがスクロールするだけで情報を直感的に消化できるようにする。この物語的な流れは、複雑な科学的情報をより親しみやすく、記憶に残りやすくするために選択された。 -->
+    <!-- Visualization & Content Choices: 
+        - [微生物比較] -> Goal: Compare -> Viz: HTML/CSSカード -> Justification: 3者の主要な違い（核の有無、細胞壁）を並べて視覚的に対比させることで、真菌のユニークな立ち位置を明確にするため。Method: HTML/CSS with Tailwind.
+        - [常在菌の割合] -> Goal: Inform -> Viz: Donut Chart -> Justification: 健康な人の体における主要な常在真菌（カンジダ、マラセチア）の代表的な割合を円グラフで示すことで、「共生」という概念を具体的に示すため。Library: Chart.js.
+        - [日和見感染のリスク要因] -> Goal: Organize -> Viz: HTML/CSSフローダイアグラム -> Justification: 健康な状態から感染症へ至るプロセスと、その引き金となる複数の要因（免疫抑制、抗生物質など）の関係性を視覚的に整理するため。Method: HTML/CSS with Tailwind.
+        - [侵襲性真菌症の死亡率] -> Goal: Compare -> Viz: Bar Chart -> Justification: 主要な侵襲性真菌症の高い死亡率を棒グラフで比較し、その脅威を定量的に示すため。Library: Chart.js.
+        - [免疫回避戦略] -> Goal: Organize -> Viz: HTML/CSSアイコン付きダイアグラム -> Justification: 真菌の巧みな戦略（形態転換、バイオフィルム）をアイコンと短い説明で図解し、複雑なメカニズムを簡潔に伝えるため。Method: HTML/CSS with Tailwind.
+        - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used.
+    -->
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #F4F2F3;
+            color: #0A2463;
+        }
+        .hero-bg {
+            background: linear-gradient(45deg, rgba(10, 36, 99, 0.9), rgba(62, 146, 204, 0.9));
+        }
+        .stat-number {
+            font-weight: 900;
+            color: #D8315B;
+            line-height: 1;
+        }
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #0A2463;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        @media (min-width: 768px) {
+            .section-title {
+                font-size: 3rem;
+            }
+        }
+        .section-subtitle {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto 3rem auto;
+            color: #3E92CC;
+        }
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            border: 1px solid #e5e7eb;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .flow-arrow {
+            color: #D8315B;
+            font-size: 2.5rem;
+            line-height: 1;
+            font-weight: 900;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <main>
+        <section class="hero-bg text-white py-20 md:py-32">
+            <div class="container mx-auto px-6 text-center">
+                <h1 class="text-4xl md:text-6xl font-black leading-tight tracking-tight">真菌の王国</h1>
+                <p class="mt-4 text-xl md:text-2xl font-light">味方か、それとも敵か？知られざる微生物の世界</p>
+            </div>
+        </section>
+
+        <section class="py-16 md:py-24">
+            <div class="container mx-auto px-6">
+                <h2 class="section-title">真菌とは何か？</h2>
+                <p class="section-subtitle">真菌は、細菌やウイルスとは根本的に異なる、独自の生物グループです。ヒトと同じ「真核生物」であることが、その複雑な関係性の鍵を握っています。</p>
+                <div class="grid md:grid-cols-3 gap-8 text-center">
+                    <div class="card p-6">
+                        <div class="text-6xl mb-4">🍄</div>
+                        <h3 class="text-2xl font-bold mb-2">真菌</h3>
+                        <p class="text-gray-600">核を持つ<strong class="text-[#0A2463]">真核生物</strong>。キチン質の硬い細胞壁を持つ。</p>
+                    </div>
+                    <div class="card p-6">
+                        <div class="text-6xl mb-4">🦠</div>
+                        <h3 class="text-2xl font-bold mb-2">細菌</h3>
+                        <p class="text-gray-600">核を持たない<strong class="text-[#0A2463]">原核生物</strong>。細胞壁の成分が異なる。</p>
+                    </div>
+                    <div class="card p-6">
+                        <div class="text-6xl mb-4">🧬</div>
+                        <h3 class="text-2xl font-bold mb-2">ウイルス</h3>
+                        <p class="text-gray-600">細胞構造を持たず、自力で増殖できない<strong class="text-[#0A2463]">非細胞性粒子</strong>。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-white py-16 md:py-24">
+            <div class="container mx-auto px-6">
+                <h2 class="section-title">共生と対立の二面性</h2>
+                <p class="section-subtitle">真菌は私たちの体に常に存在し、健康を支える「常在菌」として共生しています。しかし、そのバランスが崩れると、恐ろしい病原体へと姿を変えます。</p>
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div class="text-center md:text-left">
+                        <h3 class="text-3xl font-bold text-[#0A2463] mb-4">私たちの体に住む真菌</h3>
+                        <p class="text-lg text-gray-700 mb-6">健康な人の体にも、様々な真菌が「マイコバイオーム」というコミュニティを形成して生息しています。これらは普段、他の悪い菌の侵入を防ぐなど、有益な役割を担っています。</p>
+                        <div class="flex flex-col sm:flex-row gap-4">
+                            <div class="flex-1 card p-4 bg-blue-50">
+                                <p class="font-bold text-[#3E92CC]">皮膚の主役</p>
+                                <p class="text-2xl font-extrabold text-[#0A2463]">マラセチア属</p>
+                                <p class="text-sm text-gray-600">皮膚の真菌の80%以上を占める</p>
+                            </div>
+                            <div class="flex-1 card p-4 bg-red-50">
+                                <p class="font-bold text-[#D8315B]">消化管の主役</p>
+                                <p class="text-2xl font-extrabold text-[#0A2463]">カンジダ属</p>
+                                <p class="text-sm text-gray-600">健康な人の40-60%が保有</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="chart-container">
+                            <canvas id="mycobiomeChart"></canvas>
+                        </div>
+                        <p class="text-center text-sm text-gray-500 mt-2">常在真菌の構成例（部位により異なる）</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-16 md:py-24">
+            <div class="container mx-auto px-6">
+                <h2 class="section-title">日和見感染の引き金</h2>
+                <p class="section-subtitle">健康な状態では保たれている共生のバランスが、なぜ崩れてしまうのでしょうか？特定の条件下で、常在菌は「日和見感染」を引き起こします。</p>
+                <div class="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 text-center">
+                    <div class="card p-6 border-2 border-green-400">
+                        <h3 class="text-2xl font-bold">健康な状態</h3>
+                        <p class="text-4xl mt-2">🤝</p>
+                        <p class="mt-2 text-gray-600">免疫が正常に機能し、<br>細菌叢とのバランスが保たれている</p>
+                    </div>
+                    <div class="flow-arrow my-4 md:my-0">&rarr;</div>
+                    <div class="card p-6 bg-yellow-50">
+                        <h3 class="text-2xl font-bold text-yellow-800">バランスの乱れ</h3>
+                        <div class="text-sm mt-4 text-left space-y-1">
+                           <p>• 免疫力の低下 (HIV, がん治療)</p>
+                           <p>• 広域抗生物質の使用</p>
+                           <p>• カテーテルなどの医療機器</p>
+                           <p>• 基礎疾患 (糖尿病など)</p>
+                        </div>
+                    </div>
+                    <div class="flow-arrow my-4 md:my-0">&rarr;</div>
+                    <div class="card p-6 border-2 border-red-400 bg-red-50">
+                        <h3 class="text-2xl font-bold text-red-700">日和見感染</h3>
+                        <p class="text-4xl mt-2">💥</p>
+                        <p class="mt-2 text-gray-600">常在菌が異常増殖し、<br>病気を引き起こす</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-white py-16 md:py-24">
+            <div class="container mx-auto px-6">
+                <h2 class="section-title">警戒すべき病原真菌</h2>
+                <p class="section-subtitle">日和見感染は、水虫のような表在性のものから、命を脅かす全身性のものまで多岐にわたります。特に注意すべき病原体とその脅威を見ていきましょう。</p>
+                <div class="grid md:grid-cols-2 gap-12">
+                    <div>
+                        <h3 class="text-3xl font-bold text-[#0A2463] mb-4">侵襲性真菌症の致死率</h3>
+                        <p class="text-lg text-gray-700 mb-6">体内に侵入した真菌が引き起こす「侵襲性真菌症」は、診断が難しく、治療が遅れると非常に高い死亡率を示します。これは、免疫力が低下した患者にとって重大な脅威です。</p>
+                        <div class="space-y-4">
+                            <div class="card p-4 flex items-center gap-4">
+                                <div class="text-4xl">①</div>
+                                <div>
+                                    <h4 class="text-xl font-bold text-[#D8315B]">侵襲性アスペルギルス症</h4>
+                                    <p class="text-gray-600">重度の免疫不全患者における致死的な肺炎</p>
+                                </div>
+                            </div>
+                            <div class="card p-4 flex items-center gap-4">
+                                <div class="text-4xl">②</div>
+                                <div>
+                                    <h4 class="text-xl font-bold text-[#0A2463]">カンジダ血症</h4>
+                                    <p class="text-gray-600">血液が真菌に感染する敗血症の一種</p>
+                                </div>
+                            </div>
+                             <div class="card p-4 flex items-center gap-4">
+                                <div class="text-4xl">③</div>
+                                <div>
+                                    <h4 class="text-xl font-bold text-[#3E92CC]">クリプトコックス髄膜炎</h4>
+                                    <p class="text-gray-600">主にHIV患者の脳を侵す重篤な感染症</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="chart-container h-[400px] md:h-[500px]">
+                            <canvas id="mortalityChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="py-16 md:py-24">
+            <div class="container mx-auto px-6">
+                 <h2 class="section-title">新たな脅威：薬剤耐性菌</h2>
+                 <p class="section-subtitle">細菌と同様に、真菌の世界でも薬剤耐性が深刻な問題となっています。中でも「カンジダ・アウリス」は、スーパーバグ（超多剤耐性菌）として世界的な警戒対象です。</p>
+                 <div class="card md:grid md:grid-cols-2 gap-8 items-center p-8 md:p-12 bg-gradient-to-r from-red-600 to-pink-600 text-white">
+                    <div class="text-center md:text-left">
+                        <h3 class="text-4xl font-black">カンジダ・アウリス</h3>
+                        <p class="text-2xl font-light mt-2">WHOが最優先する病原真菌</p>
+                        <ul class="mt-6 space-y-3 text-lg text-left">
+                           <li class="flex items-start gap-3"><span class="mt-1">✔️</span><span>主要な抗真菌薬の多くが効かない「多剤耐性」</span></li>
+                           <li class="flex items-start gap-3"><span class="mt-1">✔️</span><span>病院内での集団感染（アウトブレイク）を引き起こしやすい</span></li>
+                           <li class="flex items-start gap-3"><span class="mt-1">✔️</span><span>環境に長く潜伏し、消毒薬にも抵抗性を示す</span></li>
+                        </ul>
+                    </div>
+                    <div class="text-center mt-8 md:mt-0">
+                        <p class="text-sm uppercase tracking-widest">分離株のフルコナゾール耐性率</p>
+                        <p class="stat-number text-8xl md:text-9xl text-white">90%<span class="text-6xl align-top">+</span></p>
+                        <p class="mt-2 text-lg">ほとんどの第一選択薬が効かないことを意味します。</p>
+                    </div>
+                 </div>
+            </div>
+        </section>
+
+        <section class="bg-white py-16 md:py-24">
+            <div class="container mx-auto px-6">
+                <h2 class="section-title">真菌の巧妙な生存戦略</h2>
+                <p class="section-subtitle">真菌はただの受動的な標的ではありません。宿主の免疫から逃れるため、驚くほど巧妙な戦略を進化させてきました。</p>
+                <div class="grid md:grid-cols-3 gap-8 text-center">
+                    <div class="card p-6">
+                        <div class="text-6xl mb-4">🎭</div>
+                        <h3 class="text-2xl font-bold mb-2">形態転換</h3>
+                        <p class="text-gray-600">食べられにくい「糸状菌」形態に変化し、免疫細胞による攻撃を物理的に回避する。</p>
+                    </div>
+                    <div class="card p-6">
+                        <div class="text-6xl mb-4">🛡️</div>
+                        <h3 class="text-2xl font-bold mb-2">バイオフィルム形成</h3>
+                        <p class="text-gray-600">菌が集まって強力なバリア（膜）を作り、抗真菌薬や免疫細胞の侵入をブロックする。</p>
+                    </div>
+                     <div class="card p-6">
+                        <div class="text-6xl mb-4"> decoy </div>
+                        <h3 class="text-2xl font-bold mb-2">分子的デコイ</h3>
+                        <p class="text-gray-600">おとり分子を放出して免疫細胞を「武装解除」し、攻撃される前に無力化する。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <footer class="bg-[#0A2463] text-white py-12">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-2xl font-bold">未来への挑戦</h2>
+                <p class="mt-4 max-w-2xl mx-auto text-blue-200">真菌感染症との戦いは、新たな耐性菌の出現により、ますます困難になっています。診断技術の向上、新規治療薬の開発、そして抗真菌薬の賢明な使用（スチュワードシップ）が、私たちの未来を守る鍵となります。</p>
+                <p class="text-sm mt-8 text-blue-300">本インフォグラフィックは提供されたレポートに基づき作成されました。</p>
+            </div>
+        </footer>
+
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const wrapLabel = (label) => {
+                if (typeof label === 'string' && label.length > 16) {
+                    const words = label.split(/\s+/);
+                    const lines = [];
+                    let currentLine = '';
+                    words.forEach(word => {
+                        if ((currentLine + word).length > 16) {
+                            lines.push(currentLine.trim());
+                            currentLine = '';
+                        }
+                        currentLine += word + ' ';
+                    });
+                    lines.push(currentLine.trim());
+                    return lines;
+                }
+                return label;
+            };
+
+            const tooltipTitleCallback = (tooltipItems) => {
+                const item = tooltipItems[0];
+                let label = item.chart.data.labels[item.dataIndex];
+                if (Array.isArray(label)) {
+                    return label.join(' ');
+                }
+                return label;
+            };
+            
+            const mycobiomeCtx = document.getElementById('mycobiomeChart').getContext('2d');
+            new Chart(mycobiomeCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['マラセチア属 (皮膚など)', 'カンジダ属 (消化管など)', 'その他'],
+                    datasets: [{
+                        data: [55, 35, 10],
+                        backgroundColor: ['#3E92CC', '#D8315B', '#BDC3C7'],
+                        borderColor: '#F4F2F3',
+                        borderWidth: 4,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#0A2463',
+                                font: {
+                                    size: 14,
+                                    family: "'Noto Sans JP', sans-serif"
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                title: tooltipTitleCallback
+                            }
+                        }
+                    }
+                }
+            });
+
+            const mortalityCtx = document.getElementById('mortalityChart').getContext('2d');
+            new Chart(mortalityCtx, {
+                type: 'bar',
+                data: {
+                    labels: [
+                        wrapLabel('侵襲性アスペルギルス症 (重度免疫不全時)'), 
+                        wrapLabel('カンジダ血症 (血流感染)'), 
+                        wrapLabel('クリプトコックス髄膜炎 (HIV関連)')
+                    ],
+                    datasets: [{
+                        label: '推定死亡率',
+                        data: [60, 40, 70],
+                        backgroundColor: [
+                            'rgba(216, 49, 91, 0.7)',
+                            'rgba(10, 36, 99, 0.7)',
+                            'rgba(62, 146, 204, 0.7)'
+                        ],
+                        borderColor: [
+                            '#D8315B',
+                            '#0A2463',
+                            '#3E92CC'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%'
+                                },
+                                color: '#0A2463',
+                                font: { size: 12 }
+                            },
+                            grid: {
+                                color: '#e0e0e0'
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                color: '#0A2463',
+                                font: { size: 14, weight: 'bold' }
+                            },
+                             grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                title: tooltipTitleCallback,
+                                label: function(context) {
+                                    return `死亡率: 約${context.raw}%`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

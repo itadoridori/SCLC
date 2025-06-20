@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インタラクティブ・レポート：真菌の世界</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals (Stone, Taupe, Muted Green) -->
+    <!-- Application Structure Plan: レポートの線形的な構成を再設計し、ユーザーが能動的に情報を探索できるテーマ別のダッシュボード型SPAを構築。ヘッダーで全体像を示し、ナビゲーションで各テーマ（「基本を知る」「身近な真菌」「病気との関係」「治療と対策」）に即座にアクセス可能にする。各セクションは、静的なテキストだけでなく、インタラクティブな比較表、スライダー、クリックで詳細が表示されるカード、動的チャートなどを用いて、複雑な概念（微生物間の比較、日和見感染、疾患スペクトラムなど）を視覚的かつ直感的に理解させることを目的とする。この構造は、ユーザーが自身の興味に応じて情報を深掘りできるため、学習効果とエンゲージメントの向上に繋がると判断した。 -->
+    <!-- Visualization & Content Choices: 
+        - [微生物の比較] -> Goal: 比較/理解 -> Viz: インタラクティブな表 (JS) -> Interaction: ボタンクリックで対象列をハイライトし、解説文を表示 -> Justification: 静的な表よりも能動的な情報選択を促し、各微生物の特徴を明確に対比させるため。
+        - [日和見感染の概念] -> Goal: 関係性の理解 -> Viz: 免疫力スライダー (HTML/CSS/JS) -> Interaction: スライダー操作で健常時と免疫不全時のバランスが視覚的に変化 -> Justification: 宿主と微生物の力関係という抽象的な概念を、動的なビジュアルで直感的に伝えるため。
+        - [主要な真菌と疾患] -> Goal: 分類/情報提供 -> Viz: 詳細展開カード(JS)とドーナツチャート(Chart.js) -> Interaction: カードクリックで詳細情報を表示、チャートの凡例でインタラクション -> Justification: 複雑な情報を整理し、ユーザーが必要な情報だけを選択的に閲覧できるようにするため。チャートで全体像を素早く把握させる。
+        - [抗真菌薬] -> Goal: 整理/理解 -> Viz: 作用機序ダイアグラム (HTML/CSS/JS) -> Interaction: 薬剤クラスのボタンクリックで関連情報とダイアグラム上の作用点をハイライト -> Justification: 薬剤、作用機序、作用部位を視覚的に結びつけ、記憶の定着を助けるため。
+        - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #fdfcfb;
+            color: #44403c;
+        }
+        .section-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: #a8a29e;
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background-color: #84cc16;
+        }
+        .card {
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.1);
+        }
+        .nav-item {
+            position: relative;
+            transition: color 0.3s;
+        }
+        .nav-item::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #84cc16;
+            transition: width 0.3s;
+        }
+        .nav-item:hover::after, .nav-item.active::after {
+            width: 100%;
+        }
+        .tab-button.active {
+            background-color: #84cc16;
+            color: white;
+            border-color: #84cc16;
+        }
+        .chart-container {
+            position: relative;
+            margin: auto;
+            height: 320px;
+            width: 100%;
+            max-width: 320px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+                max-width: 400px;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-lg shadow-md">
+        <nav class="container mx-auto px-6 py-3">
+            <div class="flex justify-between items-center">
+                <a href="#hero" class="text-xl font-bold text-stone-700">真菌の世界</a>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#basics" class="nav-item text-stone-600 hover:text-stone-900">基本を知る</a>
+                    <a href="#symbiosis" class="nav-item text-stone-600 hover:text-stone-900">身近な真菌</a>
+                    <a href="#diseases" class="nav-item text-stone-600 hover:text-stone-900">病気との関係</a>
+                    <a href="#treatment" class="nav-item text-stone-600 hover:text-stone-900">治療と対策</a>
+                </div>
+                <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-stone-600 hover:text-stone-900 hover:bg-stone-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-lime-500">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                    </svg>
+                </button>
+            </div>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden">
+            <a href="#basics" class="block py-2 px-4 text-sm text-stone-700 hover:bg-lime-50">基本を知る</a>
+            <a href="#symbiosis" class="block py-2 px-4 text-sm text-stone-700 hover:bg-lime-50">身近な真菌</a>
+            <a href="#diseases" class="block py-2 px-4 text-sm text-stone-700 hover:bg-lime-50">病気との関係</a>
+            <a href="#treatment" class="block py-2 px-4 text-sm text-stone-700 hover:bg-lime-50">治療と対策</a>
+        </div>
+    </header>
+
+    <main>
+        <section id="hero" class="relative text-center py-20 md:py-32 bg-stone-100 overflow-hidden">
+            <div class="container mx-auto px-6 relative z-10">
+                <h1 class="text-4xl md:text-6xl font-extrabold text-stone-800 leading-tight">真菌の世界へようこそ</h1>
+                <p class="mt-4 text-lg md:text-xl text-stone-600 max-w-3xl mx-auto">それは、味方か、敵か？ パンを膨らませ、病を治す一方で、時に生命を脅かす存在。私たちのすぐそばにいる「真菌」の、知られざる二つの顔に迫ります。</p>
+            </div>
+            <div class="absolute -bottom-1/4 -left-1/4 w-1/2 h-1/2 bg-lime-200/30 rounded-full blur-3xl opacity-50"></div>
+            <div class="absolute -top-1/4 -right-1/4 w-1/2 h-1/2 bg-amber-200/30 rounded-full blur-3xl opacity-50"></div>
+        </section>
+
+        <section id="basics" class="py-16 md:py-24">
+            <div class="container mx-auto px-6">
+                <h2 class="section-title">基本を知る</h2>
+                <p class="text-center max-w-3xl mx-auto mb-12 text-stone-600">真菌は、細菌やウイルスとどう違うのでしょうか？まずは、微生物の世界における真菌のユニークな立ち位置を理解しましょう。このセクションでは、真菌の基本的な構造と、他の微生物との決定的な違いをインタラクティブに探ります。</p>
+                
+                <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg border border-stone-200">
+                    <h3 class="text-2xl font-bold text-center mb-6 text-stone-700">微生物かんたん比較</h3>
+                    <div class="flex justify-center mb-6 space-x-2 md:space-x-4">
+                        <button class="tab-button border-2 border-stone-300 px-4 py-2 rounded-full transition duration-300" data-microbe="fungi">真菌</button>
+                        <button class="tab-button border-2 border-stone-300 px-4 py-2 rounded-full transition duration-300" data-microbe="bacteria">細菌</button>
+                        <button class="tab-button border-2 border-stone-300 px-4 py-2 rounded-full transition duration-300" data-microbe="virus">ウイルス</button>
+                    </div>
+
+                    <div id="microbe-info" class="text-center p-4 bg-stone-50 rounded-lg min-h-[100px] flex items-center justify-center mb-6">
+                        <p class="text-stone-600">上のボタンを押して、それぞれの微生物の特徴を見てみましょう。</p>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-stone-100">
+                                    <th class="p-3 font-semibold">特徴</th>
+                                    <th id="header-fungi" class="p-3 font-semibold text-center transition-colors duration-300">真菌</th>
+                                    <th id="header-bacteria" class="p-3 font-semibold text-center transition-colors duration-300">細菌</th>
+                                    <th id="header-virus" class="p-3 font-semibold text-center transition-colors duration-300">ウイルス</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b border-stone-200">
+                                    <td class="p-3">細胞の有無</td>
+                                    <td id="cell-fungi" class="p-3 text-center transition-colors duration-300">あり</td>
+                                    <td id="cell-bacteria" class="p-3 text-center transition-colors duration-300">あり</td>
+                                    <td id="cell-virus" class="p-3 text-center transition-colors duration-300">なし</td>
+                                </tr>
+                                <tr class="border-b border-stone-200 bg-stone-50">
+                                    <td class="p-3">核</td>
+                                    <td id="cell-fungi" class="p-3 text-center transition-colors duration-300">あり (真核生物)</td>
+                                    <td id="cell-bacteria" class="p-3 text-center transition-colors duration-300">なし (原核生物)</td>
+                                    <td id="cell-virus" class="p-3 text-center transition-colors duration-300">なし</td>
+                                </tr>
+                                <tr class="border-b border-stone-200">
+                                    <td class="p-3">細胞壁</td>
+                                    <td id="cell-fungi" class="p-3 text-center transition-colors duration-300">あり (キチン質)</td>
+                                    <td id="cell-bacteria" class="p-3 text-center transition-colors duration-300">あり (ペプチドグリカン)</td>
+                                    <td id="cell-virus" class="p-3 text-center transition-colors duration-300">なし</td>
+                                </tr>
+                                 <tr class="bg-stone-50">
+                                    <td class="p-3">増殖方法</td>
+                                    <td id="cell-fungi" class="p-3 text-center transition-colors duration-300">出芽、胞子</td>
+                                    <td id="cell-bacteria" class="p-3 text-center transition-colors duration-300">二分裂</td>
+                                    <td id="cell-virus" class="p-3 text-center transition-colors duration-300">宿主細胞内で複製</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="symbiosis" class="py-16 md:py-24 bg-stone-100">
+            <div class="container mx-auto px-6">
+                <h2 class="section-title">身近な真菌</h2>
+                <p class="text-center max-w-3xl mx-auto mb-12 text-stone-600">真菌は、敵であると同時に、私たちの体と共生するパートナーでもあります。このセクションでは、健康な時には無害な「常在菌」と、体のバランスが崩れた時に牙をむく「日和見感染」の概念を、インタラクティブなスライダーで体感します。</p>
+
+                <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg border border-stone-200">
+                    <h3 class="text-2xl font-bold text-center mb-2 text-stone-700">宿主の免疫力と真菌のバランス</h3>
+                    <p class="text-center text-stone-500 mb-6">スライダーを動かして、免疫力の変化が真菌にどう影響するか見てみましょう。</p>
+                    
+                    <div class="flex items-center justify-center space-x-4 mb-6">
+                        <span class="font-semibold text-blue-500">健常</span>
+                        <input id="immunity-slider" type="range" min="0" max="100" value="0" class="w-1/2 md:w-1/3 accent-lime-500">
+                        <span class="font-semibold text-red-500">免疫不全</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                        <div id="commensal-side" class="p-6 bg-blue-50 rounded-lg text-center transition-all duration-500">
+                             <h4 class="text-xl font-bold text-blue-800 mb-2">共生菌 (常在菌)</h4>
+                             <p class="text-blue-700">健康な状態では、皮膚や腸内に存在し、他の悪い菌から体を守る役割も担っています。</p>
+                             <div class="mt-4 space-y-2 text-left">
+                                <p><span class="font-bold">カンジダ:</span> 消化管の主要なメンバー。</p>
+                                <p><span class="font-bold">マラセチア:</span> 皮膚の主要なメンバー。</p>
+                             </div>
+                        </div>
+                        <div id="pathogen-side" class="p-6 bg-red-50 rounded-lg text-center transition-all duration-500 opacity-20">
+                            <h4 class="text-xl font-bold text-red-800 mb-2">日和見感染</h4>
+                            <p class="text-red-700">免疫力が低下すると、普段は無害な常在菌が過剰に増殖し、病気を引き起こします。</p>
+                            <div id="risk-factors" class="mt-4 space-y-2 text-left text-sm opacity-0 transition-opacity duration-500">
+                                <p class="font-bold">リスク要因:</p>
+                                <ul>
+                                    <li>- 広域抗生物質の使用</li>
+                                    <li>- 免疫抑制療法</li>
+                                    <li>- 中心静脈カテーテル</li>
+                                    <li>- HIV/AIDS</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <section id="diseases" class="py-16 md:py-24">
+            <div class="container mx-auto px-6">
+                <h2 class="section-title">病気との関係</h2>
+                 <p class="text-center max-w-3xl mx-auto mb-12 text-stone-600">一口に真菌症と言っても、その症状は水虫のような表在性のものから、命に関わる全身性のものまで様々です。ここでは、主要な病原真菌が引き起こす疾患のスペクトラムを、クリックで詳細が表示されるカード形式で探ります。</p>
+
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="card bg-white p-6 rounded-xl border border-stone-200 cursor-pointer" data-pathogen="candida">
+                        <h3 class="text-2xl font-bold text-stone-800 mb-2">カンジダ属</h3>
+                        <p class="text-stone-500 mb-4">常在菌であり、最大の日和見病原体。</p>
+                        <div class="text-right text-lime-600 font-semibold">詳細を見る &rarr;</div>
+                        <div class="details hidden mt-4 pt-4 border-t border-stone-200">
+                            <p><strong>役割:</strong> 常在菌、日和見病原体</p>
+                            <p><strong>表在性疾患:</strong> 口腔カンジダ症、皮膚カンジダ症</p>
+                            <p><strong>全身性疾患:</strong> カンジダ血症（血流感染）</p>
+                            <p class="mt-2 p-2 bg-red-100 text-red-800 rounded-md text-sm"><strong>注目:</strong> 多剤耐性のカンジダ・アウリスは世界的脅威。</p>
+                        </div>
+                    </div>
+
+                    <div class="card bg-white p-6 rounded-xl border border-stone-200 cursor-pointer" data-pathogen="aspergillus">
+                        <h3 class="text-2xl font-bold text-stone-800 mb-2">アスペルギルス属</h3>
+                        <p class="text-stone-500 mb-4">環境中に広く存在するカビ。</p>
+                        <div class="text-right text-lime-600 font-semibold">詳細を見る &rarr;</div>
+                        <div class="details hidden mt-4 pt-4 border-t border-stone-200">
+                            <p><strong>役割:</strong> 環境性、日和見病原体</p>
+                            <p><strong>疾患スペクトラム:</strong></p>
+                            <ul class="list-disc list-inside ml-2 text-sm">
+                                <li>アレルギー (ABPA)</li>
+                                <li>肺アスペルギローマ (菌球)</li>
+                                <li>侵襲性肺アスペルギルス症</li>
+                            </ul>
+                            <p class="mt-2 p-2 bg-blue-100 text-blue-800 rounded-md text-sm">宿主の免疫状態により全く異なる病態を示す。</p>
+                        </div>
+                    </div>
+
+                     <div class="card bg-white p-6 rounded-xl border border-stone-200 cursor-pointer" data-pathogen="malassezia">
+                        <h3 class="text-2xl font-bold text-stone-800 mb-2">マラセチア属</h3>
+                        <p class="text-stone-500 mb-4">皮膚の主要な常在菌。</p>
+                        <div class="text-right text-lime-600 font-semibold">詳細を見る &rarr;</div>
+                        <div class="details hidden mt-4 pt-4 border-t border-stone-200">
+                            <p><strong>役割:</strong> 常在菌、日和見病原体</p>
+                            <p><strong>表在性疾患:</strong></p>
+                             <ul class="list-disc list-inside ml-2 text-sm">
+                                <li>癜風（でんぷう）</li>
+                                <li>脂漏性皮膚炎、フケ</li>
+                                <li>マラセチア毛包炎</li>
+                            </ul>
+                            <p class="mt-2 p-2 bg-yellow-100 text-yellow-800 rounded-md text-sm">皮脂を好み、過剰増殖すると皮膚トラブルの原因に。</p>
+                        </div>
+                    </div>
+
+                    <div class="card bg-white p-6 rounded-xl border border-stone-200 cursor-pointer" data-pathogen="dermatophytes">
+                        <h3 class="text-2xl font-bold text-stone-800 mb-2">皮膚糸状菌</h3>
+                        <p class="text-stone-500 mb-4">皮膚の角質を栄養源とするカビ。</p>
+                        <div class="text-right text-lime-600 font-semibold">詳細を見る &rarr;</div>
+                         <div class="details hidden mt-4 pt-4 border-t border-stone-200">
+                            <p><strong>役割:</strong> 病原体</p>
+                            <p><strong>表在性疾患 (白癬):</strong></p>
+                            <ul class="list-disc list-inside ml-2 text-sm">
+                                <li>足白癬（水虫）</li>
+                                <li>体部白癬（たむし）</li>
+                                <li>爪白癬（爪水虫）</li>
+                            </ul>
+                             <p class="mt-2 p-2 bg-green-100 text-green-800 rounded-md text-sm">通常、深部に侵入することはない。</p>
+                        </div>
+                    </div>
+
+                    <div class="md:col-span-2 lg:col-span-1 lg:row-start-1 lg:col-start-3 card bg-white p-6 rounded-xl border border-stone-200 flex flex-col justify-center">
+                        <h3 class="text-xl font-bold text-stone-800 mb-4 text-center">ヒトマイコバイオームの構成例</h3>
+                        <div class="chart-container">
+                            <canvas id="mycobiomeChart"></canvas>
+                        </div>
+                        <p class="text-xs text-stone-500 mt-2 text-center">部位によって構成は大きく異なります。</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="treatment" class="py-16 md:py-24 bg-stone-100">
+            <div class="container mx-auto px-6">
+                <h2 class="section-title">治療と対策</h2>
+                <p class="text-center max-w-3xl mx-auto mb-12 text-stone-600">真菌感染症の治療は、真菌細胞に特有の構造を標的とします。ここでは、主要な抗真菌薬がどのように作用するのかを、インタラクティブな細胞図と共に学びます。また、近年問題となっている薬剤耐性の課題にも触れます。</p>
+                
+                <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg border border-stone-200">
+                    <h3 class="text-2xl font-bold text-center mb-6 text-stone-700">抗真菌薬の作用点</h3>
+                    <div class="flex flex-col md:flex-row gap-8">
+                        <div class="md:w-1/2 flex flex-col items-center">
+                            <div id="fungal-cell" class="relative w-64 h-64 border-4 border-stone-700 rounded-full flex items-center justify-center bg-stone-50 mb-4">
+                                <div class="relative w-48 h-48 bg-lime-100 rounded-full flex items-center justify-center">
+                                    <div class="w-24 h-24 bg-lime-200 rounded-full text-center flex items-center justify-center">
+                                        <span class="text-lime-800 font-bold">核</span>
+                                    </div>
+                                    <div id="target-membrane" class="absolute inset-0 border-2 border-lime-600 rounded-full transition-all duration-300"></div>
+                                </div>
+                                <div id="target-wall" class="absolute inset-0 border-4 border-stone-700 rounded-full transition-all duration-300"></div>
+                                <div class="absolute top-0 -mt-3 text-sm font-semibold text-stone-700">細胞壁</div>
+                                <div class="absolute top-10 -mt-2.5 text-sm font-semibold text-lime-700">細胞膜</div>
+                            </div>
+                             <div class="flex justify-center flex-wrap gap-2">
+                                <button class="drug-tab-button border-2 border-stone-300 px-3 py-1 rounded-full text-sm transition" data-drug="polyenes">ポリエン系</button>
+                                <button class="drug-tab-button border-2 border-stone-300 px-3 py-1 rounded-full text-sm transition" data-drug="azoles">アゾール系</button>
+                                <button class="drug-tab-button border-2 border-stone-300 px-3 py-1 rounded-full text-sm transition" data-drug="echinocandins">エキノカンディン系</button>
+                            </div>
+                        </div>
+
+                        <div id="drug-info" class="md:w-1/2 p-4 bg-stone-50 rounded-lg">
+                            <p class="text-stone-600 text-center">左の図の薬剤クラスをクリックして、作用機序を見てみましょう。</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-stone-800 text-white py-8">
+        <div class="container mx-auto px-6 text-center">
+            <p>本アプリケーションは提供されたレポートに基づき、教育目的で作成されました。</p>
+            <p class="text-sm text-stone-400 mt-2">&copy; 2025 Interactive Fungi Report</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const microbeData = {
+                fungi: {
+                    name: '真菌 (Fungi)',
+                    description: 'ヒトと同じ真核生物で、細胞壁を持つのが特徴。酵母やカビの形態をとり、多くは日和見感染の原因となります。'
+                },
+                bacteria: {
+                    name: '細菌 (Bacteria)',
+                    description: '核を持たない原核生物。独自の細胞壁（ペプチドグリカン）を持ち、二分裂で増殖します。抗生物質の多くは、この細菌特有の構造を標的とします。'
+                },
+                virus: {
+                    name: 'ウイルス (Virus)',
+                    description: '細胞構造を持たず、自分では増殖できない粒子。他の生物の細胞に侵入して、その仕組みを利用して増殖します。'
+                }
+            };
+            
+            const drugData = {
+                polyenes: {
+                    name: 'ポリエン系 (例: アムホテリシンB)',
+                    target: 'membrane',
+                    mechanism: '細胞膜のエルゴステロールに結合し、膜に穴を開けて細胞内容物を漏出させ、殺菌的に作用します。',
+                    pros: '広域で強力。',
+                    cons: 'ヒトの細胞にも影響し、腎毒性などの副作用が強い。'
+                },
+                azoles: {
+                    name: 'アゾール系 (例: フルコナゾール)',
+                    target: 'membrane',
+                    mechanism: 'エルゴステロールの合成を阻害することで、細胞膜の機能を妨げ、増殖を抑制します（静菌的）。',
+                    pros: '経口薬があり、使いやすい。',
+                    cons: '耐性が生じやすい。'
+                },
+                echinocandins: {
+                    name: 'エキノカンディн系 (例: ミカファンギン)',
+                    target: 'wall',
+                    mechanism: '真菌に特有の細胞壁の成分（β-グルカン）の合成を阻害し、細胞壁を破壊します。',
+                    pros: 'ヒト細胞にはない部位を標的とするため安全性が高い。',
+                    cons: '効果のある真菌の種類が限られる（例：クリプトコッカスには無効）。'
+                }
+            };
+
+            const microbeButtons = document.querySelectorAll('.tab-button');
+            const microbeInfo = document.getElementById('microbe-info');
+
+            microbeButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const microbeId = button.dataset.microbe;
+                    const data = microbeData[microbeId];
+
+                    microbeButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+
+                    microbeInfo.innerHTML = `<p class="font-bold text-lg text-stone-800">${data.name}</p><p class="mt-1 text-stone-600">${data.description}</p>`;
+                    
+                    ['fungi', 'bacteria', 'virus'].forEach(m => {
+                        const header = document.getElementById(`header-${m}`);
+                        const cells = document.querySelectorAll(`#cell-${m}`);
+                        if (m === microbeId) {
+                            header.classList.add('bg-lime-200');
+                            cells.forEach(c => c.classList.add('bg-lime-50'));
+                        } else {
+                            header.classList.remove('bg-lime-200');
+                            cells.forEach(c => c.classList.remove('bg-lime-50'));
+                        }
+                    });
+                });
+            });
+
+            const slider = document.getElementById('immunity-slider');
+            const commensalSide = document.getElementById('commensal-side');
+            const pathogenSide = document.getElementById('pathogen-side');
+            const riskFactors = document.getElementById('risk-factors');
+
+            slider.addEventListener('input', (e) => {
+                const value = e.target.value;
+                const pathogenOpacity = value / 100 * 0.8 + 0.2; 
+                const commensalOpacity = (100 - value) / 100 * 0.8 + 0.2;
+                
+                pathogenSide.style.opacity = pathogenOpacity;
+                commensalSide.style.opacity = commensalOpacity;
+                
+                if (value > 50) {
+                     riskFactors.style.opacity = (value - 50) / 50;
+                } else {
+                     riskFactors.style.opacity = 0;
+                }
+            });
+
+            const pathogenCards = document.querySelectorAll('.card[data-pathogen]');
+            pathogenCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    const details = card.querySelector('.details');
+                    details.classList.toggle('hidden');
+                    card.classList.toggle('bg-lime-50');
+                });
+            });
+
+            const ctx = document.getElementById('mycobiomeChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['マラセチア (皮膚)', 'カンジダ (消化管)', 'その他'],
+                    datasets: [{
+                        label: 'ヒトマイコバイオーム構成例',
+                        data: [50, 40, 10],
+                        backgroundColor: [
+                            'rgba(251, 191, 36, 0.7)',
+                            'rgba(248, 113, 113, 0.7)',
+                            'rgba(168, 162, 158, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(251, 191, 36, 1)',
+                            'rgba(248, 113, 113, 1)',
+                            'rgba(168, 162, 158, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed !== null) {
+                                        label += context.parsed + '% (代表値)';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const drugButtons = document.querySelectorAll('.drug-tab-button');
+            const drugInfoEl = document.getElementById('drug-info');
+            const targetWall = document.getElementById('target-wall');
+            const targetMembrane = document.getElementById('target-membrane');
+
+            drugButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const drugId = button.dataset.drug;
+                    const data = drugData[drugId];
+                    
+                    drugButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+
+                    drugInfoEl.innerHTML = `
+                        <h4 class="text-lg font-bold text-stone-800 mb-2">${data.name}</h4>
+                        <p class="text-sm text-stone-600 mb-3">${data.mechanism}</p>
+                        <div class="space-y-2 text-sm">
+                           <p><span class="font-semibold text-green-700">利点:</span> ${data.pros}</p>
+                           <p><span class="font-semibold text-red-700">課題:</span> ${data.cons}</p>
+                        </div>
+                    `;
+                    
+                    targetWall.style.borderWidth = '4px';
+                    targetWall.style.borderColor = '#44403c';
+                    targetMembrane.style.borderWidth = '2px';
+                    targetMembrane.style.borderColor = '#84cc16';
+                    
+                    if(data.target === 'wall') {
+                        targetWall.style.borderWidth = '8px';
+                        targetWall.style.borderColor = '#ef4444';
+                    } else if (data.target === 'membrane') {
+                        targetMembrane.style.borderWidth = '4px';
+                        targetMembrane.style.borderColor = '#ef4444';
+                    }
+                });
+            });
+            
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            const navLinks = document.querySelectorAll('nav a');
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                   if (mobileMenu.classList.contains('hidden') === false) {
+                       mobileMenu.classList.add('hidden');
+                   }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

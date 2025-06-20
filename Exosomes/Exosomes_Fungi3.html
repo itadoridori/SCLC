@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インタラクティブ・スライド：真菌の王国</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #f0f2f5;
+        }
+        .slide {
+            display: none;
+            min-height: 80vh;
+        }
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+        }
+        .narration-box {
+            background-color: rgba(17, 24, 39, 0.8);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+        .pagination-dot {
+            transition: all 0.3s ease;
+        }
+        .pagination-dot.active {
+            background-color: #3b82f6;
+            transform: scale(1.25);
+        }
+        .flow-diagram > div {
+            flex: 1;
+            min-width: 150px;
+        }
+        .flow-diagram > .arrow {
+            flex: 0.5;
+            align-self: center;
+            font-size: 2.5rem;
+            color: #9ca3af;
+        }
+        .cell-diagram {
+            position: relative;
+            width: 300px;
+            height: 300px;
+        }
+        .cell-diagram .label {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-5xl bg-white shadow-2xl rounded-2xl overflow-hidden">
+        <div id="slides-container" class="relative">
+
+            <!-- Slide 1: Title -->
+            <div id="slide-1" class="slide active p-8 md:p-12 items-center justify-center text-center bg-gray-800 text-white">
+                <div class="max-w-3xl">
+                    <h1 class="text-4xl md:text-6xl font-black tracking-tight">真菌の王国</h1>
+                    <p class="mt-4 text-xl md:text-2xl text-gray-300">共生と対立、その知られざる二面性</p>
+                    <p class="mt-8 text-sm text-gray-400">提供されたレポートに基づくインタラクティブ・プレゼンテーション</p>
+                </div>
+            </div>
+
+            <!-- Slide 2: What are Fungi? -->
+            <div id="slide-2" class="slide p-8 md:p-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 text-center mb-8">真菌とは、一体何者か？</h2>
+                <div class="flex-grow grid md:grid-cols-3 gap-8 text-center items-start">
+                    <div class="bg-blue-50 p-6 rounded-lg border-2 border-blue-200 h-full">
+                        <p class="text-5xl mb-4">🍄</p><h3 class="text-2xl font-bold text-blue-800">真菌</h3>
+                        <p class="mt-2 text-gray-700">私たちと同じ<strong class="text-blue-600">真核生物</strong>。硬い細胞壁を持つ。</p>
+                    </div>
+                    <div class="bg-green-50 p-6 rounded-lg border-2 border-green-200 h-full">
+                        <p class="text-5xl mb-4">🦠</p><h3 class="text-2xl font-bold text-green-800">細菌</h3>
+                        <p class="mt-2 text-gray-700">核を持たない<strong class="text-green-600">原核生物</strong>。細胞壁の成分が異なる。</p>
+                    </div>
+                    <div class="bg-red-50 p-6 rounded-lg border-2 border-red-200 h-full">
+                        <p class="text-5xl mb-4">🧬</p><h3 class="text-2xl font-bold text-red-800">ウイルス</h3>
+                        <p class="mt-2 text-gray-700">細胞を持たず、自力で増殖できない<strong class="text-red-600">非細胞性</strong>。</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 3: The Fungus Cell -->
+            <div id="slide-3" class="slide p-8 md:p-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 text-center mb-8">真菌細胞の弱点</h2>
+                <div class="flex-grow flex flex-col md:flex-row items-center gap-8">
+                    <div class="w-full md:w-1/2 flex justify-center">
+                        <div class="cell-diagram">
+                            <div class="absolute inset-0 border-8 border-gray-400 rounded-full bg-gray-100 flex items-center justify-center">
+                                <div class="absolute w-[85%] h-[85%] border-4 border-blue-400 rounded-full bg-blue-100"></div>
+                                <div class="absolute w-[40%] h-[40%] border-4 border-purple-400 rounded-full bg-purple-200 flex items-center justify-center font-bold text-purple-800">核</div>
+                            </div>
+                            <div class="label" style="top: -10px; left: 50%; transform: translateX(-50%);">細胞壁 <span class="text-red-500">(エキノカンディン系)</span></div>
+                            <div class="label" style="top: 18%; left: 50%; transform: translateX(-50%);">細胞膜 <span class="text-red-500">(アゾール系/ポリエン系)</span></div>
+                        </div>
+                    </div>
+                    <div class="w-full md:w-1/2">
+                        <h3 class="text-2xl font-bold text-gray-700 mb-4">「真核生物のジレンマ」と治療の標的</h3>
+                        <p class="text-gray-600">真菌はヒトと同じ真核生物のため、多くの薬はヒトにも毒性を示します。しかし、真菌にはヒトにはない特有の構造があります。抗真菌薬は、この「細胞壁」や、細胞膜に含まれる「エルゴステロール」という成分を選択的に攻撃します。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 4: A Double-Edged Sword -->
+            <div id="slide-4" class="slide p-8 md:p-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 text-center mb-8">共生から対立へ</h2>
+                <div class="flex-grow grid md:grid-cols-2 gap-8 items-center">
+                    <div class="bg-green-100 p-8 rounded-lg text-center">
+                        <h3 class="text-2xl font-bold text-green-800">常在菌としての「共生」</h3>
+                        <p class="text-8xl mt-4">🤝</p>
+                        <p class="mt-4 text-green-700">健康な状態では、免疫を刺激したり、悪い菌の定着を防ぐなど、有益な役割を担っています。</p>
+                    </div>
+                    <div class="bg-red-100 p-8 rounded-lg text-center">
+                         <h3 class="text-2xl font-bold text-red-800">病原体としての「対立」</h3>
+                         <p class="text-8xl mt-4">💥</p>
+                         <p class="mt-4 text-red-700">体のバランスが崩れると、普段は無害な常在菌が牙をむき、感染症を引き起こします。</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 5: Human Mycobiome -->
+            <div id="slide-5" class="slide p-8 md:p-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 text-center mb-8">私たちの体に住まう主な真菌</h2>
+                <div class="flex-grow flex flex-col md:flex-row items-center gap-8">
+                    <div class="w-full md:w-1/2">
+                        <p class="text-gray-600 mb-4">私たちの皮膚、口、腸には、様々な真菌が「マイコバイオーム」というコミュニティを作って暮らしています。特に代表的なのが、皮膚に多い「マラセチア属」と、消化管に多い「カンジダ属」です。</p>
+                        <div class="space-y-4">
+                            <div class="p-4 bg-blue-50 rounded-lg">
+                                <h4 class="font-bold text-blue-700">カンジダ属</h4>
+                                <p class="text-sm text-gray-600">健康な人の40-60%が保有。口腔や消化管の主要メンバー。</p>
+                            </div>
+                            <div class="p-4 bg-yellow-50 rounded-lg">
+                                <h4 class="font-bold text-yellow-700">マラセチア属</h4>
+                                <p class="text-sm text-gray-600">皮膚の真菌の80%以上を占める。</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="w-full md:w-1/2">
+                         <div class="relative mx-auto w-full max-w-xs h-64 md:h-80"><canvas id="mycobiomeChart"></canvas></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 6: Opportunistic Infection -->
+            <div id="slide-6" class="slide p-8 md:p-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 text-center mb-8">日和見感染は、こうして起こる</h2>
+                <div class="flex-grow flex items-center justify-center w-full">
+                    <div class="flow-diagram flex flex-col md:flex-row gap-4 w-full">
+                        <div class="bg-green-100 p-6 rounded-lg text-center">
+                            <h3 class="font-bold text-green-800">健康な状態</h3>
+                            <p class="text-sm mt-2">免疫と常在菌のバランスが取れている</p>
+                        </div>
+                        <div class="arrow text-center">→</div>
+                        <div class="bg-yellow-100 p-6 rounded-lg text-center">
+                            <h3 class="font-bold text-yellow-800">リスク要因</h3>
+                            <p class="text-sm mt-2">免疫力の低下、抗生物質の使用、カテーテルなど</p>
+                        </div>
+                        <div class="arrow text-center">→</div>
+                        <div class="bg-red-100 p-6 rounded-lg text-center">
+                            <h3 class="font-bold text-red-800">日和見感染</h3>
+                            <p class="text-sm mt-2">常在菌が異常増殖し、病気を引き起こす</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 7: Spectrum of Diseases -->
+            <div id="slide-7" class="slide p-8 md:p-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 text-center mb-8">真菌症のスペクトラム</h2>
+                <div class="flex-grow w-full flex flex-col items-center justify-center">
+                    <p class="text-gray-600 text-center mb-6">真菌感染症は、皮膚の表面にとどまるものから、全身に広がり命を脅かすものまで、様々です。</p>
+                    <div class="w-full bg-gray-200 rounded-full h-4 relative">
+                        <div class="bg-gradient-to-r from-green-400 to-red-500 h-4 rounded-full"></div>
+                    </div>
+                    <div class="w-full flex justify-between text-sm mt-2 font-bold">
+                        <span>表在性</span>
+                        <span>深在性・侵襲性</span>
+                    </div>
+                    <div class="mt-8 grid md:grid-cols-2 gap-6 w-full max-w-4xl">
+                        <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded-r-lg">
+                            <h4 class="font-bold">表在性・皮膚真菌症</h4>
+                            <p class="text-sm text-gray-600">例：水虫、癜風、皮膚カンジダ症。生命を脅かすことは稀。</p>
+                        </div>
+                         <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg">
+                            <h4 class="font-bold">全身性（侵襲性）真菌症</h4>
+                            <p class="text-sm text-gray-600">例：カンジダ血症、侵襲性アスペルギルス症。致死的な場合も。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 8: Fungal Evasion -->
+            <div id="slide-8" class="slide p-8 md:p-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 text-center mb-8">真菌の巧妙な免疫回避戦略</h2>
+                <div class="flex-grow grid md:grid-cols-3 gap-8 text-center">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <p class="text-5xl mb-4">🎭</p><h3 class="text-xl font-bold text-gray-800">形態転換</h3>
+                        <p class="mt-2 text-gray-600">食べられにくい「糸状」に姿を変え、免疫細胞の攻撃を物理的にかわす。</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <p class="text-5xl mb-4">🛡️</p><h3 class="text-xl font-bold text-gray-800">バイオフィルム形成</h3>
+                        <p class="mt-2 text-gray-600">集団でバリアを作り、薬や免疫細胞の侵入をブロックする。</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <p class="text-5xl mb-4"> decoy </p><h3 class="text-xl font-bold text-gray-800">分子的デコイ</h3>
+                        <p class="mt-2 text-gray-600">おとり分子を放出して、免疫細胞を攻撃前に「武装解除」させる。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 9: Candida Auris -->
+            <div id="slide-9" class="slide p-8 md:p-12 bg-red-800 text-white">
+                <h2 class="text-3xl md:text-4xl font-bold text-center mb-2">新たな世界的脅威</h2>
+                <h3 class="text-5xl md:text-6xl font-black text-center mb-8 text-yellow-300">カンジダ・アウリス</h3>
+                <div class="flex-grow grid md:grid-cols-2 gap-8 items-center">
+                    <div class="bg-black bg-opacity-20 p-6 rounded-lg">
+                        <h4 class="text-2xl font-bold mb-4">スーパーバグ（多剤耐性菌）としての特徴</h4>
+                        <ul class="space-y-2 list-disc list-inside">
+                            <li>主要な抗真菌薬の多くが効かない</li>
+                            <li>病院内での集団感染を起こしやすい</li>
+                            <li>環境に長く潜伏し、消毒薬にも抵抗</li>
+                        </ul>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-lg text-yellow-200">侵襲性感染時の死亡率</p>
+                        <p class="text-7xl md:text-8xl font-black text-white my-2">30-60%</p>
+                        <p class="text-yellow-200">WHOが「最優先」病原体に指定</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 10: Antifungal Resistance -->
+            <div id="slide-10" class="slide p-8 md:p-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 text-center mb-8">抗真菌薬耐性のメカニズム</h2>
+                <div class="flex-grow flex flex-col md:flex-row items-center gap-8">
+                    <div class="w-full md:w-2/3">
+                        <p class="text-gray-600 mb-6">真菌は、細菌と同じように薬剤耐性を獲得します。これは、治療の失敗に直結する深刻な問題です。主なメカニズムは３つあります。</p>
+                        <ol class="space-y-4">
+                            <li class="flex items-start gap-4">
+                                <span class="flex-shrink-0 bg-blue-500 text-white font-bold w-8 h-8 rounded-full flex items-center justify-center">1</span>
+                                <div><h4 class="font-bold">標的の修飾</h4><p class="text-sm text-gray-600">薬が結合する部分の形を変え、結合できなくする。</p></div>
+                            </li>
+                            <li class="flex items-start gap-4">
+                                <span class="flex-shrink-0 bg-blue-500 text-white font-bold w-8 h-8 rounded-full flex items-center justify-center">2</span>
+                                <div><h4 class="font-bold">標的の過剰発現</h4><p class="text-sm text-gray-600">薬の標的を大量に作り、薬の効果を薄める。</p></div>
+                            </li>
+                            <li class="flex items-start gap-4">
+                                <span class="flex-shrink-0 bg-blue-500 text-white font-bold w-8 h-8 rounded-full flex items-center justify-center">3</span>
+                                <div><h4 class="font-bold">薬剤排出ポンプ</h4><p class="text-sm text-gray-600">細胞内に入ってきた薬を、ポンプで外に汲み出す。</p></div>
+                            </li>
+                        </ol>
+                    </div>
+                    <div class="w-full md:w-1/3 flex justify-center items-center">
+                        <div class="relative">
+                            <div class="w-40 h-40 rounded-full bg-red-200 flex items-center justify-center text-red-800 font-bold">真菌細胞</div>
+                            <div class="absolute top-1/2 -left-12 text-blue-500 font-bold text-lg">薬 &rarr;</div>
+                            <div class="absolute top-1/2 -right-20 text-blue-500 font-bold text-lg">&larr; ポンプで排出</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 11: Future Directions -->
+            <div id="slide-11" class="slide p-8 md:p-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 text-center mb-8">未来への挑戦と希望</h2>
+                <div class="flex-grow grid md:grid-cols-3 gap-8 text-center">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">① 新規治療法の開発</h3>
+                        <p class="text-gray-600">真菌特有の弱点を狙う新しい薬や、免疫を利用した治療法の研究が進んでいます。</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">② マイコバイオーム研究</h3>
+                        <p class="text-gray-600">腸内真菌と慢性疾患（IBDや神経疾患）の関連を探り、新たな予防・治療法へ繋げます。</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">③ ワンヘルス・アプローチ</h3>
+                        <p class="text-gray-600">ヒト、動物、環境の健康を一体として捉え、薬剤耐性の拡大を防ぎます。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 12: YouTube Kit -->
+            <div id="slide-12" class="slide p-8 md:p-12 bg-gray-900 text-white">
+                <h2 class="text-3xl md:text-4xl font-bold text-center mb-8">YouTube動画制作用キット</h2>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-xl font-bold border-b-2 border-blue-400 pb-2 mb-4">タイトル案 (3選)</h3>
+                        <ul class="list-disc list-inside space-y-2">
+                            <li>体内に潜むもう一つの王国：善玉か悪玉か？「真菌」の正体</li>
+                            <li>【警告】死者数急増のスーパーバグ。見えないカビの世界的脅威「カンジダ・アウリス」とは？</li>
+                            <li>あなたの不調、原因はカビかも？腸内真菌と現代病の意外な関係</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold border-b-2 border-blue-400 pb-2 mb-4">サムネイル用プロンプト (3選)</h3>
+                        <ul class="list-disc list-inside space-y-2 text-sm">
+                            <li>A dramatic image of a glowing, colorful fungus cell splitting into two, one side looking beneficial (glowing green) and the other side looking menacing (glowing red), with the text "善玉か？悪玉か？" in bold Japanese font. Highly detailed, microscopic view, cinematic lighting.</li>
+                            <li>A close-up of a doctor in a hazmat suit looking concerned at a petri dish, inside the dish the words "カンジダ・アウリス" are spelled out with glowing red fungal colonies. Background is a dark, sterile lab. Dramatic, high-contrast.</li>
+                            <li>An illustration of the human digestive tract, with a magnifying glass revealing a battle between good bacteria (blue) and overgrown, menacing-looking fungi (purple). The title "腸内細菌の乱れ" is overlaid in a modern, stylish font. Infographic style, clean, vibrant colors.</li>
+                        </ul>
+                    </div>
+                    <div class="md:col-span-2">
+                         <h3 class="text-xl font-bold border-b-2 border-blue-400 pb-2 mb-4">概要欄</h3>
+                         <p class="text-sm">私たちの体には、細菌だけでなく「真菌」というもう一つの微生物の王国が存在します。普段は健康を支えるパートナーでありながら、ひとたびバランスが崩れると、恐ろしい病原体に豹変する「日和見感染」。この動画では、水虫のような身近なものから、近年世界で猛威を振るう多剤耐性菌「カンジダ・アウリス」まで、真菌の知られざる二面性に迫ります。あなたの健康常識を覆す、目に見えない脅威と共生の最前線をご覧ください。<br><br>#真菌 #カンジダ #健康 #ドキュメンタリー #科学</p>
+                    </div>
+                    <div class="md:col-span-2">
+                        <h3 class="text-xl font-bold border-b-2 border-blue-400 pb-2 mb-4">BGM用Suno AIプロンプト (3選)</h3>
+                        <ul class="list-disc list-inside space-y-2 text-sm">
+                            <li>A mysterious and educational documentary BGM, cinematic, atmospheric, with a gentle piano melody, subtle synth pads, and a slow, inquisitive tempo. Evokes a sense of discovery and underlying danger.</li>
+                            <li>An epic, suspenseful orchestral track for a science documentary about a global threat. Building tension with strings and deep drums, a sense of urgency and importance. No lyrics.</li>
+                            <li>A calm, ambient, and slightly futuristic electronic track. Minimalist, with soft synth arpeggios and a clean beat. Perfect for explaining complex scientific concepts in a clear and modern way.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Narration and Pagination -->
+        <div class="narration-box p-4 text-white text-sm md:text-base min-h-[100px] flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p id="narration-text" class="text-center sm:text-left flex-grow"></p>
+            <div class="flex items-center gap-4 flex-shrink-0 mt-4 sm:mt-0">
+                <button id="prev-btn" class="bg-white text-gray-800 p-2 rounded-full shadow-lg hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                </button>
+                <div id="pagination-dots" class="flex gap-2"></div>
+                <button id="next-btn" class="bg-white text-gray-800 p-2 rounded-full shadow-lg hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const slides = document.querySelectorAll('.slide');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const paginationDotsContainer = document.getElementById('pagination-dots');
+    const narrationText = document.getElementById('narration-text');
+    let currentSlide = 1;
+    const totalSlides = slides.length;
+
+    const narrations = {
+        1: "パンやチーズ、医薬品。私たちの生活は、古くから真菌の恩恵を受けてきました。しかし、その一方で、真菌は時に生命を脅かす病原体ともなります。今回は、私たちのすぐそばにいる「真菌」の、光と影の物語に迫ります。",
+        2: "微生物と一括りにされがちですが、真菌は細菌やウイルスとは根本的に異なります。最大の特徴は、私たち人間と同じ「真核生物」であること。つまり、細胞の中に核を持つ、より複雑な生命体なのです。この点が、真菌との戦いを難しくする大きな要因となります。",
+        3: "真菌とヒトの細胞は似ていますが、決定的な違いもあります。それが、細胞を覆う「細胞壁」と、細胞膜の成分である「エルゴステロール」です。これらはヒトの細胞には存在しないため、抗真菌薬はここを狙い撃ちにします。いわば、真菌だけが持つ鎧の隙間を突くわけです。",
+        4: "真菌と私たちの関係は、まさにコインの裏表です。健康な時には、彼らは体表や腸内で静かに暮らし、他の悪い菌から私たちを守ってくれる「共生」関係にあります。しかし、体の抵抗力が落ちると、その関係は一変。彼らは危険な病原体へと姿を変え、「対立」が始まるのです。",
+        5: "私たちの体は、多種多様な真菌たちの住処、いわば「マイコバイオーム」です。その二大巨頭が、皮膚を好む「マラセチア属」と、口や腸に多い「カンジダ属」。これらは普段、お互いにバランスを保ちながら、私たちの健康の一部を担っています。",
+        6: "普段は大人しい常在菌が、なぜ暴れ出すのでしょうか。それは、宿主である私たちの側に変化が起きた時です。病気や治療で免疫力が低下したり、抗生物質で細菌のバランスが崩れたりすると、真菌はここぞとばかりに増殖を始めます。これが「日和見感染」の正体です。",
+        7: "真菌が引き起こす病気、真菌症は、その深さによって大きく二つに分けられます。水虫やたむしといった「表在性」のものは、皮膚の表面で起こります。一方、血液や内臓にまで侵入する「全身性・侵襲性」のものは、命に関わる深刻な事態を引き起こします。",
+        8: "私たちの免疫システムが真菌を排除しようとする一方、真菌も巧みな戦略でそれに対抗します。免疫細胞から逃れるために姿を変えたり、集団でバリアを築いたり、さらには免疫細胞を騙す「おとり」分子を放出することまであるのです。体内では、かくも壮絶な攻防が繰り広げられています。",
+        9: "今、世界中の医療機関が最も警戒している真菌がいます。その名は「カンジダ・アウリス」。多くの抗真菌薬が効かない多剤耐性を持ち、病院内で集団感染を繰り返すことから「スーパーバグ」とも呼ばれます。これは、人類と真菌の戦いが、新たなステージに入ったことを示しています。",
+        10: "真菌は、薬から逃れる術を学習します。薬の標的となる部分の形を変えたり、薬を細胞の外に汲み出すポンプを活性化させたりすることで、耐性を獲得します。特に、免疫が低下した患者への長期的な投薬は、耐性菌を生み出す温床となりやすいのです。",
+        11: "薬剤耐性という大きな課題に対し、科学者たちは新たな挑戦を続けています。真菌の病原性そのものを標的とする新しい薬や、私たちの体に有益な真菌を利用する「マイコバイオーム治療」など、未来への希望の光は見えています。真菌との戦いは、これからも続くのです。",
+        12: "このスライドは、YouTube動画の企画・制作用の素材をまとめたものです。タイトルや概要、サムネイルのアイデアを活用して、より多くの人々に真菌の世界の奥深さを伝えていきましょう。"
+    };
+
+    function updateSlide() {
+        slides.forEach((slide, index) => {
+            slide.classList.toggle('active', (index + 1) === currentSlide);
+        });
+
+        narrationText.textContent = narrations[currentSlide];
+
+        document.querySelectorAll('.pagination-dot').forEach((dot, index) => {
+            dot.classList.toggle('active', (index + 1) === currentSlide);
+        });
+
+        prevBtn.disabled = currentSlide === 1;
+        nextBtn.disabled = currentSlide === totalSlides;
+    }
+
+    function createPagination() {
+        for (let i = 1; i <= totalSlides; i++) {
+            const dot = document.createElement('button');
+            dot.classList.add('pagination-dot', 'w-3', 'h-3', 'rounded-full', 'bg-gray-300', 'hover:bg-gray-400');
+            dot.addEventListener('click', () => {
+                currentSlide = i;
+                updateSlide();
+            });
+            paginationDotsContainer.appendChild(dot);
+        }
+    }
+
+    prevBtn.addEventListener('click', () => {
+        if (currentSlide > 1) {
+            currentSlide--;
+            updateSlide();
+        }
+    });
+
+    nextBtn.addEventListener('click', () => {
+        if (currentSlide < totalSlides) {
+            currentSlide++;
+            updateSlide();
+        }
+    });
+    
+    function createMycobiomeChart() {
+        const ctx = document.getElementById('mycobiomeChart')?.getContext('2d');
+        if (!ctx) return;
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['マラセチア属', 'カンジダ属', 'その他'],
+                datasets: [{
+                    data: [55, 35, 10],
+                    backgroundColor: ['#FBBF24', '#60A5FA', '#9CA3AF'],
+                    borderColor: '#FFFFFF',
+                    borderWidth: 4,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    }
+                }
+            }
+        });
+    }
+
+    createPagination();
+    updateSlide();
+    createMycobiomeChart();
+});
+</script>
+</body>
+</html>
