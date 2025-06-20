@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インタラクティブ・レポート：真菌とがんの関連性</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals (Slate, Stone, Indigo) -->
+    <!-- Application Structure Plan: The SPA is designed as a narrative journey to guide the user from a speculative hypothesis to a nuanced, evidence-based conclusion. It starts with the core question (Hero), establishes foundational knowledge through three interactive "Pillars" (Exosomes, Mycobiome, Liver), critically deconstructs the hypothesis using a visual chain metaphor, presents the more plausible "Inflammatory Niche" model, allows data exploration with charts, distinguishes science from pseudoscience, and finally explores future applications. This thematic, scrolling structure was chosen over a linear report format to make complex information more digestible and engaging for a general audience, encouraging exploration rather than passive reading. -->
+    <!-- Visualization & Content Choices: 
+        - Fungi in Cancer (Table 1) -> Goal: Compare -> Viz: Bar Chart (Chart.js) -> Interaction: Hover tooltips -> Justification: Easily compare the prevalence of different fungi across cancer types.
+        - Hypothesis Deconstruction -> Goal: Analyze -> Viz: HTML/CSS Diagram (Chain links) -> Interaction: Click to reveal text -> Justification: A strong visual metaphor for the "broken" link in the causal chain, which is the report's main conclusion.
+        - fEV Cargo (Table 3) -> Goal: Organize/Inform -> Viz: Interactive Tabs (HTML/JS) -> Interaction: Click tabs to filter content -> Justification: More engaging than a static table and allows focused learning.
+        - Inflammatory Niche Model -> Goal: Explain Process -> Viz: HTML/CSS Flow Diagram -> Justification: A simple, clear visual for a key conceptual model.
+        - Pseudoscience Comparison -> Goal: Clarify/Distinguish -> Viz: HTML Table -> Justification: Direct side-by-side comparison is most effective for distinguishing nuanced scientific findings from dangerous misinformation.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+            color: #1e293b; /* slate-800 */
+        }
+        .section-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: #334155; /* slate-700 */
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        .section-subtitle {
+            font-size: 1.125rem;
+            color: #475569; /* slate-600 */
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 3rem auto;
+        }
+        .nav-link {
+            padding: 8px 16px;
+            border-radius: 9999px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        .nav-link:hover, .nav-link.active {
+            background-color: #eef2ff; /* indigo-50 */
+            color: #4338ca; /* indigo-700 */
+        }
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            padding: 1.5rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+            background-color: white;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .cargo-tab {
+            border-color: transparent;
+            color: #64748b; /* slate-500 */
+        }
+        .cargo-tab:hover {
+            color: #312e81; /* indigo-800 */
+        }
+        .cargo-tab.active {
+            border-color: #4f46e5; /* indigo-600 */
+            color: #4f46e5; /* indigo-600 */
+        }
+    </style>
+</head>
+<body>
+
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl font-bold text-slate-800">真菌とがんの科学</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div id="nav-menu" class="ml-10 flex items-baseline space-x-4">
+                        <a href="#hero" class="nav-link">序論</a>
+                        <a href="#pillars" class="nav-link">３つの柱</a>
+                        <a href="#hypothesis" class="nav-link">仮説の検証</a>
+                        <a href="#model" class="nav-link">新モデル</a>
+                        <a href="#charts" class="nav-link">データ</a>
+                        <a href="#pseudoscience" class="nav-link">科学と疑似科学</a>
+                        <a href="#future" class="nav-link">未来</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+        <section id="hero" class="text-center py-16">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-indigo-700 tracking-tight">
+                肝臓の真菌が、全身のがんを引き起こすのか？
+            </h1>
+            <p class="mt-6 max-w-3xl mx-auto text-lg text-slate-600">
+                「真菌が肝臓に潜み、エクソソームという"メッセージ物質"を放出して全身のがんを誘発する」— この説は、科学の最前線で議論されています。このインタラクティブ・レポートでは、その仮説の真偽を科学的根拠に基づいて解き明かし、より妥当な「真菌とがん」の新しい関係性、そして未来の治療への可能性を探ります。
+            </p>
+            <div class="mt-8">
+                <a href="#pillars" class="inline-block bg-indigo-600 text-white font-bold py-3 px-8 rounded-full hover:bg-indigo-700 transition-colors">探求を始める</a>
+            </div>
+        </section>
+        
+        <section id="pillars" class="py-16">
+            <h2 class="section-title">物語の鍵を握る「３つの柱」</h2>
+            <p class="section-subtitle">この複雑な仮説を理解するためには、３つの基本的な科学的概念を知る必要があります。それぞれが、物語の中で重要な役割を果たします。下のカードをクリックして、各要素の役割を学びましょう。</p>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div id="pillar-1" class="card text-center cursor-pointer">
+                    <div class="text-5xl mb-4">💬</div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-2">第１の柱：エクソソーム</h3>
+                    <p class="text-slate-600">細胞間の"メッセージカプセル"。がん細胞はこれを使い、悪質な情報を全身に広げます。</p>
+                </div>
+                <div id="pillar-2" class="card text-center cursor-pointer">
+                    <div class="text-5xl mb-4">🍄</div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-2">第２の柱：腫瘍内真菌</h3>
+                    <p class="text-slate-600">かつて無菌と考えられていた腫瘍内に潜む真菌。がんに影響を与える「隠れた住人」です。</p>
+                </div>
+                <div id="pillar-3" class="card text-center cursor-pointer">
+                    <div class="text-5xl mb-4">🛡️</div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-2">第３の柱：肝臓の特異性</h3>
+                    <p class="text-slate-600">体を守るフィルターでありながら、免疫が「寛容」なため、がん転移の温床にもなり得る臓器です。</p>
+                </div>
+            </div>
+            <div id="pillar-details" class="mt-8 p-6 bg-white rounded-lg shadow-inner" style="display: none;"></div>
+        </section>
+
+        <section id="hypothesis" class="py-16">
+            <h2 class="section-title">仮説の因果連鎖を検証する</h2>
+            <p class="section-subtitle">当初の仮説「肝臓の真菌 → エクソソーム放出 → 全身のがん」は、一本の鎖として考えられます。科学的証拠は、この鎖のどの部分を支持し、どこが弱いのでしょうか？鎖の輪をクリックして、それぞれの妥当性を確認してください。</p>
+            <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4">
+                <div id="link-1" class="chain-link border-green-500">
+                    <span class="text-2xl">🍄</span><span class="font-bold">蓄積</span>
+                </div>
+                <div class="text-2xl font-bold text-slate-400">→</div>
+                <div id="link-2" class="chain-link border-green-500">
+                     <span class="text-2xl">💬</span><span class="font-bold">放出</span>
+                </div>
+                <div class="text-2xl font-bold text-slate-400">→</div>
+                <div id="link-3" class="chain-link border-dashed border-red-500">
+                     <span class="text-2xl">💥</span><span class="font-bold">がん化</span>
+                </div>
+            </div>
+            <div id="link-details" class="mt-8 card" style="display: none;"></div>
+        </section>
+
+        <section id="model" class="py-16 bg-indigo-50 rounded-lg">
+            <h2 class="section-title">より妥当な新モデル：「炎症性ニッチ」仮説</h2>
+            <p class="section-subtitle">直接的な因果関係は証明されていませんが、科学者たちはより説得力のあるモデルを提唱しています。真菌は直接がんを引き起こすのではなく、「がんが育ちやすい土壌」を作ることで、間接的に病状を悪化させている可能性が高いのです。このプロセスは「炎症性ニッチ」モデルと呼ばれます。</p>
+            <div class="p-6 md:p-8">
+                <div class="grid md:grid-cols-5 items-center gap-4 text-center">
+                    <div class="card p-4">
+                        <h4 class="font-bold">1. 真菌の定着</h4>
+                        <p class="text-sm text-slate-600">腸などから真菌が肝臓や腫瘍に定着する。</p>
+                    </div>
+                    <div class="text-3xl text-indigo-400 font-light">→</div>
+                     <div class="card p-4">
+                        <h4 class="font-bold">2. 慢性炎症</h4>
+                        <p class="text-sm text-slate-600">真菌やその産物（fEVs含）が持続的な炎症を引き起こす。</p>
+                    </div>
+                     <div class="text-3xl text-indigo-400 font-light">→</div>
+                     <div class="card p-4">
+                        <h4 class="font-bold">3. がん促進環境</h4>
+                        <p class="text-sm text-slate-600">炎症が「前転移ニッチ」という、がんの増殖や転移に適した微小環境を作り出す。</p>
+                    </div>
+                </div>
+            </div>
+            <p class="text-center mt-6 text-slate-700 max-w-2xl mx-auto">このモデルでは、肝臓はがんを放出する「工場」ではなく、全身の炎症と転移を増幅させる「中心的なハブ」として機能します。これは、現在の科学的証拠とよく一致する考え方です。</p>
+        </section>
+
+        <section id="charts" class="py-16">
+            <h2 class="section-title">データで見る真菌とがん</h2>
+            <p class="section-subtitle">研究によって、特定のがんと特定の真菌との間に関連があることが示唆されています。また、真菌が放出する細胞外小胞（fEVs）には、体に影響を与えうる様々な"積み荷"が含まれています。インタラクティブな要素でこれらのデータを探ってみましょう。</p>
+            <div class="grid lg:grid-cols-2 gap-12 items-start">
+                <div>
+                    <h3 class="font-bold text-xl text-center mb-4 text-slate-700">がんと関連する主要な真菌</h3>
+                    <div class="chart-container h-96 md:h-[450px] max-w-xl mx-auto">
+                        <canvas id="fungiChart"></canvas>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="font-bold text-xl text-center mb-4 text-slate-700">真菌エクソソームの"積み荷"</h3>
+                    <div class="card max-w-xl mx-auto">
+                        <div class="border-b border-slate-200">
+                            <nav class="-mb-px flex space-x-6" id="cargo-tabs">
+                                <button data-cargo="protein" class="cargo-tab active whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm transition-colors">タンパク質</button>
+                                <button data-cargo="polysaccharide" class="cargo-tab whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm transition-colors">多糖類</button>
+                                <button data-cargo="rna" class="cargo-tab whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm transition-colors">核酸 (RNA)</button>
+                            </nav>
+                        </div>
+                        <div id="cargo-content" class="mt-4 min-h-[200px]">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <section id="pseudoscience" class="py-16">
+            <h2 class="section-title">科学と疑似科学の境界線</h2>
+            <p class="section-subtitle">「がんは真菌である」という単純で誤った主張がインターネット上には存在します。最先端のマイコバイオーム研究は、この主張とは全く異なります。両者の違いを明確に理解することは、正しい知識を得るために非常に重要です。</p>
+            <div class="max-w-4xl mx-auto overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr>
+                            <th class="p-4 border-b-2 border-slate-200 font-bold text-slate-700">項目</th>
+                            <th class="p-4 border-b-2 border-green-200 bg-green-50 font-bold text-green-800">科学的研究 (本レポート)</th>
+                            <th class="p-4 border-b-2 border-red-200 bg-red-50 font-bold text-red-800">疑似科学 (例: シモンチーニ説)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="bg-white">
+                            <td class="p-4 border-b border-slate-200 font-medium">主張</td>
+                            <td class="p-4 border-b border-slate-200">真菌はがんの<span class="font-bold">進行に影響を与える一因子</span>であり、複雑な相互作用がある。</td>
+                            <td class="p-4 border-b border-slate-200">がんは真菌（カンジダ）そのものである、という<span class="font-bold">単一的な原因</span>を主張。</td>
+                        </tr>
+                        <tr class="bg-slate-50">
+                            <td class="p-4 border-b border-slate-200 font-medium">メカニズム</td>
+                            <td class="p-4 border-b border-slate-200">慢性炎症、免疫調節、転移ニッチ形成など、<span class="font-bold">複雑な生物学的プロセス</span>を介して影響する。</td>
+                            <td class="p-4 border-b border-slate-200">単純な「真菌のコロニー」であると主張し、<span class="font-bold">科学的根拠に欠ける</span>。</td>
+                        </tr>
+                        <tr class="bg-white">
+                            <td class="p-4 border-b border-slate-200 font-medium">治療法への示唆</td>
+                            <td class="p-4 border-b border-slate-200">バイオマーカー開発、免疫療法への補助（アジュバント）、抗真菌薬の併用など、<span class="font-bold">緻密な治療戦略</span>を探る。</td>
+                            <td class="p-4 border-b border-slate-200">重曹の注射など、<span class="font-bold">危険で証明されていない</span>「治療法」を推奨。</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="future" class="py-16">
+            <h2 class="section-title">未来への展望：新たな治療戦略へ</h2>
+            <p class="section-subtitle">この研究分野はまだ始まったばかりですが、がん治療に革命をもたらす可能性を秘めています。真菌とがんの関係を理解することは、以下のような新しい臨床応用へと繋がります。</p>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="card">
+                    <h3 class="font-bold text-lg text-indigo-700 mb-2">診断マーカーとしての活用</h3>
+                    <p class="text-slate-600">特定の真菌のDNAを検出することで、がんの早期発見や予後予測に繋がる可能性があります。</p>
+                </div>
+                <div class="card">
+                    <h3 class="font-bold text-lg text-indigo-700 mb-2">アジュバント（補助）療法</h3>
+                    <p class="text-slate-600">抗真菌薬を併用して腫瘍内の環境を変化させ、既存の化学療法や免疫療法の効果を高める戦略です。</p>
+                </div>
+                <div class="card">
+                    <h3 class="font-bold text-lg text-indigo-700 mb-2">エクソソームによる創薬</h3>
+                    <p class="text-slate-600">エクソソームの"運び屋"としての性質を利用し、薬剤をがん細胞へ直接届けるDDS（ドラッグデリバリーシステム）への応用が期待されています。</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+    
+    <footer class="bg-slate-800 text-slate-400 py-8">
+        <div class="container mx-auto px-4 text-center">
+            <p>このページは、提供された科学レポートに基づき生成されたインタラクティブな要約です。</p>
+            <p class="text-sm mt-2">医学的な助言や診断に代わるものではありません。健康に関する懸念は専門の医療機関にご相談ください。</p>
+        </div>
+    </footer>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    const pillarData = {
+        'pillar-1': {
+            title: '第１の柱：エクソソーム - 細胞間のメッセンジャー',
+            content: 'エクソソームは、細胞が放出する直径30〜150ナノメートルの微小なカプセルです。内部には親細胞のDNA、RNA、タンパク質などが含まれており、これらを他の細胞に届けることで情報を伝達します。<strong>がん細胞が放出するエクソソーム（TDE）は特に悪質で、遠く離れた臓器に転移しやすい環境（前転移ニッチ）を作ったり、免疫細胞の攻撃を抑制したりすることで、がんの進行を助けます。</strong>この能力は、仮説の「全身への影響」を考える上での重要な前例となります。'
+        },
+        'pillar-2': {
+            title: '第２の柱：腫瘍内真菌（オンコマイコバイオーム）',
+            content: '最新の解析技術により、これまで無菌だと考えられていた多くのがん組織内に、特有の真菌コミュニティが存在することが明らかになりました。これらは「オンコマイコバイオーム」と呼ばれます。<strong>例えば、消化器系のがんでは<em>Candida</em>属、膵臓がんでは<em>Malassezia</em>属が多く見つかっています。</strong>これらの真菌は、慢性的な炎症を引き起こしたり、がん細胞の増殖を促すシグナルを活性化させたりすることで、がんの進行に関与していると考えられています。'
+        },
+        'pillar-3': {
+            title: '第３の柱：肝臓の特異な役割',
+            content: '肝臓は、体にとって二つの相反する顔を持つユニークな臓器です。一つは、腸から流れてくる異物や病原体を捕獲・処理する<strong>強力な「フィルター」</strong>としての顔。もう一つは、無害な食物抗原などに過剰反応しないよう、免疫応答をあえて抑制する<strong>「免疫寛容」</strong>という顔です。この免疫寛容な性質が、がん細胞にとっては格好の隠れ家となり、転移が成立しやすい「肥沃な土壌」を提供してしまうというパラドックスが存在します。'
+        }
+    };
+
+    const linkData = {
+        'link-1': {
+            title: '検証１：真菌は肝臓に蓄積するか？ → <span class="text-green-600 font-bold">妥当性が高い</span>',
+            content: '<strong>はい、これは臨床的・病態生理学的に十分に裏付けられています。</strong><br>1) 全身性のカンジダ感染症では、血流に乗った真菌が肝臓に膿瘍を作ることがあります。<br>2) 腸内環境が悪化すると（リーキーガット）、腸内の真菌が門脈を通って直接肝臓に流れ込むことがあります。<br>特にがん患者のように免疫が低下している状態では、肝臓のフィルター機能が追いつかず、真菌が定着・持続しやすい条件が揃っています。'
+        },
+        'link-2': {
+            title: '検証２：真菌はエクソソーム（fEVs）を放出するか？ → <span class="text-green-600 font-bold">妥当性が高い</span>',
+            content: '<strong>はい、真菌もエクソソームに似た細胞外小胞（fEVs）を産生することが確立されています。</strong><br>これらのfEVsには、タンパク質、脂質、そして宿主細胞に影響を与えうるRNAなどの生物活性分子が「積み荷」として含まれています。特に、<em>Candida albicans</em>のfEVsが宿主の上皮細胞のシグナル伝達経路（MAPK経路）を活性化できることが最近示されました。これは、真菌の産物が宿主細胞と直接コミュニケーションできることを示す重要な証拠です。'
+        },
+        'link-3': {
+            title: '検証３：そのfEVsが全身のがんを直接引き起こすか？ → <span class="text-red-600 font-bold">証拠がなく、推測的</span>',
+            content: '<strong>いいえ、この直接的な因果関係を示す証拠は現在のところ存在しません。これが仮説の最も弱い部分です。</strong><br>1) 肝臓の真菌から放出されたfEVsが血流に乗り、全身を巡るという直接的な証明がありません。<br>2) fEVs内の真菌RNAが、ヒトのがん関連遺伝子を直接コントロールするという証拠もありません。<br>したがって、この「肝臓発、全身がん」という単純なストーリーは、現時点では科学的飛躍が大きいと言えます。'
+        }
+    };
+
+    const cargoData = {
+        protein: {
+            title: 'タンパク質',
+            content: '毒素（例: カンジダライシン）、ストレス応答タンパク質、代謝酵素などが含まれます。宿主細胞に直接ダメージを与えたり、免疫応答を調節したりする可能性があります。',
+        },
+        polysaccharide: {
+            title: '多糖類',
+            content: 'β-グルカンやマンナンなど、真菌の細胞壁を構成する成分です。これらは宿主の免疫細胞によって認識され、強力な炎症反応を引き起こす「警報」として機能します。',
+        },
+        rna: {
+            title: '核酸 (RNA)',
+            content: '真菌由来の低分子RNA（milRNA）などが含まれています。理論上、これらが宿主細胞に取り込まれ、遺伝子の働きを調節する可能性（異種生物間RNAi）が指摘されていますが、ヒトのがん遺伝子に対する直接的な影響はまだ証明されていません。',
+        }
+    };
+
+    const pillarContainer = document.getElementById('pillar-details');
+    document.querySelectorAll('#pillars .card').forEach(card => {
+        card.addEventListener('click', () => {
+            const data = pillarData[card.id];
+            pillarContainer.innerHTML = `<h4 class="font-bold text-lg mb-2 text-indigo-800">${data.title}</h4><p class="text-slate-700">${data.content}</p>`;
+            pillarContainer.style.display = 'block';
+        });
+    });
+
+    const linkContainer = document.getElementById('link-details');
+    document.querySelectorAll('.chain-link').forEach(link => {
+        link.addEventListener('click', (e) => {
+            const data = linkData[e.currentTarget.id];
+            linkContainer.innerHTML = `<h4 class="font-bold text-lg mb-2">${data.title}</h4><p class="text-slate-700">${data.content}</p>`;
+            linkContainer.style.display = 'block';
+        });
+    });
+
+    const cargoContent = document.getElementById('cargo-content');
+    const cargoTabs = document.querySelectorAll('.cargo-tab');
+    function updateCargoContent(cargoType) {
+        const data = cargoData[cargoType];
+        cargoContent.innerHTML = `<h4 class="font-bold text-indigo-700">${data.title}</h4><p class="text-slate-600 mt-1">${data.content}</p>`;
+        cargoTabs.forEach(t => {
+            t.classList.toggle('active', t.dataset.cargo === cargoType);
+        });
+    }
+
+    cargoTabs.forEach(tab => {
+        tab.addEventListener('click', (e) => {
+            updateCargoContent(e.currentTarget.dataset.cargo);
+        });
+    });
+    updateCargoContent('protein');
+
+
+    const fungiChartCtx = document.getElementById('fungiChart').getContext('2d');
+    const fungiChartData = {
+        labels: ['Candida', 'Malassezia', 'Aspergillus', 'Blastomyces', 'Saccharomyces'],
+        datasets: [{
+            label: '関連が報告されているがんの種類（概数）',
+            data: [5, 2, 2, 2, 1],
+            backgroundColor: [
+                'rgba(129, 140, 248, 0.6)', // indigo-400
+                'rgba(165, 180, 252, 0.6)', // indigo-300
+                'rgba(199, 210, 254, 0.6)', // indigo-200
+                'rgba(165, 180, 252, 0.6)', // indigo-300
+                'rgba(199, 210, 254, 0.6)', // indigo-200
+            ],
+            borderColor: [
+                'rgba(99, 102, 241, 1)', // indigo-500
+                'rgba(129, 140, 248, 1)', // indigo-400
+                'rgba(165, 180, 252, 1)', // indigo-300
+                'rgba(129, 140, 248, 1)', // indigo-400
+                'rgba(165, 180, 252, 1)', // indigo-300
+            ],
+            borderWidth: 1
+        }]
+    };
+    new Chart(fungiChartCtx, {
+        type: 'bar',
+        data: fungiChartData,
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        footer: function(tooltipItems) {
+                           const fungus = tooltipItems[0].label;
+                           const mechanisms = {
+                               'Candida': '主なメカニズム: 慢性炎症、発がん性代謝物、がん遺伝子経路の活性化',
+                               'Malassezia': '主なメカニズム: 慢性炎症、補体系の活性化',
+                               'Aspergillus': '主なメカニズム: 発がん性代謝物（アフラトキシン）',
+                               'Blastomyces': '主なメカニズム: 慢性炎症',
+                               'Saccharomyces': '主なメカニズム: 慢性炎症'
+                           };
+                           return mechanisms[fungus] || '';
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    title: { display: true, text: '関連がん種の数' }
+                }
+            }
+        }
+    });
+
+    const sections = document.querySelectorAll('section');
+    const navLinks = document.querySelectorAll('#nav-menu a');
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                navLinks.forEach(link => {
+                    link.classList.toggle('active', link.getAttribute('href').substring(1) === entry.target.id);
+                });
+            }
+        });
+    }, { rootMargin: '-50% 0px -50% 0px' });
+
+    sections.forEach(section => {
+        observer.observe(section);
+    });
+
+    // Custom styles for specific elements
+    const chainLinks = document.querySelectorAll('.chain-link');
+    chainLinks.forEach(link => {
+        link.classList.add('flex', 'items-center', 'justify-center', 'w-32', 'h-16', 'md:w-40', 'md:h-20', 'rounded-lg', 'bg-white', 'shadow-md', 'cursor-pointer', 'transition-all', 'duration-300', 'border-4', 'hover:shadow-xl', 'hover:scale-105', 'space-x-2');
+    });
+
+    const cargoTabsCss = document.querySelectorAll('.cargo-tab');
+    cargoTabsCss.forEach(tab => {
+        tab.classList.add('whitespace-nowrap', 'py-3', 'px-1', 'border-b-2', 'font-medium', 'text-sm', 'transition-colors');
+    });
+    
+});
+</script>
+
+</body>
+</html>

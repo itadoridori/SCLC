@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インフォグラフィック：真菌とがんの関連性</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Brilliant Blues -->
+    <!-- Application Structure Plan: A narrative-driven, single-page scrolling infographic. The structure guides the user from a compelling question (Hero) -> foundational knowledge (The Key Players) -> data-driven evidence (Data Insights) -> deconstruction of the initial hypothesis (The Hypothesis Chain) -> presentation of a more plausible model (A New Theory) -> and finally, future outlook (Clinical Horizons). This narrative flow was chosen to transform a complex scientific report into an engaging and digestible story, making the information accessible to a broader audience. -->
+    <!-- Visualization & Content Choices: 
+        - Key stat (35+ cancers) -> Goal: Inform -> Viz: Big Number Display (HTML/CSS) -> Justification: High-impact way to convey a single, powerful statistic.
+        - Fungi in Cancer (Table 1) -> Goal: Compare -> Viz: Bar Chart (Chart.js) -> Justification: Ideal for comparing the prevalence of different fungi across cancer types, as listed in the report. Library: Chart.js/Canvas.
+        - fEV Cargo (Table 3) -> Goal: Organize/Inform -> Viz: Icon-based List (HTML/CSS) -> Justification: A visually clear and simple way to present the components of fungal exosomes without a dense table.
+        - Hypothesis Flow -> Goal: Explain Process -> Viz: HTML/CSS Flowchart Diagram -> Justification: Visually represents the causal chain of the hypothesis, making it easy to follow and critique. NO SVG/Mermaid used.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 450px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <header class="text-center py-16 md:py-24">
+            <h1 class="text-4xl md:text-6xl font-extrabold" style="color: #0077B6;">真菌とがん</h1>
+            <p class="mt-4 text-xl md:text-2xl font-semibold" style="color: #00B4D8;">肝臓に潜む微生物は、全身のがんの引き金になるのか？</p>
+            <p class="mt-6 max-w-3xl mx-auto text-base text-gray-600">
+                近年、「腫瘍の中に真菌が存在する」という驚くべき発見が、がん研究に新たな光を当てています。このインフォグラフィックでは、科学的根拠に基づき「肝臓の真菌がエクソソームを介して全身のがんを誘発する」という仮説を解き明かし、その真相と未来の治療への可能性を探ります。
+            </p>
+        </header>
+
+        <main class="space-y-20 md:space-y-28 pb-24">
+
+            <section id="key-players">
+                <h2 class="text-3xl font-bold text-center mb-12" style="color: #0077B6;">物語の3人の主役</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                    <div class="bg-white p-8 rounded-xl shadow-lg">
+                        <div class="text-6xl mb-4">💬</div>
+                        <h3 class="text-xl font-bold mb-2">エクソソーム</h3>
+                        <p class="text-gray-600">細胞間で情報を運ぶ超小型カプセル。がん細胞はこれを使い、悪質なメッセージを全身に広げます。</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl shadow-lg">
+                        <div class="text-6xl mb-4">🍄</div>
+                        <h3 class="text-xl font-bold mb-2">腫瘍内真菌</h3>
+                        <p class="text-gray-600">かつて無菌と考えられていた腫瘍に潜む真菌。がんの進行に関与する「隠れた住人」です。</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl shadow-lg">
+                        <div class="text-6xl mb-4">🛡️</div>
+                        <h3 class="text-xl font-bold mb-2">肝臓</h3>
+                        <p class="text-gray-600">体を守るフィルターでありながら、その特性ががん転移の温床にもなり得る、二つの顔を持つ臓器です。</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="data-insights">
+                <h2 class="text-3xl font-bold text-center mb-12" style="color: #0077B6;">データで見る証拠</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 items-center">
+                    <div class="lg:col-span-2 text-center">
+                        <div class="bg-white p-8 rounded-xl shadow-lg">
+                            <p class="text-2xl font-semibold" style="color: #00B4D8;">少なくとも</p>
+                            <p class="text-8xl font-extrabold my-2" style="color: #0077B6;">35</p>
+                            <p class="text-2xl font-semibold" style="color: #00B4D8;">種類のがん</p>
+                            <p class="mt-4 text-gray-600">で、腫瘍内に特有の真菌が存在することが確認されています。</p>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-3">
+                        <div class="bg-white p-6 rounded-xl shadow-lg">
+                            <h3 class="font-bold text-center mb-4">がん種と関連する主な真菌</h3>
+                            <p class="text-sm text-center text-gray-600 mb-4">特定のがんには特定の真菌が多く見られます。これは、両者の間に偶然ではない関係があることを示唆しています。</p>
+                            <div class="chart-container">
+                                <canvas id="fungiChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="hypothesis-chain">
+                <h2 class="text-3xl font-bold text-center mb-4" style="color: #0077B6;">仮説の因果連鎖を検証する</h2>
+                <p class="text-center text-gray-600 max-w-2xl mx-auto mb-12">「肝臓の真菌が全身のがんを引き起こす」という仮説は、一本の鎖のようにつながっている必要があります。科学的証拠は、この鎖のどこを支持し、どこが弱いのでしょうか？</p>
+                <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-2">
+                    <div class="p-4 bg-white rounded-lg shadow-md text-center border-t-4 border-green-400">
+                        <p class="font-bold text-lg">1. 真菌が肝臓に定着</p>
+                        <p class="text-sm text-green-600 font-semibold mt-1">妥当性が高い</p>
+                    </div>
+                    <div class="text-4xl font-light" style="color: #90E0EF;">→</div>
+                    <div class="p-4 bg-white rounded-lg shadow-md text-center border-t-4 border-green-400">
+                        <p class="font-bold text-lg">2. エクソソームを放出</p>
+                        <p class="text-sm text-green-600 font-semibold mt-1">妥当性が高い</p>
+                    </div>
+                    <div class="text-4xl font-light" style="color: #90E0EF;">→</div>
+                    <div class="p-4 bg-white rounded-lg shadow-md text-center border-t-4 border-red-400">
+                        <p class="font-bold text-lg">3. 全身のがんを直接誘発</p>
+                        <p class="text-sm text-red-600 font-semibold mt-1">証拠が不十分</p>
+                    </div>
+                </div>
+                <div class="mt-8 bg-white p-6 rounded-xl shadow-inner max-w-3xl mx-auto">
+                    <h3 class="font-bold text-xl mb-2" style="color: #0077B6;">結論：鎖は繋がっていない</h3>
+                    <p class="text-gray-700">真菌が肝臓に定着し、エクソソーム（fEVs）を放出する証拠はありますが、そのエクソソームが直接全身のがんを引き起こすという<span class="font-bold">決定的な証拠は現在のところありません。</span>この「最後の輪」の欠如が、単純な因果関係の仮説を支持できない理由です。</p>
+                </div>
+            </section>
+            
+            <section id="new-theory">
+                <h2 class="text-3xl font-bold text-center mb-4" style="color: #0077B6;">より妥当な新モデル：「炎症性ニッチ」仮説</h2>
+                <p class="text-center text-gray-600 max-w-2xl mx-auto mb-12">真菌はがんの「直接の原因」ではなく、がんが育ちやすい「土壌」を作ることで、間接的に病状を悪化させている可能性が高いと考えられています。これが「炎症性ニッチ」モデルです。</p>
+                <div class="bg-white rounded-xl shadow-lg p-8">
+                    <div class="grid grid-cols-1 md:grid-cols-5 items-center gap-6 text-center">
+                        <div class="flex flex-col items-center">
+                             <div class="w-20 h-20 rounded-full flex items-center justify-center text-3xl mb-2" style="background-color: #CAF0F8;">🍄</div>
+                             <h4 class="font-bold">1. 真菌の定着</h4>
+                             <p class="text-sm text-gray-600">腸などから真菌が腫瘍や肝臓に定着する。</p>
+                        </div>
+                        <div class="text-4xl font-light hidden md:block" style="color: #90E0EF;">→</div>
+                        <div class="flex flex-col items-center">
+                             <div class="w-20 h-20 rounded-full flex items-center justify-center text-3xl mb-2" style="background-color: #CAF0F8;">🔥</div>
+                             <h4 class="font-bold">2. 慢性炎症の誘発</h4>
+                             <p class="text-sm text-gray-600">真菌やその産物が持続的な炎症を引き起こす。</p>
+                        </div>
+                        <div class="text-4xl font-light hidden md:block" style="color: #90E0EF;">→</div>
+                        <div class="flex flex-col items-center">
+                             <div class="w-20 h-20 rounded-full flex items-center justify-center text-3xl mb-2" style="background-color: #CAF0F8;">🌱</div>
+                             <h4 class="font-bold">3. がん促進環境の形成</h4>
+                             <p class="text-sm text-gray-600">炎症が、がんの増殖や転移に適した環境（ニッチ）を作り出す。</p>
+                        </div>
+                    </div>
+                </div>
+                 <p class="text-center mt-8 text-gray-700 max-w-2xl mx-auto">このモデルでは、肝臓はがんを放出する「工場」ではなく、全身の炎症と転移を増幅させる「ハブ」として機能します。これは現在の科学的証拠とよく一致する考え方です。</p>
+            </section>
+
+            <section id="clinical-horizons">
+                <h2 class="text-3xl font-bold text-center mb-12" style="color: #0077B6;">未来の臨床応用</h2>
+                <p class="text-center text-gray-600 max-w-2xl mx-auto mb-12">この研究は、がん治療に革命をもたらす可能性を秘めています。「がんは真菌」という単純な誤解ではなく、複雑な相互作用を理解することが、新しい治療戦略に繋がります。</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="bg-white p-8 rounded-xl shadow-lg text-center">
+                        <div class="text-4xl mb-4">🔬</div>
+                        <h3 class="text-lg font-bold">バイオマーカー</h3>
+                        <p class="text-sm text-gray-600 mt-2">特定の真菌DNAを検出することで、がんの早期発見や予後予測に繋がる可能性があります。</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl shadow-lg text-center">
+                        <div class="text-4xl mb-4">💊</div>
+                        <h3 class="text-lg font-bold">アジュバント療法</h3>
+                        <p class="text-sm text-gray-600 mt-2">抗真菌薬を併用して腫瘍の「土壌」を変え、既存の化学療法や免疫療法の効果を高める戦略です。</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl shadow-lg text-center">
+                        <div class="text-4xl mb-4">🎯</div>
+                        <h3 class="text-lg font-bold">ドラッグデリバリー</h3>
+                        <p class="text-sm text-gray-600 mt-2">エクソソームの「運び屋」としての性質を利用し、薬剤をがん細胞へ直接届ける技術への応用が期待されます。</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center py-10 border-t">
+            <p class="text-sm text-gray-500">このインフォグラフィックは、科学レポート「腫瘍マイコバイオーム、細胞外小胞、および肝臓軸」に基づいて作成されました。<br>医学的助言に代わるものではありません。健康に関する懸念は専門の医療機関にご相談ください。</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const ctx = document.getElementById('fungiChart').getContext('2d');
+            
+            const data = {
+                labels: ['Candida属', 'Malassezia属', 'Aspergillus属', 'Blastomyces属'],
+                datasets: [{
+                    label: '関連がん種の数（報告例）',
+                    data: [5, 2, 2, 2],
+                    backgroundColor: [
+                        '#00B4D8',
+                        '#90E0EF',
+                        '#CAF0F8',
+                        '#ADE8F4'
+                    ],
+                    borderColor: [
+                        '#0077B6',
+                        '#0096C7',
+                        '#48CAE4',
+                        '#00B4D8'
+                    ],
+                    borderWidth: 1
+                }]
+            };
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: '#0077B6',
+                            titleFont: {
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            bodyFont: {
+                                size: 12
+                            },
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    const item = tooltipItems[0];
+                                    let label = item.chart.data.labels[item.dataIndex];
+                                    if (Array.isArray(label)) {
+                                      return label.join(' ');
+                                    } else {
+                                      return label;
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                             grid: {
+                                color: '#e9ecef'
+                            },
+                            ticks: {
+                                stepSize: 1
+                            }
+                        },
+                        y: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

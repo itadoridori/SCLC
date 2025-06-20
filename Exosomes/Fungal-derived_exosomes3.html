@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>スライドプレゼンテーション：真菌とがんの科学</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+        .slide {
+            display: none;
+        }
+        .slide.active {
+            display: block;
+        }
+        .chart-container {
+            position: relative;
+            height: 350px;
+            width: 100%;
+            max-width: 600px;
+            margin: auto;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 flex flex-col items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-4xl bg-white shadow-2xl rounded-lg overflow-hidden">
+        <!-- Slides Container -->
+        <div id="slides-container" class="p-8 md:p-12">
+
+            <!-- Slide 1: Title -->
+            <div class="slide active">
+                <div class="text-center h-[500px] flex flex-col justify-center items-center">
+                    <h1 class="text-4xl md:text-5xl font-bold text-slate-800">真菌とがん</h1>
+                    <p class="mt-4 text-xl md:text-2xl text-cyan-600">最新科学が解き明かす、知られざる関係</p>
+                    <p class="mt-8 text-slate-600 max-w-2xl">本プレゼンテーションでは、「肝臓の真菌が全身のがんを引き起こす」という仮説を科学的根拠に基づき、わかりやすく解説します。</p>
+                </div>
+            </div>
+
+            <!-- Slide 2: The Core Question -->
+            <div class="slide">
+                <div class="text-center h-[500px] flex flex-col justify-center items-center">
+                    <h2 class="text-3xl font-bold text-slate-800 mb-6">中心となる問い</h2>
+                    <div class="bg-slate-50 p-8 rounded-lg shadow-inner">
+                        <p class="text-2xl md:text-3xl font-semibold text-slate-700">「肝臓に蓄積した真菌は、<br>エクソソームを放出して<br>全身のがんを引き起こすのか？」</p>
+                    </div>
+                    <p class="mt-8 text-slate-600">この刺激的な仮説の真偽を探るため、まずは物語の鍵を握る３つの要素から見ていきましょう。</p>
+                </div>
+            </div>
+
+            <!-- Slide 3: Pillar 1 - Exosomes -->
+            <div class="slide">
+                 <h2 class="text-3xl font-bold text-center text-slate-800 mb-8">物語の鍵①：エクソソーム</h2>
+                 <div class="h-[420px] grid md:grid-cols-2 gap-8 items-center">
+                    <div class="text-center">
+                        <div class="text-8xl">💬</div>
+                        <p class="mt-4 text-lg font-semibold">細胞間のメッセンジャー</p>
+                    </div>
+                    <div>
+                        <ul class="space-y-4 text-slate-700 list-disc pl-5">
+                            <li>細胞が放出する直径30〜150ナノメートルの超小型カプセルです。</li>
+                            <li>内部にタンパク質やRNAなどの「積み荷」を搭載し、他の細胞に情報を伝達します。</li>
+                            <li class="font-bold text-cyan-700">がん細胞はこれを利用し、転移しやすい環境を作ったり、免疫から逃れたりします。</li>
+                        </ul>
+                    </div>
+                 </div>
+            </div>
+            
+            <!-- Slide 4: Pillar 2 - Mycobiome -->
+            <div class="slide">
+                 <h2 class="text-3xl font-bold text-center text-slate-800 mb-8">物語の鍵②：腫瘍内真菌</h2>
+                 <div class="h-[420px] grid md:grid-cols-2 gap-8 items-center">
+                     <div class="text-center">
+                        <div class="text-8xl">🍄</div>
+                        <p class="mt-4 text-lg font-semibold">がん組織に潜む「隠れた住人」</p>
+                    </div>
+                    <div>
+                        <ul class="space-y-4 text-slate-700 list-disc pl-5">
+                            <li>かつて無菌と考えられていたがん組織内に、様々な真菌が存在することが判明しました。</li>
+                            <li>その種類や量は、がんの種類によって特徴があります。</li>
+                            <li class="font-bold text-cyan-700">これらの真菌は、慢性的な炎症を引き起こすことで、がんの進行に関与すると考えられています。</li>
+                        </ul>
+                    </div>
+                 </div>
+            </div>
+
+            <!-- Slide 5: Pillar 3 - Liver -->
+            <div class="slide">
+                 <h2 class="text-3xl font-bold text-center text-slate-800 mb-8">物語の鍵③：肝臓の特異性</h2>
+                 <div class="h-[420px] grid md:grid-cols-2 gap-8 items-center">
+                     <div class="text-center">
+                        <div class="text-8xl">🛡️</div>
+                        <p class="mt-4 text-lg font-semibold">フィルターと温床の二面性</p>
+                    </div>
+                    <div>
+                        <ul class="space-y-4 text-slate-700 list-disc pl-5">
+                            <li>腸からの血液を濾過し、病原体を排除する強力な「フィルター」です。</li>
+                            <li>一方で、過剰な免疫反応を抑える「免疫寛容」という性質を持っています。</li>
+                            <li class="font-bold text-cyan-700">この免疫寛容な性質が、逆説的に、がん細胞が転移しやすい「肥沃な土壌」を提供してしまいます。</li>
+                        </ul>
+                    </div>
+                 </div>
+            </div>
+
+            <!-- Slide 6: Belief 1 -->
+            <div class="slide">
+                <h2 class="text-3xl font-bold text-center text-slate-800 mb-8">仮説の検証①：真菌は肝臓に蓄積するか？</h2>
+                <div class="h-[420px] flex flex-col items-center justify-center">
+                    <div class="text-2xl font-bold text-green-600 mb-6">結論：妥当性が高い</div>
+                    <div class="flex items-center space-x-4">
+                        <div class="text-center p-4">
+                            <p class="text-5xl">➡️</p>
+                            <p class="font-semibold mt-2">腸</p>
+                        </div>
+                        <div class="text-4xl text-slate-400">→</div>
+                        <div class="text-center p-4 bg-cyan-50 rounded-lg">
+                             <p class="text-5xl">🍄</p>
+                            <p class="font-semibold mt-2">肝臓</p>
+                        </div>
+                    </div>
+                    <p class="mt-8 text-slate-600 max-w-xl text-center">臨床データや、腸から肝臓へ真菌が移動する「腸肝軸」の存在から、特に免疫が低下した状態では、真菌が肝臓に定着する可能性は十分にあると考えられます。</p>
+                </div>
+            </div>
+
+            <!-- Slide 7: Belief 2 -->
+            <div class="slide">
+                <h2 class="text-3xl font-bold text-center text-slate-800 mb-8">仮説の検証②：真菌はエクソソームを放出するか？</h2>
+                <div class="h-[420px] flex flex-col items-center justify-center">
+                     <div class="text-2xl font-bold text-green-600 mb-6">結論：妥当性が高い</div>
+                    <div class="flex items-center space-x-4">
+                        <div class="text-center p-4">
+                            <p class="text-5xl">🍄</p>
+                        </div>
+                        <div class="text-4xl text-slate-400">→</div>
+                        <div class="text-center p-4">
+                             <p class="text-5xl">💬</p>
+                            <p class="font-semibold mt-2">fEVs</p>
+                        </div>
+                    </div>
+                    <p class="mt-8 text-slate-600 max-w-xl text-center">真菌もまた、エクソソームに似た細胞外小胞（fEVs）を放出することが科学的に確立されています。これらの小胞は、宿主細胞に影響を与えうる様々な物質を運んでいます。</p>
+                </div>
+            </div>
+            
+            <!-- Slide 8: Belief 3 -->
+            <div class="slide">
+                 <h2 class="text-3xl font-bold text-center text-slate-800 mb-8">仮説の検証③：全身のがんを直接引き起こすか？</h2>
+                <div class="h-[420px] flex flex-col items-center justify-center">
+                     <div class="text-2xl font-bold text-red-600 mb-6">結論：直接的な証拠はない</div>
+                     <div class="flex items-center space-x-2 text-3xl font-bold text-slate-700">
+                        <span>肝臓[🍄]</span>
+                        <span>→</span>
+                        <span>エクソソーム[💬]</span>
+                        <span class="text-red-500">⇢</span>
+                        <span>全身のがん[💥]</span>
+                    </div>
+                     <p class="mt-8 text-slate-600 max-w-xl text-center">これが仮説の最も弱い部分です。肝臓から放出された真菌エクソソームが、全身を巡って直接がんを誘発するという一連の流れを証明する証拠は、現在のところ存在しません。</p>
+                </div>
+            </div>
+
+            <!-- Slide 9: New Model -->
+            <div class="slide">
+                <h2 class="text-3xl font-bold text-center text-slate-800 mb-8">より妥当な新モデル：「炎症性ニッチ」仮説</h2>
+                <div class="h-[420px] flex flex-col items-center justify-center">
+                    <div class="grid grid-cols-5 items-center gap-2 text-center text-sm md:text-base">
+                        <div class="p-3 bg-slate-100 rounded"><strong>1. 真菌の定着</strong></div>
+                        <div class="text-2xl text-slate-400">→</div>
+                        <div class="p-3 bg-slate-100 rounded"><strong>2. 慢性炎症</strong></div>
+                        <div class="text-2xl text-slate-400">→</div>
+                        <div class="p-3 bg-cyan-100 rounded"><strong>3. がん促進環境 (ニッチ) の形成</strong></div>
+                    </div>
+                    <p class="mt-8 text-slate-600 max-w-2xl text-center">真菌はがんの「直接の原因」ではなく、慢性的な炎症を通じて、がんが育ちやすく転移しやすい「土壌（ニッチ）」を作ることで、間接的に病状を悪化させている可能性が高いと考えられています。</p>
+                </div>
+            </div>
+
+            <!-- Slide 10: Data -->
+            <div class="slide">
+                <h2 class="text-3xl font-bold text-center text-slate-800 mb-4">データで見る：がんと真菌の関連</h2>
+                <p class="text-center text-sm text-slate-500 mb-4">特定のがん種では、特定の真菌が多く見つかります。</p>
+                <div class="h-[420px]">
+                    <div class="chart-container">
+                        <canvas id="fungiChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 11: Pseudoscience -->
+            <div class="slide">
+                <h2 class="text-3xl font-bold text-center text-slate-800 mb-8">科学と疑似科学の境界線</h2>
+                <div class="h-[420px] overflow-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead>
+                            <tr class="bg-slate-100">
+                                <th class="p-3"></th>
+                                <th class="p-3 text-green-700">科学的研究</th>
+                                <th class="p-3 text-red-700">疑似科学的主張</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b">
+                                <td class="p-3 font-bold">主張</td>
+                                <td class="p-3">真菌はがんの<strong class="text-green-700">進行に影響する一因子</strong></td>
+                                <td class="p-3">がんは真菌そのものであるという<strong class="text-red-700">単一的な原因</strong>を主張</td>
+                            </tr>
+                            <tr class="border-b">
+                                <td class="p-3 font-bold">メカニズム</td>
+                                <td class="p-3">免疫調節や炎症など<strong class="text-green-700">複雑な相互作用</strong>を介して影響</td>
+                                <td class="p-3">単純な「真菌コロニー」であると主張し、<strong class="text-red-700">科学的根拠に欠ける</strong></td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-bold">治療法</td>
+                                <td class="p-3">バイオマーカーや補助療法など<strong class="text-green-700">緻密な戦略</strong>を探る</td>
+                                <td class="p-3">重曹の注射など<strong class="text-red-700">危険で未証明</strong>な方法を推奨</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                     <p class="mt-6 text-slate-600">最新の科学は、単純な「がんは真菌だ」という説とは全く異なります。両者を混同しないことが重要です。</p>
+                </div>
+            </div>
+
+            <!-- Slide 12: Future -->
+            <div class="slide">
+                <h2 class="text-3xl font-bold text-center text-slate-800 mb-8">未来の展望：新たな治療戦略へ</h2>
+                <div class="h-[420px] grid grid-cols-1 md:grid-cols-3 gap-8 text-center pt-8">
+                     <div class="bg-slate-50 p-6 rounded-lg">
+                        <div class="text-5xl mb-4">🔬</div>
+                        <h3 class="font-bold">診断マーカー</h3>
+                        <p class="text-sm mt-2">特定の真菌DNAを検出し、がんの早期発見や予後予測に役立てます。</p>
+                    </div>
+                     <div class="bg-slate-50 p-6 rounded-lg">
+                        <div class="text-5xl mb-4">💊</div>
+                        <h3 class="font-bold">アジュバント療法</h3>
+                        <p class="text-sm mt-2">抗真菌薬を併用し、既存のがん治療の効果を高めることを目指します。</p>
+                    </div>
+                     <div class="bg-slate-50 p-6 rounded-lg">
+                        <div class="text-5xl mb-4">🎯</div>
+                        <h3 class="font-bold">ドラッグデリバリー</h3>
+                        <p class="text-sm mt-2">エクソソームの性質を利用し、薬剤をがん細胞へ直接届ける技術に応用します。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 13: Conclusion -->
+             <div class="slide">
+                <div class="h-[500px] flex flex-col justify-center items-center text-center">
+                    <h2 class="text-3xl font-bold text-slate-800 mb-6">結論と今後の課題</h2>
+                    <p class="text-lg text-slate-700 max-w-2xl">「肝臓の真菌エクソソームが全身のがんを直接引き起こす」という仮説は、現時点では<strong class="text-red-600">推測的</strong>です。</p>
+                    <p class="mt-4 text-slate-600 max-w-2xl">しかし、真菌が<strong class="text-cyan-700">「炎症性ニッチ」</strong>を介してがんの進行に関与するという、より複雑なモデルは科学的根拠に裏付けられています。</p>
+                     <p class="mt-8 text-slate-500 max-w-2xl">今後は、生体内でのエクソソームの動きや、その積み荷の機能を解明することが、この分野の発展の鍵となります。</p>
+                </div>
+            </div>
+
+            <!-- Slide 14: YouTube Assets -->
+            <div class="slide">
+                 <h2 class="text-3xl font-bold text-center text-slate-800 mb-6">YouTube配信用コンテンツ案</h2>
+                 <div class="h-[420px] overflow-auto space-y-6 text-sm">
+                    <div>
+                        <h3 class="font-bold text-cyan-700 text-base mb-2">タイトル案 (3案)</h3>
+                        <ol class="list-decimal list-inside bg-slate-50 p-3 rounded-lg space-y-1">
+                            <li>【最新科学】がんの原因はカビだった！？専門家が解き明かす「真菌とがん」の本当の関係</li>
+                            <li>あなたの体にも潜んでいる？腫瘍内で見つかった「真菌」の正体と、がん治療の未来</li>
+                            <li>肝臓の「カビ」が全身にがんを広げる？話題の仮説を徹底検証！</li>
+                        </ol>
+                    </div>
+                     <div>
+                        <h3 class="font-bold text-cyan-700 text-base mb-2">概要欄</h3>
+                        <div class="bg-slate-50 p-3 rounded-lg">
+                            <p>「がんは真菌（カビ）が原因」という話、聞いたことはありませんか？これは本当なのでしょうか？<br>この動画では、最新の科学的知見に基づき、「腫瘍内マイコバイオーム（真菌）」とがんの複雑な関係を、専門家のレポートを基に徹底解説します。<br>「肝臓の真菌がエクソソームを放出して全身のがんを誘発する」という衝撃的な仮説の真偽から、より現実に即した「炎症性ニッチ」モデル、そして未来の診断・治療法まで、イラストやインフォグラフィックスで分かりやすく紹介。危険な疑似科学との違いも明確にします。<br>がん研究の最前線で何が起きているのか、一緒に学びましょう。</p>
+                        </div>
+                    </div>
+                     <div>
+                        <h3 class="font-bold text-cyan-700 text-base mb-2">サムネイル生成用プロンプト案 (3案)</h3>
+                        <ol class="list-decimal list-inside bg-slate-50 p-3 rounded-lg space-y-1">
+                            <li>驚いた表情の人物の横に、拡大された真菌（きのこのイラストなど）と「がんの原因はカビ！？」という大きなテキストを配置。背景は警告色と青を組み合わせ、科学的な雰囲気を出す。 --ar 16:9</li>
+                            <li>人間のシルエットの肝臓部分をハイライトし、そこから光る粒子（エクソソーム）が全身に広がっていくイメージ。テキストは「肝臓から全身へ…」「がんを広げる真菌の恐怖」とする。ドラマチックなスタイルで。 --ar 16:9</li>
+                            <li>左側に「疑似科学：がんはカビ」、右側に「最新科学：複雑な関係」と対比させる構図。左は暗く曖昧なイメージ、右は明るくクリーンで図解的なイメージにする。中央に「真実はどっち？」というテキストを配置。--ar 16:9</li>
+                        </ol>
+                    </div>
+                      <div>
+                        <h3 class="font-bold text-cyan-700 text-base mb-2">BGM生成用Suno AIプロンプト案 (3案)</h3>
+                        <ol class="list-decimal list-inside bg-slate-50 p-3 rounded-lg space-y-1">
+                            <li>(Instrumental) Corporate documentary, mysterious but hopeful, atmospheric pads, gentle piano melody, subtle electronic beat, underscore for science explanation, calm, focused</li>
+                            <li>(Instrumental) Lo-fi hip hop for study, chill beat, soft synth melody, slightly melancholic but thoughtful, good for background of a serious educational video</li>
+                            <li>(Instrumental) Cinematic ambient, suspenseful intro, evolving into an optimistic and inspiring orchestral theme, sense of discovery and breakthrough, for a science documentary</li>
+                        </ol>
+                    </div>
+                 </div>
+            </div>
+
+        </div>
+
+        <!-- Narration and Controls -->
+        <div class="bg-slate-800 text-white p-4">
+            <div id="narration-box" class="mb-4 min-h-[100px] text-slate-300 text-sm">
+                <!-- Narration script will be injected here -->
+            </div>
+            <div class="flex justify-between items-center">
+                <button id="prev-btn" class="bg-slate-600 hover:bg-slate-500 text-white font-bold py-2 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">前へ</button>
+                <div id="slide-counter" class="font-semibold"></div>
+                <button id="next-btn" class="bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-2 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">次へ</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const slides = document.querySelectorAll('.slide');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const slideCounter = document.getElementById('slide-counter');
+        const narrationBox = document.getElementById('narration-box');
+        let currentSlide = 0;
+
+        const narrations = [
+            '皆さん、こんにちは。本日は「真菌とがん」という、非常に興味深く、そして重要なテーマについて掘り下げていきます。近年、がん研究の最前線で注目されている「肝臓の真菌が全身のがんを引き起こす」という仮説。その科学的根拠を一つずつ、わかりやすく解説していきます。',
+            '今回検証する中心的な問いは、こちらです。「肝臓に蓄積した真菌は、エクソソームという名のメッセージ物質を放出し、全身のがんを引き起こすのか？」この仮説は、一見すると衝撃的ですが、科学的な妥当性はどうなのでしょうか。この謎を解き明かすため、まずは物語の鍵を握る３つの要素から見ていきましょう。',
+            '一つ目の鍵は「エクソソーム」です。これは細胞から放出される、情報を詰め込んだ超小型のカプセルのようなもの。正常な細胞同士のコミュニケーションにも使われますが、がん細胞はこれを悪用します。有害な情報を全身にばらまき、転移しやすい環境を作ったり、免疫細胞の攻撃から逃れたりする、いわば「悪の手紙」のような役割を果たすのです。',
+            '二つ目の鍵は「腫瘍内真菌」、通称マイコバイオームです。かつて、がん組織は無菌だと考えられていましたが、近年の研究で、様々な種類の真菌、つまりカビの仲間が、がん組織の中に潜んでいることが明らかになりました。これらは単にそこにいるだけでなく、慢性的な炎症を引き起こすなどを通じて、がんの進行に影響を与えていると考えられています。',
+            '三つ目の鍵は「肝臓」です。肝臓は、私たちの体で二つの重要な役割を担っています。一つは、腸から流れてくる血液を濾過し、異物や病原体を排除する「フィルター」機能。もう一つは、無害なものに過剰反応しないよう、あえて免疫を抑える「免疫寛容」という性質です。この免疫が働きにくいという性質が、皮肉にも、がん細胞にとっては格好の隠れ家となり、転移の温床になってしまうのです。',
+            'では、仮説を検証していきましょう。まず、「真菌は肝臓に蓄積するのか？」という点です。これについては、臨床的なデータや、腸から肝臓へ菌が移動する経路が確認されていることから、科学的に「妥当性が高い」と言えます。特に、がん患者さんのように免疫力が低下している状態では、真菌が肝臓に定着しやすくなります。',
+            '次に、「その真菌はエクソソームを放出するのか？」という点です。これも、研究によって「妥当性が高い」とされています。真菌もまた、エクソソームに似た「細胞外小胞」を放出し、その中に自身のタンパク質やRNAなどを詰め込んで、周囲の細胞に影響を与えることが分かっています。',
+            'そして、これが仮説の核心部分です。「そのエクソソームは、全身のがんを直接引き起こすのか？」この点については、結論から言うと「直接的な証拠はない」というのが現状です。肝臓から放出された真菌のエクソソームが、血流に乗って全身を巡り、他の臓器で新たながんを発生させる、という一連の流れを証明した研究は、まだありません。これが、この仮説の最も弱い環（わ）なのです。',
+            'では、真菌はがんと無関係なのでしょうか。そうではありません。科学者たちは、より現実に即した「炎症性ニッチ」という新しいモデルを提唱しています。これは、真菌ががんの「直接の原因」になるのではなく、まず組織に定着し、そこで慢性的な「炎症」を引き起こす。この炎症が、がん細胞が増殖したり、転移したりしやすい「土壌」、つまり「ニッチ」を作り出すことで、間接的にがんを悪化させる、という考え方です。',
+            '実際に、データを見てみましょう。このグラフは、特定のがん種でよく見つかる真菌の種類を示しています。例えば、消化器系のがんではカンジダ属、膵臓がんではマラッセチア属といったように、単なる偶然では説明しがたい関連性が見られます。これは、真菌とがんの間に、何らかの生物学的な相互作用があることを強く示唆しています。',
+            'ここで、非常に重要な注意点があります。それは、最先端の科学と、インターネット上で見られる「がんは真菌だ」といった疑似科学との区別です。科学が示すのは、両者の「複雑な相互作用」であり、免疫調節など緻密なメカニズムを探るものです。一方で、疑似科学は「がんはカビの塊だ」というような単純な原因を主張し、重曹の注射といった危険で未証明な治療法を推奨します。両者は全く異なるものであることを、明確に理解してください。',
+            'この研究分野は、まだ始まったばかりですが、未来のがん治療に大きな可能性を秘めています。例えば、特定の真菌を「診断マーカー」としてがんの早期発見に応用したり、抗真菌薬を補助的に使う「アジュバント療法」で既存の治療効果を高めたり、あるいはエクソソームの性質を利用した「ドラッグデリバリーシステム」の開発などが期待されています。',
+            'まとめです。「肝臓の真菌がエクソソームを介して直接、全身のがんを引き起こす」という当初の仮説は、現時点では証拠が不十分であり、推測の域を出ません。しかし、真菌が「炎症性ニッチ」の形成を通じて、がんの進行に間接的に関与するという、より複雑なモデルは科学的根拠に裏付けられています。今後は、生体内でのエクソソームの動きや、その積み荷の機能を解明することが、この分野の発展、そして新たながん治療法の開発に繋がっていくでしょう。',
+            '本プレゼンテーションは以上となります。ご清聴ありがとうございました。'
+        ];
+
+        function updateSlide() {
+            slides.forEach((slide, index) => {
+                slide.classList.toggle('active', index === currentSlide);
+            });
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === slides.length - 1;
+            slideCounter.textContent = `スライド ${currentSlide + 1} / ${slides.length}`;
+            narrationBox.textContent = narrations[currentSlide];
+        }
+
+        prevBtn.addEventListener('click', () => {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlide();
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentSlide < slides.length - 1) {
+                currentSlide++;
+                updateSlide();
+            }
+        });
+        
+        // Initial Chart Render
+        const fungiChartCtx = document.getElementById('fungiChart').getContext('2d');
+        new Chart(fungiChartCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Candida属', 'Malassezia属', 'Aspergillus属', 'Blastomyces属'],
+                datasets: [{
+                    label: '関連するがん種の数',
+                    data: [5, 2, 2, 2],
+                    backgroundColor: [
+                        'rgba(56, 189, 248, 0.6)',
+                        'rgba(14, 165, 233, 0.6)',
+                        'rgba(2, 132, 199, 0.6)',
+                        'rgba(7, 89, 133, 0.6)'
+                    ],
+                    borderColor: [
+                        'rgb(56, 189, 248)',
+                        'rgb(14, 165, 233)',
+                        'rgb(2, 132, 199)',
+                        'rgb(7, 89, 133)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: '特定のがん種と関連する主要な真菌属'
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        updateSlide();
+    });
+</script>
+</body>
+</html>
