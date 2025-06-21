@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>スライドショー：水素焙煎コーヒーの科学的主張を徹底解剖</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #f1f5f9; /* slate-100 */
+        }
+        .slide {
+            display: none;
+            height: 550px; /* Fixed height for slide content */
+        }
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .narration {
+            background-color: #1e293b; /* slate-800 */
+            color: #e2e8f0; /* slate-200 */
+            font-size: 0.9rem;
+            line-height: 1.6;
+            height: 120px; /* Fixed height for narration box */
+            overflow-y: auto;
+        }
+        .pagination-dot {
+            transition: background-color 0.3s ease;
+        }
+        .chart-container {
+            position: relative;
+            margin: auto;
+            height: 80%;
+            width: 90%;
+            max-height: 300px;
+        }
+        .flow-diagram {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+        }
+        .flow-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .flow-box {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            background-color: #fff;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            min-width: 150px;
+        }
+        .flow-arrow {
+            font-size: 2.5rem;
+            color: #94a3b8; /* slate-400 */
+        }
+        .final-slide-content h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1e3a8a; /* blue-900 */
+            border-bottom: 2px solid #60a5fa; /* blue-400 */
+            padding-bottom: 0.5rem;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+        }
+         .final-slide-content ul {
+            list-style-type: '✔️ ';
+            padding-left: 1.5rem;
+        }
+        .final-slide-content li {
+            margin-bottom: 0.75rem;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+
+    <div class="w-full max-w-4xl bg-white shadow-2xl rounded-lg overflow-hidden">
+        <div id="slides-container" class="relative">
+            <!-- Slide 1: Title -->
+            <div class="slide active p-6 md:p-12 justify-center items-center text-center">
+                <h1 class="text-3xl md:text-5xl font-bold text-blue-900 mb-4">水素焙煎コーヒーの「科学」</h1>
+                <p class="text-lg md:text-xl text-slate-600">その驚くべき主張は、真実か、それとも巧妙なフィクションか？</p>
+                <div class="mt-8">
+                    <span class="text-6xl">☕</span>
+                    <span class="text-4xl mx-4">+</span>
+                    <span class="text-6xl">🔬</span>
+                    <span class="text-4xl mx-4">=</span>
+                    <span class="text-6xl">❓</span>
+                </div>
+            </div>
+
+            <!-- Slide 2: Semantic Deception -->
+            <div class="slide p-6 md:p-8 justify-between">
+                <h2 class="text-2xl md:text-3xl font-bold text-center text-blue-900 mb-4">欺瞞①：言葉のすり替え</h2>
+                <div class="flow-diagram flex-col md:flex-row">
+                    <div class="flow-item">
+                        <p class="font-bold mb-2">UCCの「水素焙煎」</p>
+                        <div class="flow-box border-2 border-green-500">
+                            <p class="text-4xl">♻️</p>
+                            <p class="font-bold text-green-700">環境技術</p>
+                            <p class="text-xs mt-2">CO₂排出削減が目的</p>
+                        </div>
+                    </div>
+                    <div class="flow-arrow font-bold text-red-500">≠</div>
+                    <div class="flow-item">
+                        <p class="font-bold mb-2">主張される「水素焙煎」</p>
+                         <div class="flow-box border-2 border-red-500">
+                            <p class="text-4xl">💊</p>
+                            <p class="font-bold text-red-700">疑似科学</p>
+                            <p class="text-xs mt-2">健康効果の付与が目的</p>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-center text-sm text-slate-500 mt-4">革新的な技術の「名前」だけを借用し、全く別のものに見せかけている。</p>
+            </div>
+            
+            <!-- Slide 3: Evidence Bridge Fallacy -->
+            <div class="slide p-6 md:p-8 justify-between">
+                <h2 class="text-2xl md:text-3xl font-bold text-center text-blue-900 mb-4">欺瞞②：証拠の不正利用</h2>
+                 <div class="flow-diagram flex-col md:flex-row">
+                    <div class="flow-item">
+                        <p class="font-bold mb-2">大阪大学の研究</p>
+                        <div class="flow-box border-2 border-blue-500">
+                            <p class="text-4xl">🐁</p>
+                            <p class="font-bold text-blue-700">動物実験</p>
+                            <p class="text-xs mt-2">特定の「ケイ素製剤」の効果を検証</p>
+                        </div>
+                    </div>
+                    <div class="flow-arrow">➡️</div>
+                    <div class="flow-item">
+                        <p class="font-bold mb-2">コーヒー製品の主張</p>
+                         <div class="flow-box border-2 border-red-500">
+                            <p class="text-4xl">🙋‍♂️</p>
+                            <p class="font-bold text-red-700">人間で実証済み</p>
+                            <p class="text-xs mt-2">無関係なコーヒーの効果として宣伝</p>
+                        </div>
+                    </div>
+                </div>
+                 <p class="text-center text-sm text-slate-500 mt-4">正当な研究成果を、全く無関係な製品の「証拠」として盗用している。</p>
+            </div>
+
+            <!-- Slide 4: Misrepresentation of Authority -->
+            <div class="slide p-6 md:p-8 justify-between">
+                <h2 class="text-2xl md:text-3xl font-bold text-center text-blue-900 mb-4">欺瞞③：権威の誇張</h2>
+                <div class="chart-container">
+                    <canvas id="impactChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Slide 5: Evidence Breakdown -->
+            <div class="slide p-6 md:p-8 justify-between">
+                <h2 class="text-2xl md:text-3xl font-bold text-center text-blue-900 mb-4">証拠の検証：「人間で実証」の内訳</h2>
+                <div class="chart-container">
+                    <canvas id="evidenceChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Slide 6: Conclusion -->
+            <div class="slide p-6 md:p-12 justify-center items-center text-center">
+                <h2 class="text-3xl md:text-4xl font-bold text-red-700 mb-4">結論：科学的根拠ゼロ</h2>
+                <p class="text-lg md:text-xl text-slate-700 max-w-2xl mx-auto">この製品コンセプトは、言葉のすり替え、証拠の不正利用、権威の誇張によって構築された、巧妙なマーケティング・フィクションです。</p>
+                <div class="mt-8 text-2xl font-bold flex justify-center items-center gap-4 text-slate-600">
+                    <span>科学</span><span class="text-red-500 text-4xl">≠</span><span>疑似科学</span>
+                </div>
+            </div>
+
+            <!-- Slide 7: YouTube Content -->
+            <div class="slide p-6 md:p-8 overflow-y-auto">
+                 <h2 class="text-2xl md:text-3xl font-bold text-center text-blue-900 mb-6">YouTube動画制作用コンテンツ案</h2>
+                 <div class="final-slide-content text-sm">
+                    <h3>タイトル案</h3>
+                    <ul>
+                        <li>【科学者が解説】話題の「水素コーヒー」は詐欺？論文と証拠を徹底検証した結果…</li>
+                        <li>【99%が知らない】その健康情報、ウソかも？水素焙煎コーヒーの驚くべきトリック</li>
+                        <li>【論文の真実】"Nature論文で証明"は本当か？水素コーヒーの主張をファクトチェック</li>
+                    </ul>
+
+                    <h3>概要欄</h3>
+                    <p class="p-4 bg-slate-100 rounded-md">
+                        「体内で水素が発生し、ガンや生活習慣病に効く」と話題の水素焙煎コーヒー。その科学的根拠とされる論文や資料を専門家が徹底分析！<br><br>この動画では、<br>✅「水素焙煎」という言葉の本当の意味<br>✅根拠とされる「Nature論文」の正体<br>✅「人間で実証済み」という主張のウラ側<br>を、インフォグラフィックで分かりやすく解説します。<br><br>あなたが信じているその健康情報は本当に正しいですか？この動画を見れば、科学的に見える情報の見極め方がわかります。#ファクトチェック #健康リテラシー #疑似科学
+                    </p>
+
+                    <h3>サムネイル生成用プロンプト（Midjourney, DALL-E等）</h3>
+                    <ul>
+                        <li>A photorealistic image for a YouTube thumbnail, debunking a health myth. A coffee cup with a question mark symbol rising like steam. On one side, a skeptical scientist in a lab coat pointing at a chemical formula. On the other side, bold Japanese text saying "その常識、ウソかも？" (That common knowledge might be a lie?). Dramatic lighting, high contrast, eye-catching. --ar 16:9</li>
+                        <li>A split-screen YouTube thumbnail. Left side shows a glowing, magical-looking coffee cup with "水素" (Hydrogen) text. Right side shows a red "X" mark over it, with a scientist looking concerned. Big, bold Japanese text at the bottom: "科学的にあり得ません" (Scientifically impossible). Vibrant colors, style of a popular science channel. --ar 16:9</li>
+                        <li>A YouTube thumbnail with a magnifying glass examining a coffee bean. Inside the magnifying glass, instead of a bean, there's a mouse in a lab. The main title in bold Japanese: "騙されるな！" (Don't be fooled!). Subtitle: "水素コーヒーの真実" (The truth about hydrogen coffee). Clean, modern design, infographic style. --ar 16:9</li>
+                    </ul>
+                     
+                    <h3>BGM生成用プロンプト（Suno AI）</h3>
+                    <ul>
+                        <li>(Verse 1) A mysterious and slightly tense synthwave track, investigative mood, pulsing bassline, arpeggiated synths. (Chorus) The beat becomes more determined and driving, a feeling of revealing the truth, sense of clarity and breakthrough, cinematic, powerful but not aggressive.</li>
+                        <li>An upbeat, quirky and educational lo-fi hip hop beat. Boom-bap style drums, a simple, catchy piano melody, and a walking bassline. Perfect for a fact-checking or explainer video, intelligent and modern vibe.</li>
+                        <li>A minimalist and suspenseful instrumental track. A simple, repeating piano motif with ambient pads and a subtle, ticking clock sound effect. Creates a sense of intellectual curiosity and critical thinking, perfect for a deep-dive analysis.</li>
+                    </ul>
+                 </div>
+            </div>
+        </div>
+
+        <!-- Narration and Pagination -->
+        <div class="bg-white p-4">
+            <div id="narration-box" class="narration p-4 rounded-md mb-4"></div>
+            <div class="flex items-center justify-between">
+                <button id="prev-btn" class="px-4 py-2 bg-slate-200 rounded-md hover:bg-slate-300 disabled:opacity-50 disabled:cursor-not-allowed">＜ 前へ</button>
+                <div id="pagination-dots" class="flex gap-2"></div>
+                <button id="next-btn" class="px-4 py-2 bg-slate-200 rounded-md hover:bg-slate-300 disabled:opacity-50 disabled:cursor-not-allowed">次へ ＞</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const slides = document.querySelectorAll('.slide');
+            const nextBtn = document.getElementById('next-btn');
+            const prevBtn = document.getElementById('prev-btn');
+            const paginationDotsContainer = document.getElementById('pagination-dots');
+            const narrationBox = document.getElementById('narration-box');
+            let currentSlide = 0;
+            let impactChart = null;
+            let evidenceChart = null;
+
+            const narrations = [
+                "近年、体内で水素を発生させ、様々な健康効果をもたらすと謳う「水素焙煎コーヒー」が注目されています。しかし、その華やかな主張の裏には、一体どのような科学的根拠があるのでしょうか。このプレゼンテーションでは、その主張を一つずつ、徹底的に解剖していきます。",
+                "まず最初のトリックは、「言葉のすり替え」です。UCCなどが開発した本物の「水素焙煎」は、CO2削減を目指す環境技術です。しかし、この製品は、その革新的な名前だけを拝借し、全く無関係な疑似科学的プロセスであるかのように見せかけています。",
+                "次に、根拠として示される「大阪大学の研究」です。これは、特定のケイ素製剤の効果を動物で検証した、正当な基礎研究です。しかし、この成果を、全く無関係なコーヒー製品が人間で達成したかのように不正に結びつけ、製品の信頼性を偽装しています。",
+                "そして最も強力な主張が「Nature論文による裏付け」です。しかし、グラフが示すように、最高峰の科学誌『Nature』と、実際に論文が掲載された『Scientific Reports』とでは、科学的な権威や影響力に天と地ほどの差があります。これは、権威を意図的に誇張する手法です。",
+                "では、「人間で実証済み」という主張の証拠そのものを見てみましょう。その内訳は、動物実験の不正利用や、科学的価値のない個人の体験談がほとんどを占めています。最も重要な「人間での臨床試験」の証拠は、ゼロ。つまり、主張を裏付ける科学的証拠は存在しないのです。",
+                "結論です。この製品の主張は、科学的根拠が全くありません。言葉の巧みなすり替え、無関係な研究成果の盗用、そして権威の誇張。これらを組み合わせることで作り上げられた、科学に見せかけたフィクションなのです。消費者は、常に批判的な視点を持つことが求められます。",
+                "このプレゼンテーションを元に、Youtube動画を作成する際のアイデアをまとめました。タイトルや概要、サムネイル、BGMのプロンプトとしてご活用ください。より多くの人に、正確な情報リテラシーを届ける一助となれば幸いです。"
+            ];
+
+            function showSlide(index) {
+                slides.forEach((slide, i) => {
+                    slide.classList.toggle('active', i === index);
+                });
+                
+                // Update dots
+                const dots = document.querySelectorAll('.pagination-dot');
+                dots.forEach((dot, i) => {
+                    dot.classList.toggle('bg-blue-600', i === index);
+                    dot.classList.toggle('bg-slate-300', i !== index);
+                });
+
+                // Update narration
+                narrationBox.textContent = narrations[index];
+
+                // Update buttons
+                prevBtn.disabled = index === 0;
+                nextBtn.disabled = index === slides.length - 1;
+                
+                currentSlide = index;
+
+                // Lazy load charts and ensure they are only initialized once
+                if (index === 3 && !impactChart) {
+                    const impactCtx = document.getElementById('impactChart')?.getContext('2d');
+                    if (impactCtx) {
+                        impactChart = new Chart(impactCtx, {
+                            type: 'bar',
+                            data: {
+                                labels: ['Nature誌 (主張)', 'Scientific Reports (事実)'],
+                                datasets: [{
+                                    label: '科学的インパクトスコア (イメージ)',
+                                    data: [100, 15],
+                                    backgroundColor: ['#1e3a8a', '#60a5fa'],
+                                }]
+                            },
+                            options: {
+                                indexAxis: 'y',
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: { display: false },
+                                    title: { display: true, text: '主張される権威 vs 実際の権威' }
+                                },
+                                scales: { x: { beginAtZero: true } }
+                            }
+                        });
+                    }
+                }
+
+                if (index === 4 && !evidenceChart) {
+                    const evidenceCtx = document.getElementById('evidenceChart')?.getContext('2d');
+                    if (evidenceCtx) {
+                        evidenceChart = new Chart(evidenceCtx, {
+                            type: 'doughnut',
+                            data: {
+                                labels: ['動物実験の流用', '個人の体験談', '疑似科学', '人間での臨床試験'],
+                                datasets: [{
+                                    data: [40, 20, 40, 0],
+                                    backgroundColor: ['#60a5fa', '#93c5fd', '#bfdbfe', '#ef4444'],
+                                    borderColor: '#ffffff',
+                                    borderWidth: 2
+                                }]
+                            },
+                            options: {
+                                 responsive: true,
+                                 maintainAspectRatio: false,
+                                 plugins: {
+                                    legend: { position: 'bottom' },
+                                    title: { display: true, text: '主張される「証拠」の構成比率' }
+                                 }
+                            }
+                        });
+                    }
+                }
+            }
+            
+            // Create pagination dots
+            slides.forEach((_, i) => {
+                const dot = document.createElement('button');
+                dot.classList.add('pagination-dot', 'w-3', 'h-3', 'rounded-full');
+                dot.addEventListener('click', () => showSlide(i));
+                paginationDotsContainer.appendChild(dot);
+            });
+
+            nextBtn.addEventListener('click', () => {
+                if (currentSlide < slides.length - 1) {
+                    showSlide(currentSlide + 1);
+                }
+            });
+
+            prevBtn.addEventListener('click', () => {
+                if (currentSlide > 0) {
+                    showSlide(currentSlide - 1);
+                }
+            });
+
+            // Initial setup
+            showSlide(0);
+        });
+    </script>
+</body>
+</html>

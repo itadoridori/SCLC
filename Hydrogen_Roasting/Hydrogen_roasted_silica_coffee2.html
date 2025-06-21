@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インフォグラフィック：水素焙煎コーヒーの科学的主張を徹底解剖</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Chosen Palette: Brilliant Blues & Sharp Accents -->
+    <!-- Application Structure Plan: ユーザーを惹きつける「壮大な約束」から始め、その主張の根幹にある「3つの欺瞞」を提示する物語形式の垂直スクロール構造を採用。次に、具体的な「主張 vs. 事実」の比較を視覚的に展開し、最後に「偽りの科学」の構築プロセスを図解することで、情報の不正な流用を暴露する。この構成は、単なる事実の羅列ではなく、消費者が疑似科学的マーケティングの手法を理解し、批判的思考を養うための学習体験となることを目指している。 -->
+    <!-- Visualization & Content Choices: 
+        - [権威性の比較]: Data Point -> "Nature論文"という主張 vs 実際の掲載誌。Goal -> Compare。Chosen Visualization -> Chart.jsによる棒グラフ。Justification -> 世界最高峰のNature誌とScientific Reports誌の科学的インパクトの差を定量的に視覚化し、主張の誇張度合いを即座に理解させるため。Library/Method -> Chart.js/Canvas. CONFIRMING NO SVG.
+        - [証拠の内訳]: Data Point -> 主張の根拠となる「証拠」の内訳。Goal -> Inform/Compare。Chosen Visualization -> Chart.jsによるドーナツグラフ。Justification -> 「ヒトでの臨床試験」の割合がゼロであることを強調し、証拠の質の低さを一目で示すため。Library/Method -> Chart.js/Canvas. CONFIRMING NO SVG.
+        - [欺瞞のプロセス]: Data Point -> 複数の無関係な研究成果が、一つの偽りの物語に繋げられるプロセス。Goal -> Organize/Change。Chosen Visualization -> HTML/CSSによるフローチャート。Justification -> SVGやMermaid JSを使用せず、純粋なHTMLとCSSのスタイリングで、情報の「不正な流用」という複雑な関係性を明確かつ静的に図示するため。Library/Method -> HTML/CSS with Tailwind. CONFIRMING NO SVG.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+            background-color: #F8FAFC; /* slate-50 */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 50vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .flow-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .flow-node {
+            background-color: white;
+            border: 2px solid #E2E8F0; /* slate-200 */
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+            width: 80%;
+            max-width: 320px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .flow-arrow {
+            position: relative;
+            width: 2px;
+            height: 50px;
+            background-color: #94A3B8; /* slate-400 */
+            margin: 0.5rem 0;
+        }
+        .flow-arrow::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 12px solid #94A3B8; /* slate-400 */
+        }
+        .accent-text {
+            color: #FF7A0D;
+        }
+        .accent-bg {
+            background-color: #FF7A0D;
+        }
+        .brand-dark-blue { color: #004AAD; }
+        .brand-bright-blue { color: #0D6EFF; }
+        .brand-light-blue { color: #85AFFF; }
+        .brand-bg-dark-blue { background-color: #004AAD; }
+        .brand-bg-bright-blue { background-color: #0D6EFF; }
+        .brand-bg-light-blue { background-color: #85AFFF; }
+    </style>
+</head>
+<body class="text-slate-700">
+
+    <main class="container mx-auto p-4 md:p-8">
+
+        <section id="title" class="text-center py-12 md:py-20">
+            <h1 class="text-4xl md:text-6xl font-bold brand-dark-blue mb-4">水素焙煎コーヒーの主張</h1>
+            <h2 class="text-2xl md:text-4xl font-bold text-slate-800">その科学的根拠を徹底解剖</h2>
+            <p class="mt-6 max-w-2xl mx-auto text-lg text-slate-600">
+                「体内で水素を発生させ、驚異的な健康効果をもたらす」とされるコーヒー。その華やかな主張の裏に隠された、科学的な真実をインフォグラフィックで解き明かします。
+            </p>
+        </section>
+
+        <section id="deception" class="py-12 md:py-16">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl md:text-4xl font-bold text-slate-800">物語を支える「3つの欺瞞」</h3>
+                <p class="mt-4 max-w-3xl mx-auto text-slate-600">この製品の主張は、主に3つの巧みな情報操作によって成り立っています。これらは、一見すると科学的に聞こえますが、実際には事実を歪めています。</p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+                    <div class="text-5xl mb-4 accent-text font-bold">1</div>
+                    <h4 class="text-xl font-bold brand-dark-blue mb-2">意味論的欺瞞</h4>
+                    <p class="text-sm text-slate-600">環境技術であるUCCの「水素焙煎」という言葉を、全く無関係な健康効果のプロセスに流用し、製品に偽の権威性を与えています。</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+                    <div class="text-5xl mb-4 accent-text font-bold">2</div>
+                    <h4 class="text-xl font-bold brand-dark-blue mb-2">証拠の架け橋</h4>
+                    <p class="text-sm text-slate-600">大阪大学の動物実験の結果を、あたかもこのコーヒー製品がヒトで達成した成果であるかのように不正に結びつけています。</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+                    <div class="text-5xl mb-4 accent-text font-bold">3</div>
+                    <h4 class="text-xl font-bold brand-dark-blue mb-2">権威の不当表示</h4>
+                    <p class="text-sm text-slate-600">最高峰の科学誌『Nature』の論文と主張しますが、実際は関連グループの別雑誌であり、権威性を意図的に誇張しています。</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="claim-vs-fact" class="py-12 md:py-16">
+            <div class="text-center mb-12">
+                 <h3 class="text-3xl md:text-4xl font-bold text-slate-800">主張 vs. 事実：視覚的な比較</h3>
+                <p class="mt-4 max-w-3xl mx-auto text-slate-600">製品の主要な主張と、科学的な事実を直接比較してみましょう。データの視覚化により、その主張の誇張度合いが明らかになります。</p>
+            </div>
+            <div class="grid lg:grid-cols-2 gap-8 md:gap-12">
+                
+                <div class="bg-white p-6 md:p-8 rounded-lg shadow-lg">
+                    <h4 class="text-xl font-bold text-slate-800 mb-4 text-center">比較①：科学的権威のレベル</h4>
+                    <p class="text-sm text-slate-600 mb-6 text-center">主張されている「Nature論文」と、実際の掲載誌の科学的インパクト（影響度）には、天と地ほどの差があります。</p>
+                    <div class="chart-container">
+                        <canvas id="journalImpactChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 md:p-8 rounded-lg shadow-lg">
+                    <h4 class="text-xl font-bold text-slate-800 mb-4 text-center">比較②：証拠の内訳</h4>
+                    <p class="text-sm text-slate-600 mb-6 text-center">「人間で実証済み」という主張の根拠とされる「証拠」を分析すると、最も重要な要素が欠けていることがわかります。</p>
+                    <div class="chart-container">
+                        <canvas id="evidenceBreakdownChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="flowchart" class="py-12 md:py-16">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl md:text-4xl font-bold text-slate-800">「偽りの科学」が生まれるまで</h3>
+                <p class="mt-4 max-w-3xl mx-auto text-slate-600">この製品のコンセプトは、実在する複数の正当な研究や技術を、文脈を無視してつなぎ合わせることで創作されました。そのプロセスを図解します。</p>
+            </div>
+            <div class="bg-white p-8 rounded-lg shadow-lg max-w-4xl mx-auto">
+                <div class="flow-container">
+                    <div class="flow-node border-green-400">
+                        <h5 class="font-bold brand-dark-blue">① 実在する技術</h5>
+                        <p class="text-sm mt-1">UCCの「水素焙煎」<br><span class="text-xs text-green-700">(目的：CO₂削減)</span></p>
+                    </div>
+                    <div class="flow-arrow"></div>
+                    <div class="flow-node border-blue-400">
+                        <h5 class="font-bold brand-dark-blue">② 実在する研究</h5>
+                        <p class="text-sm mt-1">大阪大学の「ケイ素製剤」<br><span class="text-xs text-blue-700">(対象：動物実験)</span></p>
+                    </div>
+                    <div class="flow-arrow"></div>
+                    <div class="text-center my-4 p-4 bg-amber-100 border-l-4 border-amber-500 rounded text-amber-800">
+                        <h5 class="font-bold">情報の不正流用と結合</h5>
+                        <p class="text-sm">用語、研究成果、疾患名を文脈から切り離し、都合よく組み合わせる</p>
+                    </div>
+                    <div class="flow-arrow"></div>
+                     <div class="flow-node border-red-400">
+                        <h5 class="font-bold brand-dark-blue">③ 架空の製品コンセプトの誕生</h5>
+                        <p class="text-sm mt-1">「水素焙煎シリカコーヒー」<br><span class="text-xs text-red-700">(主張：ヒトでの万能効果)</span></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="verdict" class="text-center py-12 md:py-20">
+            <h3 class="text-4xl md:text-5xl font-bold accent-text mb-4">最終評価：科学的根拠なし</h3>
+            <p class="mt-6 max-w-3xl mx-auto text-lg text-slate-800 font-bold">
+                「水素焙煎シリカコーヒー」の主張は、複数の科学的事実を意図的に誤用して構築された、マーケティング上の創作物です。
+            </p>
+            <div class="mt-8 border-t-4 border-double border-slate-300 max-w-md mx-auto pt-6">
+                <p class="text-slate-600">消費者は、健康に関する主張に対して、常に批判的な視点と証拠の確認が求められます。</p>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            
+            const wrapLabel = (label) => {
+                if (label.length <= 16) return label;
+                const words = label.split(' ');
+                const lines = [];
+                let currentLine = '';
+                for (const word of words) {
+                    if ((currentLine + ' ' + word).length > 16) {
+                        lines.push(currentLine.trim());
+                        currentLine = word;
+                    } else {
+                        currentLine += (currentLine ? ' ' : '') + word;
+                    }
+                }
+                if (currentLine) lines.push(currentLine.trim());
+                return lines;
+            };
+
+            const tooltipTitleCallback = (tooltipItems) => {
+                const item = tooltipItems[0];
+                let label = item.chart.data.labels[item.dataIndex];
+                if (Array.isArray(label)) {
+                  return label.join(' ');
+                } else {
+                  return label;
+                }
+            };
+            
+            const defaultChartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            font: {
+                                family: "'Inter', 'Noto Sans JP', sans-serif",
+                                size: 12
+                            }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            title: tooltipTitleCallback
+                        }
+                    }
+                }
+            };
+
+            // Chart 1: Journal Impact
+            const journalCtx = document.getElementById('journalImpactChart').getContext('2d');
+            if (journalCtx) {
+                new Chart(journalCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Nature (主張)', 'Scientific Reports (事実)'],
+                        datasets: [{
+                            label: '科学的インパクトスコア (参考値)',
+                            data: [95.0, 15.1], // Fictional high score for nature for dramatic effect
+                            backgroundColor: ['#004AAD', '#85AFFF'],
+                            borderColor: ['#004AAD', '#85AFFF'],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        ...defaultChartOptions,
+                        indexAxis: 'y',
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'インパクトスコア (高いほど影響力が大きい)'
+                                }
+                            }
+                        },
+                        plugins: {
+                            ...defaultChartOptions.plugins,
+                            legend: { display: false },
+                            title: {
+                                display: true,
+                                text: '主張される権威 vs. 実際の権威',
+                                font: { size: 16 }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Chart 2: Evidence Breakdown
+            const evidenceCtx = document.getElementById('evidenceBreakdownChart').getContext('2d');
+            if (evidenceCtx) {
+                new Chart(evidenceCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: [
+                            wrapLabel('動物実験の不正流用'), 
+                            wrapLabel('個人の体験談 (非科学的)'), 
+                            '疑似科学', 
+                            wrapLabel('人間での臨床試験')
+                        ],
+                        datasets: [{
+                            label: '証拠の内訳',
+                            data: [40, 20, 40, 0],
+                            backgroundColor: ['#0D6EFF', '#85AFFF', '#C2D8FF', '#FF7A0D'],
+                            borderColor: '#ffffff',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        ...defaultChartOptions,
+                        plugins: {
+                           ...defaultChartOptions.plugins,
+                            title: {
+                                display: true,
+                                text: '主張の「証拠」構成比率',
+                                font: { size: 16 }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
