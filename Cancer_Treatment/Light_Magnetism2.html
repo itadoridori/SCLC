@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インフォグラフィック：光と磁気の医療応用</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Brilliant Blues -->
+    <!-- Application Structure Plan: このインフォグラフィックは、スクロールによって物語が展開する直線的な構造を採用しています。まず「イントロダクション」で全体像をレーダーチャートで提示し、読者の関心を引きます。次に「科学的根拠のスペクトラム」セクションで、レポートの結論に基づき「確立された医療」「補完療法」「新興技術」「非科学的・有害」の4つのカテゴリーに各技術を明確に分類・可視化します。その後、「作用機序の解明」セクションで代表的な2つの技術のメカニズムをフローチャートで解説。最後に「結論」で重要なメッセージを要約します。この構造は、複雑な情報を段階的に提示し、読者がエビデンスレベルという重要な文脈で各技術を理解・評価できるよう設計されています。 -->
+    <!-- Visualization & Content Choices: 
+        - Data Point: 5つのモダリティの総合比較 -> Goal: Compare -> Viz: レーダーチャート (Chart.js/Canvas) -> Justification: 多角的な特性（科学的根拠、安全性など）を一覧で比較するのに最適。
+        - Data Point: PEMFのFDA承認年 -> Goal: Inform -> Viz: 大きな数字のテキスト -> Justification: 1979年という具体的な数字は、その技術の歴史と信頼性を強く印象付けます。
+        - Data Point: 各モダリティの主要応用分野 -> Goal: Inform -> Viz: ドーナツチャート (Chart.js/Canvas) -> Justification: 主要な用途の構成比をシンプルかつ視覚的に示すのに効果的です。
+        - Data Point: PBMとPEMFの作用機序 -> Goal: Organize -> Viz: HTML/CSSフローチャート (Tailwind) -> Justification: 複雑な生物学的プロセスをステップバイステップの視覚的な流れで示すことで、専門家でない読者の理解を促進します。SVG/Mermaidは使用しません。
+        - Data Point: ラドンのリスク -> Goal: Inform (Warn) -> Viz: Unicodeアイコン(☢️)と強調されたテキスト -> Justification: テキストを読む前に、色とアイコンで危険性を直感的に伝達します。
+        - Library/Method: Chart.js for all charts, Tailwind CSS for all layout and styling. CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Noto Sans JP', sans-serif; background-color: #F8FAFC; color: #1E293B; }
+        .chart-container { position: relative; width: 100%; max-width: 600px; margin-left: auto; margin-right: auto; height: 350px; max-height: 450px; }
+        @media (min-width: 768px) { .chart-container { height: 450px; } }
+        .donut-chart-container { position: relative; width: 100%; max-width: 300px; margin-left: auto; margin-right: auto; height: 300px; max-height: 300px; }
+        .section-title { border-left: 5px solid #0EA5E9; padding-left: 1rem; }
+    </style>
+</head>
+<body>
+    <div class="max-w-5xl mx-auto p-4 sm:p-8">
+        
+        <!-- Header -->
+        <header class="text-center mb-16">
+            <h1 class="text-4xl md:text-5xl font-bold text-teal-700 mb-4">光と磁気の力</h1>
+            <p class="text-xl md:text-2xl text-slate-600">医療の最前線と、科学が解き明かす真実</p>
+        </header>
+
+        <!-- Introduction & Overview Chart -->
+        <section class="mb-20">
+            <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-xl">
+                <h2 class="text-2xl font-bold text-slate-800 mb-2">5つの技術、その実力は？</h2>
+                <p class="text-slate-600 mb-6">光と磁気を利用した治療法は数多く存在しますが、その科学的根拠や安全性は様々です。このインフォグラフィックでは、5つの代表的な技術を「科学的根拠」「安全性」「応用の確立度」「将来性」の観点から徹底比較します。</p>
+                <div class="chart-container">
+                    <canvas id="overviewRadarChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Spectrum of Evidence -->
+        <section class="mb-20">
+            <h2 class="section-title text-3xl font-bold mb-8">科学的根拠のスペクトラム</h2>
+            
+            <!-- Category 1: Established -->
+            <div class="mb-12">
+                <div class="flex items-center gap-4 mb-6">
+                    <span class="text-2xl font-bold py-2 px-4 bg-teal-600 text-white rounded-lg">A</span>
+                    <div>
+                        <h3 class="text-2xl font-bold text-teal-700">確立された医療</h3>
+                        <p class="text-slate-500">質の高いエビデンスで有効性が証明され、公的に承認されている治療法。</p>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="bg-white p-6 rounded-2xl shadow-lg hover:shadow-2xl transition-shadow duration-300">
+                        <h4 class="text-xl font-bold mb-4">パルス電磁場 (PEMF)</h4>
+                        <p class="text-sm text-slate-600 mb-4">磁気パルスで体内に微弱な電流を誘導し、細胞レベルで治癒を促進。特に整形外科領域で活躍。</p>
+                        <p class="text-6xl font-bold text-center text-teal-600 my-4">1979<span class="text-xl">年</span></p>
+                        <p class="text-xs text-center text-slate-500 -mt-2 mb-4">FDAが骨折治療に初承認した年</p>
+                        <div class="donut-chart-container">
+                            <canvas id="pemfDonut"></canvas>
+                        </div>
+                        <p class="text-xs text-center mt-2 text-slate-500">主な応用分野</p>
+                    </div>
+                     <div class="bg-white p-6 rounded-2xl shadow-lg hover:shadow-2xl transition-shadow duration-300">
+                        <h4 class="text-xl font-bold mb-4">光バイオモジュレーション (PBM)</h4>
+                        <p class="text-sm text-slate-600 mb-4">特定の波長の光（660nm赤色光など）を利用し、細胞のエネルギー産生を高め、組織修復や疼痛緩和を促す。</p>
+                        <div class="text-center my-4">
+                            <span class="text-6xl font-bold text-sky-600">💡</span>
+                            <p class="font-semibold mt-2">非熱的な光化学作用</p>
+                        </div>
+                         <p class="text-xs text-center text-slate-500 mb-4">作用の鍵は「熱」ではなく「光」そのもの</p>
+                        <div class="donut-chart-container">
+                            <canvas id="pbmDonut"></canvas>
+                        </div>
+                         <p class="text-xs text-center mt-2 text-slate-500">主な応用分野</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category 2: Emerging -->
+             <div class="mb-12">
+                <div class="flex items-center gap-4 mb-6">
+                    <span class="text-2xl font-bold py-2 px-4 bg-indigo-600 text-white rounded-lg">B</span>
+                    <div>
+                        <h3 class="text-2xl font-bold text-indigo-700">新興の診断技術</h3>
+                        <p class="text-slate-500">大きな可能性を秘めるが、実用化にはさらなる研究が必要な最先端技術。</p>
+                    </div>
+                </div>
+                 <div class="grid grid-cols-1">
+                    <div class="bg-white p-6 rounded-2xl shadow-lg hover:shadow-2xl transition-shadow duration-300">
+                        <h4 class="text-xl font-bold mb-4">テラヘルツ波 (THz)</h4>
+                        <p class="text-sm text-slate-600 mb-4">水への高い吸収率を利用し、がん組織を画像化する次世代の診断ツール。非電離性で安全と期待されるが…。</p>
+                        <div class="chart-container h-64 max-h-[256px]">
+                            <canvas id="thzBarChart"></canvas>
+                        </div>
+                        <div class="mt-4 bg-indigo-50 p-4 rounded-lg text-center">
+                            <p class="font-bold text-indigo-800">最大の課題：非熱作用</p>
+                            <p class="text-sm text-indigo-700">熱を介さない未知の影響について、安全性の検証が進行中。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Category 3: Harmful -->
+            <div class="mb-12">
+                <div class="flex items-center gap-4 mb-6">
+                    <span class="text-2xl font-bold py-2 px-4 bg-red-600 text-white rounded-lg">C</span>
+                    <div>
+                        <h3 class="text-2xl font-bold text-red-700">非科学的・有害</h3>
+                        <p class="text-slate-500">有益性の主張に科学的根拠が乏しく、むしろ深刻な健康リスクが証明されているもの。</p>
+                    </div>
+                </div>
+                 <div class="grid grid-cols-1">
+                     <div class="bg-red-50 border-2 border-red-500 p-6 rounded-2xl shadow-lg">
+                        <h4 class="text-xl font-bold mb-4 text-red-900">ラジウム / ラドン</h4>
+                         <div class="flex flex-col md:flex-row gap-6 items-center">
+                            <div class="flex-1 text-center">
+                                <p class="text-lg text-red-700">支持者の主張</p>
+                                <p class="text-3xl font-bold text-slate-700">"ホルミシス効果"</p>
+                                <p class="text-sm text-slate-600">「微量の放射線は体に良い」という仮説。しかし…</p>
+                            </div>
+                            <div class="text-5xl text-red-500 transform md:rotate-90">➡️</div>
+                             <div class="flex-1 text-center bg-red-900 text-white p-4 rounded-lg">
+                                 <p class="text-lg">科学的コンセンサス</p>
+                                 <p class="text-3xl font-bold">☢️ 肺がんの原因</p>
+                                <p class="text-sm opacity-80">安全な閾値は存在せず、いかなるレベルの被ばくもリスクを増加させる。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mechanism Flowcharts -->
+        <section class="mb-20">
+            <h2 class="section-title text-3xl font-bold mb-8">作用機序の解明</h2>
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- PBM Flowchart -->
+                <div class="bg-white p-6 rounded-2xl shadow-lg">
+                    <h3 class="text-xl font-bold text-center mb-4 text-sky-700">光バイオモジュレーション (PBM) の仕組み</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-lg"><span class="text-3xl">💡</span><p>特定の波長の赤色光が皮膚を透過し細胞に到達</p></div>
+                        <div class="self-center text-center text-2xl text-slate-400">⬇️</div>
+                        <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-lg"><span class="text-3xl">🔋</span><p>ミトコンドリアが光を吸収し、エネルギー(ATP)産生が急増</p></div>
+                        <div class="self-center text-center text-2xl text-slate-400">⬇️</div>
+                        <div class="flex items-center gap-3 p-3 bg-sky-100 rounded-lg"><span class="text-3xl">🩹</span><p class="font-semibold text-sky-800">細胞が活性化し、組織の修復と炎症の抑制を促進</p></div>
+                    </div>
+                </div>
+                <!-- PEMF Flowchart -->
+                <div class="bg-white p-6 rounded-2xl shadow-lg">
+                     <h3 class="text-xl font-bold text-center mb-4 text-teal-700">パルス電磁場 (PEMF) の仕組み</h3>
+                     <div class="space-y-3">
+                        <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-lg"><span class="text-3xl">〰️</span><p>パルス状の磁場を体組織に印加</p></div>
+                        <div class="self-center text-center text-2xl text-slate-400">⬇️</div>
+                        <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-lg"><span class="text-3xl">⚡️</span><p>ファラデーの法則により体内に微弱な電流が発生</p></div>
+                        <div class="self-center text-center text-2xl text-slate-400">⬇️</div>
+                        <div class="flex items-center gap-3 p-3 bg-teal-100 rounded-lg"><span class="text-3xl">🦴</span><p class="font-semibold text-teal-800">細胞のイオン輸送が活性化し、自己治癒能力を刺激</p></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Conclusion -->
+        <footer class="text-center bg-slate-800 text-white p-8 rounded-2xl">
+            <h2 class="text-3xl font-bold mb-4">結論：エビデンスこそが羅針盤</h2>
+            <p class="max-w-2xl mx-auto mb-6">光や磁気を利用した治療法は、大きな可能性を秘める一方で、科学的根拠のない危険なものも存在します。<br>PEMFのように確固たるエビデンスを積み上げた技術がある一方、ラドンのように明確なリスクが証明されているものもあります。治療法を選択する際は、流行や宣伝文句ではなく、質の高い科学的根拠に基づき、専門家と相談することが不可欠です。</p>
+        </footer>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const wrapLabel = (label) => {
+                if (typeof label === 'string' && label.length > 16) {
+                    const words = label.split('');
+                    const lines = [];
+                    let currentLine = '';
+                    words.forEach(word => {
+                        if ((currentLine + word).length > 16) {
+                            lines.push(currentLine);
+                            currentLine = '';
+                        }
+                        currentLine += word;
+                    });
+                    lines.push(currentLine);
+                    return lines;
+                }
+                return label;
+            };
+
+            const tooltipTitleCallback = (tooltipItems) => {
+                const item = tooltipItems[0];
+                let label = item.chart.data.labels[item.dataIndex];
+                if (Array.isArray(label)) {
+                    return label.join('');
+                } else {
+                    return label;
+                }
+            };
+            
+            // Overview Radar Chart
+            const radarCtx = document.getElementById('overviewRadarChart').getContext('2d');
+            new Chart(radarCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['科学的根拠', '安全性', '応用の確立度', '将来性'],
+                    datasets: [
+                        { label: 'PEMF', data: [5, 4, 5, 3], fill: true, backgroundColor: 'rgba(13, 148, 136, 0.2)', borderColor: 'rgb(13, 148, 136)' },
+                        { label: 'PBM/FIR', data: [4, 4, 3, 4], fill: true, backgroundColor: 'rgba(14, 165, 233, 0.2)', borderColor: 'rgb(14, 165, 233)' },
+                        { label: 'THz', data: [2, 2, 1, 5], fill: true, backgroundColor: 'rgba(99, 102, 241, 0.2)', borderColor: 'rgb(99, 102, 241)' },
+                        { label: 'ラドン', data: [0, 0, 0, 0], fill: true, backgroundColor: 'rgba(239, 68, 68, 0.2)', borderColor: 'rgb(239, 68, 68)' }
+                    ]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    scales: { r: { suggestedMin: 0, suggestedMax: 5, pointLabels: { font: { size: 14 } }, ticks: { stepSize: 1 } } },
+                    plugins: { tooltip: { callbacks: { title: tooltipTitleCallback } } }
+                }
+            });
+
+            // PEMF Donut Chart
+            const pemfDonutCtx = document.getElementById('pemfDonut').getContext('2d');
+            new Chart(pemfDonutCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['骨癒合促進', '疼痛管理', '変形性関節症'],
+                    datasets: [{ data: [45, 35, 20], backgroundColor: ['#0d9488', '#0f766e', '#14b8a6'] }]
+                },
+                options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom' }, tooltip: { callbacks: { title: tooltipTitleCallback } } } }
+            });
+
+            // PBM Donut Chart
+            const pbmDonutCtx = document.getElementById('pbmDonut').getContext('2d');
+            new Chart(pbmDonutCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['創傷治癒', '疼痛・炎症緩和', '皮膚再生'],
+                    datasets: [{ data: [50, 30, 20], backgroundColor: ['#0ea5e9', '#0284c7', '#38bdf8'] }]
+                },
+                options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom' }, tooltip: { callbacks: { title: tooltipTitleCallback } } } }
+            });
+
+            // THz Bar Chart
+            const thzBarCtx = document.getElementById('thzBarChart').getContext('2d');
+            new Chart(thzBarCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['皮膚がん', '乳がん', '脳腫瘍', '断端評価'],
+                    datasets: [{
+                        label: '研究における注目度',
+                        data: [8, 9, 6, 7],
+                        backgroundColor: 'rgba(99, 102, 241, 0.7)',
+                        borderColor: 'rgb(99, 102, 241)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    maintainAspectRatio: false,
+                    scales: { x: { beginAtZero: true } },
+                    plugins: { legend: { display: false }, tooltip: { callbacks: { title: tooltipTitleCallback } } }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インタラクティブ・レポート：光と磁気の医療応用</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Application Structure Plan: このSPAは、ユーザーが複雑な科学情報を直感的に理解できるよう、テーマ別のダッシュボード構造を採用しています。まず初めに、全治療法を比較できる「概要・比較」セクションで全体像を提示。その後、ユーザーはナビゲーションバーを使い、「確立された治療法」「エビデンスに基づく補完療法」「新興技術」「非科学的・有害」という、科学的妥当性で分類された各セクションへ自由に移動できます。この構造は、単なる情報の羅列ではなく、ユーザーがエビデンスの質という重要な文脈で各技術を評価できるよう導くために選択されました。ユーザーは全体像の把握から詳細の掘り下げまで、スムーズな思考の流れで情報を探索できます。 -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: 全5モダリティの比較概要 -> Goal: 比較、全体像の把握 -> Viz: インタラクティブなレーダーチャート (Chart.js/Canvas)とHTMLテーブル。-> Interaction: チャートのホバーで詳細表示、テーブルのヘッダーでソート。-> Justification: レーダーチャートは多角的な特性（安全性、エビデンスなど）を視覚的に比較するのに最適。テーブルは具体的なデータの比較を可能にし、ユーザーの興味に応じた情報の並べ替えを許可する。
+        - Report Info: 各技術の作用機序 -> Goal: 原理の平易な説明 -> Viz: HTML/CSS (Tailwind)によるシンプルなフロー図。-> Interaction: なし。静的な視覚情報。-> Justification: 複雑な生物学的プロセスをテキストだけでなく視覚的なフローで示すことで、専門家でないユーザーの理解を促進する。SVGや画像を使わず、軽量なHTMLで実現。
+        - Report Info: 各技術のリスクと有効性 -> Goal: 重要情報の強調 -> Viz: 色分けされた情報カード（例：緑＝安全、赤＝危険）とアイコン（Unicode）。-> Interaction: なし。-> Justification: 色とアイコンは、テキストを読む前に情報の重要度（特に安全性）を瞬時に伝達する効果的な手段。
+        - Report Info: 詳細な科学的解説 -> Goal: 詳細情報へのアクセス提供 -> Viz: 開閉式のアコーディオンパネル。-> Interaction: クリックで開閉。-> Justification: 初期表示では要点のみを提示し、UIをクリーンに保つ。興味のあるユーザーだけが詳細情報を展開できるようにすることで、情報過多を避ける。
+        - Library/Method: Chart.js for charts, Tailwind CSS for all layout and styling. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Noto Sans JP', sans-serif; scroll-behavior: smooth; }
+        .chart-container { position: relative; width: 100%; max-width: 600px; margin-left: auto; margin-right: auto; height: 350px; max-height: 450px; }
+        @media (min-width: 768px) { .chart-container { height: 450px; } }
+        .nav-item.active { background-color: #0d9488; color: white; }
+        .nav-item { transition: all 0.3s ease-in-out; }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        [x-cloak] { display: none !important; }
+    </style>
+</head>
+<body class="bg-stone-50 text-stone-800">
+
+    <div id="app" x-data="appData()" x-init="init()">
+        <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col items-center py-4">
+                    <h1 class="text-2xl md:text-3xl font-bold text-teal-800 mb-4">光と磁気の医療応用：科学的分析レポート</h1>
+                    <nav class="flex flex-wrap justify-center gap-2">
+                        <button @click="setActiveSection('overview')" :class="{ 'active': activeSection === 'overview' }" class="nav-item px-4 py-2 text-sm font-semibold rounded-full bg-white hover:bg-teal-100 text-teal-700 shadow-sm border border-teal-200">概要・比較</button>
+                        <button @click="setActiveSection('established')" :class="{ 'active': activeSection === 'established' }" class="nav-item px-4 py-2 text-sm font-semibold rounded-full bg-white hover:bg-teal-100 text-teal-700 shadow-sm border border-teal-200">確立された治療法</button>
+                        <button @click="setActiveSection('complementary')" :class="{ 'active': activeSection === 'complementary' }" class="nav-item px-4 py-2 text-sm font-semibold rounded-full bg-white hover:bg-teal-100 text-teal-700 shadow-sm border border-teal-200">補完療法</button>
+                        <button @click="setActiveSection('emerging')" :class="{ 'active': activeSection === 'emerging' }" class="nav-item px-4 py-2 text-sm font-semibold rounded-full bg-white hover:bg-teal-100 text-teal-700 shadow-sm border border-teal-200">新興技術</button>
+                        <button @click="setActiveSection('harmful')" :class="{ 'active': activeSection === 'harmful' }" class="nav-item px-4 py-2 text-sm font-semibold rounded-full bg-white hover:bg-red-100 text-red-700 shadow-sm border border-red-200">非科学的・有害</button>
+                    </nav>
+                </div>
+            </div>
+        </header>
+
+        <main class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+            
+            <!-- Overview Section -->
+            <section id="overview" class="content-section" :class="{ 'active': activeSection === 'overview' }">
+                <div class="bg-white p-6 rounded-2xl shadow-lg mb-8">
+                    <h2 class="text-2xl font-bold text-teal-700 mb-2">概要：5つの治療モダリティ</h2>
+                    <p class="text-stone-600 mb-6">本レポートで分析する5つの主要な光・磁気療法を紹介します。これらの技術は、科学的根拠のレベル、応用範囲、安全性において大きく異なります。以下のチャートと表は、それらの特性を視覚的に比較し、全体像を把握するためのものです。</p>
+                    <div class="chart-container mb-8">
+                        <canvas id="modalitiesChart"></canvas>
+                    </div>
+                    <p class="text-center text-sm text-stone-500 mb-8">チャートの凡例をクリックすると、各項目の表示/非表示を切り替えられます。</p>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left text-stone-500">
+                            <thead class="text-xs text-teal-800 uppercase bg-teal-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 rounded-l-lg">モダリティ</th>
+                                    <th scope="col" class="px-6 py-3">基本原理</th>
+                                    <th scope="col" class="px-6 py-3">主な応用</th>
+                                    <th scope="col" class="px-6 py-3">科学的根拠</th>
+                                    <th scope="col" class="px-6 py-3 rounded-r-lg">主なリスク</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template x-for="item in summaryData" :key="item.name">
+                                    <tr class="bg-white border-b hover:bg-stone-50">
+                                        <th scope="row" class="px-6 py-4 font-medium text-stone-900 whitespace-nowrap" x-text="item.name" :class="item.style"></th>
+                                        <td class="px-6 py-4" x-text="item.principle"></td>
+                                        <td class="px-6 py-4" x-text="item.application"></td>
+                                        <td class="px-6 py-4 font-semibold" x-text="item.evidence" :class="item.evidenceStyle"></td>
+                                        <td class="px-6 py-4" x-text="item.risk"></td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Established Section -->
+            <section id="established" class="content-section" :class="{ 'active': activeSection === 'established' }">
+                <div x-data="{ modality: modalities.pemf }">
+                    <div class="bg-white p-6 rounded-2xl shadow-lg">
+                        <div class="mb-6 border-b border-gray-200 pb-4">
+                            <span class="inline-block bg-green-100 text-green-800 text-sm font-semibold px-3 py-1 rounded-full mb-2" x-text="modality.category"></span>
+                            <h2 class="text-3xl font-bold text-stone-800" x-text="modality.name"></h2>
+                            <p class="text-lg text-teal-700 font-semibold" x-text="modality.subtitle"></p>
+                        </div>
+                        <p class="text-stone-600 mb-6" x-text="modality.description"></p>
+                        
+                        <div class="grid md:grid-cols-2 gap-6 mb-6">
+                            <!-- Mechanism -->
+                            <div class="bg-stone-100/50 p-6 rounded-xl border">
+                                <h3 class="font-bold text-lg mb-3 text-teal-800">作用機序：ファラデーの法則から細胞応答へ</h3>
+                                <div class="space-y-2">
+                                    <div class="flex items-center gap-2 p-3 bg-white rounded-lg shadow-sm">
+                                        <span class="text-2xl">⚡️</span>
+                                        <p class="text-sm font-medium">時間変化する磁場を印加</p>
+                                    </div>
+                                    <div class="flex justify-center"><span class="text-xl">⬇️</span></div>
+                                    <div class="flex items-center gap-2 p-3 bg-white rounded-lg shadow-sm">
+                                        <span class="text-2xl">🔬</span>
+                                        <p class="text-sm font-medium">体内に微弱な電場と電流を誘導 (電磁誘導)</p>
+                                    </div>
+                                    <div class="flex justify-center"><span class="text-xl">⬇️</span></div>
+                                    <div class="flex items-center gap-2 p-3 bg-white rounded-lg shadow-sm">
+                                        <span class="text-2xl">🧬</span>
+                                        <p class="text-sm font-medium">イオン輸送調節・シグナル伝達を活性化</p>
+                                    </div>
+                                    <div class="flex justify-center"><span class="text-xl">⬇️</span></div>
+                                    <div class="flex items-center gap-2 p-3 bg-teal-100/50 rounded-lg shadow-sm border border-teal-200">
+                                        <span class="text-2xl">💪</span>
+                                        <p class="text-sm font-bold text-teal-900">自己治癒能力の促進</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Key Info -->
+                            <div class="space-y-4">
+                               <div class="bg-green-50 border border-green-200 p-4 rounded-xl">
+                                    <h4 class="font-bold text-green-800">臨床的有効性</h4>
+                                    <p class="text-sm text-green-700" x-html="modality.evidence"></p>
+                                </div>
+                                <div class="bg-amber-50 border border-amber-200 p-4 rounded-xl">
+                                    <h4 class="font-bold text-amber-800">主な応用分野</h4>
+                                    <p class="text-sm text-amber-700" x-html="modality.applications"></p>
+                                </div>
+                                <div class="bg-red-50 border border-red-200 p-4 rounded-xl">
+                                    <h4 class="font-bold text-red-800">⚠️ 禁忌・注意点</h4>
+                                    <p class="text-sm text-red-700" x-html="modality.risks"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Accordion for details -->
+                        <div x-data="{ open: false }" class="bg-stone-100/50 rounded-xl border">
+                            <button @click="open = !open" class="w-full flex justify-between items-center p-4">
+                                <h3 class="font-bold text-lg text-teal-800">詳細な科学的解説</h3>
+                                <span class="text-2xl text-teal-600 transform transition-transform" :class="{'rotate-45': open}">+</span>
+                            </button>
+                            <div x-show="open" x-cloak x-transition class="p-4 pt-0">
+                                <div class="prose prose-sm max-w-none text-stone-600" x-html="modality.details"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Complementary Section -->
+             <section id="complementary" class="content-section" :class="{ 'active': activeSection === 'complementary' }">
+                <div x-data="{ selected: 'pbm', modalities: {pbm: modalities.pbm, fir: modalities.fir} }">
+                    <div class="flex justify-center mb-6 gap-2">
+                        <button @click="selected = 'pbm'" :class="{'bg-teal-600 text-white': selected === 'pbm', 'bg-white text-teal-700': selected !== 'pbm'}" class="px-5 py-2 font-semibold rounded-full shadow-sm">660nm光 (PBM)</button>
+                        <button @click="selected = 'fir'" :class="{'bg-teal-600 text-white': selected === 'fir', 'bg-white text-teal-700': selected !== 'fir'}" class="px-5 py-2 font-semibold rounded-full shadow-sm">遠赤外線 (FIR)</button>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-2xl shadow-lg transition-all duration-300">
+                        <template x-if="selected === 'pbm'">
+                            <div x-data="{ modality: modalities.pbm }">
+                                <div class="mb-6 border-b border-gray-200 pb-4">
+                                    <span class="inline-block bg-sky-100 text-sky-800 text-sm font-semibold px-3 py-1 rounded-full mb-2" x-text="modality.category"></span>
+                                    <h2 class="text-3xl font-bold text-stone-800" x-text="modality.name"></h2>
+                                    <p class="text-lg text-teal-700 font-semibold" x-text="modality.subtitle"></p>
+                                </div>
+                                <p class="text-stone-600 mb-6" x-text="modality.description"></p>
+                                <div class="grid md:grid-cols-2 gap-6 mb-6">
+                                    <div class="bg-stone-100/50 p-6 rounded-xl border">
+                                        <h3 class="font-bold text-lg mb-3 text-teal-800">作用機序：ミトコンドリアの活性化</h3>
+                                        <div class="space-y-2">
+                                            <div class="flex items-center gap-2 p-3 bg-white rounded-lg shadow-sm"><span class="text-2xl">🔴</span><p class="text-sm font-medium">赤色光が細胞内の受容体 (CCO) に吸収</p></div>
+                                            <div class="flex justify-center"><span class="text-xl">⬇️</span></div>
+                                            <div class="flex items-center gap-2 p-3 bg-white rounded-lg shadow-sm"><span class="text-2xl">💨</span><p class="text-sm font-medium">阻害物質 (NO) が解離</p></div>
+                                            <div class="flex justify-center"><span class="text-xl">⬇️</span></div>
+                                            <div class="flex items-center gap-2 p-3 bg-white rounded-lg shadow-sm"><span class="text-2xl">⚡️</span><p class="text-sm font-medium">細胞のエネルギー (ATP) 産生が急増</p></div>
+                                             <div class="flex justify-center"><span class="text-xl">⬇️</span></div>
+                                            <div class="flex items-center gap-2 p-3 bg-teal-100/50 rounded-lg shadow-sm border border-teal-200"><span class="text-2xl">🩹</span><p class="text-sm font-bold text-teal-900">細胞修復・増殖の促進</p></div>
+                                        </div>
+                                    </div>
+                                    <div class="space-y-4">
+                                        <div class="bg-green-50 border border-green-200 p-4 rounded-xl"><h4 class="font-bold text-green-800">臨床的エビデンス</h4><p class="text-sm text-green-700" x-html="modality.evidence"></p></div>
+                                        <div class="bg-amber-50 border border-amber-200 p-4 rounded-xl"><h4 class="font-bold text-amber-800">主な応用分野</h4><p class="text-sm text-amber-700" x-html="modality.applications"></p></div>
+                                        <div class="bg-red-50 border border-red-200 p-4 rounded-xl"><h4 class="font-bold text-red-800">⚠️ 禁忌・注意点</h4><p class="text-sm text-red-700" x-html="modality.risks"></p></div>
+                                    </div>
+                                </div>
+                                <div x-data="{ open: false }" class="bg-stone-100/50 rounded-xl border">
+                                    <button @click="open = !open" class="w-full flex justify-between items-center p-4"><h3 class="font-bold text-lg text-teal-800">詳細な科学的解説</h3><span class="text-2xl text-teal-600 transform transition-transform" :class="{'rotate-45': open}">+</span></button>
+                                    <div x-show="open" x-cloak x-transition class="p-4 pt-0"><div class="prose prose-sm max-w-none text-stone-600" x-html="modality.details"></div></div>
+                                </div>
+                            </div>
+                        </template>
+                        <template x-if="selected === 'fir'">
+                             <div x-data="{ modality: modalities.fir }">
+                                <div class="mb-6 border-b border-gray-200 pb-4">
+                                    <span class="inline-block bg-sky-100 text-sky-800 text-sm font-semibold px-3 py-1 rounded-full mb-2" x-text="modality.category"></span>
+                                    <h2 class="text-3xl font-bold text-stone-800" x-text="modality.name"></h2>
+                                    <p class="text-lg text-teal-700 font-semibold" x-text="modality.subtitle"></p>
+                                </div>
+                                <p class="text-stone-600 mb-6" x-text="modality.description"></p>
+                                <div class="grid md:grid-cols-2 gap-6 mb-6">
+                                    <div class="bg-stone-100/50 p-6 rounded-xl border">
+                                        <h3 class="font-bold text-lg mb-3 text-teal-800">作用機序：熱作用と非熱作用</h3>
+                                        <div class="space-y-4">
+                                            <div>
+                                                <h4 class="font-semibold mb-1">🔥 熱作用</h4>
+                                                <p class="text-sm">水分子の振動を活性化させ、深部を温め血行を促進。</p>
+                                            </div>
+                                            <div>
+                                                <h4 class="font-semibold mb-1">🔬 非熱作用</h4>
+                                                <p class="text-sm">特定の酵素 (HO-1) を誘導し、細胞保護・抗炎症作用を発揮。</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="space-y-4">
+                                        <div class="bg-green-50 border border-green-200 p-4 rounded-xl"><h4 class="font-bold text-green-800">臨床的有効性</h4><p class="text-sm text-green-700" x-html="modality.evidence"></p></div>
+                                        <div class="bg-amber-50 border border-amber-200 p-4 rounded-xl"><h4 class="font-bold text-amber-800">主な応用分野</h4><p class="text-sm text-amber-700" x-html="modality.applications"></p></div>
+                                        <div class="bg-red-50 border border-red-200 p-4 rounded-xl"><h4 class="font-bold text-red-800">⚠️ 禁忌・注意点</h4><p class="text-sm text-red-700" x-html="modality.risks"></p></div>
+                                    </div>
+                                </div>
+                                <div x-data="{ open: false }" class="bg-stone-100/50 rounded-xl border">
+                                    <button @click="open = !open" class="w-full flex justify-between items-center p-4"><h3 class="font-bold text-lg text-teal-800">詳細な科学的解説</h3><span class="text-2xl text-teal-600 transform transition-transform" :class="{'rotate-45': open}">+</span></button>
+                                    <div x-show="open" x-cloak x-transition class="p-4 pt-0"><div class="prose prose-sm max-w-none text-stone-600" x-html="modality.details"></div></div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </section>
+
+            <!-- Emerging Section -->
+            <section id="emerging" class="content-section" :class="{ 'active': activeSection === 'emerging' }">
+                 <div x-data="{ modality: modalities.thz }">
+                    <div class="bg-white p-6 rounded-2xl shadow-lg">
+                        <div class="mb-6 border-b border-gray-200 pb-4">
+                            <span class="inline-block bg-purple-100 text-purple-800 text-sm font-semibold px-3 py-1 rounded-full mb-2" x-text="modality.category"></span>
+                            <h2 class="text-3xl font-bold text-stone-800" x-text="modality.name"></h2>
+                            <p class="text-lg text-teal-700 font-semibold" x-text="modality.subtitle"></p>
+                        </div>
+                        <p class="text-stone-600 mb-6" x-text="modality.description"></p>
+                        
+                        <div class="grid md:grid-cols-2 gap-6 mb-6">
+                            <div class="bg-stone-100/50 p-6 rounded-xl border">
+                                <h3 class="font-bold text-lg mb-3 text-teal-800">相互作用原理</h3>
+                                <ul class="space-y-3 list-inside">
+                                    <li class="flex items-start gap-2"><span class="text-blue-500 mt-1">💧</span><span><strong class="font-semibold">水への高い吸収率：</strong>組織の水分量の差を画像化する。</span></li>
+                                    <li class="flex items-start gap-2"><span class="text-green-500 mt-1">🛡️</span><span><strong class="font-semibold">非電離性：</strong>X線と異なり、DNAを直接損傷しない。</span></li>
+                                    <li class="flex items-start gap-2"><span class="text-purple-500 mt-1">🧬</span><span><strong class="font-semibold">分光学的「指紋」：</strong>生体分子を化学的に同定できる。</span></li>
+                                </ul>
+                            </div>
+
+                            <div class="space-y-4">
+                               <div class="bg-sky-50 border border-sky-200 p-4 rounded-xl">
+                                    <h4 class="font-bold text-sky-800">将来の応用可能性</h4>
+                                    <p class="text-sm text-sky-700" x-html="modality.applications"></p>
+                                </div>
+                                <div class="bg-red-50 border border-red-200 p-4 rounded-xl">
+                                    <h4 class="font-bold text-red-800">⚠️ 安全性に関する課題</h4>
+                                    <p class="text-sm text-red-700" x-html="modality.risks"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div x-data="{ open: false }" class="bg-stone-100/50 rounded-xl border">
+                            <button @click="open = !open" class="w-full flex justify-between items-center p-4">
+                                <h3 class="font-bold text-lg text-teal-800">詳細な科学的解説</h3>
+                                <span class="text-2xl text-teal-600 transform transition-transform" :class="{'rotate-45': open}">+</span>
+                            </button>
+                            <div x-show="open" x-cloak x-transition class="p-4 pt-0">
+                                <div class="prose prose-sm max-w-none text-stone-600" x-html="modality.details"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Harmful Section -->
+            <section id="harmful" class="content-section" :class="{ 'active': activeSection === 'harmful' }">
+                <div x-data="{ modality: modalities.radon }">
+                    <div class="bg-red-50 p-6 rounded-2xl shadow-lg border-2 border-red-500">
+                        <div class="mb-6 border-b border-red-200 pb-4">
+                            <span class="inline-block bg-red-200 text-red-900 text-sm font-semibold px-3 py-1 rounded-full mb-2" x-text="modality.category"></span>
+                            <h2 class="text-3xl font-bold text-red-900" x-text="modality.name"></h2>
+                            <p class="text-lg text-red-800 font-semibold" x-text="modality.subtitle"></p>
+                        </div>
+                        <p class="text-red-700 mb-6" x-text="modality.description"></p>
+                        
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="bg-white p-6 rounded-xl border border-red-200">
+                                <h3 class="font-bold text-lg mb-3 text-stone-800">ホルミシス仮説 (支持者の主張)</h3>
+                                <p class="text-sm text-stone-600">低線量の放射線が体の防御機能を刺激し、健康に良い効果をもたらすという理論。新陳代謝の向上や免疫機能の改善が主張される。</p>
+                            </div>
+                            <div class="bg-red-900 text-white p-6 rounded-xl">
+                                <h3 class="font-bold text-lg mb-3">科学的コンセンサス (WHO等)</h3>
+                                <p class="text-sm">ラドンは<strong>グループ1発がん性物質</strong>であり、肺がんの主要な原因。安全な閾値は存在せず、いかなるレベルの被ばくもリスクを増加させる。</p>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6 bg-white p-4 rounded-xl border-l-4 border-red-600">
+                           <h3 class="font-bold text-lg text-red-900 mb-2">結論と勧告</h3>
+                           <p class="text-stone-700" x-html="modality.details"></p>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center py-8 px-4">
+            <p class="text-sm text-stone-500">このインタラクティブ・レポートは、提供された科学的分析文書に基づいて作成されたものです。</p>
+        </footer>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script>
+    function appData() {
+        return {
+            activeSection: 'overview',
+            chartInstance: null,
+            summaryData: [
+                { name: 'PEMF', principle: '電磁誘導による細胞刺激', application: '骨癒合、疼痛管理', evidence: '高', risk: '植込み型電子機器', style: 'text-green-700', evidenceStyle: 'text-green-600' },
+                { name: '660nm光 (PBM)', principle: '光化学作用 (ATP産生)', application: '創傷治癒、疼痛緩和', evidence: '中～高', risk: '不適切な線量', style: 'text-sky-700', evidenceStyle: 'text-sky-600' },
+                { name: '遠赤外線 (FIR)', principle: '熱作用、非熱作用 (HO-1)', application: '血行促進、温熱療法', evidence: '中～高', risk: '熱傷、脱水', style: 'text-sky-700', evidenceStyle: 'text-sky-600' },
+                { name: 'テラヘルツ波 (THz)', principle: '非電離、水への吸収', application: 'がん画像診断 (研究中)', evidence: '低～中', risk: '非熱作用の安全性が未確立', style: 'text-purple-700', evidenceStyle: 'text-purple-600' },
+                { name: 'ラジウム/ラドン', principle: '電離放射線', application: '代替医療 (主張)', evidence: '非常に低い/反証済', risk: '肺がん (確立済)', style: 'text-red-700', evidenceStyle: 'text-red-600' },
+            ],
+            modalities: {
+                pemf: {
+                    name: 'パルス電磁場 (PEMF) 療法',
+                    subtitle: '磁気パルスによる細胞機能の変調',
+                    category: '確立された医療',
+                    description: 'かつては「代替医療」と見なされながらも、特定の適応症においてエビデンスに基づいた医療実践へと移行することに成功した事例。時間的に変化する磁場を用いて体内に微弱な電流を誘導し、非侵襲的に自己治癒能力を促進します。',
+                    evidence: '<strong>高:</strong> 多数のシステマティックレビューやメタアナリシスによって有効性が裏付けられています。',
+                    applications: '<ul><li>・骨癒合不全 (FDA承認)</li><li>・変形性関節症</li><li>・慢性腰痛</li></ul>',
+                    risks: '<ul><li>・ペースメーカー等の植込み型電子機器</li><li>・妊娠中の女性</li><li>・悪性腫瘍の部位</li></ul>',
+                    details: `<p>PEMF療法の基本原理は、ファラデーの電磁誘導の法則に基づきます。この非侵襲的かつ非熱的な電気的刺激が、細胞膜を介したイオン輸送を調節し、細胞内のシグナル伝達経路を活性化させ、炎症や成長に関連する遺伝子の発現に影響を与えると考えられています。</p><p>PEMFが医学的な正当性を獲得できた背景には、その研究戦略の的確さがあります。「万能薬」として広範な効果を主張するのではなく、骨癒合不全のような特定の、測定可能な病態を対象とし、ランダム化比較試験（RCT）といった厳格な科学的手法でその有効性を実証し、規制当局の承認を得るという道を歩んできました。その強みは、主張の広さではなく、その特異性にあります。</p><p>ただし、臨床研究で有効性が証明された処方箋ベースの医療機器と、市販の「ウェルネス」目的の消費者向け製品との間には潜在的な乖離がある点に注意が必要です。</p>`
+                },
+                pbm: {
+                    name: '光バイオモジュレーション (PBM)',
+                    subtitle: '660nm波長の光による細胞の活性化',
+                    category: 'エビデンスに基づく補完療法',
+                    description: '非熱的な光を用いて細胞プロセスを刺激する治療法。赤色光がミトコンドリアの酵素（シトクロムcオキシダーゼ）に吸収され、細胞のエネルギー通貨であるATPの産生を増加させることで、組織の修復や再生を促進します。',
+                    evidence: '<strong>中～高:</strong> 作用機序が解明されつつあり、多くの臨床研究で有効性が示されています。',
+                    applications: '<ul><li>・創傷治癒（特に糖尿病性潰瘍）</li><li>・疼痛、炎症の軽減</li><li>・皮膚再生、育毛、ニキビ治療</li></ul>',
+                    risks: '<strong>二相性用量反応:</strong> 照射量が少なすぎても多すぎても効果が減弱、あるいは有害になる可能性があるため、正確な線量管理が不可欠です。',
+                    details: `<p>PBMの基本原理は、熱作用ではなく光化学作用です。光エネルギーがミトコンドリアの呼吸鎖を阻害していた一酸化窒素（NO）を解離させ、ATP産生を急増させます。この初期反応が、細胞増殖や組織修復に関連する遺伝子の発現を調節するシグナル伝達カスケードを引き起こします。</p><p>臨床応用で重要なのは「二相性用量反応」の概念です。低線量の光は細胞代謝を促進しますが、過剰な照射は酸化的ストレスを引き起こし細胞を損傷する可能性があります。したがって、PBMは単に「光を当てる」のではなく、正確な線量管理が求められる精密医療と理解すべきです。</p>`
+                },
+                fir: {
+                    name: '遠赤外線 (FIR) 療法',
+                    subtitle: '熱作用と非熱作用による生物学的効果',
+                    category: 'エビデンスに基づく補完療法',
+                    description: '主に温熱効果によって血行を促進し、筋肉の疲労回復や疼痛緩和に用いられます。近年、単なる熱効果だけでなく、特定の酵素（HO-1）を誘導する非熱的な細胞保護作用も発見され、新たな応用が期待されています。',
+                    evidence: '<strong>中～高（温熱作用）、中（非熱作用）:</strong> 温熱効果は確立されています。非熱作用については有望な研究が進んでいます。',
+                    applications: '<ul><li>・温熱療法（筋肉痛、冷え性）</li><li>・血行促進、新陳代謝向上</li><li>・透析シャントの保護（非熱作用）</li></ul>',
+                    risks: '<ul><li>・熱傷</li><li>・脱水症状</li></ul>',
+                    details: `<p>FIRの主要なメカニズムは熱作用です。波長8～14μmの遠赤外線は、人体の水分子に効率良く吸収され、分子振動を活発化させて熱を発生させます。この熱が深部に到達し、血管を拡張させます。</p><p>画期的な発見は、単なる温熱効果を超えた非熱作用の存在です。FIR照射が細胞保護酵素であるヘムオキシゲナーゼ-1（HO-1）を誘導することが示されました。この作用は同程度の温度を単に加えるだけでは再現されず、FIRが特定のエネルギーシグナルとして細胞の防御システムを起動させることを示唆しています。この発見は、血液透析患者のシャント保護など、より複雑な病態への応用に対する科学的根拠を提供します。</p>`
+                },
+                thz: {
+                    name: 'テラヘルツ波 (THz) 技術',
+                    subtitle: '医療診断の新境地',
+                    category: '新興の診断・研究技術',
+                    description: 'マイクロ波と赤外光の間に位置する電磁波で、水への高い吸収率と非電離性という特性を持ちます。これらの特性を利用し、特にがん組織のように水分量の多い組織を画像化する、新しい診断ツールとしての応用が期待されています。',
+                    evidence: '<strong>低～中:</strong> 研究開発段階であり、臨床応用はまだ限定的です。',
+                    applications: '<ul><li>・がんの画像診断（皮膚がん、乳がん等）</li><li>・手術中の切除断端評価</li><li>・生体分子のリアルタイム分析</li></ul>',
+                    risks: '<strong>非熱作用の安全性が未確立:</strong> DNAを直接損傷しない「非電離」であることから安全と見なされてきましたが、顕著な温度上昇を伴わない「非熱作用」が生体に影響を及ぼす可能性が研究されており、安全性評価が重要な課題です。',
+                    details: `<p>THz技術の医療応用として最も活発に研究されているのが、がんの画像診断です。がん組織は正常組織より水分含有量が多く、THzイメージングで明確なコントラストを生み出します。従来の病理診断でも識別困難な超早期乳がんを画像化する成功例も報告されています。</p><p>実用化への最大の課題は安全性評価です。「非電離＝安全」という従来のパラダイムに対し、熱を介さずに生物学的な影響を引き起こす「非熱作用」の可能性が指摘されています。この問題は、6Gなどの次世代通信での利用も検討されているため、公衆衛生上の広範な意味合いを持ちます。安全性に関する議論は、「熱作用か非熱作用か」という、より複雑な領域へと移行しています。</p>`
+                },
+                radon: {
+                    name: 'ラジウム / ラドン療法',
+                    subtitle: 'ホルミシス仮説 vs 発がん性リスク',
+                    category: '非科学的・有害',
+                    description: '低線量の放射線は体に良い刺激を与えるという「放射線ホルミシス」仮説に基づき、温泉療法などで利用が主張されます。しかし、この主張は科学的根拠に乏しく、国際的な公衆衛生機関のコンセンサスとは真っ向から対立します。',
+                    evidence: '<strong>非常に低い/反証済み:</strong> 有益性を示すエビデンスは極めて脆弱です。',
+                    applications: '代替医療として、がんやリウマチへの効果が主張されるが、科学的根拠はない。',
+                    risks: '<strong>肺がん:</strong> ラドンはWHOなどから「グループ1発がん性物質」に分類されており、特に非喫煙者における肺がんの最大原因とされています。',
+                    details: `<p class="font-semibold text-red-800">ラドンをめぐる「議論」は、科学的正当性を持つ論争ではなく、商業的マーケティングと確立された科学的エビデンスとの間の乖離と見なすべきです。</p><p>ホルミシス仮説は、ラドンが放出するアルファ線による深刻なDNA損傷のメカニズムを無視しています。ラドン被ばくと肺がんリスクとの間に明確な因果関係を証明する大規模な疫学調査が多数存在する一方、有益性を主張する証拠は体験談や小規模な動物実験などに留まります。</p><p class="font-bold">したがって、健康増進を目的としてラジウムやラドンを意図的に利用することは、既知の重大な発がんリスクを無視する無責任な行為であり、強く避けるべきであると勧告します。</p>`
+                },
+            },
+            init() {
+                this.renderChart();
+                this.setActiveSection('overview');
+            },
+            setActiveSection(sectionId) {
+                this.activeSection = sectionId;
+                window.scrollTo({ top: 0, behavior: 'auto' });
+            },
+            renderChart() {
+                if (this.chartInstance) {
+                    this.chartInstance.destroy();
+                }
+                const ctx = document.getElementById('modalitiesChart').getContext('2d');
+                this.chartInstance = new Chart(ctx, {
+                    type: 'radar',
+                    data: {
+                        labels: ['科学的根拠', '安全性 (リスク低)', '応用の確立度', '将来性', '作用機序の明確さ'],
+                        datasets: [
+                            {
+                                label: 'PEMF',
+                                data: [5, 4, 5, 3, 4],
+                                fill: true,
+                                backgroundColor: 'rgba(13, 148, 136, 0.2)',
+                                borderColor: 'rgb(13, 148, 136)',
+                                pointBackgroundColor: 'rgb(13, 148, 136)',
+                            },
+                            {
+                                label: 'PBM/FIR',
+                                data: [4, 4, 3, 4, 4],
+                                fill: true,
+                                backgroundColor: 'rgba(14, 165, 233, 0.2)',
+                                borderColor: 'rgb(14, 165, 233)',
+                                pointBackgroundColor: 'rgb(14, 165, 233)',
+                            },
+                             {
+                                label: 'THz',
+                                data: [2, 2, 1, 5, 3],
+                                fill: true,
+                                backgroundColor: 'rgba(139, 92, 246, 0.2)',
+                                borderColor: 'rgb(139, 92, 246)',
+                                pointBackgroundColor: 'rgb(139, 92, 246)',
+                            },
+                            {
+                                label: 'ラドン',
+                                data: [0, 0, 0, 0, 1],
+                                fill: true,
+                                backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                                borderColor: 'rgb(239, 68, 68)',
+                                pointBackgroundColor: 'rgb(239, 68, 68)',
+                            }
+                        ]
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        responsive: true,
+                        scales: {
+                            r: {
+                                angleLines: {
+                                    display: true
+                                },
+                                suggestedMin: 0,
+                                suggestedMax: 5,
+                                pointLabels: {
+                                  font: {
+                                    size: 13,
+                                  }
+                                },
+                                ticks: {
+                                   stepSize: 1
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        label += context.formattedValue + ' / 5';
+                                        return label;
+                                    }
+                                }
+                            }
+                        }
+                    },
+                });
+            }
+        }
+    }
+    </script>
+</body>
+</html>

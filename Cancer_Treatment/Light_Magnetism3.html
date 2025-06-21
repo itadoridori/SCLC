@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>スライドショー：光と磁気の医療応用</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans JP', sans-serif; background-color: #f1f5f9; }
+        .slide { display: none; }
+        .slide.active { display: block; }
+        .chart-container { position: relative; width: 100%; height: 300px; }
+        .narration-box {
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-4">
+
+    <div id="slideshow" class="w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden">
+        <!-- Slides Container -->
+        <div class="p-8">
+            <!-- Slide 1: Title -->
+            <div class="slide active">
+                <div class="text-center h-[500px] flex flex-col justify-center items-center bg-slate-800 text-white rounded-xl p-8">
+                    <h1 class="text-4xl md:text-5xl font-bold mb-4">光と磁気の医療応用</h1>
+                    <p class="text-xl md:text-2xl text-slate-300">科学的根拠に基づく真実と偽り</p>
+                </div>
+            </div>
+
+            <!-- Slide 2: Introduction -->
+            <div class="slide">
+                <div class="h-[500px] flex flex-col">
+                    <h2 class="text-2xl font-bold text-center mb-6 text-slate-700">5つの技術：その実力とリスクは？</h2>
+                    <div class="flex-grow overflow-x-auto">
+                        <table class="w-full text-sm text-left text-slate-600">
+                             <thead class="text-xs text-slate-700 uppercase bg-slate-200">
+                                <tr>
+                                    <th class="px-4 py-2">モダリティ</th>
+                                    <th class="px-4 py-2">科学的根拠</th>
+                                    <th class="px-4 py-2">主な応用</th>
+                                    <th class="px-4 py-2">主なリスク</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="bg-green-50 border-b"><td class="px-4 py-2 font-semibold text-green-800">PEMF</td><td class="px-4 py-2">高</td><td class="px-4 py-2">骨癒合、疼痛管理</td><td class="px-4 py-2">植込み型機器</td></tr>
+                                <tr class="bg-sky-50 border-b"><td class="px-4 py-2 font-semibold text-sky-800">PBM (660nm)</td><td class="px-4 py-2">中～高</td><td class="px-4 py-2">創傷治癒、疼痛緩和</td><td class="px-4 py-2">不適切な線量</td></tr>
+                                <tr class="bg-sky-50 border-b"><td class="px-4 py-2 font-semibold text-sky-800">遠赤外線 (FIR)</td><td class="px-4 py-2">中～高</td><td class="px-4 py-2">温熱療法、血行促進</td><td class="px-4 py-2">熱傷、脱水</td></tr>
+                                <tr class="bg-purple-50 border-b"><td class="px-4 py-2 font-semibold text-purple-800">テラヘルツ波 (THz)</td><td class="px-4 py-2">低～中</td><td class="px-4 py-2">画像診断 (研究中)</td><td class="px-4 py-2">安全性が未確立</td></tr>
+                                <tr class="bg-red-50 border-b"><td class="px-4 py-2 font-semibold text-red-800">ラジウム/ラドン</td><td class="px-4 py-2">反証済み</td><td class="px-4 py-2">代替医療 (主張)</td><td class="px-4 py-2">肺がん</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 3: PBM Mechanism -->
+            <div class="slide">
+                 <div class="h-[500px] flex flex-col">
+                    <h2 class="text-2xl font-bold text-center mb-6 text-slate-700">光バイオモジュレーション(PBM)の仕組み</h2>
+                    <div class="flex-grow grid grid-cols-1 md:grid-cols-3 gap-4 items-center text-center">
+                        <div class="p-4 bg-slate-100 rounded-lg h-full flex flex-col justify-center">
+                            <p class="text-5xl mb-2">💡</p>
+                            <h3 class="font-bold">1. 光の吸収</h3>
+                            <p class="text-sm">赤色光が細胞内のミトコンドリアに吸収されます。</p>
+                        </div>
+                        <div class="text-4xl text-slate-400 self-center">➡️</div>
+                        <div class="p-4 bg-slate-100 rounded-lg h-full flex flex-col justify-center">
+                            <p class="text-5xl mb-2">🔋</p>
+                            <h3 class="font-bold">2. エネルギー産生</h3>
+                            <p class="text-sm">エネルギー通貨「ATP」の産生が急増します。</p>
+                        </div>
+                        <div class="text-4xl text-slate-400 self-center hidden md:block transform rotate-90">⬇️</div>
+                         <div class="col-span-1 md:col-span-3 text-4xl text-slate-400 self-center md:hidden">⬇️</div>
+                        <div class="p-4 bg-sky-100 text-sky-800 rounded-lg h-full flex flex-col justify-center col-span-1 md:col-span-3">
+                            <p class="text-5xl mb-2">🩹</p>
+                            <h3 class="font-bold">3. 治癒の促進</h3>
+                            <p class="text-sm">細胞が活性化し、組織の修復や炎症抑制が進みます。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 4: FIR Mechanism -->
+            <div class="slide">
+                <div class="h-[500px] flex flex-col">
+                    <h2 class="text-2xl font-bold text-center mb-6 text-slate-700">遠赤外線(FIR)の二つの作用</h2>
+                    <div class="flex-grow grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
+                        <div class="p-6 bg-orange-100 rounded-xl text-center">
+                            <p class="text-5xl mb-4">🔥</p>
+                            <h3 class="text-xl font-bold text-orange-800 mb-2">熱作用</h3>
+                            <p class="text-sm text-orange-700">体の水分を振動させて深部から温め、血行を促進。筋肉痛や冷え性の緩和に利用されます。</p>
+                        </div>
+                        <div class="p-6 bg-indigo-100 rounded-xl text-center">
+                            <p class="text-5xl mb-4">🔬</p>
+                            <h3 class="text-xl font-bold text-indigo-800 mb-2">非熱作用</h3>
+                            <p class="text-sm text-indigo-700">熱とは別に、細胞を保護する特定の酵素(HO-1)を活性化。透析患者のシャント保護など、専門的な応用が研究されています。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 5: THz Potential -->
+            <div class="slide">
+                <div class="h-[500px] flex flex-col">
+                    <h2 class="text-2xl font-bold text-center mb-6 text-slate-700">テラヘルツ波(THz)の可能性と課題</h2>
+                    <p class="text-center text-sm text-slate-500 mb-4">がん組織の水分量が多いことを利用し、次世代の画像診断技術として期待されています。</p>
+                    <div class="flex-grow chart-container">
+                        <canvas id="thzChart"></canvas>
+                    </div>
+                    <div class="mt-4 bg-red-100 p-4 rounded-lg text-center">
+                        <p class="font-bold text-red-800">⚠️ 安全性の課題</p>
+                        <p class="text-sm text-red-700">DNAを傷つけない「非電離」ですが、熱を介さない「非熱作用」が体に与える影響はまだ未解明です。</p>
+                    </div>
+                </div>
+            </div>
+            
+             <!-- Slide 6: PEMF Evidence -->
+            <div class="slide">
+                <div class="h-[500px] flex flex-col justify-center items-center text-center">
+                    <h2 class="text-2xl font-bold mb-4 text-slate-700">パルス電磁場(PEMF)の確かな実績</h2>
+                     <p class="text-slate-600 mb-8 max-w-lg">多くの代替療法と異なり、質の高い研究で有効性を証明し、医療現場で確立された地位を築いています。</p>
+                    <div class="p-8 bg-green-100 text-green-800 rounded-full w-64 h-64 flex flex-col justify-center items-center shadow-lg">
+                        <p class="text-sm">FDAが骨折治療に承認</p>
+                        <p class="text-7xl font-bold">1979</p>
+                        <p class="text-sm">変形性関節症や慢性腰痛にも有効性が示されています。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 7: Radon Controversy -->
+            <div class="slide">
+                <div class="h-[500px] flex flex-col">
+                    <h2 class="text-2xl font-bold text-center mb-6 text-slate-700">ラドン療法の光と「影」</h2>
+                    <div class="flex-grow grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
+                        <div class="p-6 bg-slate-100 rounded-xl text-center border-l-4 border-slate-400">
+                             <h3 class="text-xl font-bold text-slate-800 mb-2">支持者の主張「ホルミシス効果」</h3>
+                            <p class="text-sm text-slate-600">「微量の放射線は体に良い刺激を与える」という仮説。温泉療法などで健康効果がうたわれます。</p>
+                        </div>
+                        <div class="p-6 bg-red-100 rounded-xl text-center border-l-4 border-red-500">
+                             <h3 class="text-xl font-bold text-red-800 mb-2">科学的結論「発がん性物質」</h3>
+                             <p class="text-5xl mb-2">☢️</p>
+                            <p class="text-sm text-red-700">WHO等はラドンを「グループ1発がん性物質」に分類。安全な量はなく、肺がんの確実な原因とされています。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 8: Conclusion -->
+            <div class="slide">
+                 <div class="h-[500px] flex flex-col">
+                    <h2 class="text-2xl font-bold text-center mb-6 text-slate-700">結論：科学的根拠のスペクトラム</h2>
+                     <p class="text-center text-sm text-slate-500 mb-6">各技術は、科学的な信頼性において明確に分類できます。</p>
+                    <div class="flex-grow space-y-4">
+                        <div class="p-4 bg-green-100 rounded-lg"><strong class="text-green-800">A. 確立された医療 (PEMF):</strong> 質の高いエビデンスで承認済み。</div>
+                        <div class="p-4 bg-sky-100 rounded-lg"><strong class="text-sky-800">B. 有望な補完療法 (PBM, FIR):</strong> 作用機序が明確で臨床データも豊富。</div>
+                        <div class="p-4 bg-purple-100 rounded-lg"><strong class="text-purple-800">C. 新興技術 (THz):</strong> 診断に期待。ただし安全性評価が必須。</div>
+                        <div class="p-4 bg-red-100 rounded-lg"><strong class="text-red-800">D. 非科学的・有害 (ラドン):</strong> 有害性が証明済み。利用は避けるべき。</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 9: For YouTube Creators -->
+            <div class="slide">
+                <div class="h-[500px] flex flex-col">
+                    <h2 class="text-2xl font-bold text-center mb-4 text-slate-700">YouTube配信用コンテンツ案</h2>
+                    <div class="flex-grow grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+                        <div class="bg-slate-100 p-4 rounded-lg">
+                            <h3 class="font-bold mb-2">タイトル案 (3案)</h3>
+                            <ol class="list-decimal list-inside space-y-1">
+                                <li>【科学的に解説】本当に効く光・磁気治療、ヤバい治療の見分け方</li>
+                                <li>【知らないと損】がん診断から腰痛改善まで！最新エネルギー医学の全貌</li>
+                                <li>【警告】その健康法、実は発がん性物質かも？ラドン療法の危険な真実</li>
+                            </ol>
+                        </div>
+                        <div class="bg-slate-100 p-4 rounded-lg">
+                            <h3 class="font-bold mb-2">サムネイル生成プロンプト (3案)</h3>
+                             <ol class="list-decimal list-inside space-y-1">
+                                <li>A split-screen image. Left side shows a glowing, futuristic light therapy device treating a patient. Right side shows a "DANGER" sign with a radiation symbol. Text overlay: "本当に効く？ヤバい？"</li>
+                                <li>A collage of medical infographics. A DNA helix, a brain scan, and a glowing human silhouette. A magnifying glass is focused on the DNA. Text overlay: "最新科学で解明！"</li>
+                                <li>A dark, mysterious background with a glowing rock emitting faint green light. A large red "X" is crossed over it. Text overlay: "警告：その健康法"</li>
+                            </ol>
+                        </div>
+                         <div class="bg-slate-100 p-4 rounded-lg col-span-1 md:col-span-2">
+                            <h3 class="font-bold mb-2">概要欄</h3>
+                            <p>光や磁気を使った治療法、気になっていませんか？遠赤外線や話題のPEMFから、実は危険なラドン療法まで、5つの技術を科学的根拠に基づいて徹底解説！この動画を見れば、本当に効果が期待できる治療法と、絶対に避けるべき危険な健康法の見分け方がわかります。医療の最前線を知り、賢い選択をしましょう。 #エネルギー医学 #健康リテラシー #科学解説</p>
+                        </div>
+                         <div class="bg-slate-100 p-4 rounded-lg col-span-1 md:col-span-2">
+                            <h3 class="font-bold mb-2">BGM生成プロンプト (Suno AI用)</h3>
+                             <ol class="list-decimal list-inside space-y-1">
+                                <li>"A calm, inspirational corporate background track. Electronic piano, gentle synth pads, and a simple, slow BPM drum beat. Optimistic and futuristic."</li>
+                                <li>"An investigative documentary style music. A repeating, thoughtful piano motif, subtle string pads, creating a sense of mystery and discovery. Neutral tone."</li>
+                                <li>"A slightly tense, dramatic background music for a science documentary. Low-frequency synth bass, ambient textures, with occasional high-pitched synth blips to create a sense of caution."</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Narration Box -->
+        <div id="narration" class="narration-box m-8 mt-0">
+            <p id="narration-text"></p>
+        </div>
+
+        <!-- Pagination -->
+        <div class="flex justify-between items-center bg-slate-100 p-4">
+            <button id="prevBtn" class="px-4 py-2 bg-slate-300 text-slate-800 rounded-lg hover:bg-slate-400 disabled:opacity-50 disabled:cursor-not-allowed">前へ</button>
+            <div id="pagination" class="font-semibold text-slate-600"></div>
+            <button id="nextBtn" class="px-4 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed">次へ</button>
+        </div>
+    </div>
+
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const paginationDiv = document.getElementById('pagination');
+        const narrationText = document.getElementById('narration-text');
+        
+        let currentSlide = 0;
+        const totalSlides = slides.length;
+
+        const narrations = [
+            "近年、医療分野で注目を集める光と磁気の力。しかし、そのすべてが信頼できるわけではありません。本日は、科学の目でその真実と偽りを解き明かしていきます。",
+            "今回分析するのは、この5つの技術です。遠赤外線やPEMFのように医療応用が進むものから、ラドンのように深刻なリスクが指摘されるものまで、科学的根拠のレベルは大きく異なります。",
+            "まず、光で細胞を元気にする光バイオモジュレーションです。特定の光が細胞内の発電所であるミトコンドリアに作用し、エネルギー産生を活性化。これが組織の修復や炎症抑制につながると考えられています。",
+            "遠赤外線の力は一つではありません。一つは、体を芯から温める「熱作用」。もう一つは、熱とは無関係に細胞を保護する酵素を活性化させる「非熱作用」。この二つの働きが、様々な健康効果を生み出します。",
+            "テラヘルツ波は、がん診断の未来を担う新技術です。がん組織に多い水分を検知して画像化します。ただし、X線とは違う「非熱作用」による体への影響については、まだ研究の途上にあり、安全性の確立が今後の課題です。",
+            "パルス電磁場、PEMFは、代替医療から主流の医療へと移行した成功例です。1979年にはアメリカのFDAに骨折治療用として承認されるなど、質の高い研究によってその有効性が証明されています。",
+            "ラドン療法は、「微量の放射線は体に良い」と主張しますが、これは科学的コンセンサスとは異なります。WHOなどの国際機関は、ラドンを明確な発がん性物質と断定しており、そのリスクは無視できません。",
+            "結論です。これらの技術は、科学的な信頼度によって明確にランク付けできます。確立された医療から、有害性が証明されたものまで様々です。大切なのは、宣伝文句に惑わされず、科学的根拠に基づいて判断することです。",
+            "このスライドショーが、皆様のコンテンツ制作の一助となれば幸いです。タイトルやサムネイル、BGMのアイデアをご活用いただき、視聴者にとって有益で魅力的な動画を作成してください。"
+        ];
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.toggle('active', i === index);
+            });
+            paginationDiv.textContent = `スライド ${index + 1} / ${totalSlides}`;
+            narrationText.textContent = narrations[index];
+            prevBtn.disabled = index === 0;
+            nextBtn.disabled = index === totalSlides - 1;
+        }
+
+        prevBtn.addEventListener('click', () => {
+            if (currentSlide > 0) {
+                currentSlide--;
+                showSlide(currentSlide);
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                showSlide(currentSlide);
+            }
+        });
+        
+        const tooltipTitleCallback = (tooltipItems) => {
+            const item = tooltipItems[0];
+            let label = item.chart.data.labels[item.dataIndex];
+            if (Array.isArray(label)) {
+                return label.join(' ');
+            } else {
+                return label;
+            }
+        };
+
+        // Initialize charts
+        function initCharts() {
+            // THz Chart
+             const thzCtx = document.getElementById('thzChart')?.getContext('2d');
+             if(thzCtx) {
+                new Chart(thzCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['皮膚がん', '乳がん', '脳腫瘍', '手術中の断端評価'],
+                        datasets: [{
+                            label: '研究における注目度（スコア）',
+                            data: [8, 9, 6, 8.5],
+                            backgroundColor: 'rgba(129, 140, 248, 0.7)',
+                            borderColor: 'rgb(99, 102, 241)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: { x: { beginAtZero: true, max: 10 } },
+                        plugins: { legend: { display: false }, tooltip: { callbacks: { title: tooltipTitleCallback } } }
+                    }
+                });
+             }
+        }
+        
+        showSlide(currentSlide);
+        initCharts();
+
+    </script>
+</body>
+</html>
