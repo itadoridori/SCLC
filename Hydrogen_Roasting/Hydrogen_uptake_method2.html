@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インフォグラフィック：分子状水素の科学</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Brilliant Blues -->
+    <!-- Application Structure Plan: The infographic follows a narrative structure designed for progressive learning. It starts with a high-level hook ("What is H₂?"), moves to the core scientific mechanisms ("How does it work?"), then addresses the user's primary practical question ("Which method is best?") with a comparative analysis. This is visually reinforced with a pharmacokinetic chart. It then proactively debunks common myths ("Fact vs. Fiction") and concludes with an actionable consumer guide. This structure guides the user from curiosity to understanding, comparison, critical thinking, and finally, informed decision-making. -->
+    <!-- Visualization & Content Choices: 
+        1.  H₂ Mechanisms: Data -> Selective antioxidant & Gasotransmitter concepts. Goal -> Organize & Inform. Viz -> Two-column HTML/CSS diagram. Justification -> Simplifies complex biological concepts into an easily digestible visual metaphor (Good vs. Bad ROS; Signal Key). Library/Method -> HTML/CSS with Tailwind, using Unicode icons (NO SVG).
+        2.  Intake Method Comparison: Data -> Table 1 from the report. Goal -> Compare. Viz -> Three-column card layout. Justification -> More engaging and scannable than a dense table, highlighting key pros/cons for quick comparison. Library/Method -> HTML/CSS with Tailwind.
+        3.  Pharmacokinetics: Data -> Conceptual data from section 2.5. Goal -> Show Change. Viz -> Line Chart. Justification -> The most effective way to visually represent the difference between "rapid peak" (Inhalation), "transient pulse" (HRW), and "sustained release" (Supplements). Library/Method -> Chart.js (Canvas), with proper container styling.
+        4.  Myth Debunking: Data -> Sections 3.1 & 3.2. Goal -> Organize & Inform. Viz -> Two-part "Myth vs. Reality" card layout. Justification -> Directly juxtaposes misinformation with scientific facts for maximum clarity and corrective impact. Library/Method -> HTML/CSS with Tailwind.
+        5.  Key Stats: Data -> "2000+ studies", "1.6 ppm max", "4% flammability". Goal -> Inform. Viz -> Large, bold text ("Single Big Number"). Justification -> Grabs attention and conveys key metrics instantly. Library/Method -> HTML/CSS with Tailwind.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Noto Sans JP', sans-serif; background-color: #f0f9ff; color: #0c4a6e; }
+        .chart-container { position: relative; width: 100%; max-width: 800px; margin-left: auto; margin-right: auto; height: 300px; max-height: 400px; }
+        @media (min-width: 768px) { .chart-container { height: 400px; } }
+        .gradient-text { background: linear-gradient(to right, #0369a1, #0ea5e9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+        <header class="text-center mb-16">
+            <h1 class="text-4xl md:text-6xl font-bold gradient-text mb-4">分子状水素(H₂)の科学</h1>
+            <p class="max-w-3xl mx-auto text-lg text-sky-800">「不活性ガス」から「治療薬候補」へ。2000報を超える論文が示す、最小分子の驚くべき可能性を解き明かします。</p>
+        </header>
+
+        <main class="space-y-20">
+
+            <section id="mechanism">
+                <h2 class="text-3xl font-bold text-center mb-10 text-sky-900">どのように作用するのか？</h2>
+                <div class="grid md:grid-cols-2 gap-8 text-center">
+                    <div class="bg-white/70 backdrop-blur-sm p-8 rounded-2xl shadow-lg border border-sky-100">
+                        <h3 class="text-2xl font-bold text-sky-800 mb-4">① 選択的抗酸化作用</h3>
+                        <p class="text-sky-700 mb-6">体内の「悪玉」活性酸素だけを選んで無害な水に変え、「善玉」はそのままに。正常な細胞機能を邪魔しない賢い働きをします。</p>
+                        <div class="bg-sky-50 p-4 rounded-xl flex items-center justify-around">
+                            <div class="text-center">
+                                <span class="text-5xl">👿</span>
+                                <p class="font-bold mt-2">悪玉 (•OH)</p>
+                                <p class="text-sm text-red-500">ダメージ源</p>
+                            </div>
+                            <div class="text-5xl font-bold text-sky-500">+ H₂ →</div>
+                            <div class="text-center">
+                                <span class="text-5xl">💧</span>
+                                <p class="font-bold mt-2">無害な水</p>
+                                <p class="text-sm text-green-500">中和</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white/70 backdrop-blur-sm p-8 rounded-2xl shadow-lg border border-sky-100">
+                        <h3 class="text-2xl font-bold text-sky-800 mb-4">② 細胞シグナル調節作用</h3>
+                        <p class="text-sky-700 mb-6">自前の抗酸化力や抗炎症力をONにする「スイッチ」役も。水素が去った後も、体の防御システムを活性化させます。</p>
+                        <div class="bg-sky-50 p-4 rounded-xl flex items-center justify-around">
+                            <div class="text-center">
+                               <span class="text-5xl">🔑</span>
+                               <p class="font-bold mt-2">H₂シグナル</p>
+                            </div>
+                            <div class="text-5xl font-bold text-sky-500">→</div>
+                            <div class="text-center">
+                               <span class="text-5xl">🛡️</span>
+                               <p class="font-bold mt-2">自己防御力UP</p>
+                               <p class="text-sm text-green-500">Nrf2経路 活性化</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="comparison">
+                <h2 class="text-3xl font-bold text-center mb-10 text-sky-900">摂取方法の比較：効率は目的で決まる</h2>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="bg-white p-6 rounded-2xl shadow-xl flex flex-col">
+                        <div class="text-center mb-4">
+                            <span class="text-6xl">💨</span>
+                            <h3 class="text-2xl font-bold mt-2 text-sky-900">ガス吸入</h3>
+                        </div>
+                        <div class="text-sm text-sky-800 space-y-2 mb-4">
+                            <p><span class="font-bold text-green-600">長所：</span>最も速く高濃度。用量管理が正確。</p>
+                            <p><span class="font-bold text-red-600">短所：</span>専用機器が必要で高価。日常的でない。</p>
+                        </div>
+                        <div class="mt-auto bg-sky-100 p-4 rounded-lg text-center">
+                            <p class="font-bold text-sky-900">最適目的</p>
+                            <p class="text-sm text-sky-700">脳卒中など一刻を争う急性期の医療・研究</p>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-xl flex flex-col border-4 border-sky-500">
+                        <div class="absolute top-0 -translate-y-1/2 left-1/2 -translate-x-1/2 bg-sky-500 text-white text-xs font-bold px-3 py-1 rounded-full">最も一般的</div>
+                        <div class="text-center mb-4">
+                            <span class="text-6xl">💧</span>
+                            <h3 class="text-2xl font-bold mt-2 text-sky-900">水素豊富水</h3>
+                        </div>
+                        <div class="text-sm text-sky-800 space-y-2 mb-4">
+                           <p><span class="font-bold text-green-600">長所：</span>手軽で安全。日常的に摂取可能。</p>
+                           <p><span class="font-bold text-red-600">短所：</span>効果は一過性。総量が少なく抜けやすい。</p>
+                        </div>
+                        <div class="mt-auto bg-sky-100 p-4 rounded-lg text-center">
+                           <p class="font-bold text-sky-900">最適目的</p>
+                           <p class="text-sm text-sky-700">日々の健康維持、運動後の回復、肝臓ケア</p>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-xl flex flex-col">
+                        <div class="text-center mb-4">
+                            <span class="text-6xl">💊</span>
+                            <h3 class="text-2xl font-bold mt-2 text-sky-900">サプリメント</h3>
+                        </div>
+                        <div class="text-sm text-sky-800 space-y-2 mb-4">
+                            <p><span class="font-bold text-green-600">長所：</span>持続的に長時間作用する可能性。携帯に便利。</p>
+                            <p><span class="font-bold text-red-600">短所：</span>体内の科学的データが限定的。品質に差。</p>
+                        </div>
+                         <div class="mt-auto bg-sky-100 p-4 rounded-lg text-center">
+                           <p class="font-bold text-sky-900">最適目的</p>
+                           <p class="text-sm text-sky-700">慢性的な炎症など、持続的なサポート</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="pharmacokinetics">
+                <h2 class="text-3xl font-bold text-center mb-4 text-sky-900">体内の動きを可視化</h2>
+                <p class="text-center max-w-2xl mx-auto text-sky-800 mb-8">摂取方法によって、体内の水素濃度がどう変化するかは大きく異なります。このグラフは、各方法の血中濃度の概念的な違いを示しています。</p>
+                <div class="bg-white/70 backdrop-blur-sm p-4 sm:p-6 rounded-2xl shadow-lg border border-sky-100">
+                    <div class="chart-container">
+                        <canvas id="kineticsChart"></canvas>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="factcheck">
+                <h2 class="text-3xl font-bold text-center mb-10 text-sky-900">よくある主張の真実</h2>
+                <div class="space-y-8">
+                    <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg grid md:grid-cols-2 gap-8 items-center">
+                        <div>
+                            <p class="text-sm font-bold text-amber-600">よくある主張</p>
+                            <h3 class="text-2xl font-bold text-sky-900 mt-1">「水素はがんの温床を除去する」</h3>
+                        </div>
+                        <div>
+                            <p class="text-sm font-bold text-sky-600">科学的真実</p>
+                            <p class="mt-2 text-sky-800">単純な「除去」ではありません。最も強力なエビデンスは、H₂が抗がん剤や放射線治療の<span class="font-bold">副作用を選択的に軽減</span>し、患者のQOL（生活の質）を改善する<span class="font-bold">「補助療法」</span>としての価値です。がんの直接治療への効果はまだ研究段階です。</p>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg grid md:grid-cols-2 gap-8 items-center">
+                        <div>
+                            <p class="text-sm font-bold text-amber-600">よくある主張</p>
+                            <h3 class="text-2xl font-bold text-sky-900 mt-1">「水素で体がアルカリ性になり免疫力アップ」</h3>
+                        </div>
+                        <div>
+                             <p class="text-sm font-bold text-sky-600">科学的真実</p>
+                             <p class="mt-2 text-sky-800">これは<span class="font-bold">科学的に誤り</span>です。体のpHは厳密に一定に保たれており、飲み物では変化しません。免疫への良い影響は、pHではなく、H₂の優れた<span class="font-bold">抗炎症作用や細胞保護作用</span>によるものと考えられています。</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="consumer-guide">
+                <h2 class="text-3xl font-bold text-center mb-10 text-sky-900">賢い消費者のための３つのルール</h2>
+                 <div class="grid md:grid-cols-3 gap-8">
+                    <div class="bg-white/70 backdrop-blur-sm p-8 rounded-2xl shadow-lg border border-sky-100 text-center">
+                        <div class="text-6xl mb-4">1.</div>
+                        <h3 class="text-xl font-bold text-sky-800 mb-2">品質を疑う</h3>
+                        <p class="text-sky-700">国民生活センターの調査では、表示通りの水素を含まない製品も多数。第三者機関の証明など、信頼できる製品を選びましょう。</p>
+                    </div>
+                     <div class="bg-white/70 backdrop-blur-sm p-8 rounded-2xl shadow-lg border border-sky-100 text-center">
+                        <div class="text-6xl mb-4">2.</div>
+                        <h3 class="text-xl font-bold text-sky-800 mb-2">科学を信じる</h3>
+                        <p class="text-sky-700">「活性水素」「マイナス水素イオン」は非科学的用語。効果の源は「分子状水素(H₂)」。過度な宣伝文句に注意してください。</p>
+                    </div>
+                     <div class="bg-white/70 backdrop-blur-sm p-8 rounded-2xl shadow-lg border border-sky-100 text-center">
+                        <div class="text-6xl mb-4">3.</div>
+                        <h3 class="text-xl font-bold text-sky-800 mb-2">医師に相談する</h3>
+                        <p class="text-sky-700">水素は非常に安全ですが、病気の標準治療に代わるものではありません。あくまで補助的な役割と理解し、専門家に相談しましょう。</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-20 pt-8 border-t border-sky-200">
+            <p class="text-sm text-sky-700">このインフォグラフィックは、公開された科学的評価レポートに基づき作成された教育用資料です。医学的助言を意図したものではありません。</p>
+        </footer>
+    </div>
+
+<script>
+    const ctx = document.getElementById('kineticsChart').getContext('2d');
+    const kineticsChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['0分', '15分', '30分', '1時間', '2時間', '4時間', '8時間', '12時間'],
+            datasets: [{
+                label: 'ガス吸入 (急速ピーク)',
+                data: [0, 95, 100, 80, 20, 5, 0, 0],
+                borderColor: '#ef4444', // red-500
+                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: '#ef4444',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: '#ef4444',
+            }, {
+                label: '水素水 (一過性パルス)',
+                data: [0, 50, 30, 15, 5, 0, 0, 0],
+                borderColor: '#3b82f6', // blue-500
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                fill: true,
+                tension: 0.4,
+                 pointBackgroundColor: '#3b82f6',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: '#3b82f6',
+            }, {
+                label: 'サプリ (持続放出)',
+                data: [0, 5, 15, 25, 40, 40, 30, 20],
+                borderColor: '#16a34a', // green-600
+                backgroundColor: 'rgba(22, 163, 74, 0.1)',
+                fill: true,
+                tension: 0.4,
+                 pointBackgroundColor: '#16a34a',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: '#16a34a',
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                intersect: false,
+                mode: 'index',
+            },
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        usePointStyle: true,
+                        font: {
+                           size: 12
+                        },
+                         padding: 20,
+                    }
+                },
+                tooltip: {
+                    enabled: true,
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    titleFont: { size: 14, weight: 'bold' },
+                    bodyFont: { size: 12 },
+                    padding: 10,
+                    cornerRadius: 8,
+                    displayColors: true,
+                    usePointStyle: true,
+                    callbacks: {
+                        title: function(tooltipItems) {
+                            const item = tooltipItems[0];
+                            let label = item.chart.data.labels[item.dataIndex];
+                            if (Array.isArray(label)) {
+                              return label.join(' ');
+                            } else {
+                              return label;
+                            }
+                        },
+                         label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            label += context.parsed.y + ' (相対濃度)';
+                            return label;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    title: {
+                        display: true,
+                        text: '血中水素濃度 (概念的・相対値)',
+                        font: { size: 12 }
+                    },
+                    grid: {
+                        color: 'rgba(125, 211, 252, 0.3)', // sky-300
+                        drawBorder: false,
+                    },
+                    ticks: {
+                       font: { size: 10 }
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: '摂取後の経過時間',
+                        font: { size: 12 }
+                    },
+                     grid: {
+                        display: false
+                    },
+                    ticks: {
+                       font: { size: 10 }
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

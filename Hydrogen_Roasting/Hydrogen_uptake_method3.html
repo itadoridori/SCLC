@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インタラクティブ・スライド：分子状水素の科学</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+        .slide {
+            display: none;
+            min-height: 500px;
+        }
+        .slide.active {
+            display: flex;
+        }
+        .pagination-dot {
+            transition: background-color 0.3s ease;
+        }
+        .pagination-dot.active {
+            background-color: #0284c7;
+        }
+        .narration-box {
+            background-color: rgba(14, 116, 144, 0.05);
+            border-top: 2px solid rgba(14, 116, 144, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <div class="max-w-5xl mx-auto my-8 bg-white rounded-2xl shadow-2xl overflow-hidden">
+        <!-- Slides Container -->
+        <div id="slides-container" class="relative">
+            <!-- Slide 1: Title -->
+            <div class="slide active flex-col justify-center items-center text-center p-8" data-narration="こんにちは。このビデオでは、近年注目を集める「分子状水素」について、その科学的根拠を分かりやすく解説していきます。不活性なガスと思われていた水素が、なぜ医療分野で期待されているのか。その謎に迫ります。">
+                <div class="w-24 h-24 bg-sky-100 text-sky-500 rounded-full flex items-center justify-center mb-6">
+                    <i class="fas fa-atom text-5xl"></i>
+                </div>
+                <h1 class="text-3xl md:text-5xl font-bold text-sky-800 mb-4">分子状水素の科学</h1>
+                <p class="text-lg text-slate-600 max-w-2xl">不活性ガスから治療薬候補へ。最小分子の驚くべき可能性を解き明かす</p>
+            </div>
+
+            <!-- Slide 2: Paradigm Shift -->
+            <div class="slide flex-col justify-center items-center text-center p-8" data-narration="水素医学の歴史が大きく動いたのは2007年。日本の研究チームが、水素ガスが脳梗塞のダメージを劇的に軽減することを発見しました。この一つの論文がきっかけとなり、世界中で研究が爆発的に進展。今では2000報以上の論文が発表されています。">
+                 <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mb-8">常識を覆した、2007年の一大発見</h2>
+                <div class="flex flex-col md:flex-row items-center gap-8">
+                    <div class="text-center">
+                        <p class="text-slate-500 text-lg">2007年以前</p>
+                        <i class="fas fa-bed text-6xl text-slate-400 my-4"></i>
+                        <p class="font-bold text-slate-600">「生理学的に不活性なガス」</p>
+                    </div>
+                    <div class="text-6xl text-sky-500 font-thin my-4 md:my-0">
+                        <i class="fas fa-long-arrow-alt-right"></i>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-sky-600 text-lg">2007年以後</p>
+                        <i class="fas fa-rocket text-6xl text-sky-600 my-4"></i>
+                        <p class="font-bold text-sky-700">「治療効果を持つ抗酸化物質」</p>
+                    </div>
+                </div>
+                 <p class="mt-8 text-slate-500">権威ある科学雑誌「Nature Medicine」への掲載が転換点に。</p>
+            </div>
+
+            <!-- Slide 3: Mechanism 1 - Selective Antioxidant -->
+            <div class="slide flex-col justify-center items-center p-8" data-narration="水素の最も重要な特徴、それは「選択性」です。私たちの体には、良い働きをする「善玉」活性酸素と、細胞を傷つける「悪玉」活性酸素が存在します。水素は、この悪玉だけを狙い撃ちして無害な水に変え、善玉には影響を与えません。">
+                <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mb-8 text-center">作用の仕組み①：賢い「選択的」抗酸化作用</h2>
+                <div class="w-full max-w-2xl bg-slate-100 p-6 rounded-lg">
+                    <div class="flex items-center justify-between">
+                        <!-- Good ROS -->
+                        <div class="text-center w-1/3">
+                            <i class="fas fa-shield-alt text-5xl text-green-500"></i>
+                            <p class="font-bold mt-2">善玉活性酸素</p>
+                            <p class="text-sm text-slate-500">（細胞の信号役）</p>
+                        </div>
+                        <!-- H2 Action -->
+                        <div class="text-center w-1/3">
+                             <p class="text-4xl font-bold text-sky-500">H₂</p>
+                            <i class="fas fa-arrow-right text-3xl text-slate-400 my-2"></i>
+                            <p class="font-bold text-slate-500">無視</p>
+                        </div>
+                         <!-- Bad ROS -->
+                        <div class="text-center w-1/3">
+                            <i class="fas fa-skull-crossbones text-5xl text-red-500"></i>
+                            <p class="font-bold mt-2">悪玉活性酸素</p>
+                            <p class="text-sm text-slate-500">（細胞の破壊役）</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-end mt-4">
+                        <div class="text-center w-1/3">
+                            <i class="fas fa-arrow-right text-3xl text-slate-400 my-2"></i>
+                            <p class="font-bold text-green-600">中和</p>
+                        </div>
+                        <div class="text-center w-1/3">
+                            <i class="fas fa-tint text-5xl text-blue-500"></i>
+                             <p class="font-bold mt-2">無害な水</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 4: Mechanism 2 - Signal Modulator -->
+            <div class="slide flex-col justify-center items-center p-8" data-narration="水素は、単に活性酸素を消去するだけではありません。細胞のスイッチをONにして、体が本来持つ防御システムを活性化させる「シグナル役」としての働きも持っています。この効果は、水素が体から抜けた後も持続する可能性があります。">
+                <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mb-8 text-center">作用の仕組み②：体の防御力をONにするシグナル役</h2>
+                <div class="w-full max-w-2xl flex items-center justify-center space-x-4 md:space-x-8">
+                    <div class="text-center">
+                        <i class="fas fa-key text-5xl text-amber-500"></i>
+                        <p class="font-bold mt-2">水素シグナル</p>
+                    </div>
+                    <i class="fas fa-long-arrow-alt-right text-4xl text-slate-400"></i>
+                    <div class="text-center">
+                         <i class="fas fa-dna text-5xl text-sky-600"></i>
+                        <p class="font-bold mt-2">細胞核に作用</p>
+                    </div>
+                    <i class="fas fa-long-arrow-alt-right text-4xl text-slate-400"></i>
+                    <div class="text-center">
+                        <i class="fas fa-user-shield text-5xl text-green-600"></i>
+                        <p class="font-bold mt-2">自己防御力 UP</p>
+                         <p class="text-sm text-slate-500">（抗酸化酵素など）</p>
+                    </div>
+                </div>
+                <p class="mt-8 text-slate-600">この働きにより、微量の水素でも大きな効果が期待できます。</p>
+            </div>
+
+            <!-- Slide 5: How to Take Hydrogen -->
+            <div class="slide flex-col justify-center items-center p-8" data-narration="では、どうやって水素を体に取り込むのでしょうか？主な方法は３つ。「ガス吸入」「水素豊富水」「サプリメント」です。それぞれに長所と短所があり、最も効率的な方法は目的によって異なります。">
+                 <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mb-10 text-center">どうやって摂るの？３つの主な摂取方法</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-4xl">
+                    <div class="text-center p-6 bg-slate-100 rounded-lg">
+                        <i class="fas fa-lungs text-5xl text-sky-600 mb-4"></i>
+                        <h3 class="text-xl font-bold">水素ガス吸入</h3>
+                        <p class="text-sm mt-2">専用機器でガスを直接吸い込む。作用が速く高濃度。</p>
+                    </div>
+                    <div class="text-center p-6 bg-slate-100 rounded-lg">
+                        <i class="fas fa-glass-water text-5xl text-blue-500 mb-4"></i>
+                        <h3 class="text-xl font-bold">水素豊富水</h3>
+                        <p class="text-sm mt-2">水素を溶かした水を飲む。最も手軽で安全。</p>
+                    </div>
+                    <div class="text-center p-6 bg-slate-100 rounded-lg">
+                        <i class="fas fa-pills text-5xl text-green-600 mb-4"></i>
+                        <h3 class="text-xl font-bold">水素発生サプリ</h3>
+                        <p class="text-sm mt-2">体内で水と反応し水素を発生。持続性が期待される。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 6: Pharmacokinetics Chart -->
+            <div class="slide flex-col justify-center items-center p-8" data-narration="こちらのグラフは、摂取方法による体内の水素濃度の変化をイメージしたものです。ガス吸入は急速にピークに達し、水素水は短時間の一過性、サプリメントは長時間にわたり穏やかに作用することが期待されます。">
+                <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mb-6 text-center">体内の動きを比較：作用の速さと持続性</h2>
+                <div class="w-full max-w-3xl h-80">
+                    <canvas id="kineticsChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Slide 7: Which is most efficient? -->
+            <div class="slide flex-col justify-center items-center p-8" data-narration="結論として、最も効率的な方法は「目的次第」です。一刻を争う救急医療では「ガス吸入」、日々の健康維持には手軽な「水素水」、慢性的な悩みのサポートには持続性のある「サプリメント」が、それぞれ適していると考えられます。">
+                <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mb-8 text-center">結論：最も効率的な方法は「目的」で決まる</h2>
+                <div class="w-full max-w-4xl space-y-4">
+                    <div class="bg-red-50 p-4 rounded-lg flex items-center">
+                        <i class="fas fa-ambulance text-3xl text-red-500 w-16 text-center"></i>
+                        <div>
+                            <p class="font-bold text-red-700">急性期のケア（脳卒中など）</p>
+                            <p class="text-sm text-red-600">→ 速く高濃度な<span class="font-bold">「ガス吸入」</span>が最適。</p>
+                        </div>
+                    </div>
+                    <div class="bg-blue-50 p-4 rounded-lg flex items-center">
+                        <i class="fas fa-person-running text-3xl text-blue-500 w-16 text-center"></i>
+                        <div>
+                            <p class="font-bold text-blue-700">日常的な健康維持（運動後など）</p>
+                            <p class="text-sm text-blue-600">→ 手軽で安全な<span class="font-bold">「水素水」</span>が実用的。</p>
+                        </div>
+                    </div>
+                    <div class="bg-green-50 p-4 rounded-lg flex items-center">
+                        <i class="fas fa-calendar-alt text-3xl text-green-500 w-16 text-center"></i>
+                        <div>
+                            <p class="font-bold text-green-700">慢性的なサポート（関節など）</p>
+                            <p class="text-sm text-green-600">→ 持続性が期待できる<span class="font-bold">「サプリメント」</span>が理論的に有利。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 8: Fact Check - Cancer -->
+            <div class="slide flex-col justify-center items-center p-8" data-narration="さて、よく聞かれる主張についても検証しましょう。「水素はがんの温床を除去する」という話。これは単純化しすぎています。現在最も確かなのは、抗がん剤や放射線治療の副作用を和らげ、患者さんの生活の質を高める「補助療法」としての価値です。">
+                <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mb-8 text-center">主張の検証①：水素とがんの関係</h2>
+                <div class="w-full max-w-3xl grid md:grid-cols-2 gap-6">
+                    <div class="bg-amber-50 border-l-4 border-amber-400 p-6 rounded-r-lg">
+                        <h3 class="font-bold text-amber-700 text-lg">単純な解釈</h3>
+                        <p class="mt-2 text-slate-600">水素が活性酸素を除去して、がんを直接予防・治療する。</p>
+                    </div>
+                     <div class="bg-sky-50 border-l-4 border-sky-400 p-6 rounded-r-lg">
+                        <h3 class="font-bold text-sky-800 text-lg">科学的な見解</h3>
+                        <p class="mt-2 text-slate-700">主な価値は、がん治療の<span class="font-bold">副作用を軽減</span>する「補助療法」。健康な細胞を守り、患者のQOLを改善する役割が期待されています。</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 9: Fact Check - Alkalinity -->
+            <div class="slide flex-col justify-center items-center p-8" data-narration="もう一つ、「水素で体がアルカリ性になり免疫力が高まる」という主張。これは科学的に誤りです。私たちの体のpHは非常に厳密に管理されており、飲み物で変化しません。水素が免疫に良い影響を与えるのは、pHではなく、優れた「抗炎症作用」によるものです。">
+                 <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mb-8 text-center">主張の検証②：アルカリ性と免疫</h2>
+                <div class="w-full max-w-3xl grid md:grid-cols-2 gap-6">
+                    <div class="bg-amber-50 border-l-4 border-amber-400 p-6 rounded-r-lg">
+                        <h3 class="font-bold text-amber-700 text-lg">誤った解釈</h3>
+                        <p class="mt-2 text-slate-600">水素を摂ると体がアルカリ性になり、免疫力が上がる。</p>
+                    </div>
+                     <div class="bg-sky-50 border-l-4 border-sky-400 p-6 rounded-r-lg">
+                        <h3 class="font-bold text-sky-800 text-lg">科学的な見解</h3>
+                        <p class="mt-2 text-slate-700">体のpHは飲み物では変わりません。免疫への良い影響は、pHではなく、水素が持つ<span class="font-bold">「抗炎症作用」や「細胞保護作用」</span>によるものと考えられます。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 10: Consumer Guide -->
+            <div class="slide flex-col justify-center items-center p-8" data-narration="最後に、消費者の皆様へのアドバイスです。第一に、品質に注意しましょう。宣伝通りの水素濃度がない製品も多く存在します。第二に、あくまで補助的な役割と理解し、医療の代わりにはなりません。そして第三に、科学的根拠のない誇大広告に惑わされないようにしましょう。">
+                <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mb-8 text-center">消費者のための３つの心得</h2>
+                <div class="w-full max-w-4xl grid md:grid-cols-3 gap-6 text-center">
+                    <div class="bg-slate-100 p-6 rounded-lg">
+                        <i class="fas fa-award text-4xl text-sky-600 mb-4"></i>
+                        <h3 class="font-bold text-lg">① 品質を要求する</h3>
+                        <p class="text-sm mt-1">第三者機関の証明など、信頼できる製品を選びましょう。</p>
+                    </div>
+                    <div class="bg-slate-100 p-6 rounded-lg">
+                        <i class="fas fa-plus-square text-4xl text-sky-600 mb-4"></i>
+                        <h3 class="font-bold text-lg">② 補助役と心得る</h3>
+                        <p class="text-sm mt-1">医療には代わりません。医師への相談が重要です。</p>
+                    </div>
+                    <div class="bg-slate-100 p-6 rounded-lg">
+                        <i class="fas fa-bullhorn text-4xl text-sky-600 mb-4"></i>
+                        <h3 class="font-bold text-lg">③ 誇大広告に注意</h3>
+                        <p class="text-sm mt-1">「活性水素」などの非科学的用語に惑わされないように。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 11: YouTube Kit -->
+            <div class="slide flex-col p-8" data-narration="ご視聴ありがとうございました。このビデオが、皆様の分子状水素への理解を深める一助となれば幸いです。もしよろしければ、チャンネル登録と高評価をお願いいたします。">
+                 <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mb-6 text-center">YouTube 制作キット</h2>
+                <div class="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-8 text-sm">
+                    <div class="space-y-6">
+                        <div>
+                            <h3 class="font-bold text-lg text-sky-700 mb-2"><i class="fab fa-youtube mr-2"></i>タイトル案</h3>
+                            <ul class="list-disc list-inside space-y-1 pl-2 text-slate-600">
+                                <li>【科学的に解説】水素は体に良いって本当？医師が語る真実と嘘</li>
+                                <li>一番効率的なのはどれ？水素水・サプリ・吸入を徹底比較【2025年版】</li>
+                                <li>知らないと損する「分子状水素」入門｜ノーベル賞級の発見から最新研究まで</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg text-sky-700 mb-2"><i class="fas fa-image mr-2"></i>サムネイル生成プロンプト案</h3>
+                             <ul class="list-disc list-inside space-y-1 pl-2 text-slate-600">
+                                <li>青い背景に輝くH2の分子モデル。中央に「科学が証明した真実」という大きな白い文字。背景にはDNAの二重らせんが薄く描かれている。鮮やかでモダンな科学的イメージ。</li>
+                                <li>左右に分割された画像。左側には「水素水」「サプリ」「吸入器」のイラストを配置。右側には大きなクエスチョンマークと「最も効果的なのは？」というテキスト。目を引く比較スタイル。</li>
+                                <li>医師のイラストが白衣を着て指をさしている。吹き出しに「その常識、間違いです！」というテキスト。背景は研究室風。信頼性とインパクトを重視。</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg text-sky-700 mb-2"><i class="fas fa-music mr-2"></i>BGM生成プロンプト案 (SUNO AI用)</h3>
+                             <ul class="list-disc list-inside space-y-1 pl-2 text-slate-600">
+                                <li>An inspirational and slightly futuristic corporate background track. Calm piano melody, subtle electronic pads, and a gentle, steady beat. Optimistic, intelligent, and unobtrusive. Perfect for a science explainer video. (感動的で少し未来的な企業向けBGM。穏やかなピアノのメロディ、繊細な電子パッド、優しく安定したビート。楽観的で知的、邪魔にならない。科学解説ビデオに最適。)</li>
+                                <li>A minimalist and clean ambient track. Soft synth textures, slow tempo, with occasional light bell sounds. Creates a sense of focus, clarity, and discovery. No dramatic changes. (ミニマルでクリーンなアンビエントトラック。柔らかなシンセのテクスチャ、遅いテンポ、時折軽いベルの音。集中力、明瞭さ、発見の感覚を生み出す。劇的な変化なし。)</li>
+                                <li>A calm and thoughtful lo-fi hip hop beat. Smooth electric piano chords, a simple boom-bap drum pattern, vinyl crackle effects. Relaxed but engaging, suitable for a modern educational presentation. (穏やかで思慮深いローファイ・ヒップホップ。滑らかなエレピのコード、シンプルなブーンバップのドラムパターン、レコードのノイズ。リラックスしつつも引き込まれる、現代的な教育プレゼン向け。)</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div>
+                         <h3 class="font-bold text-lg text-sky-700 mb-2"><i class="fas fa-file-alt mr-2"></i>概要欄</h3>
+                         <div class="p-4 bg-slate-100 rounded-lg text-slate-600 leading-relaxed border">
+                            <p>「水素が体に良い」という話、一度は耳にしたことがあるかもしれません。しかし、その科学的根拠や正しい知識はご存知でしょうか？</p>
+                            <br>
+                            <p>この動画では、2007年の画期的な発見から最新の研究まで、2000報以上の論文で研究が進む「分子状水素(H₂)」の科学を徹底的に解説します。</p>
+                            <br>
+                            <p>✅ 水素の驚くべき「選択的」抗酸化作用とは？<br>
+                            ✅ 水素水、サプリ、ガス吸入…一番効率的な摂取方法は？<br>
+                            ✅ 「がんの温床を除去」「体質がアルカリ性に」は本当？<br>
+                            ✅ 賢い消費者が知っておくべき３つの心得</p>
+                            <br>
+                            <p>この一本で、水素に関するあなたの疑問がすべて解決します。</p>
+                            <br>
+                            <p>【免責事項】<br>
+                            この動画は教育目的で作成されており、医学的助言に代わるものではありません。いかなる疾患の診断・治療においても、必ず医療専門家にご相談ください。</p>
+                         </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Narration and Controls -->
+        <div class="p-4 narration-box">
+            <div id="narration-text" class="text-slate-700 mb-4 h-20 overflow-y-auto text-sm md:text-base"></div>
+            <div class="flex justify-between items-center">
+                <button id="prevBtn" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition disabled:opacity-50 disabled:cursor-not-allowed"><i class="fas fa-arrow-left"></i> 前へ</button>
+                <div id="pagination-dots" class="flex space-x-2"></div>
+                <button id="nextBtn" class="px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 transition disabled:opacity-50 disabled:cursor-not-allowed">次へ <i class="fas fa-arrow-right"></i></button>
+            </div>
+        </div>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const slides = document.querySelectorAll('.slide');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const narrationText = document.getElementById('narration-text');
+    const paginationDotsContainer = document.getElementById('pagination-dots');
+    let currentSlide = 0;
+    let kineticsChartInstance = null;
+
+    function createPaginationDots() {
+        slides.forEach((_, index) => {
+            const dot = document.createElement('div');
+            dot.classList.add('w-2.5', 'h-2.5', 'bg-slate-300', 'rounded-full', 'cursor-pointer', 'pagination-dot');
+            dot.addEventListener('click', () => showSlide(index));
+            paginationDotsContainer.appendChild(dot);
+        });
+    }
+    
+    function updatePaginationDots() {
+        const dots = paginationDotsContainer.children;
+        Array.from(dots).forEach((dot, index) => {
+            dot.classList.toggle('active', index === currentSlide);
+        });
+    }
+
+    function showSlide(index) {
+        slides.forEach((slide, i) => {
+            slide.classList.toggle('active', i === index);
+        });
+        
+        currentSlide = index;
+        
+        prevBtn.disabled = currentSlide === 0;
+        nextBtn.disabled = currentSlide === slides.length - 1;
+        
+        narrationText.textContent = slides[currentSlide].dataset.narration || '';
+        
+        updatePaginationDots();
+
+        // Lazy load chart
+        if (slides[currentSlide].querySelector('#kineticsChart') && !kineticsChartInstance) {
+            renderKineticsChart();
+        }
+    }
+    
+    function renderKineticsChart() {
+        const ctx = document.getElementById('kineticsChart').getContext('2d');
+        kineticsChartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['0分', '30分', '1時間', '2時間', '4時間', '8時間'],
+                datasets: [
+                    {
+                        label: 'ガス吸入',
+                        data: [0, 95, 80, 20, 5, 0],
+                        borderColor: 'rgb(239, 68, 68)',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        fill: true,
+                        tension: 0.3,
+                    },
+                    {
+                        label: '水素水',
+                        data: [0, 40, 25, 5, 0, 0],
+                        borderColor: 'rgb(59, 130, 246)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        fill: true,
+                        tension: 0.3,
+                    },
+                    {
+                        label: 'サプリメント (理論値)',
+                        data: [0, 15, 25, 30, 30, 25],
+                        borderColor: 'rgb(22, 163, 74)',
+                        backgroundColor: 'rgba(22, 163, 74, 0.1)',
+                        fill: true,
+                        tension: 0.3,
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: { display: true, text: '摂取方法による血中水素濃度の概念的推移' },
+                    legend: { position: 'bottom' }
+                },
+                scales: {
+                    y: { title: { display: true, text: '血中濃度 (相対値)' } },
+                    x: { title: { display: true, text: '摂取後の時間' } }
+                }
+            }
+        });
+    }
+
+    prevBtn.addEventListener('click', () => {
+        if (currentSlide > 0) {
+            showSlide(currentSlide - 1);
+        }
+    });
+
+    nextBtn.addEventListener('click', () => {
+        if (currentSlide < slides.length - 1) {
+            showSlide(currentSlide + 1);
+        }
+    });
+
+    // Initialize
+    createPaginationDots();
+    showSlide(0);
+});
+</script>
+</body>
+</html>

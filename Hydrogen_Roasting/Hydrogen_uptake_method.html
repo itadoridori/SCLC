@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インタラクティブ・ガイド：水素摂取の科学</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Scientific (Slate, Sky, Amber) -->
+    <!-- Application Structure Plan: The application is structured as a user-centric, single-page journey. It starts by directly answering the user's primary question ("Which method is best?") via an interactive selector, not a static table. It then progressively delves deeper into the 'how' (mechanism of action with visual diagrams), the 'what to believe' (fact-checking common health claims with a clear myth-vs-fact layout), and finally 'what to do' (a consumer guide). This thematic, task-oriented structure prioritizes usability and learning over the linear format of the source report, guiding the user from practical decisions to foundational knowledge and responsible application. -->
+    <!-- Visualization & Content Choices: 
+        1. Intake Method Comparison: Report Info -> Comparison of H₂ intake methods. Goal -> Help users choose a method based on their needs. Viz/Presentation -> Interactive card system with goal-based filtering buttons. Interaction -> User clicks a goal (e.g., "Daily Wellness"), and the corresponding method card is highlighted, explaining its suitability. Justification -> Transforms a static data table into a personalized, actionable decision tool. Library/Method -> Vanilla JS for class manipulation on HTML/Tailwind elements.
+        2. Pharmacokinetics: Report Info -> Descriptions of H₂ blood concentration over time for each method. Goal -> Visually compare the speed, peak, and duration. Viz/Presentation -> A single, multi-line Chart.js chart showing relative H₂ concentration vs. time. Interaction -> Hover tooltips for data points, clickable legend to toggle lines. Justification -> A chart conveys "rapid peak" vs. "sustained release" far more effectively than text. Library/Method -> Chart.js (Canvas), configured to be responsive and constrained within a styled container.
+        3. Health Claims (Cancer/Alkalinity): Report Info -> Debunking of common myths. Goal -> Clearly separate misinformation from scientific fact. Viz/Presentation -> "Myth vs. Reality" card layout using HTML/Tailwind. Each card juxtaposes the common claim with the scientific explanation. Interaction -> Minimal hover effects for engagement. Justification -> This direct comparison format is highly effective for correcting misconceptions. Library/Method -> HTML/CSS/Tailwind.
+        4. Biological Mechanisms: Report Info -> Concepts of selective antioxidant and gasotransmitter. Goal -> Simplify complex science. Viz/Presentation -> Simple diagrams built with styled HTML divs, not images. Interaction -> None needed; the visual itself is the clarification. Justification -> Makes abstract scientific principles concrete and understandable for a lay audience. Library/Method -> HTML/CSS/Tailwind.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Noto Sans JP', sans-serif; }
+        .chart-container { position: relative; width: 100%; max-width: 800px; margin-left: auto; margin-right: auto; height: 350px; }
+        @media (min-width: 768px) { .chart-container { height: 450px; } }
+        .tab-button.active { background-color: #0284c7; color: white; }
+        .method-card { transition: all 0.3s ease-in-out; }
+        .method-card.faded { opacity: 0.4; transform: scale(0.95); }
+        .nav-link { position: relative; transition: color 0.3s; }
+        .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -4px; left: 50%; transform: translateX(-50%); background-color: #0284c7; transition: width 0.3s; }
+        .nav-link:hover::after, .nav-link.active::after { width: 100%; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <div id="app" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <header class="sticky top-0 bg-slate-50/80 backdrop-blur-lg z-50 py-4 border-b border-slate-200">
+            <div class="flex justify-between items-center">
+                <h1 class="text-xl md:text-2xl font-bold text-sky-800">水素摂取の科学</h1>
+                <nav class="hidden md:flex space-x-6 text-sm font-medium">
+                    <a href="#comparison" class="nav-link text-slate-600 hover:text-sky-700">目的別比較</a>
+                    <a href="#mechanism" class="nav-link text-slate-600 hover:text-sky-700">作用の仕組み</a>
+                    <a href="#pharmacokinetics" class="nav-link text-slate-600 hover:text-sky-700">体内動態</a>
+                    <a href="#factcheck" class="nav-link text-slate-600 hover:text-sky-700">主張の検証</a>
+                    <a href="#consumer" class="nav-link text-slate-600 hover:text-sky-700">消費者ガイド</a>
+                </nav>
+            </div>
+        </header>
+
+        <main class="py-12">
+
+            <section id="intro" class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-900 mb-4">分子状水素 インタラクティブ・ガイド</h2>
+                <p class="max-w-3xl mx-auto text-slate-600">
+                    健康分野で注目される「水素」。その摂取方法による違いや、語られている健康効果は本当なのでしょうか？このガイドは、科学的エビデンスに基づき、複雑な情報を整理し、あなたの疑問に答えます。
+                </p>
+            </section>
+
+            <section id="comparison" class="mb-20">
+                <div class="text-center mb-12">
+                    <h2 class="text-2xl md:text-3xl font-bold text-slate-900 mb-3">目的別比較：あなたに最適な水素の摂り方は？</h2>
+                    <p class="max-w-3xl mx-auto text-slate-600">あなたの目的に応じて、最も効率的な摂取方法は異なります。「効率」は一つではありません。下の目的を選択して、各方法の長所と短所を比較してみましょう。</p>
+                </div>
+
+                <div class="flex flex-wrap justify-center gap-2 md:gap-4 mb-8" id="goal-selector">
+                    <button data-goal="all" class="tab-button active text-sm md:text-base px-4 py-2 font-semibold rounded-full bg-white text-slate-700 shadow-sm hover:bg-sky-100 transition-colors">すべて表示</button>
+                    <button data-goal="acute" class="tab-button text-sm md:text-base px-4 py-2 font-semibold rounded-full bg-white text-slate-700 shadow-sm hover:bg-sky-100 transition-colors">緊急・急性期のケア</button>
+                    <button data-goal="chronic" class="tab-button text-sm md:text-base px-4 py-2 font-semibold rounded-full bg-white text-slate-700 shadow-sm hover:bg-sky-100 transition-colors">慢性的なサポート</button>
+                    <button data-goal="daily" class="tab-button text-sm md:text-base px-4 py-2 font-semibold rounded-full bg-white text-slate-700 shadow-sm hover:bg-sky-100 transition-colors">日々の健康維持</button>
+                </div>
+
+                <div id="method-container" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="method-card bg-white p-6 rounded-2xl shadow-lg border-2 border-transparent" data-goals='["acute"]'>
+                        <div class="flex items-center mb-4">
+                            <div class="text-3xl mr-4">💨</div>
+                            <h3 class="text-xl font-bold text-slate-800">水素ガス吸入</h3>
+                        </div>
+                        <p class="text-slate-600 mb-4 text-sm">専用の発生器から水素ガスを直接吸入。肺から血中に取り込まれます。</p>
+                        <div class="space-y-3 text-sm">
+                            <div class="p-3 bg-green-50 border border-green-200 rounded-lg">
+                                <p class="font-semibold text-green-800">長所：</p>
+                                <ul class="list-disc list-inside text-green-700 mt-1">
+                                    <li>作用が最も速く、高濃度</li>
+                                    <li>精密な用量管理が可能</li>
+                                    <li>脳などにも直接届きやすい</li>
+                                </ul>
+                            </div>
+                            <div class="p-3 bg-red-50 border border-red-200 rounded-lg">
+                                <p class="font-semibold text-red-800">短所：</p>
+                                <ul class="list-disc list-inside text-red-700 mt-1">
+                                    <li>専用機器が必要で高価</li>
+                                    <li>持ち運びできず、日常的でない</li>
+                                    <li>安全管理が必要</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div id="acute-text" class="goal-text hidden mt-4 p-3 bg-sky-50 border-l-4 border-sky-500 text-sky-800 text-sm rounded-r-lg">
+                            <p class="font-bold">【最適】：急性期ケア</p>
+                            <p>脳卒中や心停止後など、一刻を争う状況で酸化ストレスを迅速に抑える必要がある場合に最も適しています。臨床研究で主に使用される方法です。</p>
+                        </div>
+                    </div>
+
+                    <div class="method-card bg-white p-6 rounded-2xl shadow-lg border-2 border-transparent" data-goals='["chronic"]'>
+                        <div class="flex items-center mb-4">
+                            <div class="text-3xl mr-4">💊</div>
+                            <h3 class="text-xl font-bold text-slate-800">水素発生サプリメント</h3>
+                        </div>
+                        <p class="text-slate-600 mb-4 text-sm">マグネシウムやケイ素等が胃腸内で水分と反応し、水素を発生させます。</p>
+                        <div class="space-y-3 text-sm">
+                             <div class="p-3 bg-green-50 border border-green-200 rounded-lg">
+                                <p class="font-semibold text-green-800">長所：</p>
+                                <ul class="list-disc list-inside text-green-700 mt-1">
+                                    <li>長時間、持続的に水素を供給</li>
+                                    <li>持ち運びが便利</li>
+                                    <li>潜在的な水素発生量が多い</li>
+                                </ul>
+                            </div>
+                            <div class="p-3 bg-red-50 border border-red-200 rounded-lg">
+                                <p class="font-semibold text-red-800">短所：</p>
+                                <ul class="list-disc list-inside text-red-700 mt-1">
+                                    <li>体内のデータがまだ限定的</li>
+                                    <li>効果が腸内環境に左右される可能性</li>
+                                    <li>製品の質にばらつき</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div id="chronic-text" class="goal-text hidden mt-4 p-3 bg-sky-50 border-l-4 border-sky-500 text-sky-800 text-sm rounded-r-lg">
+                            <p class="font-bold">【最適】：慢性的なサポート</p>
+                            <p>関節リウマチのような慢性炎症など、一日を通して継続的な酸化ストレス対策が望ましい場合に理論的に最も適しています。</p>
+                        </div>
+                    </div>
+                    
+                    <div class="method-card bg-white p-6 rounded-2xl shadow-lg border-2 border-transparent" data-goals='["daily"]'>
+                        <div class="flex items-center mb-4">
+                            <div class="text-3xl mr-4">💧</div>
+                            <h3 class="text-xl font-bold text-slate-800">水素豊富水（水素水）</h3>
+                        </div>
+                        <p class="text-slate-600 mb-4 text-sm">水に水素ガスを溶け込ませたものを飲用。主に消化管から吸収されます。</p>
+                        <div class="space-y-3 text-sm">
+                            <div class="p-3 bg-green-50 border border-green-200 rounded-lg">
+                                <p class="font-semibold text-green-800">長所：</p>
+                                <ul class="list-disc list-inside text-green-700 mt-1">
+                                    <li>最も手軽で安全</li>
+                                    <li>日常的に水分補給と同時に摂取可能</li>
+                                    <li>肝臓への効果が期待できる</li>
+                                </ul>
+                            </div>
+                            <div class="p-3 bg-red-50 border border-red-200 rounded-lg">
+                                <p class="font-semibold text-red-800">短所：</p>
+                                <ul class="list-disc list-inside text-red-700 mt-1">
+                                    <li>効果が短時間で一過性</li>
+                                    <li>総摂取量が少ない</li>
+                                    <li>開封後すぐに水素が抜ける</li>
+                                </ul>
+                            </div>
+                        </div>
+                         <div id="daily-text" class="goal-text hidden mt-4 p-3 bg-sky-50 border-l-4 border-sky-500 text-sky-800 text-sm rounded-r-lg">
+                            <p class="font-bold">【最適】：日々の健康維持</p>
+                            <p>運動後の回復や、メタボリックシンドローム対策など、日常的な健康増進が目的の場合に最も手軽で実用的な選択肢です。</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="mechanism" class="mb-20">
+                <div class="text-center mb-12">
+                    <h2 class="text-2xl md:text-3xl font-bold text-slate-900 mb-3">作用の仕組み：水素は体内で何をしているのか？</h2>
+                    <p class="max-w-3xl mx-auto text-slate-600">水素の価値は、単なる抗酸化物質にとどまりません。「選択性」と「シグナル伝達」という二つの重要な働きを持っています。</p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="bg-white p-6 rounded-2xl shadow-lg">
+                        <h3 class="text-xl font-bold text-sky-800 mb-4">① 選択的抗酸化作用</h3>
+                        <p class="text-slate-600 mb-4">体内の活性酸素には「善玉」と「悪玉」があります。水素は、細胞にダメージを与える最も有害な「悪玉」活性酸素（ヒドロキシルラジカル等）だけを選んで中和し、無害な水に変えます。体に必要な「善玉」活性酸素には影響を与えません。</p>
+                        <div class="bg-slate-100 p-4 rounded-lg flex items-center justify-around text-center text-xs md:text-sm">
+                            <div>
+                                <div class="text-3xl">😊</div>
+                                <p>善玉ROS (シグナル伝達)</p>
+                                <p class="font-bold text-slate-500 mt-2">無視</p>
+                            </div>
+                            <div class="text-5xl font-thin text-sky-500">H₂</div>
+                             <div>
+                                <div class="text-3xl">👿</div>
+                                <p>悪玉ROS (細胞傷害)</p>
+                                <p class="font-bold text-green-600 mt-2">→ 中和 → 💧</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-lg">
+                        <h3 class="text-xl font-bold text-sky-800 mb-4">② ガストランスミッター作用</h3>
+                        <p class="text-slate-600 mb-4">水素は、体内の防御システムをONにする「スイッチ」のような役割も果たします。細胞に働きかけて、体自身が持つ抗酸化酵素や抗炎症物質の産生を促します。この効果は、水素が体から抜けた後も持続する可能性があります。</p>
+                        <div class="bg-slate-100 p-4 rounded-lg flex items-center justify-around text-center text-xs md:text-sm">
+                           <div>
+                                <div class="text-4xl">H₂</div>
+                                <p>水素シグナル</p>
+                           </div>
+                           <div class="text-3xl text-slate-400">➡️</div>
+                           <div>
+                                <div class="text-3xl">🏠</div>
+                                <p>細胞</p>
+                           </div>
+                           <div class="text-3xl text-slate-400">➡️</div>
+                           <div>
+                                <div class="text-3xl">🛡️</div>
+                                <p>自己防御力UP</p>
+                           </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="pharmacokinetics" class="mb-20">
+                <div class="text-center mb-12">
+                    <h2 class="text-2xl md:text-3xl font-bold text-slate-900 mb-3">体内動態チャート：どう吸収され、どう消えるか</h2>
+                    <p class="max-w-3xl mx-auto text-slate-600">摂取方法によって、体内の水素濃度がどう変化するかは大きく異なります。下のチャートは、各方法の薬物動態プロファイルの概念的な違いを視覚化したものです。</p>
+                </div>
+                <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-lg">
+                    <div class="chart-container">
+                        <canvas id="pharmacokineticsChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <section id="factcheck" class="mb-20">
+                <div class="text-center mb-12">
+                    <h2 class="text-2xl md:text-3xl font-bold text-slate-900 mb-3">主張の検証：よく聞く話は本当か？</h2>
+                    <p class="max-w-3xl mx-auto text-slate-600">水素に関しては、科学的根拠の乏しい主張も広まっています。ここでは特に多い二つの主張について、科学的な見解を解説します。</p>
+                </div>
+                <div class="space-y-8">
+                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-slate-800 mb-4">主張①：「水素はがんの温床である活性酸素を除去する」</h3>
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <div class="border-l-4 border-amber-400 pl-4">
+                                    <h4 class="font-bold text-amber-700">よくある解釈 (過度な単純化)</h4>
+                                    <p class="text-slate-600 text-sm mt-1">水素が活性酸素をなくすことで、がんを直接予防・治療できる。</p>
+                                </div>
+                                <div class="border-l-4 border-sky-500 pl-4">
+                                    <h4 class="font-bold text-sky-800">科学的見解</h4>
+                                    <p class="text-slate-600 text-sm mt-1">この表現は単純化しすぎています。現在の強力なエビデンスは、水素が「補助療法」として価値があることを示しています。つまり、抗がん剤や放射線治療による<span class="font-bold">副作用（正常な細胞へのダメージ）を選択的に軽減し、患者のQOL（生活の質）を改善する</span>役割です。がんの直接治療への効果は、まだ研究段階です。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-slate-800 mb-4">主張②：「水素は体液を弱アルカリ性にし、免疫力を高める」</h3>
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <div class="border-l-4 border-amber-400 pl-4">
+                                    <h4 class="font-bold text-amber-700">よくある解釈 (科学的誤り)</h4>
+                                    <p class="text-slate-600 text-sm mt-1">水素を摂ると体がアルカリ性になり、免疫力が上がる。</p>
+                                </div>
+                                <div class="border-l-4 border-sky-500 pl-4">
+                                    <h4 class="font-bold text-sky-800">科学的見解</h4>
+                                    <p class="text-slate-600 text-sm mt-1">これは<span class="font-bold">科学的に誤りです</span>。人間の血液のpHは、食事や飲み物では変化しないよう、極めて厳密にコントロールされています。水素が免疫系に良い影響を与える可能性はありますが、それはpH変化によるものではなく、その<span class="font-bold">優れた「抗炎症作用」や「細胞保護作用」</span>によるものと考えられています。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="consumer" class="bg-sky-700 text-white rounded-2xl p-8 md:p-12">
+                 <div class="text-center mb-8">
+                    <h2 class="text-2xl md:text-3xl font-bold mb-3">消費者向けガイド：賢い選択のために</h2>
+                    <p class="max-w-3xl mx-auto text-sky-200">水素製品を利用する前に、知っておくべき重要なポイントがあります。</p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8 text-center">
+                    <div class="bg-sky-600/50 p-6 rounded-xl">
+                        <div class="text-4xl mb-3">🔍</div>
+                        <h3 class="font-bold mb-2">品質に注意</h3>
+                        <p class="text-sm text-sky-100">市場には宣伝通りの水素濃度がない製品も存在します（国民生活センター調査）。第三者機関の証明など、信頼できる情報開示をしている製品を選びましょう。</p>
+                    </div>
+                    <div class="bg-sky-600/50 p-6 rounded-xl">
+                        <div class="text-4xl mb-3">🤝</div>
+                        <h3 class="font-bold mb-2">補助的な役割と心得る</h3>
+                        <p class="text-sm text-sky-100">水素は非常に安全ですが、いかなる病気の標準治療に取って代わるものではありません。あくまで健康維持やQOL向上のための「補助的」な手段と考え、医療専門家へ相談しましょう。</p>
+                    </div>
+                    <div class="bg-sky-600/50 p-6 rounded-xl">
+                        <div class="text-4xl mb-3">📢</div>
+                        <h3 class="font-bold mb-2">誇大広告を鵜呑みにしない</h3>
+                        <p class="text-sm text-sky-100">「活性水素」や「マイナス水素イオン」は科学的に不正確な用語です。治療効果は「分子状水素(H₂)」にあります。過度な健康効果をうたう広告には注意が必要です。</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer class="text-center py-8 text-slate-500 text-xs border-t mt-12">
+            <p>このアプリケーションは提供された科学的評価レポートに基づき作成されたものであり、医学的助言に代わるものではありません。</p>
+        </footer>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    const goalSelector = document.getElementById('goal-selector');
+    const methodContainer = document.getElementById('method-container');
+    const methodCards = methodContainer.querySelectorAll('.method-card');
+    const goalButtons = goalSelector.querySelectorAll('.tab-button');
+
+    goalSelector.addEventListener('click', (e) => {
+        if (e.target.tagName !== 'BUTTON') return;
+
+        const selectedGoal = e.target.dataset.goal;
+
+        goalButtons.forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.goal === selectedGoal);
+        });
+
+        methodCards.forEach(card => {
+            const cardGoals = JSON.parse(card.dataset.goals);
+            const goalText = card.querySelector(`#${selectedGoal}-text`);
+
+            card.querySelectorAll('.goal-text').forEach(gt => gt.classList.add('hidden'));
+
+            if (selectedGoal === 'all' || cardGoals.includes(selectedGoal)) {
+                card.classList.remove('faded');
+                card.style.borderColor = '#0284c7'; // sky-500
+                if(goalText) {
+                    goalText.classList.remove('hidden');
+                }
+            } else {
+                card.classList.add('faded');
+                card.style.borderColor = 'transparent';
+            }
+        });
+    });
+
+    // Initialize with "all" selected
+    goalSelector.querySelector('button[data-goal="all"]').click();
+
+    const chartCtx = document.getElementById('pharmacokineticsChart').getContext('2d');
+    const pharmacokineticsChart = new Chart(chartCtx, {
+        type: 'line',
+        data: {
+            labels: ['0分', '10分', '30分', '1時間', '2時間', '4時間', '8時間', '12時間'],
+            datasets: [
+                {
+                    label: 'ガス吸入 (概念)',
+                    data: [0, 95, 100, 80, 20, 5, 0, 0],
+                    borderColor: 'rgb(239, 68, 68)',
+                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 2,
+                    pointHoverRadius: 6,
+                },
+                {
+                    label: '水素水 (概念)',
+                    data: [0, 40, 25, 10, 2, 0, 0, 0],
+                    borderColor: 'rgb(59, 130, 246)',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 2,
+                    pointHoverRadius: 6,
+                },
+                {
+                    label: 'サプリメント (概念)',
+                    data: [0, 5, 15, 25, 30, 30, 25, 15],
+                    borderColor: 'rgb(22, 163, 74)',
+                    backgroundColor: 'rgba(22, 163, 74, 0.1)',
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 2,
+                    pointHoverRadius: 6,
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                intersect: false,
+                mode: 'index',
+            },
+            plugins: {
+                title: {
+                    display: true,
+                    text: '摂取方法による血中水素濃度の概念的推移',
+                    font: { size: 16 }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.parsed.y !== null) {
+                                label += context.parsed.y + ' (相対値)';
+                            }
+                            return label;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    title: {
+                        display: true,
+                        text: '血中水素濃度 (相対値)'
+                    },
+                    min: 0,
+                    max: 110,
+                    ticks: {
+                        callback: function(value) {
+                            return value > 0 ? value : '基準値';
+                        }
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: '摂取後の経過時間'
+                    }
+                }
+            }
+        }
+    });
+
+    const navLinks = document.querySelectorAll('.nav-link');
+    const sections = document.querySelectorAll('main section[id]');
+
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.4
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          navLinks.forEach(link => {
+            link.classList.toggle('active', link.getAttribute('href').substring(1) === entry.target.id);
+          });
+        }
+      });
+    }, observerOptions);
+
+    sections.forEach(section => {
+      observer.observe(section);
+    });
+
+    navLinks.forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+});
+</script>
+</body>
+</html>
