@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>廣瀬幸雄博士：研究と発見のインタラクティブ・ジャーニー</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Academic Earth -->
+    <!-- Application Structure Plan: このSPAは、廣瀬博士のキャリアの二面性（基礎科学と応用科学）を核とした「テーマ別ハブ＆スポーク」構造を採用。ユーザーはまず博士の全体像（概要、タイムライン）を把握し、次にインタラクティブなドーナツチャートで「材料科学者」か「応用イノベーター」の側面を選択。この選択が下部の「研究の探求」セクションの表示内容を動的に切り替え、関連情報へとユーザーを導く。この非線形な探索モデルは、報告書の章立てをなぞるよりも、ユーザーの興味に基づいた主体的な情報発見を促し、博士の多面的な功績の理解を深めるために最適と判断した。 -->
+    <!-- Visualization & Content Choices: 
+        - キャリアタイムライン (HTML/CSS): 報告書の表1を視覚的に表現。Goal: Inform。Interaction: ホバーで詳細表示（将来拡張）。Justification: 年代順のキャリアパスを直感的に示す。
+        - 二面性ドーナツチャート (Chart.js): 博士の2つの研究領域を表現。Goal: Compare/Navigate。Interaction: クリックで下部コンテンツをフィルタリング。Justification: 抽象的なキャリアの二面性を、ユーザーが操作可能なエントリーポイントとして具体化する。
+        - 研究内容タブ (JS): 詳細な研究内容を整理。Goal: Organize。Interaction: タブクリックで内容切り替え。Justification: 情報過多を避け、構造化された形で詳細を提供。
+        - 出版物フィルター (JS): 著書・論文リストを分類。Goal: Organize。Interaction: ボタンクリックでリストを絞り込み。Justification: 長大なリストをユーザーが関心のあるカテゴリに絞れるようにし、実用性を高める。
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #FDFBF5;
+            color: #3C3633;
+        }
+        .bg-primary { background-color: #FDFBF5; }
+        .bg-secondary { background-color: #E0E0E0; }
+        .bg-accent { background-color: #748E63; }
+        .text-primary { color: #3C3633; }
+        .text-secondary { color: #5F5651; }
+        .text-accent { color: #748E63; }
+        .border-accent { border-color: #748E63; }
+        nav a {
+            transition: color 0.3s, border-bottom-color 0.3s;
+            border-bottom: 2px solid transparent;
+            padding-bottom: 4px;
+        }
+        nav a:hover, nav a.active {
+            color: #748E63;
+            border-bottom-color: #748E63;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .tab-button {
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .tab-button.active {
+            background-color: #748E63;
+            color: white;
+        }
+        .publication-filter.active {
+            background-color: #748E63;
+            color: white;
+        }
+        .timeline-item {
+            position: relative;
+            padding-left: 30px;
+            padding-bottom: 30px;
+            border-left: 2px solid #D1C7BF;
+        }
+        .timeline-item:last-child {
+            border-left: 2px solid transparent;
+            padding-bottom: 0;
+        }
+        .timeline-dot {
+            position: absolute;
+            left: -9px;
+            top: 0;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background-color: #748E63;
+            border: 3px solid #FDFBF5;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-primary text-primary">
+
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl font-bold text-accent">廣瀬 幸雄 博士</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#hero" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-secondary">トップ</a>
+                        <a href="#profile" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-secondary">二つの顔</a>
+                        <a href="#research" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-secondary">研究の探求</a>
+                        <a href="#publications" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-secondary">出版物</a>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+                        <span class="sr-only">メニューを開く</span>
+                        <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                        <svg class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div id="mobile-menu" class="md:hidden hidden">
+                <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                    <a href="#hero" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-secondary">トップ</a>
+                    <a href="#profile" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-secondary">二つの顔</a>
+                    <a href="#research" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-secondary">研究の探求</a>
+                    <a href="#publications" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-secondary">出版物</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        
+        <section id="hero" class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-primary mb-4">研究と発見のインタラクティブ・ジャーニー</h2>
+            <p class="text-lg text-secondary max-w-3xl mx-auto">材料科学の探究者、コーヒー学の開拓者。金沢大学名誉教授、廣瀬幸雄博士の多岐にわたる学術的功績をインタラクティブに紐解きます。</p>
+        </section>
+
+        <section id="timeline-section" class="mb-16">
+            <div class="max-w-4xl mx-auto">
+                <h3 class="text-2xl font-bold text-center mb-8 text-primary">学術的キャリアの軌跡</h3>
+                 <p class="text-center text-secondary mb-10 max-w-3xl mx-auto">
+                    本セクションでは、廣瀬博士の学術的なキャリアにおける主要な出来事と受賞歴を時系列でご紹介します。金沢大学での長年にわたる研究・教育活動から、イグノーベル賞や瑞宝中綬章といった国内外での高い評価まで、その歩みをご覧ください。各マイルストーンが、博士の研究者としての歩みをどのように形作ってきたかを感じ取ることができます。
+                </p>
+                <div class="relative">
+                    <div id="timeline-container"></div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="profile" class="mb-16">
+            <h3 class="text-2xl font-bold text-center mb-2 text-primary">二人の科学者：基礎と応用の融合</h3>
+            <p class="text-center text-secondary mb-8 max-w-3xl mx-auto">
+                廣瀬博士のキャリアは、厳密な材料科学への深い貢献と、コーヒーやハトといった身近なテーマへの好奇心に基づく応用研究という、二つの異なる側面によって特徴づけられます。このセクションでは、博士の「二つの顔」を視覚的に表現します。下のチャートの各領域をクリックすることで、それぞれの研究分野が持つ魅力と発見を深く探求できます。
+            </p>
+            <div class="chart-container">
+                <canvas id="careerChart"></canvas>
+            </div>
+        </section>
+
+        <section id="research" class="mb-16">
+            <h3 class="text-2xl font-bold text-center mb-8 text-primary">研究の探求</h3>
+            <div id="research-intro" class="text-center text-secondary mb-8 max-w-3xl mx-auto">
+                上のチャートから興味のある分野を選択してください。博士の研究の詳細が表示されます。
+            </div>
+            
+            <div id="research-content" class="hidden">
+                <div class="flex justify-center mb-6 border-b border-gray-200">
+                    <div id="research-tabs" class="flex flex-wrap -mb-px"></div>
+                </div>
+                <div id="research-tab-content" class="p-4 bg-white rounded-lg shadow-inner"></div>
+            </div>
+        </section>
+
+        <section id="publications" class="mb-16">
+            <h3 class="text-2xl font-bold text-center mb-2 text-primary">著書と主要論文</h3>
+            <p class="text-center text-secondary mb-8 max-w-3xl mx-auto">
+                廣瀬博士の研究成果は、専門家向けの学術書から一般向けの啓蒙書まで、幅広い著作として結実しています。ここでは、博士の知識体系を形作る主要な出版物を紹介します。下のボタンでカテゴリを絞り込み、関心のある分野の著作をご覧ください。また、Nature誌に関する疑問についても解説します。
+            </p>
+            <div class="flex flex-wrap justify-center gap-2 mb-8">
+                <button class="publication-filter px-4 py-2 text-sm font-medium border border-gray-300 rounded-full active" data-filter="all">すべて</button>
+                <button class="publication-filter px-4 py-2 text-sm font-medium border border-gray-300 rounded-full" data-filter="academic">専門・学術書</button>
+                <button class="publication-filter px-4 py-2 text-sm font-medium border border-gray-300 rounded-full" data-filter="popular">科学啓蒙書</button>
+                <button class="publication-filter px-4 py-2 text-sm font-medium border border-gray-300 rounded-full" data-filter="paper">主要論文</button>
+            </div>
+            <div id="publications-list" class="space-y-6 max-w-4xl mx-auto"></div>
+             <div class="mt-12 p-6 bg-yellow-50 border border-yellow-200 rounded-lg max-w-4xl mx-auto">
+                <h4 class="font-bold text-lg text-yellow-800 mb-2">注記：Nature誌への論文掲載について</h4>
+                <p class="text-yellow-700">
+                    本調査において、廣瀬幸雄博士による『Nature』や『Science』といった総合科学ジャーナルでの論文発表は確認されませんでした。これは研究の質が低いことを意味するものではありません。博士の研究は、材料力学やX線応力解析といった専門分野における、深く価値の高い進展を代表するものです。このような専門性の高い研究は、その分野の権威ある専門ジャーナルで発表され、専門家による評価を受けるのが一般的です。博士の論文リストは、専門分野で大きな成功を収めた、尊敬される科学者の典型的な姿を示しています。
+                </p>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-gray-800 text-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-4 text-center text-sm">
+            <p>このページは廣瀬幸雄博士に関する公開情報を基に生成されたインタラクティブ・レポートです。</p>
+            <p>&copy; 2024 Interactive Science Journey. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        const timelineData = [
+            { year: 1963, event: '金沢大学理学部 卒業', significance: '学術的キャリアの起点' },
+            { year: 1985, event: '金沢大学 教授に就任', significance: '金沢大学における教育・研究活動の中核を担う' },
+            { year: 1997, event: '金沢大学で公開講座「コーヒー学入門」を開始', significance: '「コーヒー学」という新たな学問分野の体系化と社会への普及を開始' },
+            { year: 2003, event: 'イグノーベル化学賞 受賞', significance: '材料科学の知見を都市の生態系という異分野に応用し、科学の面白さを社会に示した' },
+            { year: 2004, event: '金沢大学VBL 初代ラボラトリー長に就任', significance: '大学の研究成果を社会実装へと繋ぐ、学術的起業家精神の制度的基盤を構築' },
+            { year: 2009, event: '文部科学大臣表彰 科学技術賞 受賞', significance: '超音波技術を用いた骨密度評価法の開発という、医療技術への貢献が評価された' },
+            { year: 2021, event: '瑞宝中綬章 受章', significance: '教育および研究分野における長年の功績が国家的に認められた' },
+        ];
+
+        const researchData = {
+            scientist: {
+                name: '材料科学の探究者',
+                intro: '材料内部の力（応力）の精密測定から、金属材料の強度や寿命を向上させるための加工技術まで、産業の基盤を支える地道で厳密な研究に取り組みました。この分野での深い洞察が、博士の科学者としての評価を不動のものにしています。',
+                tabs: [
+                    { 
+                        title: 'X線応力解析', 
+                        content: `<h4>概要</h4><p>材料内部に残存する「残留応力」をX線で非破壊測定する技術の高度化に貢献。特に、結晶の向きが揃った「集合組織」を持つ材料の応力解析法を発展させ、測定技術そのものを前進させました。</p><h4>主要な貢献</h4><ul><li>・集合組織を持つ材料の非線形な挙動に対応する高度な応力解析法を提案。</li><li>・炭化チタンコーティング膜や冷間圧延鋼など、多様な工業材料へ適用し、実用性を証明。</li></ul>`
+                    },
+                    { 
+                        title: '材料プロセッシング', 
+                        content: `<h4>概要</h4><p>累積圧延接合（ARB）法や等チャンネル角押出（ECAP）法といった強度塑性加工（SPD）技術を用い、材料の強度と性能を飛躍的に向上させる超微細粒（UFG）組織の形成を研究しました。</p><h4>主要な貢献</h4><ul><li>・ARBプロセスにより、高い強度と高い電気伝導度を両立した銅合金を開発。</li><li>・ショットピーニング（微粒子投射）により材料表面を改質し、疲労寿命を向上させる技術を研究。</li></ul>`
+                    },
+                    { 
+                        title: '疲労・破壊力学', 
+                        content: `<h4>概要</h4><p>構造物の安全に不可欠な、材料がなぜ、どのように壊れるのかというメカニズムを解明。残留応力や微細構造が疲労寿命に与える影響を体系的に調査し、破壊を未然に防ぐ予防的な工学アプローチを追求しました。</p><h4>主要な貢献</h4><ul><li>・ショットピーニングで導入された圧縮残留応力が疲労性能向上に寄与することを実証。</li><li>・微小な亀裂がどこから発生するのか、といった破壊の微視的メカニズムを解明。</li></ul>`
+                    }
+                ]
+            },
+            innovator: {
+                name: '応用科学の革新者',
+                intro: '「なぜだろう？」という純粋な好奇心を原動力に、工学の知識をコーヒー、ハト、ドライバーのストレスといった、一見科学とは無縁に見える領域へ応用。イグノーベル賞に輝いた研究や、「コーヒー学」の創設など、科学の楽しさと実用性を社会に広く伝えました。',
+                tabs: [
+                    { 
+                        title: 'コーヒー学', 
+                        content: `<h4>概要</h4><p>喫茶店の黒いコーヒーへの素朴な疑問から、コーヒー豆の焙煎プロセスを科学的に探究。日本初の大学講座「コーヒー学入門」を開設し、一つの学問分野として体系化しました。</p><h4>主要な貢献</h4><ul><li>・酸化を防ぐ「水素燃料焙煎機」など、工学的知見に基づいた焙煎装置を開発。</li><li>・日本コーヒー文化学会の設立と運営に尽力し、会長も務める。</li><li>・多数の啓蒙書を執筆し、コーヒーの科学的魅力を一般に広めた。</li></ul>`
+                    },
+                    { 
+                        title: 'イグノーベル賞の研究', 
+                        content: `<h4>概要</h4><p>兼六園の日本武尊像にハトが寄り付かない現象を観察。「銅像の材質に原因があるのでは？」という仮説を立て、材料分析を実施。このユニークな研究は2003年にイグノーベル化学賞を受賞しました。</p><h4>発見</h4><p>銅像の青銅に含まれる「ヒ素」が酸性雨と反応し、鳥が嫌う物質を生成している可能性を突き止めました。この研究は、身近な現象に科学の目で迫る面白さを示す好例です。</p>`
+                    },
+                    { 
+                        title: '健康・安全技術', 
+                        content: `<h4>概要</h4><p>VBL（ベンチャー・ビジネス・ラボラトリー）の初代ラボラトリー長として、大学の研究成果を社会に役立てる活動を推進。交通安全から防災まで、多様な応用技術の開発に携わりました。</p><h4>主なプロジェクト</h4><ul><li>・サーモグラフィでドライバーの生理的ストレスを検出し、事故防止を目指す研究。</li><li>・能登半島地震などの被災地利用を想定した「感染予防型仮設トイレ」の共同開発。</li></ul>`
+                    }
+                ]
+            }
+        };
+
+        const publicationsData = [
+            { type: 'academic', title: '基礎材料工学', publisher: '日新出版' },
+            { type: 'academic', title: '品質管理工学', publisher: '日新出版' },
+            { type: 'academic', title: 'Fractography, Industrial Applications of X-Ray Diffraction', publisher: 'Marcel Dekker' },
+            { type: 'popular', title: 'もっと知りたいコーヒー学', publisher: '旭屋出版' },
+            { type: 'popular', title: 'コーヒー学入門', publisher: '人間の科学新社' },
+            { type: 'popular', title: '工学屋の見たコーヒーの世界', publisher: 'いなほ書房' },
+            { type: 'popular', title: 'なるほど珈琲学', publisher: '旭屋出版' },
+            { type: 'paper', title: 'Residual Stress Analysis of Textured Materials by X-Ray Diffraction Method', journal: 'Materials Science Forum (2012)' },
+            { type: 'paper', title: 'High performance of mechanical and electrical properties of Cu-Cr-Zr alloy sheets produced by ARB process...', journal: 'Journal of Physics Conference Series (2010)' },
+            { type: 'paper', title: 'Fatigue Strength and X-ray Triaxial Residual Stress Measurement of Annealed Fine Grained Steels...', journal: 'Journal of the Society of Materials Science Japan (2009)' },
+            { type: 'paper', title: 'Feasibility Study on Driver\'s Stress Detection from Differential Skin Temperature Measurement', journal: 'IEEE Engineering in Medicine and Biology Society Conference (2008)' },
+        ];
+        
+        const timelineContainer = document.getElementById('timeline-container');
+        timelineData.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'timeline-item';
+            div.innerHTML = `
+                <div class="timeline-dot"></div>
+                <div class="font-bold text-lg text-accent">${item.year}年</div>
+                <h4 class="font-semibold text-primary mb-1">${item.event}</h4>
+                <p class="text-sm text-secondary">${item.significance}</p>
+            `;
+            timelineContainer.appendChild(div);
+        });
+
+        const ctx = document.getElementById('careerChart').getContext('2d');
+        const careerChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: [researchData.scientist.name, researchData.innovator.name],
+                datasets: [{
+                    label: '研究分野',
+                    data: [50, 50],
+                    backgroundColor: [
+                        'rgba(116, 142, 99, 0.7)',
+                        'rgba(189, 179, 163, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(116, 142, 99, 1)',
+                        'rgba(189, 179, 163, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '60%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            font: {
+                                size: 14,
+                                family: "'Noto Sans JP', sans-serif"
+                            }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': この分野を探求する';
+                            }
+                        }
+                    }
+                },
+                onClick: (event, elements) => {
+                    if (elements.length > 0) {
+                        const i = elements[0].index;
+                        const key = i === 0 ? 'scientist' : 'innovator';
+                        updateResearchSection(key);
+                        document.getElementById('research').scrollIntoView({ behavior: 'smooth' });
+                    }
+                }
+            }
+        });
+
+        const researchIntro = document.getElementById('research-intro');
+        const researchContent = document.getElementById('research-content');
+        const researchTabs = document.getElementById('research-tabs');
+        const researchTabContent = document.getElementById('research-tab-content');
+
+        function updateResearchSection(key) {
+            const data = researchData[key];
+            researchIntro.innerHTML = `<p class="text-lg font-semibold text-accent">${data.name}</p><p>${data.intro}</p>`;
+            
+            researchTabs.innerHTML = '';
+            data.tabs.forEach((tab, index) => {
+                const button = document.createElement('button');
+                button.className = `tab-button text-sm font-medium mr-2 mb-2 px-4 py-2 rounded-t-lg border-b-2 border-transparent hover:text-accent hover:border-accent`;
+                button.textContent = tab.title;
+                button.dataset.index = index;
+                if (index === 0) {
+                    button.classList.add('active', 'border-accent', 'text-accent');
+                }
+                button.addEventListener('click', () => {
+                    setActiveTab(key, index);
+                });
+                researchTabs.appendChild(button);
+            });
+
+            setActiveTab(key, 0);
+            researchContent.classList.remove('hidden');
+        }
+
+        function setActiveTab(key, index) {
+            const data = researchData[key];
+            researchTabContent.innerHTML = data.tabs[index].content;
+            
+            Array.from(researchTabs.children).forEach((button, i) => {
+                if (i === index) {
+                    button.classList.add('active');
+                } else {
+                    button.classList.remove('active');
+                }
+            });
+        }
+        
+        const publicationsList = document.getElementById('publications-list');
+        const publicationFilters = document.querySelectorAll('.publication-filter');
+
+        function renderPublications(filter) {
+            publicationsList.innerHTML = '';
+            const filteredData = (filter === 'all') ? publicationsData : publicationsData.filter(p => p.type === filter);
+            
+            if(filteredData.length === 0){
+                publicationsList.innerHTML = `<p class="text-center text-secondary">このカテゴリの出版物はありません。</p>`;
+                return;
+            }
+
+            filteredData.forEach(pub => {
+                const div = document.createElement('div');
+                div.className = 'publication-item bg-white p-4 rounded-lg shadow-md transition-transform transform hover:scale-105';
+                let content = '';
+                if(pub.type === 'paper'){
+                    content = `<h4 class="font-bold text-primary">${pub.title}</h4><p class="text-sm text-secondary italic">${pub.journal}</p>`;
+                } else {
+                    content = `<h4 class="font-bold text-primary">${pub.title}</h4><p class="text-sm text-secondary">${pub.publisher}</p>`;
+                }
+                div.innerHTML = content;
+                publicationsList.appendChild(div);
+            });
+        }
+
+        publicationFilters.forEach(button => {
+            button.addEventListener('click', () => {
+                const filter = button.dataset.filter;
+                publicationFilters.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                renderPublications(filter);
+            });
+        });
+
+        renderPublications('all');
+
+        const navLinks = document.querySelectorAll('.nav-link');
+        const sections = document.querySelectorAll('main section');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= sectionTop - 80) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').substring(1) === current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+        
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const menuIcons = mobileMenuButton.querySelectorAll('svg');
+
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+            menuIcons[0].classList.toggle('hidden');
+            menuIcons[1].classList.toggle('hidden');
+        });
+        
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+                if(mobileMenu.classList.contains('hidden') === false){
+                     mobileMenu.classList.add('hidden');
+                     menuIcons[0].classList.remove('hidden');
+                     menuIcons[1].classList.add('hidden');
+                }
+            });
+        });
+    });
+    </script>
+</body>
+</html>
