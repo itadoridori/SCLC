@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>体内水素発生の科学 | インタラクティブ・プレゼンテーション</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+        .slide {
+            display: none;
+            min-height: 80vh;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .slide.active {
+            display: flex;
+        }
+        .narration-box {
+            background-color: rgba(0, 0, 0, 0.75);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            max-width: 90%;
+            margin: 1rem auto 0 auto;
+        }
+        .pagination-dot {
+            transition: background-color 0.3s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .chart-container {
+            position: relative;
+            margin: auto;
+            height: 50vh;
+            width: 90vw;
+            max-width: 800px;
+        }
+        .final-slide-box {
+            background-color: white;
+            border-left: 5px solid #2563EB;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800">
+
+    <div class="container mx-auto p-4 md:p-8 min-h-screen flex flex-col justify-center">
+        <!-- Slide Container -->
+        <div id="slide-container" class="flex-grow">
+
+            <!-- Slide 1: Title -->
+            <section class="slide active flex-col justify-center items-center text-center p-4">
+                <div class="bg-white p-10 rounded-xl shadow-2xl">
+                    <h1 class="text-4xl md:text-6xl font-bold text-blue-600 mb-4">体内水素発生の科学</h1>
+                    <p class="text-xl md:text-2xl text-slate-600">その作用機序、有効性、そして科学的実態に迫る</p>
+                </div>
+                <div class="narration-box">
+                    近年、健康や医療の分野で注目される「水素」。その水素を体の中で作り出す、という画期的な技術があります。このプレゼンテーションでは、その驚くべき技術の裏側にある科学的な真実を、分かりやすく解き明かしていきます。
+                </div>
+            </section>
+
+            <!-- Slide 2: The Misconception -->
+            <section class="slide flex-col justify-center items-center p-4">
+                <h2 class="text-3xl md:text-4xl font-bold text-center mb-8">よくある誤解：<br class="md:hidden">「植物シリカ」で水素ができる？</h2>
+                <div class="grid md:grid-cols-2 gap-8 w-full max-w-5xl">
+                    <div class="bg-red-50 p-6 rounded-lg shadow-md border-2 border-red-200">
+                        <h3 class="text-2xl font-bold text-red-700 mb-2 flex items-center"><span class="text-4xl mr-3">🌾</span> 植物性シリカ</h3>
+                        <p class="text-lg font-mono text-red-600">化学式: $SiO_2$ (二酸化ケイ素)</p>
+                        <hr class="my-3">
+                        <p class="text-slate-700">もみ殻などから作られる、非常に安定した物質です。ミネラル補給が目的であり、体内で分解して水素を発生させることは化学的に不可能です。</p>
+                    </div>
+                    <div class="bg-green-50 p-6 rounded-lg shadow-md border-2 border-green-200">
+                        <h3 class="text-2xl font-bold text-green-700 mb-2 flex items-center"><span class="text-4xl mr-3">💎</span> 水素発生剤</h3>
+                        <p class="text-lg font-mono text-green-600">化学式: $Si$ (単体ケイ素)</p>
+                        <hr class="my-3">
+                        <p class="text-slate-700">実際に水素を発生させるのは、半導体の原料にもなる高純度の「単体ケイ素」です。この二つは全くの別物です。</p>
+                    </div>
+                </div>
+                <div class="narration-box">
+                    まず、最も重要な誤解を解いておきましょう。「植物性のシリカサプリメント」と「水素を発生させる製剤」は、根本的に異なる物質です。左の植物性シリカは、化学式$SiO_2$、二酸化ケイ素。非常に安定しており、体内で水素を作ることはありません。一方、右側が真の主役、化学式$Si$、単体ケイ素です。この違いが、全ての鍵を握っています。
+                </div>
+            </section>
+
+            <!-- Slide 3: The Real Reaction -->
+            <section class="slide flex-col justify-center items-center p-4">
+                <h2 class="text-3xl md:text-4xl font-bold text-center mb-8">真実：水素を生み出す化学反応</h2>
+                <div class="bg-white p-8 rounded-xl shadow-xl w-full max-w-3xl text-center">
+                    <p class="text-2xl md:text-4xl font-mono tracking-wider">
+                        <span class="font-bold text-green-600">Si</span>
+                        <span class="mx-2 md:mx-4 text-slate-400">+</span>
+                        <span class="font-bold text-blue-500">2H₂O</span>
+                        <span class="mx-2 md:mx-4 text-slate-400 text-4xl">→</span>
+                        <span class="font-bold text-slate-500">SiO₂</span>
+                        <span class="mx-2 md:mx-4 text-slate-400">+</span>
+                        <span class="font-bold text-sky-500">2H₂↑</span>
+                    </p>
+                    <div class="mt-6 text-left grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                        <div><p class="font-bold text-green-600">単体ケイ素</p></div>
+                        <div><p class="font-bold text-blue-500">水</p></div>
+                        <div><p class="font-bold text-slate-500">二酸化ケイ素</p></div>
+                        <div><p class="font-bold text-sky-500">水素ガス</p></div>
+                    </div>
+                </div>
+                 <div class="narration-box">
+                    では、どのように水素が作られるのでしょうか。答えはこのシンプルな化学反応式にあります。単体ケイ素が、体内の水分、つまり水と反応します。その結果、安全な二酸化ケイ素と、私たちの体にとって有益な水素ガスが生成されるのです。
+                </div>
+            </section>
+
+            <!-- Slide 4: The In-Body Bioreactor -->
+            <section class="slide flex-col justify-center items-center p-4">
+                 <h2 class="text-3xl md:text-4xl font-bold text-center mb-12">体内の「スイッチ」：消化管のpH勾配</h2>
+                 <div class="w-full max-w-6xl relative">
+                    <div class="absolute top-1/2 left-0 w-full h-1 bg-slate-300 -translate-y-1/2"></div>
+                    <div class="relative flex justify-between items-start">
+                        <div class="w-1/4 text-center">
+                             <div class="mx-auto w-24 h-24 rounded-full bg-orange-100 flex items-center justify-center text-5xl mb-3 border-4 border-white ring-4 ring-orange-200">💊</div>
+                             <h4 class="font-bold text-xl">1. 摂取</h4>
+                             <p class="text-slate-600 text-sm">カプセルを飲む</p>
+                        </div>
+                        <div class="w-1/4 text-center">
+                             <div class="mx-auto w-24 h-24 rounded-full bg-red-100 flex items-center justify-center text-5xl mb-3 border-4 border-white ring-4 ring-red-200">😴</div>
+                             <h4 class="font-bold text-xl">2. 胃 (酸性)</h4>
+                             <p class="text-slate-600 text-sm">反応OFF</p>
+                        </div>
+                        <div class="w-1/4 text-center">
+                             <div class="mx-auto w-24 h-24 rounded-full bg-green-100 flex items-center justify-center text-5xl mb-3 border-4 border-white ring-4 ring-green-200">💡</div>
+                             <h4 class="font-bold text-xl">3. 小腸 (アルカリ性)</h4>
+                             <p class="text-slate-600 text-sm">反応ON！</p>
+                        </div>
+                        <div class="w-1/4 text-center">
+                             <div class="mx-auto w-24 h-24 rounded-full bg-sky-100 flex items-center justify-center text-5xl mb-3 border-4 border-white ring-4 ring-sky-200">💨</div>
+                             <h4 class="font-bold text-xl">4. 水素発生</h4>
+                             <p class="text-slate-600 text-sm">全身へ供給</p>
+                        </div>
+                    </div>
+                 </div>
+                <div class="narration-box">
+                    この反応が体内で安全に、かつ効率的に行われる秘密は、私たちの消化管にあります。摂取されたケイ素製剤は、強酸性の胃では反応せず、おとなしくしています。そして、アルカリ性の小腸に到達した瞬間にスイッチが入り、水素の発生が始まるのです。まさに、人体を「バイオリアクター」として利用する賢い仕組みです。
+                </div>
+            </section>
+            
+            <!-- Slide 5: Comparison Chart -->
+            <section class="slide flex-col justify-center items-center p-4">
+                <h2 class="text-3xl md:text-4xl font-bold text-center mb-8">他の方法との比較：圧倒的な持続力</h2>
+                <div class="w-full bg-white p-4 md:p-6 rounded-xl shadow-lg chart-container">
+                    <canvas id="comparisonChart"></canvas>
+                </div>
+                <div class="narration-box">
+                    この体内発生法のすごさは、他の水素摂取法と比較すると一目瞭然です。グラフは「作用時間」を示しています。水素水やガス吸入が一時的であるのに対し、ケイ素製剤は一度の摂取で24時間以上も持続的に水素を供給し続けます。この「持続性」が、治療効果において極めて重要なのです。
+                </div>
+            </section>
+            
+            <!-- Slide 6: Therapeutic Action -->
+            <section class="slide flex-col justify-center items-center p-4">
+                <h2 class="text-3xl md:text-4xl font-bold text-center mb-8">水素の働き：賢い「選択的」抗酸化作用</h2>
+                <div class="w-full max-w-4xl bg-white p-8 rounded-xl shadow-lg">
+                    <div class="grid md:grid-cols-2 gap-8 text-center">
+                        <div>
+                            <h3 class="text-xl font-bold mb-4 text-red-600">標的：悪玉活性酸素</h3>
+                            <div class="flex justify-center items-center text-5xl gap-4">
+                                <span>😈</span> <span class="text-slate-400">+</span> <span class="text-sky-500">H₂</span> <span class="text-slate-400">→</span> <span>💧</span>
+                            </div>
+                            <p class="mt-4 text-slate-700">細胞を傷つける最も有害な活性酸素だけを選んで、無害な水に変えます。</p>
+                        </div>
+                        <div class="border-t-2 md:border-t-0 md:border-l-2 pt-6 md:pt-0 md:pl-8">
+                            <h3 class="text-xl font-bold mb-4 text-green-600">温存：善玉活性酸素</h3>
+                             <div class="flex justify-center items-center text-5xl gap-4">
+                                <span class="opacity-30">😇</span> <span class="text-slate-400 opacity-30">+</span> <span class="text-sky-500">H₂</span> <span class="text-slate-400 opacity-30">→</span> <span class="text-red-500 text-6xl">✕</span>
+                            </div>
+                            <p class="mt-4 text-slate-700">体に必要な情報伝達役の活性酸素には影響を与えず、体の機能を維持します。</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="narration-box">
+                    では、体内に供給された水素は何をするのでしょうか。その最大の特長は「選択的な抗酸化作用」です。活性酸素には、細胞を傷つける「悪玉」と、体の情報伝達に必要な「善玉」がいます。水素は、この悪玉だけを賢く見つけて無害な水に変え、善玉には手を出さない、理想的な抗酸化物質なのです。
+                </div>
+            </section>
+            
+            <!-- Slide 7: Conclusion -->
+            <section class="slide flex-col justify-center items-center text-center p-4">
+                <h2 class="text-3xl md:text-4xl font-bold mb-8">結論：科学が拓く未来</h2>
+                 <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-4xl space-y-4">
+                     <p class="text-xl flex items-start"><span class="text-2xl mr-3 text-blue-600">✔️</span><strong class="text-blue-600 mr-2">真実：</strong>水素発生の源は「植物シリカ($SiO_2$)」ではなく「単体ケイ素($Si$)」である。</p>
+                     <p class="text-xl flex items-start"><span class="text-2xl mr-3 text-blue-600">✔️</span><strong class="text-blue-600 mr-2">メカニズム：</strong>消化管のpH勾配を利用し、小腸で持続的に水素を発生させる。</p>
+                     <p class="text-xl flex items-start"><span class="text-2xl mr-3 text-blue-600">✔️</span><strong class="text-blue-600 mr-2">有効性：</strong>選択的な抗酸化作用により、有害な活性酸素のみを標的とする。</p>
+                     <p class="text-xl flex items-start"><span class="text-2xl mr-3 text-blue-600">✔️</span><strong class="text-blue-600 mr-2">安全性：</strong>未反応物や副産物は吸収されず、安全に体外へ排出される。</p>
+                 </div>
+                <div class="narration-box">
+                    まとめです。体内水素発生の真実は、植物シリカではなく、単体ケイ素による化学反応にありました。この技術は、消化管という人体のシステムを巧みに利用し、選択的な抗酸化作用を持つ水素を、安全かつ持続的に供給する画期的な方法です。科学的根拠に基づいたこのアプローチが、私たちの健康の未来を大きく変えるかもしれません。
+                </div>
+            </section>
+
+            <!-- Slide 8: YouTube/Suno Content -->
+            <section class="slide flex-col justify-center items-start p-4">
+                <div class="w-full max-w-5xl mx-auto space-y-6">
+                    <h2 class="text-3xl md:text-4xl font-bold text-center mb-6">YouTube投稿用コンテンツ案</h2>
+                    
+                    <div class="final-slide-box">
+                        <h3 class="text-xl font-bold mb-3 text-slate-700">タイトル案 (3案)</h3>
+                        <ol class="list-decimal list-inside space-y-2 text-lg">
+                            <li>【科学的に解説】体内で水素を作るサプリの真実。「植物シリカ」は間違いだった？</li>
+                            <li>飲むだけで24時間、水素が発生するメカニズム。医師も注目の最新技術とは？</li>
+                            <li>活性酸素を狙い撃ち！「単体ケイ素」が拓く次世代の健康法。</li>
+                        </ol>
+                    </div>
+
+                    <div class="final-slide-box">
+                        <h3 class="text-xl font-bold mb-3 text-slate-700">概要欄</h3>
+                        <p class="text-slate-600 leading-relaxed">
+                            「植物性シリカで水素ができる」という話、聞いたことありませんか？実はそれ、大きな誤解なんです。この動画では、科学的な論文や特許情報を基に、「体内で水素を発生させる」技術の真実に迫ります。<br><br>
+                            本当の原料は何なのか？<br>
+                            体の中でどんな化学反応が起きているのか？<br>
+                            なぜ24時間も水素を出し続けられるのか？<br>
+                            水素水や水素吸入と何が違うのか？<br><br>
+                            最新の科学が解き明かした、驚くべき「体内バイオリアクター」の仕組みを、インフォグラフィックで分かりやすく解説します。健康やアンチエイジングに関心のある方は必見です！<br><br>
+                            #水素 #活性酸素 #ケイ素 #科学 #健康
+                        </p>
+                    </div>
+
+                     <div class="final-slide-box">
+                        <h3 class="text-xl font-bold mb-3 text-slate-700">サムネイル生成プロンプト (3案)</h3>
+                        <ol class="list-decimal list-inside space-y-2 text-lg">
+                            <li>(神話 vs 科学) 左側に「🌾もみ殻」と「❌」のアイコン。右側に「💎輝く結晶」と「✔️」のアイコン。中央に大きな文字で「それ、間違いです！」、背景はサイエンス風のグリッド。--ar 16:9</li>
+                            <li>(驚きのメカニズム) 人体の断面図（消化管がハイライトされている）。胃に「OFF」、小腸に「ON」の文字。小腸から青い気の粒子(水素)が全身に広がっていくイメージ。タイトル「体内スイッチON！」--ar 16:9</li>
+                            <li>(効果を視覚化) 画面中央に「😈悪玉活性酸素」のキャラクター。そこに「H₂」と書かれたミサイルが命中し、綺麗な「💧水」に変わる瞬間。キャッチコピー「悪玉だけを狙い撃ち！」--ar 16:9</li>
+                        </ol>
+                    </div>
+
+                    <div class="final-slide-box">
+                        <h3 class="text-xl font-bold mb-3 text-slate-700">BGM用 Suno AIプロンプト (3案)</h3>
+                        <ol class="list-decimal list-inside space-y-2 text-lg">
+                            <li>A calm, optimistic, and slightly mysterious corporate-style background track. Features a gentle piano melody, light electronic pads, and a subtle, slow-paced beat. Perfect for a scientific or tech presentation. (BPM: 90)</li>
+                            <li>An inspiring and hopeful instrumental piece. Starts with a simple synth arpeggio, gradually building with string sections and a clean electronic drum beat. Evokes a sense of discovery and breakthrough. (BPM: 110)</li>
+                            <li>Minimalist and ambient background music. Dominated by soft, warm synth pads and occasional high-pitched chimes. No strong melody, creating a thoughtful and focused atmosphere for educational content. (BPM: 70)</li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="narration-box">
+                    ご視聴いただきありがとうございました。このプレゼンテーションが、皆様の健康への理解を深める一助となれば幸いです。科学的根拠に基づいた正しい知識で、より良い選択をしていきましょう。
+                </div>
+            </section>
+        </div>
+
+        <!-- Pagination Controls -->
+        <div class="flex justify-center items-center mt-8">
+            <button id="prevBtn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg shadow-md disabled:opacity-50 disabled:cursor-not-allowed">前へ</button>
+            <div id="pagination-dots" class="flex mx-4"></div>
+            <button id="nextBtn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg shadow-md disabled:opacity-50 disabled:cursor-not-allowed">次へ</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const slides = document.querySelectorAll('.slide');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const dotsContainer = document.getElementById('pagination-dots');
+            let currentSlide = 0;
+            let chartRendered = false;
+
+            // Create pagination dots
+            slides.forEach((_, i) => {
+                const dot = document.createElement('button');
+                dot.classList.add('w-3', 'h-3', 'rounded-full', 'mx-1', 'pagination-dot');
+                if (i === 0) {
+                    dot.classList.add('bg-blue-500');
+                } else {
+                    dot.classList.add('bg-slate-300');
+                }
+                dot.addEventListener('click', () => {
+                    showSlide(i);
+                });
+                dotsContainer.appendChild(dot);
+            });
+            const dots = document.querySelectorAll('.pagination-dot');
+
+            function showSlide(index) {
+                slides[currentSlide].classList.remove('active');
+                dots[currentSlide].classList.remove('bg-blue-500');
+                dots[currentSlide].classList.add('bg-slate-300');
+
+                currentSlide = index;
+
+                slides[currentSlide].classList.add('active');
+                dots[currentSlide].classList.add('bg-blue-500');
+                dots[currentSlide].classList.remove('bg-slate-300');
+
+                updateButtons();
+                renderChartIfNeeded();
+            }
+
+            function updateButtons() {
+                prevBtn.disabled = currentSlide === 0;
+                nextBtn.disabled = currentSlide === slides.length - 1;
+            }
+
+            function renderChartIfNeeded() {
+                 if (slides[currentSlide].querySelector('#comparisonChart') && !chartRendered) {
+                    const ctx = document.getElementById('comparisonChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['水素豊富水', '水素ガス吸入', 'ケイ素製剤 (体内発生)'],
+                            datasets: [{
+                                label: '作用時間 (相対値)',
+                                data: [5, 20, 100],
+                                backgroundColor: [
+                                    'rgba(255, 159, 64, 0.6)',
+                                    'rgba(75, 192, 192, 0.6)',
+                                    'rgba(54, 162, 235, 0.6)'
+                                ],
+                                borderColor: [
+                                    'rgba(255, 159, 64, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(54, 162, 235, 1)'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            indexAxis: 'y',
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: false
+                                },
+                                title: {
+                                    display: true,
+                                    text: '水素供給法による作用持続時間の比較',
+                                    font: { size: 16 }
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    beginAtZero: true,
+                                    max: 100
+                                }
+                            }
+                        }
+                    });
+                    chartRendered = true;
+                }
+            }
+
+            prevBtn.addEventListener('click', () => {
+                if (currentSlide > 0) {
+                    showSlide(currentSlide - 1);
+                }
+            });
+
+            nextBtn.addEventListener('click', () => {
+                if (currentSlide < slides.length - 1) {
+                    showSlide(currentSlide + 1);
+                }
+            });
+
+            // Initial setup
+            showSlide(0);
+        });
+    </script>
+
+</body>
+</html>

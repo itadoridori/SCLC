@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>体内水素発生の科学：インフォグラフィック</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Brilliant Blues -->
+    <!-- Application Structure Plan: The infographic follows a "myth-to-truth" narrative. It starts by debunking the common misconception about plant silica (hook), then sequentially reveals the true chemical agent (Si), the in-body process (GI tract), the performance data (comparison chart), and the therapeutic mechanisms. This structure was chosen to guide the user through a logical discovery process, making the complex scientific report digestible and engaging by transforming it into a compelling story. -->
+    <!-- Visualization & Content Choices: 
+        - Myth vs Truth (Report I.1): Goal: Compare. Viz: Side-by-side HTML cards. Justification: Directly contrasts the misconception and reality for immediate clarity. Method: HTML/CSS.
+        - GI Tract Process (Report II.1): Goal: Organize/Change. Viz: Horizontal HTML/CSS flowchart. Justification: Visualizes the pH-dependent activation sequence in an intuitive, linear way. Method: HTML/CSS.
+        - H2 Supply Comparison (Report Table 2): Goal: Compare. Viz: Horizontal Bar Chart. Justification: Provides a clear, quantitative comparison of the key performance advantages (duration, yield) over other methods. Method: Chart.js/Canvas.
+        - H2's Dual Action (Report III.1, III.2): Goal: Inform/Organize. Viz: Icon-based HTML diagrams. Justification: Simplifies the complex biochemical actions into two easily understandable concepts. Method: HTML/CSS.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+            background-color: #F0F4F8; /* Light BG from palette */
+            color: #3A506B; /* Dark Text */
+        }
+        .hero-bg {
+            background-color: #0B132B; /* Deepest Blue */
+            color: #FFFFFF;
+        }
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1C2541; /* Dark Accent */
+            line-height: 1.2;
+        }
+        .kpi-number {
+            font-size: 4rem;
+            font-weight: 700;
+            color: #3282B8; /* Primary Blue */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px; 
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <main class="container mx-auto p-4 md:p-8">
+        
+        <section id="hero" class="text-center py-16 px-6 rounded-2xl hero-bg shadow-2xl">
+            <h1 class="text-4xl md:text-5xl font-bold leading-tight">体内で水素を作る、<br class="md:hidden">その<span style="color: #5BC0BE;">真実</span>。</h1>
+            <p class="mt-4 max-w-3xl mx-auto text-lg md:text-xl text-gray-300">
+                「植物シリカで水素ができる」は本当？科学的根拠に基づき、体内で持続的に水素を発生させる驚異のテクノロジーを解き明かします。
+            </p>
+        </section>
+
+        <section id="myth-vs-truth" class="my-16 md:my-24">
+            <header class="text-center mb-12">
+                <h2 class="section-title">神話と科学の対決</h2>
+                <p class="mt-2 text-lg max-w-2xl mx-auto">水素発生の話題は、誤解から始まります。まずはその核心に迫りましょう。</p>
+            </header>
+            <div class="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+                <div class="bg-red-50 border-2 border-red-200 p-8 rounded-xl shadow-lg">
+                    <div class="flex items-center gap-4 mb-4">
+                        <span class="text-5xl">🌾</span>
+                        <div>
+                            <h3 class="text-2xl font-bold text-red-800">神話：植物性シリカ</h3>
+                            <p class="font-semibold text-red-600">原料：もみ殻 ($SiO_2$)</p>
+                        </div>
+                    </div>
+                    <p class="text-lg text-red-900">
+                        もみ殻由来のシリカは、化学的に非常に安定した「二酸化ケイ素($SiO_2$)」です。ミネラル補給にはなりますが、体温では分解できず、水素を発生させることは<strong class="font-bold">絶対にありません</strong>。
+                    </p>
+                </div>
+                <div class="bg-blue-50 border-2 border-blue-200 p-8 rounded-xl shadow-lg">
+                    <div class="flex items-center gap-4 mb-4">
+                        <span class="text-5xl">💎</span>
+                        <div>
+                            <h3 class="text-2xl font-bold text-blue-800">科学：単体ケイ素</h3>
+                            <p class="font-semibold text-blue-600">原料：高純度ケイ素 ($Si$)</p>
+                        </div>
+                    </div>
+                    <p class="text-lg text-blue-900">
+                        実際に水素を発生させるのは、半導体グレードの「単体ケイ素($Si$)」粉末です。これが体内の水分と反応し、持続的に水素を生成する真の主役です。
+                    </p>
+                </div>
+            </div>
+        </section>
+        
+        <section id="reaction" class="my-16 md:my-24 text-center">
+            <header class="mb-8">
+                <h2 class="section-title">水素を生み出す化学反応</h2>
+                <p class="mt-2 text-lg max-w-2xl mx-auto">真の水素発生剤である単体ケイ素は、体内の水と反応して水素ガスを放出します。その化学式は驚くほどシンプルです。</p>
+            </header>
+            <div class="bg-white p-8 rounded-xl shadow-xl max-w-2xl mx-auto border-t-4 border-blue-500">
+                <p class="text-2xl md:text-3xl font-mono tracking-wider text-center">
+                    <span class="font-bold text-blue-600">Si</span> 
+                    <span class="mx-2 text-gray-400">+</span>
+                    <span class="font-bold text-blue-400">2H₂O</span>
+                    <span class="mx-4 text-gray-400">→</span>
+                    <span class="font-bold text-gray-600">SiO₂</span>
+                    <span class="mx-2 text-gray-400">+</span>
+                    <span class="font-bold text-teal-500">2H₂↑</span>
+                </p>
+                <p class="mt-4 text-gray-600">ケイ素が水と反応し、安全なシリカと、治療効果を持つ水素ガスに変わります。</p>
+            </div>
+        </section>
+
+        <section id="process" class="my-16 md:my-24">
+            <header class="text-center mb-12">
+                <h2 class="section-title">体内を巡るスマートな旅</h2>
+                <p class="mt-2 text-lg max-w-3xl mx-auto">単体ケイ素製剤は、消化管の自然な環境変化を「スイッチ」として利用し、最適な場所で水素を発生させるように設計されています。</p>
+            </header>
+            <div class="relative w-full p-4">
+                <div class="absolute top-1/2 left-0 w-full h-1 bg-gray-300 -translate-y-1/2"></div>
+                <div class="relative grid grid-cols-2 md:grid-cols-4 gap-8">
+                    <div class="text-center">
+                        <div class="mx-auto w-20 h-20 rounded-full bg-red-100 flex items-center justify-center text-4xl mb-3 border-4 border-white ring-4 ring-red-200">😴</div>
+                        <h4 class="font-bold text-xl text-red-700">1. 胃 (pH 1.5)</h4>
+                        <p class="text-gray-600">強酸性の胃では反応せず、安全に通過。水素発生はOFFの状態。</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="mx-auto w-20 h-20 rounded-full bg-green-100 flex items-center justify-center text-4xl mb-3 border-4 border-white ring-4 ring-green-200">💡</div>
+                        <h4 class="font-bold text-xl text-green-700">2. 小腸 (pH 8.3)</h4>
+                        <p class="text-gray-600">アルカリ性の小腸でスイッチON！水との反応が活発に開始。</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="mx-auto w-20 h-20 rounded-full bg-blue-100 flex items-center justify-center text-4xl mb-3 border-4 border-white ring-4 ring-blue-200">💨</div>
+                        <h4 class="font-bold text-xl text-blue-700">3. 水素発生・吸収</h4>
+                        <p class="text-gray-600">大量の水素が発生し、血流に乗って全身へ。未反応物と副産物は非吸収。</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="mx-auto w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center text-4xl mb-3 border-4 border-white ring-4 ring-gray-300">🚽</div>
+                        <h4 class="font-bold text-xl text-gray-700">4. 排出</h4>
+                        <p class="text-gray-600">役目を終えたケイ素とシリカは、体内に吸収されず安全に排出される。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="kpi" class="my-16 md:my-24">
+             <header class="text-center mb-12">
+                <h2 class="section-title">圧倒的なパフォーマンス</h2>
+                <p class="mt-2 text-lg max-w-2xl mx-auto">この技術が画期的な理由は、その驚異的な水素供給能力にあります。他の方法とは一線を画す持続力と発生量をご覧ください。</p>
+            </header>
+            <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <div class="bg-white p-8 rounded-xl shadow-lg text-center">
+                    <p class="text-2xl font-bold text-gray-700">持続時間</p>
+                    <p class="kpi-number">24<span class="text-3xl text-gray-500">時間以上</span></p>
+                    <p class="text-lg text-gray-600">一度の摂取で、丸一日以上も水素を供給し続けます。</p>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-lg text-center">
+                    <p class="text-2xl font-bold text-gray-700">総発生量 (1gあたり)</p>
+                    <p class="kpi-number">>800<span class="text-3xl text-gray-500">mL</span></p>
+                    <p class="text-lg text-gray-600">飽和水素水22L以上に相当する、圧倒的な量の水素を生成します。</p>
+                </div>
+            </div>
+            <div class="mt-12">
+                <div class="bg-white p-4 md:p-8 rounded-xl shadow-xl max-w-5xl mx-auto">
+                    <h3 class="text-2xl font-bold text-center mb-4 text-gray-800">水素供給法 総合比較</h3>
+                    <div class="chart-container">
+                        <canvas id="comparisonChart"></canvas>
+                    </div>
+                    <p class="text-center text-sm text-gray-500 mt-4">ケイ素製剤は、総供給量・持続性の両面で他の方法を大きく凌駕します。</p>
+                </div>
+            </div>
+        </section>
+        
+        <section id="mechanism" class="my-16 md:my-24">
+            <header class="text-center mb-12">
+                <h2 class="section-title">水素がもたらす二重の作用</h2>
+                <p class="mt-2 text-lg max-w-2xl mx-auto">全身に届いた水素は、単なる抗酸化物質ではありません。二つの賢いメカニズムで体を守ります。</p>
+            </header>
+            <div class="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+                <div class="bg-white p-8 rounded-xl shadow-lg">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">作用①：悪玉活性酸素の<span style="color:#5BC0BE">選択的</span>除去</h3>
+                    <p class="mb-6 text-gray-600">水素は、体に必要な「善玉」活性酸素には手を出さず、細胞を傷つける最も有害な「悪玉」活性酸素（$•OH$）だけを選んで無害な水に変えます。</p>
+                    <div class="bg-gray-100 p-6 rounded-lg text-center flex justify-around items-center">
+                        <span class="text-5xl">😈</span>
+                        <span class="text-3xl text-gray-400">+</span>
+                        <span class="text-5xl" style="color:#3282B8">💧</span>
+                        <span class="text-3xl text-gray-400">→</span>
+                        <span class="text-5xl">💧</span>
+                    </div>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-lg">
+                     <h3 class="text-2xl font-bold text-gray-800 mb-4">作用②：体の防御システムの<span style="color:#5BC0BE">活性化</span></h3>
+                    <p class="mb-6 text-gray-600">水素は「シグナル分子」として働き、体が本来持つ抗酸化力や抗炎症力を高めるスイッチを入れ、細胞レベルで防御システムを強化します。</p>
+                    <ul class="space-y-3">
+                        <li class="flex items-center text-lg"><span class="text-2xl mr-3">✅</span>抗炎症作用をサポート</li>
+                        <li class="flex items-center text-lg"><span class="text-2xl mr-3">✅</span>細胞の保護と修復を促進</li>
+                        <li class="flex items-center text-lg"><span class="text-2xl mr-3">✅</span>エネルギー代謝を最適化</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        
+        <footer class="text-center mt-16 py-8 border-t border-gray-300">
+            <p class="text-gray-600">このインフォグラフィックは、公開されている科学レポートに基づき作成されたものです。</p>
+            <p class="text-sm text-gray-500 mt-1">© 2024 体内水素発生の科学</p>
+        </footer>
+
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const ctx = document.getElementById('comparisonChart').getContext('2d');
+            
+            const processLabel = (label) => {
+                if (typeof label !== 'string') return label;
+                if (label.length <= 16) return label;
+                const words = label.split(/\s+/);
+                const lines = [];
+                let currentLine = '';
+                words.forEach(word => {
+                    if ((currentLine + word).length > 16) {
+                        lines.push(currentLine.trim());
+                        currentLine = '';
+                    }
+                    currentLine += word + ' ';
+                });
+                lines.push(currentLine.trim());
+                return lines;
+            };
+
+            const labels = ['水素豊富水', '水素ガス吸入', 'ケイ素製剤（体内発生）'].map(processLabel);
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: '総供給量 (相対値)',
+                            data: [5, 65, 100],
+                            backgroundColor: '#3282B8', 
+                            borderColor: '#1C2541',
+                            borderWidth: 2,
+                            borderRadius: 5,
+                        },
+                        {
+                            label: '持続性 (相対値)',
+                            data: [2, 30, 100],
+                            backgroundColor: '#5BC0BE',
+                            borderColor: '#3A506B',
+                            borderWidth: 2,
+                            borderRadius: 5,
+                        }
+                    ]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 100,
+                             grid: {
+                                color: '#E0E7FF'
+                            }
+                        },
+                        y: {
+                             grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                font: {
+                                    size: 14,
+                                },
+                                color: '#3A506B'
+                            }
+                        },
+                        title: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    const item = tooltipItems[0];
+                                    let label = item.chart.data.labels[item.dataIndex];
+                                    if (Array.isArray(label)) {
+                                      return label.join(' ');
+                                    } else {
+                                      return label;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

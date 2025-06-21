@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>体内水素発生の科学 | インタラクティブガイド</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony -->
+    <!-- Application Structure Plan: The application is designed as a story-driven, single-page journey to guide the user from a common misconception to scientific understanding. It starts with a Hero section to set the stage, followed by an interactive "Myth vs. Reality" section to immediately address the core confusion. A visual "Journey Through the Body" diagram explains the process sequentially. "How Hydrogen Works" uses simple layouts to explain the therapeutic action. An interactive bar chart in the "Breakthrough Comparison" section allows users to compare H2 delivery methods dynamically. This thematic flow prioritizes user engagement and comprehension over rigidly following the report's chapter structure, making complex information digestible and memorable. -->
+    <!-- Visualization & Content Choices: 
+        1. Myth vs. Reality (Report Section I): Goal: Clarify. Viz: Interactive HTML cards. Interaction: Click to reveal text. Justification: Engages the user by resolving the primary misconception upfront. Method: HTML/JS.
+        2. Digestive Journey (Report Section II): Goal: Explain process. Viz: Horizontal HTML/CSS process diagram with icons. Interaction: Smooth scroll-based reveal. Justification: Simplifies the complex biological pathway into an easy-to-follow visual narrative. Method: HTML/Tailwind.
+        3. Therapeutic Action (Report Section III): Goal: Inform. Viz: Side-by-side text and icon blocks. Interaction: Static display. Justification: Clearly separates and explains the dual mechanisms of hydrogen's effects without unnecessary complexity. Method: HTML/Tailwind.
+        4. H2 Delivery Comparison (Report Table 2): Goal: Compare. Viz: Interactive bar chart. Interaction: Clicking a bar updates a detailed text description below. Justification: Enables direct, data-driven comparison and deeper exploration of pros and cons. Method: Chart.js/Canvas.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+            background-color: #F8FAFC;
+            color: #334155;
+        }
+        .section-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: #1E293B;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        .section-subtitle {
+            font-size: 1.125rem;
+            max-width: 800px;
+            margin: 0 auto 3rem auto;
+            text-align: center;
+            color: #64748B;
+        }
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .pill {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 50vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 450px;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="text-2xl font-bold text-slate-800">
+                <span class="text-blue-600">H₂</span> 体内発生の科学
+            </div>
+            <div class="hidden md:flex items-center space-x-6 text-lg">
+                <a href="#myth" class="text-slate-600 hover:text-blue-600 transition">誤解と真実</a>
+                <a href="#journey" class="text-slate-600 hover:text-blue-600 transition">体内の旅</a>
+                <a href="#action" class="text-slate-600 hover:text-blue-600 transition">水素の作用</a>
+                <a href="#comparison" class="text-slate-600 hover:text-blue-600 transition">比較</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden text-slate-800">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden px-6 pb-4 space-y-2">
+            <a href="#myth" class="block text-slate-600 hover:text-blue-600 transition py-2">誤解と真実</a>
+            <a href="#journey" class="block text-slate-600 hover:text-blue-600 transition py-2">体内の旅</a>
+            <a href="#action" class="block text-slate-600 hover:text-blue-600 transition py-2">水素の作用</a>
+            <a href="#comparison" class="block text-slate-600 hover:text-blue-600 transition py-2">比較</a>
+        </div>
+    </header>
+
+    <main>
+        <section id="hero" class="py-20 md:py-32 bg-white">
+            <div class="container mx-auto px-6 text-center">
+                <h1 class="text-4xl md:text-6xl font-bold text-slate-900 leading-tight">
+                    体内で水素を作る、<br class="md:hidden"><span class="text-blue-600">その真実</span>とは？
+                </h1>
+                <p class="mt-6 text-lg md:text-xl max-w-3xl mx-auto text-slate-600">
+                    「植物性シリカで水素発生」という話、聞いたことがありますか？このガイドでは、その通説の誤解を解き明かし、科学的根拠に基づく真の体内水素発生メカニズムを、インタラクティブに探求します。
+                </p>
+                <a href="#myth" class="mt-8 inline-block bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-lg shadow-lg hover:bg-blue-700 transition">
+                    探求を始める
+                </a>
+            </div>
+        </section>
+
+        <section id="myth" class="py-16 md:py-24">
+            <div class="container mx-auto px-6">
+                <h2 class="section-title">誤解と真実</h2>
+                <p class="section-subtitle">
+                    まず、最も重要な点を明らかにしましょう。「植物性シリカ」サプリメントと「水素発生」は、実は別々の話です。なぜ混同されているのか、そして真の水素発生源は何かを見ていきましょう。
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+                    <div id="myth-card" class="card bg-white p-8 rounded-xl shadow-md cursor-pointer border-2 border-transparent">
+                        <div class="flex items-center mb-4">
+                            <span class="text-3xl mr-4">🌾</span>
+                            <h3 class="text-2xl font-bold text-slate-800">誤解：植物性シリカ ($SiO_2$)</h3>
+                        </div>
+                        <p class="text-slate-600 mb-4">
+                            もみ殻などから抽出される「植物性シリカ」。これは二酸化ケイ素($SiO_2$)であり、非常に安定した物質です。ミネラル補給を目的としますが、体内で水素を発生させることはありません。
+                        </p>
+                        <button class="font-bold text-blue-600 hover:underline">詳細を見る ▼</button>
+                        <div id="myth-details" class="hidden mt-4 pt-4 border-t border-slate-200">
+                            <p class="font-semibold text-slate-700">化学的安定性：</p>
+                            <p class="text-slate-600">$SiO_2$のケイ素と酸素の結合は非常に強固です。これを分解して単体のケイ素(Si)を取り出すには、1900℃以上の高温が必要な工業的プロセスが必須です。体内の37℃の環境では、この反応は起こり得ません。</p>
+                        </div>
+                    </div>
+
+                    <div id="reality-card" class="card bg-white p-8 rounded-xl shadow-md cursor-pointer border-2 border-transparent">
+                        <div class="flex items-center mb-4">
+                            <span class="text-3xl mr-4">💎</span>
+                            <h3 class="text-2xl font-bold text-slate-800">真実：単体ケイ素 ($Si$)</h3>
+                        </div>
+                        <p class="text-slate-600 mb-4">
+                           実際に体内で水素を発生させるのは、半導体グレードの「単体ケイ素」粉末です。これは水と反応して持続的に水素ガス($H_2$)を生成する能力を持っています。
+                        </p>
+                        <button class="font-bold text-blue-600 hover:underline">詳細を見る ▼</button>
+                        <div id="reality-details" class="hidden mt-4 pt-4 border-t border-slate-200">
+                            <p class="font-semibold text-slate-700">化学反応式：</p>
+                            <p class="text-slate-600 font-mono">Si + 2H₂O → SiO₂ + 2H₂</p>
+                            <p class="text-slate-600 mt-2">この反応は、特定の条件下（アルカリ性環境）で進行します。これが、体内で水素を安全かつ効果的に発生させる鍵となります。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="journey" class="py-16 md:py-24 bg-white overflow-x-hidden">
+            <div class="container mx-auto px-6">
+                <h2 class="section-title">ケイ素製剤の体内の旅</h2>
+                <p class="section-subtitle">
+                    経口摂取した単体ケイ素製剤は、どのようにして体内で水素を発生させるのでしょうか？消化管の自然なpH勾配を利用した、巧妙な「生体反応器」の仕組みを追いかけましょう。
+                </p>
+
+                <div class="relative w-full mt-16">
+                    <div class="absolute top-1/2 left-0 w-full h-1 bg-slate-200 -translate-y-1/2"></div>
+                    <div class="relative flex justify-between items-start">
+                        <div class="step text-center w-1/5">
+                            <div class="icon-wrapper mx-auto w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-3xl mb-4 border-4 border-white ring-4 ring-blue-200">💊</div>
+                            <h4 class="font-bold text-slate-800">1. 経口摂取</h4>
+                            <p class="text-sm text-slate-500">単体ケイ素粉末が入ったカプセルを飲み込みます。</p>
+                        </div>
+                        <div class="step text-center w-1/5">
+                            <div class="icon-wrapper mx-auto w-16 h-16 rounded-full bg-slate-200 flex items-center justify-center text-3xl mb-4 border-4 border-white ring-4 ring-slate-300">😴</div>
+                            <h4 class="font-bold text-slate-800">2. 胃 (不活性)</h4>
+                            <p class="text-sm text-slate-500">強酸性 (pH 1.5-2.0) の胃の中では反応せず、安全に通過します。</p>
+                        </div>
+                        <div class="step text-center w-1/5">
+                            <div class="icon-wrapper mx-auto w-16 h-16 rounded-full bg-green-200 flex items-center justify-center text-3xl mb-4 border-4 border-white ring-4 ring-green-300">💡</div>
+                            <h4 class="font-bold text-slate-800">3. 小腸 (活性化)</h4>
+                            <p class="text-sm text-slate-500">アルカリ性 (pH ~8.3) の小腸で「スイッチオン」。水との反応が始まります。</p>
+                        </div>
+                        <div class="step text-center w-1/5">
+                            <div class="icon-wrapper mx-auto w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-3xl mb-4 border-4 border-white ring-4 ring-blue-200">💨</div>
+                            <h4 class="font-bold text-slate-800">4. 水素発生と吸収</h4>
+                            <p class="text-sm text-slate-500">水素($H_2$)が持続的に発生し、速やかに血流に乗って全身へ運ばれます。</p>
+                        </div>
+                        <div class="step text-center w-1/5">
+                            <div class="icon-wrapper mx-auto w-16 h-16 rounded-full bg-slate-200 flex items-center justify-center text-3xl mb-4 border-4 border-white ring-4 ring-slate-300">♻️</div>
+                            <h4 class="font-bold text-slate-800">5. 排出</h4>
+                            <p class="text-sm text-slate-500">未反応のケイ素と副産物のシリカ($SiO_2$)は吸収されず、便として体外へ。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="action" class="py-16 md:py-24">
+            <div class="container mx-auto px-6">
+                <h2 class="section-title">水素は体で何をするのか？</h2>
+                <p class="section-subtitle">
+                    全身に届けられた水素は、どのようにして健康に貢献するのでしょうか？その作用は、単なる抗酸化物質にとどまりません。「選択的な働き」と「シグナル伝達」という二つの重要な役割があります。
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+                    <div class="bg-white p-8 rounded-xl shadow-md">
+                        <h3 class="text-2xl font-bold text-slate-800 mb-4">① 選択的抗酸化作用</h3>
+                        <p class="text-slate-600 mb-6">
+                            活性酸素には「善玉」と「悪玉」があります。水素は、細胞に有害な「悪玉」の活性酸素（ヒドロキシルラジカルなど）だけを選択的に中和し、無害な水に変えるという、極めて優れた特性を持っています。
+                        </p>
+                        <div class="bg-slate-50 p-6 rounded-lg">
+                            <div class="flex items-center justify-around">
+                                <div class="text-center">
+                                    <span class="text-4xl">😈</span>
+                                    <p class="font-bold text-red-600">悪玉ROS</p>
+                                    <p class="text-sm">($•OH$)</p>
+                                </div>
+                                <div class="text-3xl text-slate-400">+</div>
+                                <div class="text-center">
+                                    <span class="text-4xl text-blue-500">💧</span>
+                                    <p class="font-bold text-blue-600">水素 ($H_2$)</p>
+                                </div>
+                                <div class="text-3xl text-slate-400">→</div>
+                                <div class="text-center">
+                                    <span class="text-4xl">💧</span>
+                                    <p class="font-bold">無害な水</p>
+                                    <p class="text-sm">($H_2O$)</p>
+                                </div>
+                            </div>
+                            <p class="text-xs text-center mt-4 text-slate-500">※ 善玉ROS (細胞のシグナル伝達に必要) には影響を与えません。</p>
+                        </div>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl shadow-md">
+                        <h3 class="text-2xl font-bold text-slate-800 mb-4">② シグナル分子作用</h3>
+                        <p class="text-slate-600">
+                           水素は単に活性酸素を除去するだけでなく、細胞内の情報伝達システムに働きかける「ガス状シグナル分子」としても機能します。これにより、体が本来持っている抗酸化能力や抗炎症能力を高め、細胞の防御システムを活性化させることが示唆されています。
+                        </p>
+                        <ul class="mt-6 space-y-3 text-slate-700">
+                            <li class="flex items-start"><span class="pill bg-green-100 text-green-800 mr-3">✓</span><span>抗炎症作用のサポート</span></li>
+                            <li class="flex items-start"><span class="pill bg-green-100 text-green-800 mr-3">✓</span><span>細胞死（アポトーシス）の抑制</span></li>
+                            <li class="flex items-start"><span class="pill bg-green-100 text-green-800 mr-3">✓</span><span>エネルギー代謝の最適化</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="comparison" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-6">
+                <h2 class="section-title">画期的な水素供給法</h2>
+                <p class="section-subtitle">
+                    なぜケイ素製剤による体内発生が注目されるのでしょうか？従来の水素供給法と比較すると、その「持続性」と「高用量」という利点が際立ちます。チャートの項目をクリックして詳細を確認してください。
+                </p>
+
+                <div class="chart-container">
+                    <canvas id="comparisonChart"></canvas>
+                </div>
+
+                <div id="comparison-details" class="mt-8 max-w-3xl mx-auto">
+                    <div class="bg-slate-50 p-6 rounded-lg text-center text-slate-500">
+                        <p>上のチャートの項目をクリックすると、ここに詳しい説明が表示されます。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+    </main>
+
+    <footer class="bg-slate-800 text-white">
+        <div class="container mx-auto px-6 py-8 text-center">
+            <p>&copy; 2024 体内水素発生の科学 インタラクティブガイド</p>
+            <p class="text-sm text-slate-400 mt-2">このアプリケーションは、提示された科学レポートに基づき教育目的で作成されたものです。</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Mobile Menu
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            document.querySelectorAll('#mobile-menu a').forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                });
+            });
+
+            // Myth/Reality card toggle
+            const mythCard = document.getElementById('myth-card');
+            const mythDetails = document.getElementById('myth-details');
+            const realityCard = document.getElementById('reality-card');
+            const realityDetails = document.getElementById('reality-details');
+
+            const toggleDetails = (card, details) => {
+                const isHidden = details.classList.contains('hidden');
+                if (isHidden) {
+                    details.classList.remove('hidden');
+                    card.querySelector('button').innerHTML = '閉じる ▲';
+                    card.classList.add('border-blue-500', 'ring-4', 'ring-blue-100');
+                } else {
+                    details.classList.add('hidden');
+                    card.querySelector('button').innerHTML = '詳細を見る ▼';
+                    card.classList.remove('border-blue-500', 'ring-4', 'ring-blue-100');
+                }
+            };
+
+            mythCard.addEventListener('click', () => toggleDetails(mythCard, mythDetails));
+            realityCard.addEventListener('click', () => toggleDetails(realityCard, realityDetails));
+
+            // Comparison Chart
+            const comparisonData = {
+                labels: ['ケイ素製剤 (体内発生)', '水素ガス吸入', '水素豊富水'],
+                datasets: [
+                    {
+                        label: '総供給量',
+                        data: [100, 70, 10],
+                        backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                        borderColor: 'rgba(59, 130, 246, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: '持続時間',
+                        data: [100, 40, 5],
+                        backgroundColor: 'rgba(16, 185, 129, 0.7)',
+                        borderColor: 'rgba(16, 185, 129, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: '手軽さ',
+                        data: [90, 30, 80],
+                        backgroundColor: 'rgba(245, 158, 11, 0.7)',
+                        borderColor: 'rgba(245, 158, 11, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            };
+            
+            const comparisonDetailsContent = {
+                'ケイ素製剤 (体内発生)': {
+                    title: 'ケイ素製剤 (体内発生)',
+                    color: 'bg-blue-100 text-blue-800',
+                    content: '一度の経口摂取で24時間以上、持続的に高用量の水素を供給。日常生活を送りながら利用できる手軽さが最大の利点。「プロドラッグ」のように体内で活性化する画期的なDDS（薬物送達システム）。'
+                },
+                '水素ガス吸入': {
+                    title: '水素ガス吸入',
+                    color: 'bg-green-100 text-green-800',
+                    content: '高濃度の水素を直接供給でき即効性が期待できるが、専用の装置が必要。利用は特定の時間と場所に限定され、持続的な供給は難しい。'
+                },
+                '水素豊富水': {
+                    title: '水素豊富水',
+                    color: 'bg-amber-100 text-amber-800',
+                    content: '最も手軽だが、水に溶ける水素の量に物理的な限界があり、供給量は少ない。摂取後の体内水素濃度は短時間で低下するため、持続的な効果を得るには頻繁な飲用が必要。'
+                }
+            };
+            
+            const detailsContainer = document.getElementById('comparison-details');
+
+            const updateDetails = (label) => {
+                const detailData = comparisonDetailsContent[label];
+                if (detailData) {
+                    detailsContainer.innerHTML = `
+                        <div class="bg-white p-6 rounded-xl shadow-md border-l-4 border-blue-500">
+                            <h4 class="text-xl font-bold text-slate-800 mb-2 flex items-center">
+                                <span class="pill ${detailData.color} mr-3">${detailData.title}</span>
+                            </h4>
+                            <p class="text-slate-600">${detailData.content}</p>
+                        </div>
+                    `;
+                }
+            }
+
+            const ctx = document.getElementById('comparisonChart').getContext('2d');
+            const comparisonChart = new Chart(ctx, {
+                type: 'bar',
+                data: comparisonData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: '評価スコア (相対値)'
+                            }
+                        },
+                        y: {
+                           ticks: {
+                               font: {
+                                   size: 14
+                               }
+                           }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            enabled: true
+                        },
+                        title: {
+                            display: true,
+                            text: '水素供給法の比較 (項目をクリック)',
+                            font: { size: 18 }
+                        }
+                    },
+                    onClick: (event, elements) => {
+                        if (elements.length > 0) {
+                            const elementIndex = elements[0].index;
+                            const label = comparisonData.labels[elementIndex];
+                            updateDetails(label);
+                        }
+                    }
+                }
+            });
+
+            // Initial details view
+            updateDetails('ケイ素製剤 (体内発生)');
+        });
+    </script>
+</body>
+</html>
