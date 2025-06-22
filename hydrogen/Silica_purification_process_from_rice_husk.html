@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インタラクティブ・シリカ精製プロセス</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Natural Harmony -->
+    <!-- Application Structure Plan: A tab-based SPA structure is chosen to facilitate easy comparison between the two main purification methods. The structure includes: 1. A header with an introduction. 2. A navigation bar with three tabs ('Direct Thermal', 'Wet Chemical', 'Summary'). 3. A main content area that dynamically displays the selected tab's content. This allows users to focus on one process at a time and then view a direct comparison, which is more user-friendly than a long, linear document. Interactive elements within each process (clickable steps) encourage exploration. The user flow is designed to be intuitive: select a process, explore its steps, and then compare in the summary. -->
+    <!-- Visualization & Content Choices: Report Info: Two distinct methods for silica purification. Goal: Compare and contrast these methods interactively. Viz/Presentation: Interactive flowcharts built with HTML/CSS (divs, borders, flexbox) for each process. Clickable steps reveal detailed text blocks (JS toggle). A Chart.js bar chart in the Summary section visually compares the final purity ranges (up to 99% vs. 98%). Key data points like temperature and pH are highlighted with icons and bold text. Interaction: Tab navigation to switch views, click-to-reveal for step details, and chart tooltips for precise values. Justification: This structure breaks down complex information into digestible, interactive chunks, making it more engaging and easier to understand than static text. Library/Method: Tailwind CSS for layout, vanilla JS for all interactions, and Chart.js for the summary visualization. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #f5f5f4; /* stone-100 */
+        }
+        .tab-btn.active {
+            border-color: #047857; /* emerald-600 */
+            background-color: #d1fae5; /* emerald-100 */
+            color: #065f46; /* emerald-700 */
+            font-weight: 700;
+        }
+        .process-step {
+            transition: all 0.3s ease-in-out;
+        }
+        .process-step:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .details-box {
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            max-height: 0;
+            overflow: hidden;
+        }
+        .details-box.open {
+            max-height: 500px;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body class="text-stone-800">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-5xl">
+        
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-emerald-800 mb-2">もみ殻から高純度シリカを精製するプロセス</h1>
+            <p class="text-md text-stone-600">もみ殻は、その灰分に87%～97%の非晶質シリカを含む貴重なバイオマス資源です。このアプリケーションでは、もみ殻から高純度シリカを製造する主要な2つのルートを対話的に探求します。</p>
+        </header>
+
+        <nav class="flex justify-center border-b-2 border-stone-200 mb-8">
+            <button data-tab="thermal" class="tab-btn active text-lg py-3 px-6 border-b-4 border-transparent hover:bg-stone-200 transition">直接熱処理法</button>
+            <button data-tab="chemical" class="tab-btn text-lg py-3 px-6 border-b-4 border-transparent hover:bg-stone-200 transition">湿式化学法</button>
+            <button data-tab="summary" class="tab-btn text-lg py-3 px-6 border-b-4 border-transparent hover:bg-stone-200 transition">まとめ・比較</button>
+        </nav>
+
+        <main id="content-area">
+            
+            <div id="thermal" class="tab-content">
+                <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+                    <h2 class="text-2xl font-bold text-emerald-700 mb-2">ルート1：直接熱処理法 (Direct Thermal Process)</h2>
+                    <p class="text-stone-600">このセクションでは、もみ殻を燃焼させて得られた灰を直接精製する物理的なアプローチを解説します。各ステップをクリックして、詳細な情報を確認してください。</p>
+                </div>
+                
+                <div class="flex flex-col items-center space-y-4">
+                    <div class="process-step w-full max-w-md bg-white p-5 rounded-lg shadow-md border border-stone-200 cursor-pointer" data-target="thermal-step1-details">
+                        <p class="text-center text-2xl mb-2">🌾</p>
+                        <h3 class="text-xl font-semibold text-center">ステップ1：もみ殻灰(RHA)の生成</h3>
+                        <p class="text-center text-stone-500 text-sm">クリックして詳細を表示</p>
+                    </div>
+                    <div id="thermal-step1-details" class="details-box w-full max-w-md -mt-2">
+                         <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-b-lg">
+                            <p class="font-semibold">🔥 燃焼・炭化 (Combustion/Carbonization)</p>
+                            <ul class="list-disc list-inside mt-2 text-stone-700 space-y-1">
+                                <li><strong>目的:</strong> 有機物を燃焼させ、シリカを濃縮する。</li>
+                                <li><strong>装置:</strong> マッフル炉, Expanded Torbed Reactor (ETR)など。</li>
+                                <li><strong>重要条件:</strong> <strong class="text-red-600">700℃以下</strong>で処理。これによりシリカが価値の高い「非晶質」状態に保たれます。(800℃を超えると結晶化のリスクあり)</li>
+                                <li><strong>生成物 (RHA):</strong> 非晶質シリカ (90-97%), 微量の金属酸化物。</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <p class="text-3xl text-stone-400">⬇️</p>
+
+                    <div class="process-step w-full max-w-md bg-white p-5 rounded-lg shadow-md border border-stone-200 cursor-pointer" data-target="thermal-step2-details">
+                        <p class="text-center text-2xl mb-2">🧪</p>
+                        <h3 class="text-xl font-semibold text-center">ステップ2：RHAの精製</h3>
+                         <p class="text-center text-stone-500 text-sm">クリックして詳細を表示</p>
+                    </div>
+                     <div id="thermal-step2-details" class="details-box w-full max-w-md -mt-2">
+                         <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-b-lg">
+                            <p class="font-semibold">🔬 酸浸出 (Acid Leaching)</p>
+                            <ul class="list-disc list-inside mt-2 text-stone-700 space-y-1">
+                                <li><strong>目的:</strong> 金属不純物を除去し、純度を大幅に向上させる。</li>
+                                <li><strong>方法:</strong> 塩酸(HCl)などの酸溶液で洗浄後、ろ過、洗浄、乾燥を行う。</li>
+                                <li><strong>効果:</strong> シリカ純度が<strong class="text-emerald-600">最大99%以上</strong>に到達。灰が白色になる。</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <p class="text-3xl text-stone-400">⬇️</p>
+
+                    <div class="w-full max-w-md bg-green-100 p-5 rounded-lg shadow-inner border border-green-200">
+                        <p class="text-center text-2xl mb-2">⚪</p>
+                        <h3 class="text-xl font-bold text-center text-green-800">最終生成物：高純度シリカ粉末</h3>
+                        <p class="text-center text-green-700">特徴: 白色、高純度(〜99%以上)、非晶質</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="chemical" class="tab-content hidden">
+                 <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+                    <h2 class="text-2xl font-bold text-emerald-700 mb-2">ルート2：湿式化学法 (Wet Chemical Process)</h2>
+                    <p class="text-stone-600">このセクションでは、一度シリカを水溶液に溶かし、再度沈殿させて高純度シリカを得る化学的なアプローチを解説します。各ステップをクリックして詳細を確認してください。</p>
+                </div>
+
+                <div class="flex flex-col items-center space-y-4">
+                     <div class="process-step w-full max-w-md bg-white p-5 rounded-lg shadow-md border border-stone-200 cursor-pointer" data-target="chemical-step1-details">
+                        <p class="text-center text-2xl mb-2">💧</p>
+                        <h3 class="text-xl font-semibold text-center">ステップ1：ケイ酸ナトリウムの生成</h3>
+                        <p class="text-center text-stone-500 text-sm">クリックして詳細を表示</p>
+                    </div>
+                    <div id="chemical-step1-details" class="details-box w-full max-w-md -mt-2">
+                         <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-b-lg">
+                            <p class="font-semibold">🔥 アルカリ溶解 (Alkali Dissolution)</p>
+                            <ul class="list-disc list-inside mt-2 text-stone-700 space-y-1">
+                                <li><strong>原料:</strong> もみ殻灰 (RHA)</li>
+                                <li><strong>目的:</strong> シリカを水に可溶な形(ケイ酸ナトリウム)に変換する。</li>
+                                <li><strong>方法:</strong> 水酸化ナトリウム(NaOH)溶液と<strong class="text-red-600">180～200℃</strong>で反応させる。</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <p class="text-3xl text-stone-400">⬇️</p>
+
+                    <div class="process-step w-full max-w-md bg-white p-5 rounded-lg shadow-md border border-stone-200 cursor-pointer" data-target="chemical-step2-details">
+                        <p class="text-center text-2xl mb-2">🔬</p>
+                        <h3 class="text-xl font-semibold text-center">ステップ2：シリカの沈殿</h3>
+                        <p class="text-center text-stone-500 text-sm">クリックして詳細を表示</p>
+                    </div>
+                     <div id="chemical-step2-details" class="details-box w-full max-w-md -mt-2">
+                         <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-b-lg">
+                            <p class="font-semibold">🧪 酸による沈殿 (Acid Precipitation)</p>
+                            <ul class="list-disc list-inside mt-2 text-stone-700 space-y-1">
+                                <li><strong>目的:</strong> 溶液からシリカを固体として取り出す。</li>
+                                <li><strong>方法:</strong> 硫酸(H2SO4)などを加えて<strong class="text-blue-600">pHを約9</strong>に調整し、シリカゲルを沈殿させる。</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <p class="text-3xl text-stone-400">⬇️</p>
+
+                    <div class="process-step w-full max-w-md bg-white p-5 rounded-lg shadow-md border border-stone-200 cursor-pointer" data-target="chemical-step3-details">
+                        <p class="text-center text-2xl mb-2">♨️</p>
+                        <h3 class="text-xl font-semibold text-center">ステップ3：精製・仕上げ</h3>
+                        <p class="text-center text-stone-500 text-sm">クリックして詳細を表示</p>
+                    </div>
+                     <div id="chemical-step3-details" class="details-box w-full max-w-md -mt-2">
+                         <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-b-lg">
+                            <p class="font-semibold">🧊 乾燥・仮焼 (Drying & Calcination)</p>
+                            <ul class="list-disc list-inside mt-2 text-stone-700 space-y-1">
+                                <li><strong>目的:</strong> 水分を除去し、構造を安定させる。</li>
+                                <li><strong>方法:</strong> <strong class="text-red-600">80℃</strong>で乾燥後、<strong class="text-red-600">600～700℃</strong>で仮焼する。</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <p class="text-3xl text-stone-400">⬇️</p>
+
+                    <div class="w-full max-w-md bg-green-100 p-5 rounded-lg shadow-inner border border-green-200">
+                        <p class="text-center text-2xl mb-2">⚪</p>
+                        <h3 class="text-xl font-bold text-center text-green-800">最終生成物：高純度シリカ粉末</h3>
+                        <p class="text-center text-green-700">純度: 90-98%</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="summary" class="tab-content hidden">
+                <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+                    <h2 class="text-2xl font-bold text-emerald-700 mb-2">まとめ・比較</h2>
+                    <p class="text-stone-600">このセクションでは、2つの精製方法の主な特徴と、最終的に得られるシリカの純度を比較します。下の表とグラフで全体像を把握しましょう。</p>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+                    <h3 class="text-xl font-bold mb-4 text-center">プロセス比較表</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr>
+                                    <th class="border-b-2 border-stone-300 p-3 bg-stone-50 font-bold">プロセス</th>
+                                    <th class="border-b-2 border-stone-300 p-3 bg-stone-50 font-bold">特徴</th>
+                                    <th class="border-b-2 border-stone-300 p-3 bg-stone-50 font-bold">主な工程</th>
+                                    <th class="border-b-2 border-stone-300 p-3 bg-stone-50 font-bold">得られるシリカ純度</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="hover:bg-stone-50">
+                                    <td class="border-b border-stone-200 p-3 font-semibold text-emerald-700">直接熱処理法</td>
+                                    <td class="border-b border-stone-200 p-3">物理的で比較的シンプル</td>
+                                    <td class="border-b border-stone-200 p-3">燃焼 → 酸洗浄</td>
+                                    <td class="border-b border-stone-200 p-3 font-bold text-lg">非常に高い (～99%以上)</td>
+                                </tr>
+                                <tr class="hover:bg-stone-50">
+                                    <td class="border-b border-stone-200 p-3 font-semibold text-emerald-700">湿式化学法</td>
+                                    <td class="border-b border-stone-200 p-3">化学反応を利用</td>
+                                    <td class="border-b border-stone-200 p-3">アルカリ溶解 → 酸で沈殿</td>
+                                    <td class="border-b border-stone-200 p-3 font-bold text-lg">高い (90～98%)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-xl font-bold mb-4 text-center">最終シリカ純度の比較</h3>
+                    <div class="chart-container">
+                        <canvas id="purityChart"></canvas>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabs = document.querySelectorAll('.tab-btn');
+            const contents = document.querySelectorAll('.tab-content');
+            const processSteps = document.querySelectorAll('.process-step');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const target = tab.dataset.tab;
+                    
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    contents.forEach(content => {
+                        if (content.id === target) {
+                            content.classList.remove('hidden');
+                        } else {
+                            content.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+
+            processSteps.forEach(step => {
+                step.addEventListener('click', () => {
+                    const targetId = step.dataset.target;
+                    const detailsBox = document.getElementById(targetId);
+                    if (detailsBox) {
+                        detailsBox.classList.toggle('open');
+                    }
+                });
+            });
+
+            const ctx = document.getElementById('purityChart').getContext('2d');
+            const purityChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['直接熱処理法', '湿式化学法'],
+                    datasets: [{
+                        label: '最大シリカ純度 (%)',
+                        data: [99.0, 98.0],
+                        backgroundColor: [
+                            'rgba(5, 150, 105, 0.7)',  // emerald-600
+                            'rgba(16, 185, 129, 0.7)' // emerald-500
+                        ],
+                        borderColor: [
+                            'rgba(4, 120, 87, 1)',   // emerald-700
+                            'rgba(5, 150, 105, 1)'    // emerald-600
+                        ],
+                        borderWidth: 2,
+                        borderRadius: 5,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: 85,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: '純度 (%)',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            }
+                        },
+                        x: {
+                             grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `最大純度: ${context.raw}%`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
