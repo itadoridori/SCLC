@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大阪大学シリコン製剤の軌跡：インタラクティブ分析</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Chosen Palette: Neutral Inquiry -->
+    <!-- Application Structure Plan: このSPAは、報告書の直線的な構成ではなく、物語的なアプローチを採用します。まず「約束 vs 現実」という核心的な対立を提示し、ユーザーの関心を引きます。次に「科学的背景」「事業化」「論争」「結論」というテーマ別のセクションを順に配置し、物語を深く掘り下げます。この構造は、複雑な情報を段階的に理解させ、特に科学的な主張と商業的・法的な現実との間の緊張関係を明確にすることを目的としています。ナビゲーションにより、ユーザーは関心のあるセクションに直接アクセスできます。 -->
+    <!-- Visualization & Content Choices: 1. 水素発生量の比較(Chart.js Bar Chart): 報告書内の異なる発生量主張（400, 600, 800mL/g）を比較し、主張の不一致を視覚的に提示。2. 事業化エコシステム(HTML/CSS Diagram): 複雑な企業関係をフローチャートで整理し、一目で理解できるようにする。3. 主張と現実の比較(HTML/CSS Cards): 特許内容と実際の製品疑惑などを並べて表示し、矛盾点を明確化。4. データインテグリティ疑惑(Canvas): 論文と特許のグラフが酷似している疑惑を、簡略化した2つのグラフを並べて表示することで視覚的に伝え、問題の重大さを強調する。これらの選択は、SVGやMermaidを使用せず、情報の核心を効果的に伝えるためのものです。 -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #F9FAFB;
+            color: #1F2937;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 320px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .tab-button.active {
+            border-color: #3B82F6;
+            color: #3B82F6;
+            background-color: #EFF6FF;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-lg md:text-xl font-bold text-gray-800">シリコン製剤の軌跡</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#overview" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">概要</a>
+                        <a href="#science" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">科学的背景</a>
+                        <a href="#commercialization" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">事業化への道</a>
+                        <a href="#controversy" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">論争</a>
+                        <a href="#conclusion" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">結論</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        
+        <section id="overview" class="text-center mb-16 md:mb-24">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">約束と現実の狭間で</h2>
+            <p class="max-w-3xl mx-auto text-base md:text-lg text-gray-600 mb-8">
+                大阪大学で生まれた画期的なシリコン水素技術。その輝かしい科学的「約束」が、いかにして商業化の「現実」の中で複雑な法廷闘争と科学的論争へと発展したのか。このインタラクティブ分析で、その全貌を解き明かします。
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-blue-500">
+                    <h3 class="font-bold text-lg mb-2">輝かしい約束</h3>
+                    <p class="text-gray-600">製剤1gから最大800mLの水素を発生。これは飽和水素水44L分に相当すると主張された。</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-yellow-500">
+                    <h3 class="font-bold text-lg mb-2">法的な現実</h3>
+                    <p class="text-gray-600">1.7億円超の訴訟。裁判所は「有効性は契約で保証されていない」と判断。</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-red-500">
+                    <h3 class="font-bold text-lg mb-2">科学への疑義</h3>
+                    <p class="text-gray-600">特許の「ナノ粒子」と納入品の「マイクロ粒子」の乖離、データ操作の可能性が第三者により指摘。</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="science" class="mb-16 md:mb-24">
+            <h2 class="text-2xl md:text-3xl font-bold text-center mb-2 text-gray-900">科学的背景：画期的な発想</h2>
+             <p class="text-center text-gray-600 mb-10 max-w-2xl mx-auto">この技術の核心は、「体内で持続的に水素を発生させる」という前例のないアイデアにあります。ここでは、その科学的な主張と、動物実験で示された有望な初期データを見ていきます。</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
+                <div>
+                    <h3 class="font-bold text-xl mb-4 text-gray-800">作用メカニズム</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 h-6 w-6 rounded-full bg-blue-100 text-blue-800 flex items-center justify-center font-bold text-sm">1</div>
+                            <p class="ml-4 text-gray-700">胃酸では反応せず、腸内のアルカリ性環境（pH 8.3程度）でシリコンが水と反応を開始。</p>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 h-6 w-6 rounded-full bg-blue-100 text-blue-800 flex items-center justify-center font-bold text-sm">2</div>
+                            <p class="ml-4 text-gray-700">化学反応 ($Si + 2H_2O \rightarrow SiO_2 + 2H_2$) により、分子状水素 ($H_2$) を持続的に発生。</p>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 h-6 w-6 rounded-full bg-blue-100 text-blue-800 flex items-center justify-center font-bold text-sm">3</div>
+                            <p class="ml-4 text-gray-700">発生した水素が、有害な活性酸素（ヒドロキシルラジカル）を選択的に中和し、酸化ストレスを低減。</p>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 h-6 w-6 rounded-full bg-blue-100 text-blue-800 flex items-center justify-center font-bold text-sm">4</div>
+                            <p class="ml-4 text-gray-700">副産物の二酸化ケイ素($SiO_2$)は無害で、体内に吸収されず排出されるため安全と主張。</p>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="font-bold text-xl mb-4 text-center text-gray-800">主張された水素発生量の変遷</h3>
+                    <div class="chart-container">
+                        <canvas id="hydrogenChart"></canvas>
+                    </div>
+                    <p class="text-center text-xs text-gray-500 mt-2">発表媒体や時期により、1gあたりの水素発生量の主張値は変動した。</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="commercialization" class="mb-16 md:mb-24 bg-white p-6 md:p-8 rounded-lg shadow">
+            <h2 class="text-2xl md:text-3xl font-bold text-center mb-2 text-gray-900">事業化への道</h2>
+            <p class="text-center text-gray-600 mb-10 max-w-2xl mx-auto">大学の研究室で生まれたシーズは、ベンチャー企業設立、大手企業との提携を経て、ペット用とヒト用の製品として市場に登場しました。このセクションでは、その複雑なエコシステムと製品展開を概観します。</p>
+            <div>
+                <h3 class="font-bold text-xl text-center mb-4 text-gray-800">エコシステム：研究から市場まで</h3>
+                <div class="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-4 text-center text-sm">
+                    <div class="p-3 bg-gray-100 rounded-lg"><strong>研究開発</strong><br>大阪大学 SANKEN<br>小林研究室</div>
+                    <div class="font-bold text-xl text-gray-400">→</div>
+                    <div class="p-3 bg-gray-100 rounded-lg"><strong>大学発ベンチャー</strong><br>ボスケシリコン / KIT</div>
+                    <div class="font-bold text-xl text-gray-400">→</div>
+                    <div class="p-3 bg-gray-100 rounded-lg"><strong>製造</strong><br>大阪チタニウム<br>テクノロジーズ</div>
+                    <div class="font-bold text-xl text-gray-400">→</div>
+                    <div class="flex flex-col space-y-2">
+                        <div class="p-3 bg-blue-50 rounded-lg"><strong>ペット市場</strong><br>マルカン / レナトスジャパン</div>
+                        <div class="p-3 bg-green-50 rounded-lg"><strong>ヒト市場</strong><br>野田製薬</div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-12">
+                <h3 class="font-bold text-xl text-center mb-4 text-gray-800">市販製品の比較</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full min-w-max text-left">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="p-4 font-semibold">製品名</th>
+                                <th class="p-4 font-semibold">ターゲット</th>
+                                <th class="p-4 font-semibold">主要な主張</th>
+                                <th class="p-4 font-semibold">販売チャネル</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y">
+                            <tr>
+                                <td class="p-4 font-medium">レナトス (レナシアプラス)</td>
+                                <td class="p-4">ペット (犬・猫)</td>
+                                <td class="p-4">持続的な腸内水素発生 (最大800mL/g)</td>
+                                <td class="p-4">一般小売・EC</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 font-medium">ソレザゥス VISION</td>
+                                <td class="p-4">ヒト (特に眼の健康)</td>
+                                <td class="p-4">眼の酸化ストレス防御 (600mL/g)</td>
+                                <td class="p-4">医療機関限定</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="controversy" class="mb-16 md:mb-24">
+            <h2 class="text-2xl md:text-3xl font-bold text-center mb-2 text-gray-900">噴出する論争</h2>
+            <p class="text-center text-gray-600 mb-10 max-w-2xl mx-auto">輝かしい科学的発表の裏で、パートナー企業との法廷闘争や、第三者による科学的誠実性への深刻な疑義が浮上しました。ここでは、その対立の核心に迫ります。</p>
+            <div class="max-w-4xl mx-auto">
+                <div class="mb-4 border-b border-gray-200">
+                    <nav class="-mb-px flex space-x-4" aria-label="Tabs">
+                        <button id="tab-btn-lawsuit" class="tab-button whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm">訴訟：期待と契約</button>
+                        <button id="tab-btn-mismatch" class="tab-button whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm">科学的な不一致</button>
+                        <button id="tab-btn-integrity" class="tab-button whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm">データインテグリティ</button>
+                    </nav>
+                </div>
+                <div id="tab-content-lawsuit" class="tab-content bg-white p-6 rounded-lg shadow-inner">
+                    <h3 class="font-bold text-lg mb-4">事件の核心：1.7億円超の支払い請求</h3>
+                    <p class="text-gray-700 mb-4">大学発ベンチャーが、最低購入量を満たさなかったとして商業パートナーのマルカン/レナトスを提訴。対する被告側は、宣伝通りの効果が得られなかったため「錯誤無効」を主張しました。</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-red-50 p-4 rounded-lg">
+                            <p class="font-semibold text-red-800">被告（マルカン/レナトス）の主張</p>
+                            <p class="text-red-700 text-sm mt-1">「大学の発表通りに機能すると信じて契約した。納入品は期待通りではなく、契約は無効だ。」</p>
+                        </div>
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <p class="font-semibold text-green-800">裁判所の判決</p>
+                            <p class="text-green-700 text-sm mt-1">「特定の有効性は契約書に記載なし。有効性への期待は『希望的観測』に過ぎない。」として原告が勝訴。</p>
+                        </div>
+                    </div>
+                </div>
+                <div id="tab-content-mismatch" class="tab-content bg-white p-6 rounded-lg shadow-inner hidden">
+                    <h3 class="font-bold text-lg mb-4">主張と現実の乖離疑惑</h3>
+                    <p class="text-gray-700 mb-4">第三者の分析により、特許で謳われた技術と、実際に納入された製品との間に、重大な隔たりがある可能性が指摘されました。</p>
+                    <div class="space-y-4">
+                        <div class="p-4 border rounded-lg">
+                            <h4 class="font-semibold">粒子サイズ</h4>
+                            <div class="flex items-center justify-between mt-2 text-sm">
+                                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">特許の主張: 1-100nm (ナノ粒子)</span>
+                                <span class="font-bold text-2xl text-gray-400">vs</span>
+                                <span class="bg-red-100 text-red-800 px-2 py-1 rounded">疑惑: 数μm〜 (マイクロ粒子)</span>
+                            </div>
+                        </div>
+                        <div class="p-4 border rounded-lg">
+                            <h4 class="font-semibold">表面処理技術</h4>
+                             <div class="flex items-center justify-between mt-2 text-sm">
+                                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">主張: 水素発生を増強する特殊処理</span>
+                                <span class="font-bold text-2xl text-gray-400">vs</span>
+                                <span class="bg-red-100 text-red-800 px-2 py-1 rounded">疑惑: 納入品に処理はなかった</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="tab-content-integrity" class="tab-content bg-white p-6 rounded-lg shadow-inner hidden">
+                    <h3 class="font-bold text-lg mb-4">データ操作の疑惑</h3>
+                    <p class="text-gray-700 mb-4">最も深刻な指摘は、科学論文と特許出願で公開されたデータに関するものです。異なる実験条件を示すはずのグラフが、酷似していると分析されています。</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+                        <div class="border p-2 rounded-lg">
+                            <p class="text-center font-semibold text-sm mb-2">科学論文のグラフ（イメージ）</p>
+                            <canvas id="dummyChart1"></canvas>
+                        </div>
+                        <div class="border p-2 rounded-lg">
+                            <p class="text-center font-semibold text-sm mb-2">特許出願のグラフ（イメージ）</p>
+                            <canvas id="dummyChart2"></canvas>
+                        </div>
+                    </div>
+                    <p class="text-center text-sm text-red-600 mt-4 font-medium">注意：これらは疑惑を説明するための模式図であり、実際のデータではありません。</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="conclusion" class="bg-gray-800 text-white p-6 md:p-8 rounded-lg">
+            <h2 class="text-2xl md:text-3xl font-bold text-center mb-2">結論：技術移転の教訓</h2>
+            <p class="text-center text-gray-300 mb-10 max-w-2xl mx-auto">この一件は、大学発の優れた技術が市場に出る過程で、学術的な発表と商業的な契約、そして科学的誠実性の間でいかに深刻な断絶が生じうるかを示す貴重なケーススタディです。技術の将来は、失われた信頼を回復できるかにかかっています。</p>
+             <div class="max-w-3xl mx-auto space-y-4">
+                <div class="bg-gray-700 p-4 rounded-lg">
+                    <h3 class="font-semibold text-lg text-blue-300">投資家・パートナーへの提言</h3>
+                    <p class="text-gray-300 mt-1">独立したデューデリジェンスが不可欠。実際の商業製品の分析、契約書における性能保証の明記、公開データの検証が極めて重要。</p>
+                </div>
+                <div class="bg-gray-700 p-4 rounded-lg">
+                    <h3 class="font-semibold text-lg text-green-300">研究コミュニティへの提言</h3>
+                    <p class="text-gray-300 mt-1">研究成果の公表には、特に商業化が絡む場合、高い倫理観と透明性が求められる。学術的プロモーションと商業マーケティングの境界線を厳格に管理する必要がある。</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="text-center py-6 text-sm text-gray-500">
+        <p>このページは公開情報に基づき作成された分析レポートのインタラクティブ版です。</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const hydrogenData = {
+                labels: ['初期発表 (2019)', 'ソレザゥス (ヒト用)', 'YouTube発表 (教授)'],
+                datasets: [{
+                    label: '主張された水素発生量 (mL/g)',
+                    data: [400, 600, 800],
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.6)',
+                        'rgba(75, 192, 192, 0.6)',
+                        'rgba(255, 159, 64, 0.6)'
+                    ],
+                    borderColor: [
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            };
+
+            const hydrogenConfig = {
+                type: 'bar',
+                data: hydrogenData,
+                options: {
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '水素発生量 (mL/g)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += context.parsed.y + ' mL/g';
+                                    }
+                                    return label;
+                                },
+                                afterLabel: function(context) {
+                                    const value = context.parsed.y;
+                                    const waterEquivalent = (value / 1.6 * 0.001 * 22.4).toFixed(1);
+                                    const waterLiters = (value / (1.6 / 1000)).toFixed(0);
+                                    if (context.label.includes('初期')) return '飽和水素水 約22L相当';
+                                    if (context.label.includes('ソレザゥス')) return '飽和水素水 約33L相当';
+                                    if (context.label.includes('YouTube')) return '飽和水素水 約44L相当';
+                                    return '';
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+            new Chart(document.getElementById('hydrogenChart'), hydrogenConfig);
+
+            const dummyData1 = { labels: ['A', 'B', 'C', 'D', 'E'], datasets: [{ data: [10, 20, 15, 25, 22], tension: 0.1, borderColor: 'rgb(75, 192, 192)', fill: false }] };
+            const dummyData2 = { labels: ['A', 'B', 'C', 'D', 'E'], datasets: [{ data: [9, 18, 13.5, 22.5, 19.8], tension: 0.1, borderColor: 'rgb(255, 99, 132)', fill: false }] };
+            const dummyConfig = {
+                type: 'line',
+                options: {
+                    plugins: { legend: { display: false }, tooltip: { enabled: false } },
+                    scales: { x: { ticks: { display: false } }, y: { ticks: { display: false } } }
+                }
+            };
+            new Chart(document.getElementById('dummyChart1'), { ...dummyConfig, data: dummyData1 });
+            new Chart(document.getElementById('dummyChart2'), { ...dummyConfig, data: dummyData2 });
+
+            const tabs = [
+                { btn: document.getElementById('tab-btn-lawsuit'), content: document.getElementById('tab-content-lawsuit') },
+                { btn: document.getElementById('tab-btn-mismatch'), content: document.getElementById('tab-content-mismatch') },
+                { btn: document.getElementById('tab-btn-integrity'), content: document.getElementById('tab-content-integrity') }
+            ];
+
+            function switchTab(activeTab) {
+                tabs.forEach(tab => {
+                    if (tab.btn === activeTab) {
+                        tab.btn.classList.add('active');
+                        tab.content.classList.remove('hidden');
+                    } else {
+                        tab.btn.classList.remove('active');
+                        tab.content.classList.add('hidden');
+                    }
+                });
+            }
+
+            tabs.forEach(tab => {
+                tab.btn.addEventListener('click', () => switchTab(tab.btn));
+            });
+            switchTab(tabs[0].btn);
+            
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    const href = this.getAttribute('href');
+                    if(href.length > 1) {
+                      e.preventDefault();
+                      document.querySelector(href).scrollIntoView({
+                          behavior: 'smooth'
+                      });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
