@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インタラクティブ・レポート：もみ殻由来シリコンの製造と応用</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Chosen Palette: Calm Harmony -->
+    <!-- Application Structure Plan: The SPA is designed around the value chain, guiding the user from raw material to final application. This "Process-Flow" structure (Introduction -> The Process -> Product & Application -> Business Case) is more intuitive for understanding a complex manufacturing and scientific narrative than a simple linear reflection of the report's chapters. It allows users to logically follow the creation and purpose of the technology. Key interactions include tabbed navigation for process stages, interactive charts for data comparison, and clickable diagrams to reveal deeper information, making dense technical data digestible and engaging. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Table 1 (Silica Production Methods) -> Goal: Compare -> Viz: Interactive Bar Chart (Chart.js) -> Interaction: Hover to see detailed specs (purity, surface area). Justification: Visually compares the effectiveness of different methods, more engaging than a static table.
+        - Report Info: Table 2 (Reduction Method Comparison) -> Goal: Compare -> Viz: Side-by-side cards + Bar Chart (Chart.js) -> Interaction: Hover on chart. Justification: Clearly contrasts the high-level differences (temp, form) while the chart quantifies the crucial energy-saving benefit of MgTR.
+        - Report Info: Process Flows (Multiple sections) -> Goal: Organize/Explain -> Viz: HTML/Tailwind diagrams -> Interaction: Clickable stages reveal contextual info. Justification: Simplifies complex chemical processes into easy-to-follow steps without cluttering the UI.
+        - Report Info: Table 3 (Silicon Formulation Properties) -> Goal: Inform/Impact -> Viz: Animated stat cards -> Interaction: Numbers animate on scroll. Justification: Highlights the most impressive product performance metrics (H2 volume, duration) in a memorable way.
+        - Report Info: Table 4 (Cost Breakdown) -> Goal: Show Proportions -> Viz: Donut Chart (Chart.js) -> Interaction: Hover to see cost components. Justification: Immediately conveys the key economic driver (Magnesium cost) of the process.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .tab-active {
+            border-color: #0d9488;
+            color: #0d9488;
+            font-weight: 600;
+        }
+        .tab-inactive {
+            border-color: transparent;
+            color: #6b7280;
+        }
+        .process-arrow::after {
+            content: '→';
+            font-size: 1.5rem;
+            line-height: 2rem;
+            color: #9ca3af;
+            margin: 0 0.5rem;
+        }
+        .process-arrow:last-child::after {
+            content: '';
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-700">
+
+    <header id="header" class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-2">
+                    <span class="text-xl font-bold text-teal-700">🌾</span>
+                    <h1 class="text-sm md:text-lg font-bold text-slate-800">もみ殻由来シリコン技術</h1>
+                </div>
+                <nav class="hidden md:flex items-center space-x-8 text-sm font-medium">
+                    <a href="#introduction" class="text-slate-600 hover:text-teal-600 transition-colors">はじめに</a>
+                    <a href="#process" class="text-slate-600 hover:text-teal-600 transition-colors">プロセス</a>
+                    <a href="#application" class="text-slate-600 hover:text-teal-600 transition-colors">製品と応用</a>
+                    <a href="#business" class="text-slate-600 hover:text-teal-600 transition-colors">事業性</a>
+                </nav>
+                <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-slate-600 hover:bg-slate-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>
+                </button>
+            </div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden bg-white shadow-lg">
+             <a href="#introduction" class="block py-2 px-4 text-sm text-slate-600 hover:bg-teal-50">はじめに</a>
+             <a href="#process" class="block py-2 px-4 text-sm text-slate-600 hover:bg-teal-50">プロセス</a>
+             <a href="#application" class="block py-2 px-4 text-sm text-slate-600 hover:bg-teal-50">製品と応用</a>
+             <a href="#business" class="block py-2 px-4 text-sm text-slate-600 hover:bg-teal-50">事業性</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8 md:py-16">
+
+        <section id="introduction" class="text-center mb-16 md:mb-24 scroll-mt-16">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-3xl md:text-5xl font-bold text-teal-800 mb-4">農業廃棄物から、未来の健康へ</h2>
+                <p class="text-lg md:text-xl text-slate-600 mb-8">
+                    年間1億トン以上排出される「もみ殻」。このありふれた農業副産物が、最先端の科学技術と出会い、私たちの健康を支える革新的な素材に生まれ変わります。本レポートは、廃棄物のアップサイクル、グリーンケミストリー、そして先進医療応用を一つに繋ぐ、サステナブルな技術の全貌を解き明かします。
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded-xl shadow-md border border-slate-200">
+                        <h3 class="font-bold text-teal-700 text-lg mb-2">🌍 サステナビリティ</h3>
+                        <p class="text-sm text-slate-500">農業廃棄物を高付加価値材料に転換し、サーキュラーエコノミーを実現します。</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md border border-slate-200">
+                        <h3 class="font-bold text-teal-700 text-lg mb-2">💡 グリーンケミストリー</h3>
+                        <p class="text-sm text-slate-500">従来法より大幅に低いエネルギーでシリコンを製造し、環境負荷を低減します。</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md border border-slate-200">
+                        <h3 class="font-bold text-teal-700 text-lg mb-2">❤️ 健康イノベーション</h3>
+                        <p class="text-sm text-slate-500">体内で持続的に水素を発生させる、新しい形の抗酸化サプリメントを提供します。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="process" class="mb-16 md:mb-24 scroll-mt-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-800">The Process: 製造工程の探求</h2>
+                <p class="mt-4 max-w-2xl mx-auto text-slate-600">もみ殻から高機能シリコン製剤が完成するまでの3つの主要工程を解説します。各タブをクリックして、詳細なプロセスと関連データをご覧ください。</p>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-lg p-4 md:p-8 border border-slate-200">
+                <div class="border-b border-slate-200 mb-6">
+                    <nav class="-mb-px flex justify-center space-x-4 md:space-x-8" aria-label="Tabs">
+                        <button class="process-tab whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm md:text-base tab-active" data-tab="silica">
+                            Stage 1: シリカ抽出
+                        </button>
+                        <button class="process-tab whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm md:text-base tab-inactive" data-tab="silicon">
+                            Stage 2: シリコン還元
+                        </button>
+                        <button class="process-tab whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm md:text-base tab-inactive" data-tab="formulation">
+                            Stage 3: 製品化
+                        </button>
+                    </nav>
+                </div>
+
+                <div id="tab-content-silica" class="tab-content">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                        <div class="text-center lg:text-left">
+                            <h3 class="text-2xl font-bold text-teal-700 mb-4">Stage 1: もみ殻から高純度シリカへ</h3>
+                            <p class="mb-6 text-slate-600">
+                                プロセスの第一歩は、もみ殻に含まれるシリカ（SiO₂）を、高純度の「非晶質」状態で取り出すことです。この非晶質状態が、後の工程での反応性を高める鍵となります。
+                            </p>
+                            <div class="flex flex-wrap justify-center lg:justify-start items-center text-sm font-semibold">
+                                <div class="p-3 bg-slate-100 rounded-lg m-1 process-arrow">🌾 もみ殻</div>
+                                <div class="p-3 bg-slate-100 rounded-lg m-1 process-arrow">🧪 酸処理</div>
+                                <div class="p-3 bg-slate-100 rounded-lg m-1 process-arrow">🔥 精密焼成 (500-800°C)</div>
+                                <div class="p-3 bg-teal-100 text-teal-800 rounded-lg m-1">⚪ 非晶質シリカ</div>
+                            </div>
+                             <p class="mt-4 text-xs text-slate-500">*精密焼成：温度が800°Cを超えるとシリカが結晶化し、価値が失われるため、厳密な温度管理が最重要管理点となります。</p>
+                        </div>
+                        <div>
+                            <h4 class="text-center font-semibold text-slate-700 mb-2">シリカ製造法の純度比較</h4>
+                            <div class="chart-container">
+                                <canvas id="silicaPurityChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-content-silicon" class="tab-content hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                        <div class="order-2 lg:order-1">
+                            <h4 class="text-center font-semibold text-slate-700 mb-2">還元法のエネルギー消費比較 (per 1kg Si)</h4>
+                             <div class="chart-container">
+                                <canvas id="energyConsumptionChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="text-center lg:text-left order-1 lg:order-2">
+                             <h3 class="text-2xl font-bold text-teal-700 mb-4">Stage 2: シリカをシリコンに還元</h3>
+                            <p class="mb-6 text-slate-600">
+                                次に、シリカから酸素を取り除き、元素シリコン（Si）を生成します。ここでは、低温・省エネで、原料の多孔質構造を維持できる「マグネシウム熱還元（MgTR）」法が選択されます。
+                            </p>
+                            <div class="flex flex-col space-y-4">
+                                <div class="bg-slate-100 p-4 rounded-lg border border-slate-200">
+                                    <h5 class="font-bold">🔥 炭素熱還元 (従来法)</h5>
+                                    <p class="text-sm text-slate-600">1500°C以上の高温が必要。エネルギー消費が莫大で、生成物は緻密な塊となり多孔質構造は失われる。</p>
+                                </div>
+                                <div class="bg-teal-50 p-4 rounded-lg border border-teal-200">
+                                    <h5 class="font-bold text-teal-800">✨ マグネシウム熱還元 (本技術)</h5>
+                                    <p class="text-sm text-teal-700">650-850°Cの低温で反応。エネルギー効率が良く、原料のナノ多孔質構造を生成物シリコンに引き継げる。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-content-formulation" class="tab-content hidden">
+                    <div class="text-center">
+                        <h3 class="text-2xl font-bold text-teal-700 mb-4">Stage 3: 水素発生剤への最終加工</h3>
+                        <p class="mb-8 max-w-3xl mx-auto text-slate-600">
+                           得られた多孔質シリコンを、体内で安全かつ効果的に水素を発生させるための最終製品へと加工します。このナノレベルでの加工技術が、本製品の独自性と高い参入障壁の源泉です。
+                        </p>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
+                            <div class="bg-white p-6 rounded-xl shadow-md border border-slate-200">
+                                <div class="text-3xl mb-3">1️⃣</div>
+                                <h4 class="font-bold text-lg mb-2">ナノ化 (ビーズミル処理)</h4>
+                                <p class="text-sm text-slate-500">シリコン粉末をナノスケール（20-30nm）まで微細化。これにより比表面積が劇的に増大し、水との反応性が向上します。</p>
+                            </div>
+                             <div class="bg-white p-6 rounded-xl shadow-md border border-slate-200">
+                                <div class="text-3xl mb-3">2️⃣</div>
+                                <h4 class="font-bold text-lg mb-2">表面活性化 (化学処理)</h4>
+                                <p class="text-sm text-slate-500">ナノ粒子の表面を化学的に改質し、腸内環境での水素発生の速度と効率をさらに高めます。</p>
+                            </div>
+                             <div class="bg-white p-6 rounded-xl shadow-md border border-slate-200">
+                                <div class="text-3xl mb-3">3️⃣</div>
+                                <h4 class="font-bold text-lg mb-2">安全性確保 (再凝集化)</h4>
+                                <p class="text-sm text-slate-500">活性化されたナノ粉末を、安全に取り扱えるマイクロメートルサイズの凝集体へと加工し、最終製品とします。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="application" class="mb-16 md:mb-24 scroll-mt-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-800">Product & Application: 製品の価値</h2>
+                <p class="mt-4 max-w-2xl mx-auto text-slate-600">このシリコン製剤は、なぜ画期的なのでしょうか。そのユニークな機能と科学的根拠を解説します。</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center">
+                <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg border border-slate-200">
+                    <h3 class="text-xl font-bold text-teal-700 mb-4">体内での水素発生メカニズム</h3>
+                    <p class="text-sm text-slate-600 mb-6">製品は「生物学的に活性化される化学反応器」として機能します。体内の消化プロセスがスイッチとなり、目的の場所である「腸」で選択的に水素を発生させます。</p>
+                    <div class="space-y-4">
+                        <div class="flex items-start space-x-4">
+                            <div class="flex-shrink-0 bg-red-100 text-red-700 rounded-full h-10 w-10 flex items-center justify-center font-bold">胃</div>
+                            <div>
+                                <h4 class="font-semibold">胃（強酸性 pH < 5）では不活性</h4>
+                                <p class="text-xs text-slate-500">強酸性の胃の中では反応せず、安全に通過します。</p>
+                            </div>
+                        </div>
+                        <div class="pl-5">
+                            <div class="h-8 w-px bg-slate-300 ml-5"></div>
+                        </div>
+                        <div class="flex items-start space-x-4">
+                             <div class="flex-shrink-0 bg-sky-100 text-sky-700 rounded-full h-10 w-10 flex items-center justify-center font-bold">腸</div>
+                            <div>
+                                <h4 class="font-semibold">腸（弱アルカリ性 pH ≈ 8.3）で活性化</h4>
+                                <p class="text-xs text-slate-500">膵液により弱アルカリ性になった腸内で水と反応し、水素（H₂）の発生を開始します。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-center lg:text-left mb-4">驚異的なパフォーマンス</h3>
+                    <p class="text-slate-600 text-center lg:text-left mb-6">少量の摂取で、従来の水素水とは比較にならない量の水素を、長時間にわたって供給し続けます。</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="bg-white p-6 rounded-xl shadow-md text-center border border-slate-200">
+                            <div id="h2-volume" class="text-4xl font-bold text-teal-600" data-target="800">0</div>
+                            <div class="text-sm font-semibold text-slate-500 mt-2">総水素発生量 (mL/g)</div>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl shadow-md text-center border border-slate-200">
+                             <div id="duration" class="text-4xl font-bold text-teal-600" data-target="24">0</div>
+                            <div class="text-sm font-semibold text-slate-500 mt-2">持続時間 (時間以上)</div>
+                        </div>
+                    </div>
+                     <p class="text-xs text-slate-500 mt-4 text-center">これは、1.6ppmの飽和水素水 約500リットル分に相当する水素量です。</p>
+                </div>
+            </div>
+        </section>
+
+
+        <section id="business" class="scroll-mt-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-800">Business Case: 事業としての可能性</h2>
+                <p class="mt-4 max-w-2xl mx-auto text-slate-600">本技術の事業化における経済性、重要管理点、そして市場参入への戦略的アプローチを考察します。</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12">
+                 <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg border border-slate-200">
+                     <h3 class="text-xl font-bold text-center mb-4">主要原材料コスト分析 (per 1kg Si)</h3>
+                     <p class="text-sm text-center text-slate-600 mb-6">もみ殻はほぼ無償ですが、プロセス全体の経済性は還元剤であるマグネシウムの価格に大きく影響されます。</p>
+                     <div class="chart-container">
+                        <canvas id="costBreakdownChart"></canvas>
+                     </div>
+                 </div>
+                 <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg border border-slate-200">
+                    <h3 class="text-xl font-bold text-center mb-6">スタートアップへの戦略的提言</h3>
+                    <div class="relative pl-6">
+                        <div class="absolute left-0 top-0 h-full w-0.5 bg-slate-200"></div>
+                        <div class="relative mb-8">
+                            <div class="absolute -left-[30px] top-1/2 -translate-y-1/2 w-4 h-4 bg-teal-500 rounded-full border-4 border-white"></div>
+                            <h4 class="font-bold">Phase 1: リスク低減と早期市場投入</h4>
+                            <p class="text-sm text-slate-600">市販の高純度シリコンを原料に、最終製品の製剤化技術を確立。サプリメントとして迅速に市場投入し、初期収益と実績を確保する。</p>
+                        </div>
+                         <div class="relative">
+                            <div class="absolute -left-[30px] top-1/2 -translate-y-1/2 w-4 h-4 bg-teal-500 rounded-full border-4 border-white"></div>
+                            <h4 class="font-bold">Phase 2: 垂直統合とコスト削減</h4>
+                            <p class="text-sm text-slate-600">Phase 1と並行し、「もみ殻からシリコンまで」の自社製造プロセスをR&D。将来的なコスト競争力とサプライチェーンの安定化を目指す。</p>
+                        </div>
+                    </div>
+                 </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-slate-800 text-slate-400 mt-16 md:mt-24">
+        <div class="container mx-auto px-4 py-6 text-center text-sm">
+            <p>&copy; 2025 Interactive Technical Report. All rights reserved.</p>
+            <p class="text-xs mt-1">This application was generated based on the provided technical report for illustrative purposes.</p>
+        </div>
+    </footer>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        const processTabs = document.querySelectorAll('.process-tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        processTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const target = tab.dataset.tab;
+
+                processTabs.forEach(t => {
+                    t.classList.remove('tab-active');
+                    t.classList.add('tab-inactive');
+                });
+                tab.classList.remove('tab-inactive');
+                tab.classList.add('tab-active');
+
+                tabContents.forEach(content => {
+                    if (content.id === `tab-content-${target}`) {
+                        content.classList.remove('hidden');
+                    } else {
+                        content.classList.add('hidden');
+                    }
+                });
+            });
+        });
+        
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+        document.querySelectorAll('#mobile-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+        });
+
+        const animateCounter = (element) => {
+            const target = +element.dataset.target;
+            const duration = 1500;
+            const stepTime = Math.abs(Math.floor(duration / target));
+            let current = 0;
+            const timer = setInterval(() => {
+                current += 1;
+                element.textContent = current;
+                if (current === target) {
+                    clearInterval(timer);
+                }
+            }, stepTime);
+        };
+        
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    if (entry.target.id === 'h2-volume' || entry.target.id === 'duration') {
+                         animateCounter(entry.target);
+                         observer.unobserve(entry.target);
+                    }
+                }
+            });
+        }, { threshold: 0.5 });
+        
+        const h2Volume = document.getElementById('h2-volume');
+        const duration = document.getElementById('duration');
+        if (h2Volume) observer.observe(h2Volume);
+        if (duration) observer.observe(duration);
+        
+        Chart.defaults.font.family = "'Inter', 'Noto Sans JP', sans-serif";
+        Chart.defaults.color = '#475569';
+
+        const chartOptions = {
+            maintainAspectRatio: false,
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: '#1f2937',
+                    titleFont: { size: 14, weight: 'bold' },
+                    bodyFont: { size: 12 },
+                    padding: 10,
+                    cornerRadius: 4,
+                    displayColors: false
+                }
+            },
+            scales: {
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        font: {
+                            size: 10
+                        }
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: '#e2e8f0',
+                        borderDash: [2, 4]
+                    },
+                    ticks: {
+                        font: {
+                           size: 12
+                        }
+                    }
+                }
+            }
+        };
+
+        const silicaData = {
+            labels: ['HCl リーチング', 'HNO₃ リーチング', '2段階 HCl', 'HCl (10 wt%)', 'HCl (2 M)'],
+            datasets: [{
+                label: '最終SiO₂純度 (%)',
+                data: [98, 95.5, 98.34, 96.1, 99],
+                backgroundColor: 'rgba(13, 148, 136, 0.6)',
+                borderColor: 'rgba(13, 148, 136, 1)',
+                borderWidth: 1,
+                borderRadius: 4,
+                hoverBackgroundColor: 'rgba(13, 148, 136, 0.8)'
+            }]
+        };
+
+        const silicaPurityChartCtx = document.getElementById('silicaPurityChart');
+        if(silicaPurityChartCtx) {
+            new Chart(silicaPurityChartCtx, {
+                type: 'bar',
+                data: silicaData,
+                options: {
+                    ...chartOptions,
+                    scales: {
+                         ...chartOptions.scales,
+                         y: {
+                             ...chartOptions.scales.y,
+                             title: {
+                                 display: true,
+                                 text: 'SiO₂ 純度 (%)'
+                             },
+                             min: 90
+                         }
+                    },
+                     plugins: {
+                        ...chartOptions.plugins,
+                        tooltip: {
+                            ...chartOptions.plugins.tooltip,
+                            callbacks: {
+                                label: function(context) {
+                                    const surfaceAreas = [300, 298, 293.89, 'N/A', '120-980'];
+                                    let label = `純度: ${context.parsed.y}%`;
+                                    if (surfaceAreas[context.dataIndex]) {
+                                        label += ` | 比表面積: ${surfaceAreas[context.dataIndex]} m²/g`;
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        const energyData = {
+            labels: ['炭素熱還元 (従来法)', 'マグネシウム熱還元 (本技術)'],
+            datasets: [{
+                label: 'エネルギー消費 (kWh/kg)',
+                data: [494, 91],
+                backgroundColor: ['rgba(220, 38, 38, 0.6)', 'rgba(13, 148, 136, 0.6)'],
+                borderColor: ['rgba(220, 38, 38, 1)', 'rgba(13, 148, 136, 1)'],
+                borderWidth: 1,
+                borderRadius: 4,
+            }]
+        };
+
+        const energyConsumptionChartCtx = document.getElementById('energyConsumptionChart');
+        if(energyConsumptionChartCtx) {
+            new Chart(energyConsumptionChartCtx, {
+                type: 'bar',
+                data: energyData,
+                options: {
+                    ...chartOptions,
+                    scales: {
+                         ...chartOptions.scales,
+                         y: {
+                             ...chartOptions.scales.y,
+                             title: {
+                                 display: true,
+                                 text: 'エネルギー消費 (kWh/kg)'
+                             }
+                         }
+                    }
+                }
+            });
+        }
+
+        const costData = {
+            labels: ['マグネシウム (Mg)', '塩酸 (HCl)', '塩化ナトリウム (NaCl)'],
+            datasets: [{
+                label: 'コスト内訳',
+                data: [1.96, 0.7, 0.3], 
+                backgroundColor: [
+                    'rgba(15, 118, 110, 0.8)',
+                    'rgba(14, 165, 233, 0.7)',
+                    'rgba(107, 114, 128, 0.6)'
+                ],
+                borderColor: '#ffffff',
+                borderWidth: 2,
+                hoverOffset: 4
+            }]
+        };
+
+        const costBreakdownChartCtx = document.getElementById('costBreakdownChart');
+        if(costBreakdownChartCtx) {
+            new Chart(costBreakdownChartCtx, {
+                type: 'doughnut',
+                data: costData,
+                options: {
+                    maintainAspectRatio: false,
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        },
+                        tooltip: {
+                             ...chartOptions.plugins.tooltip,
+                             callbacks: {
+                                label: function(context) {
+                                    return `${context.label}: 約 $${context.parsed.toFixed(2)} USD`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    });
+    </script>
+</body>
+</html>

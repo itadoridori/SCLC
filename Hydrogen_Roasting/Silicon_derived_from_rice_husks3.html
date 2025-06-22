@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インタラクティブ・スライド：もみ殻から未来の健康素材へ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', 'Noto Sans JP', sans-serif; }
+        .slide {
+            transition: opacity 0.5s ease-in-out;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 90%;
+            max-width: 500px;
+            margin: auto;
+        }
+        .narration-box {
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0));
+        }
+        .dot-active { background-color: #ffffff; }
+        .dot-inactive { background-color: rgba(255, 255, 255, 0.5); }
+    </style>
+</head>
+<body class="bg-slate-900 text-white overflow-hidden h-screen flex flex-col">
+
+    <div id="slider" class="relative w-full h-full flex-grow">
+        <!-- Slides will be injected here by JS -->
+    </div>
+
+    <div class="absolute bottom-0 left-0 right-0 p-4 z-20">
+        <div class="flex items-center justify-center space-x-2" id="pagination-dots">
+            <!-- Dots will be injected here by JS -->
+        </div>
+    </div>
+    
+    <button id="prev-btn" class="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-white/20 hover:bg-white/40 rounded-full p-2 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+    </button>
+    <button id="next-btn" class="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-white/20 hover:bg-white/40 rounded-full p-2 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+    </button>
+
+
+<script>
+const slidesData = [
+    {
+        type: 'title',
+        content: {
+            title: 'もみ殻から未来の健康素材へ',
+            subtitle: '農業廃棄物を革新的ニュートラシューティカルに変える技術',
+            narration: '皆様、本日はお集まりいただきありがとうございます。これから、ありふれた農業廃棄物である「もみ殻」が、最先端科学と出会い、私たちの健康を支える未来の素材へと生まれ変わる、驚くべき物語をご紹介します。'
+        }
+    },
+    {
+        type: 'infographic_big_number',
+        content: {
+            title: '未活用の巨大資源、もみ殻',
+            mainText: '1.2億',
+            subText: 'トン/年',
+            description: '全世界で排出されるもみ殻の量。その約20%が、本技術の原料となるシリカ（SiO₂）です。',
+            narration: '私たちの物語は、この膨大な量のもみ殻から始まります。世界で年間1億2000万トン。これまで多くが廃棄されていたこの資源に、私たちは新たな価値を見出しました。この中に、宝物である「シリカ」が眠っているのです。'
+        }
+    },
+    {
+        type: 'infographic_flow',
+        content: {
+            title: '価値を生む変革の道のり',
+            steps: [
+                { icon: '🌾', label: 'もみ殻', description: '原料' },
+                { icon: '🧪', label: '酸処理', description: '不純物除去' },
+                { icon: '🔥', label: '精密焼成', description: '高純度シリカへ' },
+                { icon: '⚪️', label: '非晶質シリカ', description: '中間生成物' }
+            ],
+            narration: 'もみ殻から価値ある素材を取り出す最初のステップです。まず、酸で洗浄し不純物を取り除きます。次に、特殊な炉で精密に焼き上げることで、有機物を除去し、高純度の「非晶質シリカ」を単離します。ここでの品質が、後の全工程を左右します。'
+        }
+    },
+    {
+        type: 'infographic_chart',
+        content: {
+            title: '技術の核心①：シリカ製造の鍵',
+            chartType: 'line',
+            chartId: 'silica-chart',
+            description: '焼成温度が800°Cを超えると、価値ある非晶質シリカは反応性の低い結晶質に変化してしまいます。この「800℃の壁」を越えない精密な温度管理こそが、本技術の最初の核心です。',
+            narration: 'シリカ製造で最も重要なのが、この「温度管理」です。グラフが示すように、温度が800℃を超えた途端、シリカは価値のない結晶に変わってしまいます。私たちはこの狭い温度範囲を完璧に制御する技術を確立しました。これが高品質な原料を生み出す第一の秘訣です。'
+        }
+    },
+    {
+        type: 'infographic_flow',
+        content: {
+            title: 'シリカからシリコンへの飛躍',
+            steps: [
+                { icon: '⚪️', label: '非晶質シリカ', description: '出発原料' },
+                { icon: '➕', label: 'Mg + NaCl', description: '還元剤と熱吸収材' },
+                { icon: '🔥', label: 'MgTR法', description: '低温での還元' },
+                { icon: '✨', label: '多孔質シリコン', description: '高機能素材' }
+            ],
+            narration: '次に、得られたシリカから酸素を取り除き、純粋な「シリコン」を製造します。ここでは、マグネシウムを還元剤として用いる「MgTR法」という、低温かつ省エネな画期的技術を採用します。'
+        }
+    },
+    {
+        type: 'infographic_chart',
+        content: {
+            title: '技術の核心②：省エネ還元法',
+            chartType: 'bar',
+            chartId: 'energy-chart',
+            description: '従来法に比べ、MgTR法はエネルギー消費を約80%も削減。環境負荷を大幅に低減し、持続可能な製造プロセスを実現します。',
+            narration: 'なぜMgTR法が画期的なのか。このグラフをご覧ください。従来の炭素熱還元法と比較して、エネルギー消費を劇的に抑えることができます。これは、環境に優しいだけでなく、製造コストの削減にも直結する、本技術の大きな強みです。'
+        }
+    },
+    {
+        type: 'infographic_flow',
+        content: {
+            title: '最終製品への仕上げ',
+            steps: [
+                { icon: '✨', label: '多孔質シリコン', description: '原料' },
+                { icon: '🔬', label: 'ナノ化', description: '表面積の増大' },
+                { icon: '💧', label: '表面活性化', description: '反応効率UP' },
+                { icon: '💊', label: '最終製剤', description: '腸内水素発生剤' }
+            ],
+            narration: 'こうして得られたシリコンは、最終的な健康素材へと加工されます。ナノレベルまで細かくし、表面を特殊処理することで、体内での反応性を最大化します。この独自のナノ加工技術こそが、高い参入障壁を築く、私たちの発明の核心です。'
+        }
+    },
+    {
+        type: 'infographic_diagram',
+        content: {
+            title: '製品のメカニズム：なぜ効くのか？',
+            items: [
+                { stage: '胃 (酸性)', description: '胃の中では反応せず、安全に通過します。', active: false },
+                { stage: '腸 (弱アルカリ性)', description: '腸に達すると膵液で活性化。水と反応し、水素(H₂)を発生させます。', active: true }
+            ],
+            narration: 'この製品は、体内でどのように働くのでしょうか。それは「スマートドラッグ」のように、目的の場所でのみ作用します。強酸性の胃では眠ったままですが、弱アルカリ性の腸に到達した瞬間、スイッチが入り、水と反応して持続的に水素を発生させ始めるのです。'
+        }
+    },
+    {
+        type: 'infographic_big_number_dual',
+        content: {
+            title: '驚異的なパフォーマンス',
+            numbers: [
+                { mainText: '>800', subText: 'mL/g', description: '総水素発生量' },
+                { mainText: '>24', subText: '時間', description: '水素発生の持続時間' }
+            ],
+            narration: 'その性能は驚異的です。わずか1グラムの製剤が、800ミリリットル以上、つまり飽和水素水500リットル分もの水素を、24時間以上にわたって体内で発生させ続けます。これにより、有害な活性酸素を持続的に除去することが可能になります。'
+        }
+    },
+    {
+        type: 'infographic_chart',
+        content: {
+            title: '事業としての可能性',
+            chartType: 'doughnut',
+            chartId: 'cost-chart',
+            description: 'もみ殻はほぼ無償ですが、製造コストの鍵を握るのは還元剤であるマグネシウムです。安定供給とプロセスの効率化が事業成功の鍵となります。',
+            narration: '最後に、事業としての可能性です。この円グラフが示す通り、製造コストの大部分を占めるのはマグネシウムです。私たちは、もみ殻という低コスト原料の利点を最大限に活かしつつ、このプロセスを効率化することで、競争力のある価格で革新的な製品を市場に届けることを目指します。'
+        }
+    },
+     {
+        type: 'summary',
+        content: {
+            title: 'まとめ：三位一体の価値',
+            points: [
+                { icon: '🌍', title: 'サーキュラーエコノミー', description: '廃棄物を価値ある資源へ転換' },
+                { icon: '💡', title: 'グリーンケミストリー', description: '省エネ・低環境負荷な製造プロセス' },
+                { icon: '❤️', title: '健康イノベーション', description: '新しい形の持続型水素サプリメント' }
+            ],
+            narration: 'まとめです。私たちの技術は、単なる製品開発ではありません。廃棄物を資源に変える「サーキュラーエコノミー」。環境に優しい「グリーンケミストリー」。そして、人々の健康に貢献する「健康イノベーション」。この三つの価値を同時に実現する、未来へのソリューションです。ご清聴ありがとうございました。'
+        }
+    },
+    {
+        type: 'youtube',
+        content: {
+            title: 'YouTube動画用コンテンツ案',
+            narration: 'このスライドは、本プレゼンテーションをYouTube動画として展開する際のコンテンツ案です。タイトル、概要、サムネイル、BGMのアイデアをご提案します。',
+            youtube_titles: [
+                '【科学解説】捨てられる「もみ殻」がガンや老化を防ぐ!? 奇跡の素材「腸内水素発生シリコン」の全貌',
+                '【ディープテック】農業廃棄物から作る未来のサプリメント。日本の大学発、世界を変える新技術。',
+                '水素水の次はこれだ！24時間、体内で水素を作り続ける「シリコン」の衝撃的な効果とは？'
+            ],
+            youtube_description: `年間1.2億トンも排出される農業廃棄物「もみ殻」。実はこの中に、私たちの健康を根底から変える可能性を秘めた宝物が眠っていました。この動画では、もみ殻から高純度の「非晶質シリカ」を抽出し、さらにそれを革新的な「多孔質シリコン」へと変換する最先端技術を徹底解説。このシリコンが、サプリメントとして体内で24時間以上も持続的に水素を発生させ、老化や生活習慣病の原因となる有害な活性酸素を選択的に除去するメカニズムを、インフォグラフィックスで分かりやすく紹介します。日本の大学から生まれた、サーキュラーエコノミーとグリーンケミストリー、そして健康イノベーションを融合したディープテックの未来をご覧ください。\n\n#科学 #テクノロジー #健康 #サプリメント #水素 #アンチエイジング #アップサイクル #SDGs`,
+            thumbnail_prompts: [
+                'A visually striking YouTube thumbnail with split-screen design. Left side: A large, overflowing pile of rice husks under a rustic, natural light. Right side: A futuristic, glowing blue capsule held between two fingers in a clean, modern laboratory setting. Bold text overlay: "捨てられるゴミが、命を救う？".',
+                'An infographic-style YouTube thumbnail. A central, detailed 3D model of a porous silicon nanoparticle. Arrows point to it from icons representing rice husks, a chemical flask, and a DNA helix. The background is a dark, tech-inspired grid. Title text in a bold, scientific font: "体内で水素を作る新素材".',
+                'A dramatic "before and after" style thumbnail. Left side: A black and white photo of a person looking tired and stressed, with a graphic of spiky "hydroxyl radical" molecules floating around them. Right side: The same person in vibrant color, looking energetic and healthy, with gentle, glowing "H2" (hydrogen) molecules replacing the radicals. A title at the bottom: "24時間、悪玉酸素を消去し続ける技術".'
+            ],
+            suno_prompts: [
+                'An optimistic and inspiring corporate technology track. Begins with a gentle piano melody, gradually builds with layered strings and a subtle electronic beat. Evokes a sense of discovery, innovation, and a bright future. Perfect for a presentation about groundbreaking science. (Instrumental)',
+                'A calm, minimalist, and slightly ethereal background music. Features soft synth pads, a simple, clean electric piano melody, and sparse, atmospheric sound effects. Creates a feeling of focus, clarity, and scientific elegance. Suitable for a detailed explanation. (Instrumental, Ambient)',
+                'An energetic and motivational electronic track. Driving synth bassline, upbeat drum machine rhythm, and soaring synth leads. Conveys progress, success, and positive change. Ideal for the introduction and conclusion of a video about a revolutionary product. (Instrumental, Uplifting, Electronic)'
+            ]
+        }
+    }
+];
+
+let currentSlide = 0;
+const slider = document.getElementById('slider');
+const dotsContainer = document.getElementById('pagination-dots');
+
+function createSlideElement(slideData, index) {
+    const slide = document.createElement('div');
+    slide.className = `slide absolute inset-0 w-full h-full p-8 pb-40 flex flex-col items-center justify-center text-center ${index === 0 ? 'opacity-100' : 'opacity-0'}`;
+    slide.style.transition = 'opacity 0.5s ease-in-out, visibility 0.5s';
+    slide.style.visibility = index === 0 ? 'visible' : 'hidden';
+
+    let contentHtml = '';
+    switch (slideData.type) {
+        case 'title':
+            contentHtml = `
+                <div class="bg-black/30 p-8 rounded-lg">
+                    <h1 class="text-4xl md:text-7xl font-bold text-white drop-shadow-lg">${slideData.content.title}</h1>
+                    <p class="text-xl md:text-2xl text-slate-300 mt-4">${slideData.content.subtitle}</p>
+                </div>
+            `;
+            break;
+        case 'infographic_big_number':
+            contentHtml = `
+                <h2 class="text-2xl md:text-4xl font-bold mb-4">${slideData.content.title}</h2>
+                <div class="bg-white/10 p-8 rounded-full aspect-square flex flex-col items-center justify-center shadow-2xl my-4">
+                    <p class="text-7xl md:text-9xl font-bold text-cyan-400">${slideData.content.mainText}</p>
+                    <p class="text-2xl md:text-4xl text-cyan-300">${slideData.content.subText}</p>
+                </div>
+                <p class="max-w-2xl text-slate-300 text-lg">${slideData.content.description}</p>
+            `;
+            break;
+        case 'infographic_flow':
+             contentHtml = `
+                <h2 class="text-2xl md:text-4xl font-bold mb-8">${slideData.content.title}</h2>
+                <div class="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 w-full max-w-4xl">
+                    ${slideData.content.steps.map((step, i) => `
+                        <div class="flex items-center gap-4 ${i < slideData.content.steps.length - 1 ? 'flex-grow' : ''}">
+                            <div class="flex flex-col items-center text-center">
+                                <div class="bg-slate-700 rounded-full w-20 h-20 flex items-center justify-center text-4xl mb-2">${step.icon}</div>
+                                <h3 class="font-bold">${step.label}</h3>
+                                <p class="text-sm text-slate-400">${step.description}</p>
+                            </div>
+                            ${i < slideData.content.steps.length - 1 ? '<div class="hidden md:block text-4xl text-slate-500 mx-4">→</div><div class="md:hidden text-4xl text-slate-500 my-4">↓</div>' : ''}
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            break;
+        case 'infographic_chart':
+            contentHtml = `
+                <h2 class="text-2xl md:text-4xl font-bold mb-4 text-center">${slideData.content.title}</h2>
+                <div class="w-full max-w-4xl h-1/2 md:h-2/3 bg-white/5 p-6 rounded-lg shadow-xl">
+                    <div class="chart-container">
+                        <canvas id="${slideData.content.chartId}"></canvas>
+                    </div>
+                </div>
+                 <p class="max-w-2xl text-slate-300 text-lg mt-6 text-center">${slideData.content.description}</p>
+            `;
+            break;
+        case 'infographic_diagram':
+            contentHtml = `
+                 <h2 class="text-2xl md:text-4xl font-bold mb-8">${slideData.content.title}</h2>
+                 <div class="flex flex-col md:flex-row gap-8 w-full max-w-3xl">
+                    ${slideData.content.items.map(item => `
+                        <div class="flex-1 p-8 rounded-lg text-center border-2 ${item.active ? 'border-cyan-400 bg-cyan-400/10' : 'border-slate-600 bg-slate-800/50'}">
+                            <h3 class="text-3xl font-bold mb-4 ${item.active ? 'text-cyan-300' : 'text-slate-400'}">${item.stage}</h3>
+                            <p class="text-lg">${item.description}</p>
+                        </div>
+                    `).join('')}
+                 </div>
+            `;
+            break;
+        case 'infographic_big_number_dual':
+             contentHtml = `
+                <h2 class="text-2xl md:text-4xl font-bold mb-8">${slideData.content.title}</h2>
+                <div class="flex flex-col md:flex-row gap-8">
+                ${slideData.content.numbers.map(num => `
+                    <div class="text-center">
+                        <p class="text-7xl md:text-9xl font-bold text-cyan-400">${num.mainText}</p>
+                        <p class="text-2xl md:text-4xl text-cyan-300 -mt-4 mb-2">${num.subText}</p>
+                        <p class="text-xl text-slate-300">${num.description}</p>
+                    </div>
+                `).join('')}
+                </div>
+             `;
+            break;
+         case 'summary':
+            contentHtml = `
+                <h2 class="text-2xl md:text-4xl font-bold mb-8">${slideData.content.title}</h2>
+                <div class="flex flex-col md:flex-row gap-8 max-w-5xl">
+                ${slideData.content.points.map(point => `
+                    <div class="flex-1 bg-white/10 p-8 rounded-xl text-center">
+                        <div class="text-6xl mb-4">${point.icon}</div>
+                        <h3 class="text-2xl font-bold mb-2">${point.title}</h3>
+                        <p class="text-slate-300">${point.description}</p>
+                    </div>
+                `).join('')}
+                </div>
+            `;
+            break;
+        case 'youtube':
+            contentHtml = `
+                <div class="w-full max-w-6xl h-full flex flex-col text-left overflow-y-auto p-4 md:p-8 bg-slate-800/50 rounded-lg">
+                    <h2 class="text-2xl md:text-3xl font-bold mb-6 text-center text-cyan-300">${slideData.content.title}</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 text-sm">
+                        <div>
+                            <h3 class="font-bold text-lg mb-2 border-b border-cyan-500 pb-1 text-white">タイトル案 (3案)</h3>
+                            <ul class="list-disc list-inside space-y-2 text-slate-300">
+                                ${slideData.content.youtube_titles.map(t => `<li>${t}</li>`).join('')}
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg mb-2 border-b border-cyan-500 pb-1 text-white">Suno AI用BGMプロンプト (3案)</h3>
+                            <ul class="list-disc list-inside space-y-2 text-slate-300">
+                                ${slideData.content.suno_prompts.map(p => `<li>${p}</li>`).join('')}
+                            </ul>
+                        </div>
+                        <div class="md:col-span-2">
+                             <h3 class="font-bold text-lg mb-2 border-b border-cyan-500 pb-1 text-white">概要</h3>
+                             <p class="text-slate-300 whitespace-pre-wrap">${slideData.content.youtube_description}</p>
+                        </div>
+                        <div class="md:col-span-2">
+                            <h3 class="font-bold text-lg mb-2 border-b border-cyan-500 pb-1 text-white">サムネイル生成用プロンプト (3案)</h3>
+                            <ul class="list-disc list-inside space-y-2 text-slate-300">
+                                 ${slideData.content.thumbnail_prompts.map(p => `<li>${p}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            `;
+            break;
+    }
+
+    const narrationHtml = `
+        <div class="narration-box absolute bottom-0 left-0 right-0 p-8 pt-16 text-center">
+            <p class="max-w-4xl mx-auto text-md md:text-lg text-slate-200">${slideData.content.narration}</p>
+        </div>
+    `;
+
+    slide.innerHTML = contentHtml + narrationHtml;
+    return slide;
+}
+
+function renderSlides() {
+    slidesData.forEach((slideData, index) => {
+        const slideElement = createSlideElement(slideData, index);
+        slider.appendChild(slideElement);
+
+        const dot = document.createElement('button');
+        dot.className = `dot w-3 h-3 rounded-full transition-colors ${index === 0 ? 'dot-active' : 'dot-inactive'}`;
+        dot.addEventListener('click', () => goToSlide(index));
+        dotsContainer.appendChild(dot);
+    });
+    
+    // After slides are in DOM, create charts
+    createCharts();
+}
+
+function updateSlider() {
+    const slides = document.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.dot');
+
+    slides.forEach((slide, index) => {
+        if (index === currentSlide) {
+            slide.classList.remove('opacity-0');
+            slide.style.visibility = 'visible';
+        } else {
+            slide.classList.add('opacity-0');
+            slide.style.visibility = 'hidden';
+        }
+    });
+
+    dots.forEach((dot, index) => {
+        dot.className = `dot w-3 h-3 rounded-full transition-colors ${index === currentSlide ? 'dot-active' : 'dot-inactive'}`;
+    });
+
+    document.getElementById('prev-btn').style.display = currentSlide === 0 ? 'none' : 'block';
+    document.getElementById('next-btn').style.display = currentSlide === slidesData.length - 1 ? 'none' : 'block';
+}
+
+function goToSlide(slideNumber) {
+    currentSlide = slideNumber;
+    updateSlider();
+}
+
+function nextSlide() {
+    if (currentSlide < slidesData.length - 1) {
+        currentSlide++;
+        updateSlider();
+    }
+}
+
+function prevSlide() {
+    if (currentSlide > 0) {
+        currentSlide--;
+        updateSlider();
+    }
+}
+
+
+function createCharts() {
+    // Silica Chart
+    const silicaCtx = document.getElementById('silica-chart');
+    if (silicaCtx) {
+        new Chart(silicaCtx, {
+            type: 'line',
+            data: {
+                labels: ['500°C', '600°C', '700°C', '800°C', '900°C', '1000°C'],
+                datasets: [{
+                    label: 'シリカの反応性',
+                    data: [95, 98, 99, 95, 20, 10],
+                    borderColor: '#22d3ee',
+                    backgroundColor: 'rgba(34, 211, 238, 0.2)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: chartOptions('シリカの反応性 (%)')
+        });
+    }
+
+    // Energy Chart
+    const energyCtx = document.getElementById('energy-chart');
+    if (energyCtx) {
+        new Chart(energyCtx, {
+            type: 'bar',
+            data: {
+                labels: ['炭素熱還元法 (従来)', 'MgTR法 (本技術)'],
+                datasets: [{
+                    label: 'エネルギー消費 (kWh/kg)',
+                    data: [494, 91],
+                    backgroundColor: ['#475569', '#22d3ee'],
+                    borderRadius: 4
+                }]
+            },
+            options: chartOptions('エネルギー消費 (kWh/kg)')
+        });
+    }
+
+    // Cost Chart
+    const costCtx = document.getElementById('cost-chart');
+    if (costCtx) {
+        new Chart(costCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['マグネシウム (Mg)', '塩酸 (HCl)', 'その他'],
+                datasets: [{
+                    data: [65, 25, 10],
+                    backgroundColor: ['#06b6d4', '#67e8f9', '#a5f3fc'],
+                    borderColor: '#1e293b',
+                    borderWidth: 4,
+                    hoverOffset: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { color: '#cbd5e1', font: { size: 12 } }
+                    },
+                    tooltip: {
+                         callbacks: {
+                            label: (context) => `${context.label}: ${context.parsed}%`
+                        }
+                    }
+                }
+            }
+        });
+    }
+}
+
+const chartOptions = (yAxisLabel) => ({
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+        y: {
+            beginAtZero: true,
+            title: { display: true, text: yAxisLabel, color: '#94a3b8' },
+            ticks: { color: '#cbd5e1' },
+            grid: { color: 'rgba(203, 213, 225, 0.1)' }
+        },
+        x: {
+            ticks: { color: '#cbd5e1' },
+            grid: { color: 'rgba(203, 213, 225, 0.1)' }
+        }
+    },
+    plugins: {
+        legend: { display: false }
+    }
+});
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    renderSlides();
+    document.getElementById('prev-btn').addEventListener('click', prevSlide);
+    document.getElementById('next-btn').addEventListener('click', nextSlide);
+    
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') {
+            nextSlide();
+        } else if (e.key === 'ArrowLeft') {
+            prevSlide();
+        }
+    });
+
+    updateSlider(); 
+});
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インフォグラフィック：もみ殻から生まれる未来の健康素材</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Chosen Palette: Brilliant Blues -->
+    <!-- Application Structure Plan: The infographic follows a linear narrative structure, guiding the user from the problem/opportunity (waste) to the solution (technology) and finally to the impact (product value and economics). This structure (1. The Opportunity, 2. The Process, 3. The Product, 4. The Economics) tells a compelling story, making complex information digestible. It starts with a "wow" factor (big numbers), moves to the "how" (process flows and comparison charts), then the "what" (product benefits), and concludes with the "why it matters" (cost). This is more engaging than a purely technical breakdown. -->
+    <!-- Visualization & Content Choices: 
+        - Data Point: Global Rice Husk Volume (120M tons) -> Goal: Inform -> Chosen Visualization: Single Big Number -> Justification: Immediately grabs attention and establishes the scale of the opportunity. No library needed.
+        - Data Point: Reduction Method Comparison (Energy Usage - Table 2) -> Goal: Compare -> Chosen Visualization: Bar Chart (Chart.js) -> Justification: A bar chart is the most effective way to visually compare the drastic energy difference between the two methods, highlighting the key advantage of MgTR. Confirms NO SVG.
+        - Data Point: Overall Process -> Goal: Organize -> Chosen Visualization: Flow Chart (HTML/CSS/Tailwind) -> Justification: Visually simplifies the multi-step manufacturing chain into an easy-to-follow diagram, far clearer than text alone. Confirms NO SVG/Mermaid.
+        - Data Point: Product KPIs (Hydrogen Volume & Duration - Table 3) -> Goal: Inform -> Chosen Visualization: Single Big Numbers -> Justification: These are the core performance metrics of the final product; presenting them as large, bold numbers makes them memorable and impactful. No library needed.
+        - Data Point: Raw Material Cost Breakdown (Table 4) -> Goal: Compare (Composition) -> Chosen Visualization: Donut Chart (Chart.js) -> Justification: A donut chart is ideal for showing the proportional contribution of each component to the total cost, instantly revealing that Magnesium is the main cost driver. Confirms NO SVG.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <style>
+        body { font-family: 'Inter', 'Noto Sans JP', sans-serif; }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container { height: 350px; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <div class="container mx-auto p-4 md:p-8">
+
+        <header class="text-center my-12 md:my-16">
+            <h1 class="text-4xl md:text-6xl font-bold text-[#003f5c] mb-4">農業廃棄物から未来の健康へ</h1>
+            <p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
+                ありふれた「もみ殻」が、最先端の科学技術によって革新的な健康素材に変わるプロセスと、その驚くべき可能性を可視化しました。
+            </p>
+        </header>
+
+        <main class="space-y-16 md:space-y-24">
+
+            <section id="opportunity">
+                <div class="text-center">
+                    <h2 class="text-sm font-bold tracking-widest text-[#bc5090] uppercase">The Opportunity</h2>
+                    <p class="text-3xl md:text-4xl font-bold text-[#003f5c] mt-2">未活用の巨大な資源</p>
+                    <p class="text-gray-600 mt-4 max-w-2xl mx-auto">世界では毎年、膨大な量のもみ殻が排出されています。このうち約20%が、本技術の出発点となるシリカ（二酸化ケイ素）です。</p>
+                </div>
+                <div class="mt-8 bg-white p-8 rounded-2xl shadow-lg border border-gray-200 text-center">
+                    <p class="text-lg text-gray-500">全世界の年間もみ殻排出量</p>
+                    <p class="text-7xl md:text-9xl font-bold text-[#ef5675] my-2">1.2億<span class="text-5xl md:text-7xl ml-2">トン</span></p>
+                    <p class="mt-4 text-gray-600">これは、持続可能でほぼ無尽蔵の原料が世界中に存在することを意味します。</p>
+                </div>
+            </section>
+
+            <section id="process">
+                <div class="text-center">
+                    <h2 class="text-sm font-bold tracking-widest text-[#bc5090] uppercase">The Process</h2>
+                    <p class="text-3xl md:text-4xl font-bold text-[#003f5c] mt-2">価値を生む変革の道のり</p>
+                    <p class="text-gray-600 mt-4 max-w-2xl mx-auto">もみ殻から高機能シリコンが生まれるまでの主要な工程と、その核心となる技術選択を解説します。</p>
+                </div>
+
+                <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-200">
+                        <h3 class="text-2xl font-bold text-[#003f5c] text-center mb-1">省エネ技術の選択</h3>
+                        <p class="text-sm text-gray-500 text-center mb-6">シリカからシリコンを製造する「還元」工程では、従来法より圧倒的にエネルギー消費の少ないMgTR法を採用。これが環境負荷低減の鍵です。</p>
+                        <div class="chart-container">
+                            <canvas id="energyChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-200">
+                        <h3 class="text-2xl font-bold text-[#003f5c] text-center mb-6">全製造プロセスフロー</h3>
+                        <div class="flex flex-col space-y-4">
+                            <div class="flex items-center space-x-4 p-4 bg-gray-100 rounded-lg">
+                                <div class="text-3xl">🌾</div>
+                                <div>
+                                    <h4 class="font-bold text-[#003f5c]">ステップ1：シリカ抽出</h4>
+                                    <p class="text-sm text-gray-600">もみ殻を酸で洗浄後、精密に温度管理して焼成。高純度の非晶質シリカを取り出す。</p>
+                                </div>
+                            </div>
+                            <div class="self-center text-3xl text-gray-400">▼</div>
+                             <div class="flex items-center space-x-4 p-4 bg-gray-100 rounded-lg">
+                                <div class="text-3xl">🔥</div>
+                                <div>
+                                    <h4 class="font-bold text-[#003f5c]">ステップ2：シリコン還元 (MgTR法)</h4>
+                                    <p class="text-sm text-gray-600">シリカをマグネシウムと共に低温加熱し、酸素を除去。多孔質のシリコンを生成する。</p>
+                                </div>
+                            </div>
+                            <div class="self-center text-3xl text-gray-400">▼</div>
+                             <div class="flex items-center space-x-4 p-4 bg-gray-100 rounded-lg">
+                                <div class="text-3xl">💊</div>
+                                <div>
+                                    <h4 class="font-bold text-[#003f5c]">ステップ3：製品化</h4>
+                                    <p class="text-sm text-gray-600">シリコンをナノレベルまで微細化・表面処理し、体内で水素を発生する最終製品に加工する。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="product">
+                <div class="text-center">
+                    <h2 class="text-sm font-bold tracking-widest text-[#bc5090] uppercase">The Product</h2>
+                    <p class="text-3xl md:text-4xl font-bold text-[#003f5c] mt-2">驚異的な性能</p>
+                    <p class="text-gray-600 mt-4 max-w-2xl mx-auto">完成したシリコン製剤は、サプリメントとして摂取することで、体内で持続的に、かつ大量の水素を発生させます。</p>
+                </div>
+                <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-200 text-center">
+                        <p class="text-lg text-gray-500">総水素発生量 (1gあたり)</p>
+                        <p class="text-7xl font-bold text-[#ff764a]">800<span class="text-4xl ml-2">mL</span></p>
+                        <p class="mt-2 text-gray-600">飽和水素水 約500リットル分に相当</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-200 text-center">
+                        <p class="text-lg text-gray-500">水素発生の持続時間</p>
+                        <p class="text-7xl font-bold text-[#ff764a]">24<span class="text-4xl ml-2">時間以上</span></p>
+                        <p class="mt-2 text-gray-600">体内で有害な活性酸素に対抗し続ける</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="economics">
+                 <div class="text-center">
+                    <h2 class="text-sm font-bold tracking-widest text-[#bc5090] uppercase">The Economics</h2>
+                    <p class="text-3xl md:text-4xl font-bold text-[#003f5c] mt-2">事業性の鍵</p>
+                    <p class="text-gray-600 mt-4 max-w-2xl mx-auto">この技術の経済性は、どの原材料コストに最も影響されるのでしょうか。コスト構造を分析します。</p>
+                </div>
+                <div class="mt-8 bg-white p-8 rounded-2xl shadow-lg border border-gray-200">
+                    <h3 class="text-2xl font-bold text-[#003f5c] text-center mb-6">主要原材料コストの内訳 (シリコン1kgあたり)</h3>
+                    <div class="chart-container" style="height: 300px; max-height: 350px;">
+                        <canvas id="costChart"></canvas>
+                    </div>
+                    <p class="text-center text-gray-600 mt-6">分析から、プロセス全体の経済性は、還元剤であるマグネシウムの価格に最も大きく依存することが明らかです。</p>
+                </div>
+            </section>
+
+        </main>
+        
+        <footer class="text-center mt-16 md:mt-24 py-8 border-t border-gray-200">
+            <p class="text-sm text-gray-500">&copy; 2025 もみ殻由来シリコン技術インフォグラフィック</p>
+        </footer>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const defaultChartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        enabled: true,
+                        backgroundColor: '#003f5c',
+                        titleFont: { size: 14 },
+                        bodyFont: { size: 12 },
+                        padding: 12,
+                        cornerRadius: 4,
+                        callbacks: {
+                            title: function(tooltipItems) {
+                                const item = tooltipItems[0];
+                                let label = item.chart.data.labels[item.dataIndex];
+                                if (Array.isArray(label)) {
+                                  return label.join(' ');
+                                } else {
+                                  return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+            
+            const energyCtx = document.getElementById('energyChart');
+            if(energyCtx) {
+                new Chart(energyCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['炭素熱還元 (従来法)', ['マグネシウム熱還元', '(MgTR法)'] ],
+                        datasets: [{
+                            label: 'エネルギー消費 (kWh/kg)',
+                            data: [494, 91],
+                            backgroundColor: ['#7a5195', '#ef5675'],
+                            borderColor: ['#7a5195', '#ef5675'],
+                            borderWidth: 1,
+                            borderRadius: 4,
+                        }]
+                    },
+                    options: {
+                        ...defaultChartOptions,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'エネルギー消費 (kWh/kg)',
+                                    color: '#6b7280'
+                                },
+                                ticks: { color: '#6b7280' }
+                            },
+                            x: {
+                                ticks: { color: '#6b7280' }
+                            }
+                        }
+                    }
+                });
+            }
+
+            const costCtx = document.getElementById('costChart');
+            if(costCtx) {
+                new Chart(costCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['マグネシウム (Mg)', '塩酸 (HCl)', 'その他'],
+                        datasets: [{
+                            label: 'コスト',
+                            data: [1.96, 0.7, 0.5],
+                            backgroundColor: [
+                                '#ff764a',
+                                '#ffa600',
+                                '#7a5195'
+                            ],
+                            borderColor: '#ffffff',
+                            borderWidth: 4,
+                            hoverOffset: 8
+                        }]
+                    },
+                    options: {
+                       ...defaultChartOptions,
+                       plugins: {
+                           ...defaultChartOptions.plugins,
+                           legend: {
+                               display: true,
+                               position: 'bottom',
+                               labels: {
+                                   color: '#6b7280',
+                                   padding: 20
+                               }
+                           }
+                       }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
