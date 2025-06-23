@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インタラクティブ消化管pHガイド</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Chosen Palette: Warm Neutral Harmony -->
+    <!-- Application Structure Plan: The application is designed as an interactive journey through the digestive tract. The core is a central line chart visualizing the pH gradient, controlled by two primary state buttons ('Fasting', 'Post-Meal'). This visual-first approach allows users to immediately grasp the overall pH landscape. Clicking on a specific organ on the chart updates a dedicated "Detail Pane" below, providing contextual information (explanations, key players) and a secondary bar chart showing enzyme activity. This structure was chosen because it mirrors the physiological flow of digestion, making a complex, multi-stage process intuitive. Users can explore "what happens" (pH chart) and then drill down to "why it happens" (detail pane) for any specific location and state, promoting active learning. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: pH values by organ and state (Table 1). Goal: Show change/comparison. Viz: Chart.js Line Chart. Interaction: State buttons toggle datasets. Clicking a point selects an organ. Justification: A line chart is ideal for showing a continuous gradient and comparing two states (fasting vs. post-meal) effectively.
+        - Report Info: Enzyme optimal pH (Table 2). Goal: Show relationship between pH and function. Viz: Chart.js Bar Chart. Interaction: Updates dynamically based on the selected organ's current pH. Justification: Instantly visualizes why pH regulation is critical for enzyme function, directly linking cause (pH) and effect (activity).
+        - Report Info: Detailed physiological explanations. Goal: Inform/Explain. Viz: Dynamic HTML text block. Interaction: Content updates based on selected organ and state. Justification: Provides necessary context to the quantitative data in the charts.
+        - Report Info: Hormone functions (Table 3). Goal: Organize/Reference. Viz: Styled HTML cards. Interaction: Static reference. Justification: A clear, organized layout for reference information that supports the main interactive elements.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #FDFBF8; /* Warm off-white */
+            color: #402E32; /* Dark brown-gray */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 50vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 450px;
+            }
+        }
+        .control-btn {
+            transition: all 0.3s ease;
+        }
+        .control-btn.active {
+            background-color: #A67B5B; /* Muted brown */
+            color: #FFFFFF;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .control-btn:not(.active):hover {
+            background-color: #EFEAE6; /* Lighter beige */
+        }
+        .organ-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .organ-card:hover, .organ-card.active {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+            border-color: #A67B5B;
+        }
+        .section-title {
+            color: #A67B5B;
+            border-bottom: 2px solid #EFEAE6;
+            padding-bottom: 0.5rem;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #EFEAE6;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #C3A995; /* Lighter Muted Brown */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #A67B5B;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
+        
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-[#A67B5B] mb-2">インタラクティブ消化管pHガイド</h1>
+            <p class="text-md md:text-lg text-gray-600 max-w-3xl mx-auto">消化管の旅へようこそ。下のボタンで状態を切り替え、グラフの各部位をクリックして、食べ物の消化プロセスでpHがどのように変化するかを探ってみましょう。</p>
+        </header>
+
+        <main>
+            <section id="controls" class="mb-6 flex justify-center items-center space-x-4">
+                <button id="btn-fasting" class="control-btn px-6 py-2 rounded-full font-semibold shadow-sm border border-gray-200 bg-white">空腹時</button>
+                <button id="btn-post-meal" class="control-btn px-6 py-2 rounded-full font-semibold shadow-sm border border-gray-200 bg-white">食事後</button>
+            </section>
+
+            <section id="main-visualization" class="mb-8 p-4 md:p-6 bg-white rounded-2xl shadow-lg">
+                <h2 class="text-xl md:text-2xl font-bold text-center mb-4">消化管のpH変動</h2>
+                <div class="chart-container">
+                    <canvas id="phChart"></canvas>
+                </div>
+                <div class="text-center mt-4 text-sm text-gray-500">
+                    <p>▲ グラフ上の点（胃、十二指腸など）をクリックして、各部位での酵素の働きを見てみましょう。</p>
+                </div>
+            </section>
+
+            <section id="detail-pane" class="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
+                <div class="lg:col-span-3 p-6 bg-white rounded-2xl shadow-lg min-h-[300px]">
+                    <h3 id="detail-title" class="text-2xl font-bold mb-3 section-title"></h3>
+                    <div id="detail-content" class="space-y-4 text-gray-700 leading-relaxed">
+                    </div>
+                </div>
+
+                <div class="lg:col-span-2 p-6 bg-white rounded-2xl shadow-lg">
+                     <h3 class="text-2xl font-bold mb-3 section-title">関連する酵素活性</h3>
+                     <p id="enzyme-intro" class="text-sm text-gray-600 mb-4"></p>
+                     <div class="relative h-64">
+                        <canvas id="enzymeChart"></canvas>
+                        <div id="enzyme-inactive-overlay" class="absolute inset-0 flex items-center justify-center bg-gray-50 bg-opacity-90 text-center p-4 rounded-lg hidden">
+                            <p class="text-gray-600 font-semibold">現在のpHでは、これらの主要な消化酵素はほとんど、または全く活性を示しません。</p>
+                        </div>
+                     </div>
+                </div>
+            </section>
+            
+            <section id="hormone-info" class="mt-12">
+                <h2 class="text-2xl md:text-3xl font-bold text-center mb-6 section-title">pHを調節する主要ホルモン</h2>
+                <div id="hormone-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const appData = {
+                organs: [
+                    { id: 'stomach', name: '胃' },
+                    { id: 'duodenum', name: '十二指腸' },
+                    { id: 'jejunum', name: '空腸' },
+                    { id: 'ileum', name: '回腸' },
+                    { id: 'cecum', name: '盲腸' },
+                    { id: 'colon', name: '結腸' },
+                    { id: 'rectum', name: '直腸' },
+                ],
+                states: {
+                    fasting: {
+                        name: '空腹時',
+                        color: 'rgba(54, 162, 235, 1)',
+                        bgColor: 'rgba(54, 162, 235, 0.2)',
+                        ph: [1.5, 6.3, 6.85, 7.3, 6.9, 7.0, 7.0],
+                        details: {
+                            stomach: '<h3>基礎酸分泌</h3><p>食事がない状態では、胃は壁細胞から塩酸（HCl）を常に分泌し、pH 1.0～2.0の強酸性環境を維持します。これは「ハウスキーピング」の役割を果たし、摂取された細菌を殺菌し、感染を防ぎます。この酸分泌の原動力は、$H^+/K^+$-ATPaseというプロトンポンプです。</p>',
+                            duodenum: '<h3>待機状態</h3><p>胃からの内容物の流入がないため、十二指腸は比較的静穏な状態です。pHは膵液や胆汁の基礎分泌により、約6.0～6.6の中性に近い弱酸性です。ホルモンの分泌も低レベルに保たれています。</p>',
+                            jejunum: '<h3>吸収準備完了</h3><p>空腸もpH 6.6～7.1の範囲で安定しています。消化間期には「消化間期強収縮（MMC）」と呼ばれる強い収縮が起こり、残存物や細菌を大腸へと送り出し、小腸を清掃します。</p>',
+                            ileum: '<h3>静的な勾配</h3><p>回腸ではpHがさらにわずかに上昇し、約7.1～7.5になります。小腸の末端として、大腸への移行に備えています。この弱アルカリ性の環境は、次の発酵段階への重要な準備です。</p>',
+                            cecum: '<h3>発酵の準備</h3><p>盲腸は、小腸からの内容物を受け入れる準備ができています。空腹時には発酵基質が少ないため、pHは比較的高め（中性に近い）ですが、大腸の入り口として活発な微生物群が待機しています。</p>',
+                            colon: '<h3>基質枯渇</h3><p>発酵の基質となる食物繊維などが少ないため、微生物の活動は穏やかです。pHはタンパク質分解などにより、6.4～7.0の中性に近い値を保っています。</p>',
+                            rectum: '<h3>貯留と待機</h3><p>直腸は便を貯留する場所であり、pHは約6.7～7.0で安定しています。微生物活動は遠位結腸で低下するため、pHの大きな変動はありません。</p>',
+                        }
+                    },
+                    postMeal: {
+                        name: '食事後',
+                        color: 'rgba(255, 99, 132, 1)',
+                        bgColor: 'rgba(255, 99, 132, 0.2)',
+                        ph: [4.5, 6.5, 6.85, 7.3, 6.0, 6.4, 6.8],
+                        details: {
+                            stomach: '<h3>緩衝と刺激</h3><p>食物が胃に入ると、その緩衝作用でpHは一時的に4.0～5.0に急上昇します。しかし、食物（特にタンパク質）はガストリンの分泌を強力に刺激し、胃酸分泌を促進します。結果、pHは徐々に低下し、タンパク質分解酵素ペプシンの至適pHへと向かいます。</p>',
+                            duodenum: '<h3>迅速な中和</h3><p>胃から酸性の粥状液が送り込まれると、その低pHが引き金となりS細胞からセクレチンが分泌されます。セクレチンは膵臓と肝臓に働きかけ、重炭酸塩に富むアルカリ性の消化液を分泌させます。これにより酸は速やかに中和され、pHは6.0～7.0に保たれ、膵酵素が働くのに最適な環境が作られます。</p>',
+                            jejunum: '<h3>活発な消化と吸収</h3><p>栄養素の消化と吸収が最も活発に行われる場所です。pHは6.6～7.1の最適な範囲に維持され、多数の刷子縁膜酵素や栄養素輸送体が効率的に機能します。</p>',
+                            ileum: '<h3>吸収の最終段階</h3><p>残りの栄養素と水分、そして胆汁酸などが再吸収されます。pHは約7.1～7.5の弱アルカリ性に保たれ、小腸でのプロセスの最終仕上げが行われます。</p>',
+                            cecum: '<h3>発酵の開始</h3><p>小腸で消化されなかった食物繊維などが盲腸に到達すると、密集した腸内細菌による活発な発酵が始まります。これにより短鎖脂肪酸（SCFA）が大量に産生され、pHは5.7～6.4へと急激に低下します。これは大腸の健康に不可欠なプロセスです。</p>',
+                            colon: '<h3>発酵勾配</h3><p>結腸の近位部では糖分解発酵が優勢でpHは低いですが、遠位部に向かうにつれて基質が枯渇し、タンパク質分解発酵に移行するため、アンモニアなどのアルカリ性物質が産生され、pHは再び中性へと上昇します。</p>',
+                            rectum: '<h3>発酵産物の吸収</h3><p>SCFAの吸収などが続き、pHは中性に近い約6.7～7.0を維持します。大腸全体のプロセスが完了し、便が形成されます。</p>',
+                        }
+                    }
+                },
+                enzymes: [
+                    { name: 'ペプシン', optimalPh: 2.0, range: [1.0, 3.5] },
+                    { name: '膵アミラーゼ', optimalPh: 6.8, range: [6.0, 7.5] },
+                    { name: 'トリプシン', optimalPh: 8.0, range: [7.0, 9.0] },
+                    { name: '膵リパーゼ', optimalPh: 8.0, range: [7.0, 9.0] }
+                ],
+                 hormones: [
+                    { name: 'ガストリン', site: '胃', trigger: 'タンパク質、伸展', action: '胃酸分泌を促進 (pH低下)', color: 'bg-red-100' },
+                    { name: 'セクレチン', site: '十二指腸', trigger: '酸 (pH < 3)', action: '胃酸を抑制、膵臓の重炭酸塩分泌を促進 (pH上昇)', color: 'bg-blue-100' },
+                    { name: 'コレシストキニン (CCK)', site: '十二指腸', trigger: '脂肪、タンパク質', action: '胃酸を抑制、膵酵素分泌と胆嚢収縮を促進', color: 'bg-green-100' },
+                    { name: 'GIP', site: '十二指腸', trigger: 'ブドウ糖、脂肪', action: '胃酸分泌を抑制', color: 'bg-yellow-100' },
+                    { name: 'モチリン', site: '小腸', trigger: '食間期', action: '消化間期の胃・小腸の収縮を刺激', color: 'bg-purple-100' },
+                ]
+            };
+
+            let currentState = 'fasting';
+            let selectedOrganIndex = 0;
+
+            const phCtx = document.getElementById('phChart').getContext('2d');
+            const enzymeCtx = document.getElementById('enzymeChart').getContext('2d');
+            const enzymeOverlay = document.getElementById('enzyme-inactive-overlay');
+
+            const calculateEnzymeActivity = (enzyme, ph) => {
+                const { optimalPh, range } = enzyme;
+                const tolerance = (range[1] - range[0]) / 2;
+                const diff = Math.abs(ph - optimalPh);
+                const activity = Math.max(0, 1 - (diff / tolerance)**2);
+                return activity * 100;
+            };
+
+            const phChart = new Chart(phCtx, {
+                type: 'line',
+                data: {
+                    labels: appData.organs.map(o => o.name),
+                    datasets: [
+                        {
+                            label: appData.states.fasting.name,
+                            data: appData.states.fasting.ph,
+                            borderColor: appData.states.fasting.color,
+                            backgroundColor: appData.states.fasting.bgColor,
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 6,
+                            pointHoverRadius: 9,
+                        },
+                        {
+                            label: appData.states.postMeal.name,
+                            data: appData.states.postMeal.ph,
+                            borderColor: appData.states.postMeal.color,
+                            backgroundColor: appData.states.postMeal.bgColor,
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 6,
+                            pointHoverRadius: 9,
+                            hidden: true,
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 9,
+                            title: { display: true, text: 'pH値', font: { size: 14 } }
+                        },
+                        x: {
+                            title: { display: true, text: '消化管の部位', font: { size: 14 } }
+                        }
+                    },
+                    plugins: {
+                        legend: { position: 'top' },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: pH ${context.parsed.y}`;
+                                }
+                            }
+                        }
+                    },
+                    onClick: (e, elements) => {
+                        if (elements.length > 0) {
+                            selectedOrganIndex = elements[0].index;
+                            updateUI();
+                        }
+                    }
+                }
+            });
+
+            const enzymeChart = new Chart(enzymeCtx, {
+                type: 'bar',
+                data: {
+                    labels: appData.enzymes.map(e => e.name),
+                    datasets: [{
+                        label: '相対的活性 (%)',
+                        data: [],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.6)',
+                            'rgba(54, 162, 235, 0.6)',
+                            'rgba(255, 206, 86, 0.6)',
+                            'rgba(75, 192, 192, 0.6)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true, max: 100, title: {display: true, text: '活性 (%)'} } },
+                    plugins: { legend: { display: false } }
+                }
+            });
+            
+            function updateUI() {
+                const organId = appData.organs[selectedOrganIndex].id;
+                const organName = appData.organs[selectedOrganIndex].name;
+                const stateData = appData.states[currentState];
+                const currentPh = stateData.ph[selectedOrganIndex];
+
+                document.getElementById('detail-title').textContent = `${organName} (${stateData.name})`;
+                document.getElementById('detail-content').innerHTML = stateData.details[organId];
+                
+                document.getElementById('enzyme-intro').textContent = `${organName}の現在のpH (${currentPh.toFixed(1)}) における各酵素の推定活性レベル。`;
+
+                const enzymeActivities = appData.enzymes.map(enzyme => calculateEnzymeActivity(enzyme, currentPh));
+                
+                const allInactive = enzymeActivities.every(activity => activity < 1);
+
+                if (allInactive) {
+                    enzymeOverlay.classList.remove('hidden');
+                    enzymeChart.data.datasets[0].data = [0, 0, 0, 0];
+                } else {
+                    enzymeOverlay.classList.add('hidden');
+                    enzymeChart.data.datasets[0].data = enzymeActivities;
+                }
+                
+                enzymeChart.update();
+                phChart.update();
+            }
+
+            document.getElementById('btn-fasting').addEventListener('click', () => {
+                currentState = 'fasting';
+                phChart.data.datasets[0].hidden = false;
+                phChart.data.datasets[1].hidden = true;
+                document.getElementById('btn-fasting').classList.add('active');
+                document.getElementById('btn-post-meal').classList.remove('active');
+                updateUI();
+            });
+
+            document.getElementById('btn-post-meal').addEventListener('click', () => {
+                currentState = 'postMeal';
+                phChart.data.datasets[0].hidden = true;
+                phChart.data.datasets[1].hidden = false;
+                document.getElementById('btn-fasting').classList.remove('active');
+                document.getElementById('btn-post-meal').classList.add('active');
+                updateUI();
+            });
+            
+            const hormoneGrid = document.getElementById('hormone-grid');
+            appData.hormones.forEach(hormone => {
+                const card = `
+                    <div class="p-4 rounded-lg shadow-sm ${hormone.color}">
+                        <h4 class="font-bold text-lg text-gray-800">${hormone.name}</h4>
+                        <p class="text-sm text-gray-600"><strong>分泌部位:</strong> ${hormone.site}</p>
+                        <p class="text-sm text-gray-600"><strong>刺激:</strong> ${hormone.trigger}</p>
+                        <p class="mt-2 text-gray-700">${hormone.action}</p>
+                    </div>
+                `;
+                hormoneGrid.innerHTML += card;
+            });
+
+            document.getElementById('btn-fasting').click();
+        });
+    </script>
+</body>
+</html>
