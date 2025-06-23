@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インフォグラフィック：分子状水素の科学</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Brilliant Blues (#0A2463, #3E92CC, #D8DDEF) with a vibrant green accent -->
+    <!-- Application Structure Plan: A single-page, top-to-bottom narrative infographic designed for easy scrolling and digestion. The story flows from a high-level hook (The Breakthrough) to the core mechanism (Selectivity), then to practical data (Speed & Methods), addresses a key user concern (Safety), and finally summarizes the broad benefits. This linear story-telling approach is ideal for an infographic format, guiding the user through a complex topic step-by-step to build understanding. -->
+    <!-- Visualization & Content Choices: 
+        1. Core Concept (Selectivity) -> Goal: Organize/Compare -> Viz: Custom Flow Diagram -> Justification: A visual diagram is far more intuitive than a table for explaining the core concept of targeting 'bad' ROS while ignoring 'good' ROS. It immediately clarifies the 'strategic' nature of H2. Method: HTML/CSS with Tailwind. NO SVG/Mermaid.
+        2. Blood Saturation Data -> Goal: Show Change -> Viz: Line Chart -> Justification: A line chart is the standard and most effective way to show a value changing over time, perfect for demonstrating how quickly H2 reaches therapeutic levels. Library: Chart.js. NO SVG.
+        3. Administration Routes -> Goal: Compare -> Viz: Bar Chart -> Justification: A horizontal bar chart allows for easy comparison of a key metric (relative speed/concentration) across different categories, making the superiority of inhalation for acute care visually obvious. Library: Chart.js. NO SVG.
+        4. Safety Thresholds -> Goal: Inform/Compare -> Viz: Custom Visual Gauge -> Justification: A simple visual gauge provides a powerful, at-a-glance understanding of the wide safety margin between the therapeutic dose and the flammability limit, which is more impactful than text alone. Method: HTML/CSS with Tailwind. NO SVG.
+        5. Systemic Effects -> Goal: Inform -> Viz: Icon Grid -> Justification: Using icons with brief text in a card layout makes the wide range of benefits easy to scan and visually appealing, breaking up text-heavy sections. Method: HTML/CSS with Tailwind. NO SVG.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Noto Sans JP', sans-serif; background-color: #D8DDEF; }
+        .font-black { font-weight: 900; }
+        .chart-container { position: relative; width: 100%; max-width: 600px; margin-left: auto; margin-right: auto; height: 350px; max-height: 400px; }
+        @media (min-width: 768px) { .chart-container { height: 400px; } }
+    </style>
+</head>
+<body class="text-gray-800">
+    <div class="container mx-auto px-4 py-8 md:py-12 max-w-5xl">
+
+        <header class="text-center mb-16">
+            <h1 class="text-4xl md:text-6xl font-black text-[#0A2463] mb-4">見えないチカラ、水素の科学</h1>
+            <p class="text-lg md:text-xl text-[#0A2463]/90 max-w-3xl mx-auto">かつて「不活性」と考えられていた分子状水素が、今、医療と健康の分野で注目を集めています。その科学的根拠を、データと共に解き明かします。</p>
+        </header>
+
+        <section class="mb-20">
+            <div class="bg-white rounded-2xl shadow-2xl p-6 md:p-10">
+                <h2 class="text-3xl md:text-4xl font-black text-[#3E92CC] text-center mb-6">最大の秘密は「選択制」にあり</h2>
+                <p class="text-center text-gray-600 mb-10 max-w-3xl mx-auto">水素は、体内のすべての活性酸素と反応するわけではありません。生命活動に必要な「善玉」はそのままに、細胞を無差別に傷つける最も有害な「悪玉」だけを狙い撃ちします。</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+                    <div class="text-center p-4 rounded-lg bg-red-50 border border-red-200">
+                        <h3 class="text-2xl font-bold text-red-500">悪玉<span class="text-sm">(細胞毒性ROS)</span></h3>
+                        <p class="text-5xl my-4">💥</p>
+                        <p class="font-semibold text-red-600">•OH</p>
+                        <p class="text-xs text-gray-500">ヒドロキシルラジカル</p>
+                    </div>
+                    
+                    <div class="text-center">
+                         <p class="text-2xl font-black text-[#0A2463] animate-pulse">H₂</p>
+                         <p class="text-4xl my-2">→</p>
+                         <p class="text-5xl text-blue-400">💧</p>
+                         <p class="text-lg font-bold text-gray-700 mt-2">無害な水に変わる</p>
+                    </div>
+
+                    <div class="text-center p-4 rounded-lg bg-green-50 border border-green-200">
+                        <h3 class="text-2xl font-bold text-green-600">善玉<span class="text-sm">(シグナル分子)</span></h3>
+                         <p class="text-5xl my-4">🛡️</p>
+                        <p class="font-semibold text-green-700">$H_2O_2$</p>
+                        <p class="text-xs text-gray-500">過酸化水素など</p>
+                    </div>
+                </div>
+                 <p class="text-center text-gray-500 text-sm mt-8">水素は「善玉」の活性酸素とは反応せず、その重要な働きを邪魔しません。</p>
+            </div>
+        </section>
+
+        <section class="mb-20">
+             <div class="bg-white rounded-2xl shadow-2xl p-6 md:p-10">
+                <h2 class="text-3xl md:text-4xl font-black text-[#3E92CC] text-center mb-2">驚異のスピード：体への到達時間</h2>
+                <p class="text-center text-gray-600 mb-10 max-w-3xl mx-auto">吸入された水素は、肺から速やかに吸収され、血液に乗って全身へ。わずか数分で、治療効果が期待される濃度に達します。</p>
+                <div class="chart-container">
+                    <canvas id="saturationChart"></canvas>
+                </div>
+                <p class="text-center text-sm text-gray-500 mt-4">出典: 慶應義塾大学医学部との共同研究データ [21, 22, 23]</p>
+            </div>
+        </section>
+
+        <section class="mb-20">
+            <div class="bg-white rounded-2xl shadow-2xl p-6 md:p-10">
+                <h2 class="text-3xl md:text-4xl font-black text-[#3E92CC] text-center mb-2">届け方の科学：投与方法による違い</h2>
+                <p class="text-center text-gray-600 mb-10 max-w-3xl mx-auto">どうやって水素を取り込むかで、その効果とスピードは大きく変わります。特に急性期のケアでは、全身へ迅速に届ける「吸入」が最も効果的です。</p>
+                <div class="chart-container" style="height: 300px; max-height: 350px;">
+                    <canvas id="deliveryChart"></canvas>
+                </div>
+                <p class="text-center text-sm text-gray-500 mt-4">全身への送達効率を相対的に比較したイメージです。</p>
+            </div>
+        </section>
+
+        <section class="mb-20">
+            <div class="bg-white rounded-2xl shadow-2xl p-6 md:p-10">
+                <h2 class="text-3xl md:text-4xl font-black text-[#3E92CC] text-center mb-6">安全性は？気になるリスクをデータで見る</h2>
+                <p class="text-center text-gray-600 mb-10 max-w-3xl mx-auto">水素ガスの引火性はよく知られていますが、治療で使う濃度はその危険域を大きく下回ります。生物学的な安全性も極めて高いことが確認されています。</p>
+                <div class="w-full max-w-lg mx-auto">
+                    <div class="text-sm font-bold text-gray-600 flex justify-between">
+                        <span>安全</span>
+                        <span>危険域</span>
+                    </div>
+                    <div class="relative w-full h-10 bg-gradient-to-r from-green-300 to-red-400 rounded-full mt-2">
+                        <div class="absolute top-0 left-0 h-10 bg-blue-500 rounded-l-full flex items-center justify-center text-white font-bold" style="width: 25%;">
+                           治療域: 1-3%
+                        </div>
+                        <div class="absolute top-0 h-full w-1 bg-black/50" style="left: 30%;">
+                             <div class="absolute -top-6 -translate-x-1/2 text-xs font-bold whitespace-nowrap">爆発下限: 4%</div>
+                        </div>
+                    </div>
+                    <p class="text-center text-sm text-gray-500 mt-4">治療で用いられる濃度は、引火リスクのある濃度とは明確に区別されています。</p>
+                </div>
+            </div>
+        </section>
+        
+        <section>
+            <h2 class="text-3xl md:text-4xl font-black text-[#0A2463] text-center mb-10">全身に広がるポジティブな影響</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-white p-6 rounded-xl shadow-lg text-center transform hover:-translate-y-2 transition-transform">
+                    <p class="text-5xl mb-3">🛡️</p>
+                    <h3 class="text-lg font-bold">抗炎症</h3>
+                    <p class="text-sm text-gray-600">炎症を引き起こす物質の産生を抑制</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg text-center transform hover:-translate-y-2 transition-transform">
+                    <p class="text-5xl mb-3">❤️</p>
+                    <h3 class="text-lg font-bold">細胞保護</h3>
+                    <p class="text-sm text-gray-600">細胞死（アポトーシス）から細胞を守る</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg text-center transform hover:-translate-y-2 transition-transform">
+                    <p class="text-5xl mb-3">⚡️</p>
+                    <h3 class="text-lg font-bold">代謝改善</h3>
+                    <p class="text-sm text-gray-600">エネルギー工場ミトコンドリアの機能をサポート</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg text-center transform hover:-translate-y-2 transition-transform">
+                    <p class="text-5xl mb-3">⚖️</p>
+                    <h3 class="text-lg font-bold">免疫調節</h3>
+                    <p class="text-sm text-gray-600">免疫バランスを整える可能性</p>
+                </div>
+            </div>
+        </section>
+
+    </div>
+    <footer class="text-center py-6 bg-[#0A2463]">
+        <p class="text-sm text-white/70">このインフォグラフィックは提供された科学的レビュー報告書に基づき作成されました。</p>
+    </footer>
+
+    <script>
+        const saturationCtx = document.getElementById('saturationChart').getContext('2d');
+        new Chart(saturationCtx, {
+            type: 'line',
+            data: {
+                labels: ['0分', '10分', '30分', '60分'],
+                datasets: [{
+                    label: '血中水素飽和度 (%)',
+                    data: [0, 2.0, 2.2, 2.5],
+                    borderColor: '#3E92CC',
+                    backgroundColor: 'rgba(62, 146, 204, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#0A2463',
+                    pointRadius: 6,
+                    pointHoverRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: '飽和度 (%)', color: '#0A2463' },
+                        grid: { color: 'rgba(10, 36, 99, 0.1)' },
+                        ticks: { color: '#0A2463' }
+                    },
+                    x: {
+                        title: { display: true, text: '吸入時間', color: '#0A2463' },
+                        grid: { display: false },
+                        ticks: { color: '#0A2463' }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        enabled: true,
+                        backgroundColor: '#0A2463',
+                        titleFont: { weight: 'bold' },
+                        bodyFont: { size: 14 },
+                        callbacks: {
+                            title: function(tooltipItems) {
+                                const item = tooltipItems[0];
+                                let label = item.chart.data.labels[item.dataIndex];
+                                if (Array.isArray(label)) {
+                                  return label.join(' ');
+                                } else {
+                                  return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        const deliveryCtx = document.getElementById('deliveryChart').getContext('2d');
+        new Chart(deliveryCtx, {
+            type: 'bar',
+            data: {
+                labels: ['吸入療法', '水素豊富水', '経皮/入浴', '静脈投与(IV)'],
+                datasets: [{
+                    label: '全身への送達効率 (相対値)',
+                    data: [100, 45, 25, 10],
+                    backgroundColor: [
+                        '#3E92CC',
+                        '#67a9db',
+                        '#93c3e8',
+                        '#c0dcf4'
+                    ],
+                    borderColor: '#0A2463',
+                    borderWidth: 2,
+                    borderRadius: 5
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(10, 36, 99, 0.1)' },
+                        ticks: {
+                            display: false
+                        }
+                    },
+                    y: {
+                        grid: { display: false },
+                        ticks: { color: '#0A2463', font: { weight: 'bold' } }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        enabled: true,
+                        backgroundColor: '#0A2463',
+                        callbacks: {
+                            title: function(tooltipItems) {
+                                const item = tooltipItems[0];
+                                let label = item.chart.data.labels[item.dataIndex];
+                                if (Array.isArray(label)) {
+                                  return label.join(' ');
+                                } else {
+                                  return label;
+                                }
+                            },
+                             label: function(context) {
+                                return `送達効率: ${context.raw}`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

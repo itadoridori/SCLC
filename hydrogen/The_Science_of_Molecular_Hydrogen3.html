@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>スライドで学ぶ：分子状水素の科学</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans JP', sans-serif; }
+        .slide { display: none; }
+        .slide.active { display: block; }
+        .chart-container { position: relative; width: 100%; max-width: 600px; margin: auto; height: 300px; }
+        @media (min-width: 768px) { .chart-container { height: 350px; } }
+        .narration-script {
+            background: rgba(0, 0, 0, 0.03);
+            border-left: 5px solid #1e40af;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen p-4">
+
+    <div id="slideshow-container" class="w-full max-w-4xl bg-white shadow-2xl rounded-xl overflow-hidden">
+        <div class="p-8 md:p-12 min-h-[600px] flex flex-col justify-between">
+            <!-- Slide 1: Title -->
+            <div id="slide-1" class="slide active">
+                <div class="text-center h-full flex flex-col justify-center">
+                    <h1 class="text-3xl md:text-5xl font-bold text-blue-900 mb-4">スライドで学ぶ<br>分子状水素の科学</h1>
+                    <p class="text-lg text-gray-600 mb-8">不活性ガスから治療ガスへ。その科学的根拠を解き明かす。</p>
+                    <div class="text-6xl animate-pulse">H₂ → ⚕️</div>
+                </div>
+                <div class="narration-script p-4 mt-8 rounded-md">
+                    <p class="text-sm md:text-base text-gray-700">分子状水素、H₂は、長年、生物学的に何もしない「不活性なガス」と考えられてきました。しかし2007年の画期的な発見により、特定の活性酸素を選択的に除去する「治療ガス」としての可能性が示され、医学研究の世界で大きな注目を集めることになったのです。</p>
+                </div>
+            </div>
+
+            <!-- Slide 2: Selectivity -->
+            <div id="slide-2" class="slide">
+                <h2 class="text-2xl md:text-3xl font-bold text-blue-900 text-center mb-6">最大の特長：狙い撃つ「選択性」</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center text-center">
+                    <div class="p-4 bg-red-50 border-2 border-red-200 rounded-lg">
+                        <h3 class="font-bold text-red-600">悪玉活性酸素</h3>
+                        <p class="text-4xl my-3">💥</p>
+                        <p class="text-sm font-semibold">ヒドロキシルラジカル<br>(•OH)</p>
+                    </div>
+                    <div class="flex flex-col items-center">
+                         <div class="text-5xl font-bold text-blue-600 animate-bounce">H₂</div>
+                         <div class="text-4xl my-2 text-gray-500">→</div>
+                         <div class="text-5xl">💧</div>
+                         <p class="mt-2 font-bold text-gray-800">無害な水に変換</p>
+                    </div>
+                    <div class="p-4 bg-green-50 border-2 border-green-200 rounded-lg">
+                        <h3 class="font-bold text-green-600">善玉活性酸素</h3>
+                        <p class="text-4xl my-3">🛡️</p>
+                        <p class="text-sm font-semibold">過酸化水素など<br>(H₂O₂)</p>
+                        <p class="text-xs text-gray-500 mt-2">（反応しない）</p>
+                    </div>
+                </div>
+                <div class="narration-script p-4 mt-8 rounded-md">
+                    <p class="text-sm md:text-base text-gray-700">水素の最も重要な特徴は、その「選択性」にあります。細胞を無差別に攻撃し、老化や病気の原因となる最も有害な「悪玉」活性酸素だけを標的にして無害な水に変えます。一方で、免疫機能など体に必要な「善玉」活性酸素には反応せず、その重要な働きを邪魔しません。</p>
+                </div>
+            </div>
+            
+            <!-- Slide 3: Paradox -->
+            <div id="slide-3" class="slide">
+                <h2 class="text-2xl md:text-3xl font-bold text-blue-900 text-center mb-6">なぜ安定な水素が反応するのか？</h2>
+                <div class="flex justify-center items-center space-x-4 md:space-x-8 text-center">
+                    <div class="text-center">
+                        <p class="text-4xl md:text-6xl">H₂</p>
+                        <p class="font-bold text-gray-600 mt-2">安定な水素分子</p>
+                    </div>
+                    <p class="text-4xl md:text-6xl font-bold text-gray-500">+</p>
+                    <div class="text-center">
+                        <p class="text-4xl md:text-6xl animate-ping opacity-75">💥</p>
+                         <p class="font-bold text-red-600 mt-2">超・不安定な悪玉</p>
+                    </div>
+                     <p class="text-4xl md:text-6xl font-bold text-gray-500">=</p>
+                     <div class="text-center">
+                        <p class="text-4xl md:text-6xl">💧</p>
+                         <p class="font-bold text-blue-600 mt-2">無害な水</p>
+                    </div>
+                </div>
+                 <div class="narration-script p-4 mt-8 rounded-md">
+                    <p class="text-sm md:text-base text-gray-700">「安定しているはずの水素がなぜ反応するのか」という疑問はもっともです。その答えは、反応相手である悪玉活性酸素、特にヒドロキシルラジカルが極めて不安定で、非常に高い反応性を持つためです。水素が攻撃的なのではなく、相手が暴力的だからこそ、触媒なしで反応が成立するのです。</p>
+                </div>
+            </div>
+            
+            <!-- Slide 4: Systemic Effects -->
+            <div id="slide-4" class="slide">
+                 <h2 class="text-2xl md:text-3xl font-bold text-blue-900 text-center mb-6">全身に広がるポジティブな効果</h2>
+                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                     <div class="bg-blue-50 p-4 rounded-lg">
+                         <p class="text-4xl">🛡️</p><p class="font-bold mt-2">抗炎症</p>
+                     </div>
+                      <div class="bg-blue-50 p-4 rounded-lg">
+                         <p class="text-4xl">❤️</p><p class="font-bold mt-2">細胞保護</p>
+                     </div>
+                      <div class="bg-blue-50 p-4 rounded-lg">
+                         <p class="text-4xl">⚡️</p><p class="font-bold mt-2">代謝改善</p>
+                     </div>
+                      <div class="bg-blue-50 p-4 rounded-lg">
+                         <p class="text-4xl">⚖️</p><p class="font-bold mt-2">免疫調節</p>
+                     </div>
+                 </div>
+                 <div class="narration-script p-4 mt-8 rounded-md">
+                    <p class="text-sm md:text-base text-gray-700">水素の効果は、単に活性酸素を除去するだけではありません。炎症を抑える作用、細胞が自ら死んでしまうのを防ぐ作用、エネルギー産生を助ける作用など、全身にわたって有益な効果が報告されています。これは、水素が体の根本的な調節機能をサポートするマスターレギュレーターとして機能している可能性を示唆します。</p>
+                </div>
+            </div>
+            
+            <!-- Slide 5: Kinetics -->
+            <div id="slide-5" class="slide">
+                <h2 class="text-2xl md:text-3xl font-bold text-blue-900 text-center mb-6">驚異のスピード：血中濃度プロファイル</h2>
+                <div class="chart-container">
+                    <canvas id="kineticsChart"></canvas>
+                </div>
+                <div class="narration-script p-4 mt-8 rounded-md">
+                    <p class="text-sm md:text-base text-gray-700">吸入された水素は肺から素早く吸収され、血液に乗って全身に運ばれます。臨床研究データによれば、吸入開始後わずか10分で、多くの病態で治療効果が期待される血中飽和度2.0%に到達します。このスピードと、脳のような重要な臓器へも容易に到達できる点が、大きな利点です。</p>
+                </div>
+            </div>
+
+            <!-- Slide 6: Delivery Methods -->
+            <div id="slide-6" class="slide">
+                <h2 class="text-2xl md:text-3xl font-bold text-blue-900 text-center mb-6">どう届ける？投与方法の比較</h2>
+                <div class="chart-container">
+                    <canvas id="deliveryChart"></canvas>
+                </div>
+                <div class="narration-script p-4 mt-8 rounded-md">
+                    <p class="text-sm md:text-base text-gray-700">水素の取り込み方には、吸入、水素水の飲用、点滴など様々あります。特に、脳卒中などの急性疾患に対して、迅速かつ高濃度で全身に水素を届けるには、吸入療法が最も効果的です。一方、水素水は、肝臓へのアプローチや、日常的なケアとしての利便性があります。目的に応じて最適な方法を選ぶことが重要です。</p>
+                </div>
+            </div>
+
+            <!-- Slide 7: Safety (Bio) -->
+            <div id="slide-7" class="slide">
+                 <h2 class="text-2xl md:text-3xl font-bold text-blue-900 text-center mb-6">体への影響は？生物学的安全性</h2>
+                 <div class="bg-green-100 border-l-4 border-green-500 p-6 rounded-lg text-green-800 space-y-4">
+                     <p class="flex items-center"><span class="text-2xl mr-3">✅</span><span>FDA（米国食品医薬品局）により「一般に安全と認められる」GRASに分類。</span></p>
+                     <p class="flex items-center"><span class="text-2xl mr-3">✅</span><span>体内で有害な物質に変化せず、過剰分は速やかに呼気から排出。</span></p>
+                     <p class="flex items-center"><span class="text-2xl mr-3">✅</span><span>反応しても生成物は「水」だけなので、体液のpHバランスを崩さない。</span></p>
+                     <p class="flex items-center"><span class="text-2xl mr-3">✅</span><span>数多くの研究で、重篤な副作用は報告されていない。</span></p>
+                 </div>
+                 <div class="narration-script p-4 mt-8 rounded-md">
+                    <p class="text-sm md:text-base text-gray-700">水素の生物学的な安全性は極めて高いと評価されています。アメリカのFDAによって安全な物質として認められているほか、体内で毒性のある物質に変わることもありません。過剰に取り込んでも速やかに体外へ排出され、副作用がほとんどないことが、数多くの研究で一貫して確認されています。</p>
+                </div>
+            </div>
+
+            <!-- Slide 8: Safety (Physical) -->
+            <div id="slide-8" class="slide">
+                 <h2 class="text-2xl md:text-3xl font-bold text-blue-900 text-center mb-6">爆発しない？物理的な安全性</h2>
+                 <div class="w-full max-w-lg mx-auto text-center">
+                     <p class="mb-4 text-gray-700">治療で使う濃度と、引火する濃度は全く異なります。</p>
+                    <div class="bg-gray-200 rounded-full h-10 w-full relative">
+                        <div class="bg-blue-500 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold" style="width: 25%;">
+                           治療域: 1-3%
+                        </div>
+                        <div class="absolute top-0 h-full border-l-2 border-dashed border-red-500" style="left: 30%;">
+                            <span class="absolute -top-6 -translate-x-1/2 text-xs text-red-500 font-bold">爆発下限: 4%</span>
+                        </div>
+                    </div>
+                 </div>
+                 <div class="narration-script p-4 mt-8 rounded-md">
+                    <p class="text-sm md:text-base text-gray-700">水素ガスと聞くと引火や爆発を心配されるかもしれませんが、それは物質固有の性質の話です。医療で使われる水素吸入療法では、引火の危険がある濃度４％を大きく下回る、通常１～３％程度の低濃度で、しかも十分な酸素と共に供給されます。そのため、治療における引火や窒息のリスクは設計段階で排除されており、安全に管理されています。</p>
+                </div>
+            </div>
+
+            <!-- Slide 9: Conclusion -->
+            <div id="slide-9" class="slide">
+                 <h2 class="text-2xl md:text-3xl font-bold text-blue-900 text-center mb-6">まとめと今後の展望</h2>
+                 <div class="space-y-4 text-gray-800">
+                     <p>✅ **有効性：** 有害な活性酸素を選択的に除去する作用は確かな科学的根拠に裏付けられている。</p>
+                     <p>✅ **多機能性：** 単なる抗酸化に留まらず、抗炎症、細胞保護など、体の調節機能もサポートする。</p>
+                     <p>✅ **安全性：** 生物学的な安全性が極めて高く、物理的リスクも管理された応用で回避されている。</p>
+                     <p>未来の医療において、生活習慣病の予防や、既存治療の副作用を軽減する補助療法など、水素が重要な役割を担う可能性に大きな期待が寄せられています。</p>
+                 <div class="narration-script p-4 mt-8 rounded-md">
+                    <p class="text-sm md:text-base text-gray-700">これまでの科学的エビデンスを統合すると、分子状水素は、有害な活性酸素を選択的に除去するという確かな作用機序を持ち、極めて高い安全性プロファイルを有する、多機能な治療薬候補であると結論付けられます。今後、さらに大規模な臨床試験が進むことで、生活習慣病の予防から最先端医療の補助まで、未来の医療において重要な役割を果たすことが期待されています。</p>
+                </div>
+            </div>
+            </div>
+
+            <!-- Slide 10: YouTube Prompts -->
+            <div id="slide-10" class="slide">
+                 <h2 class="text-2xl md:text-3xl font-bold text-blue-900 text-center mb-6">YouTube投稿用リソース</h2>
+                 <div class="space-y-6 text-sm">
+                     <div>
+                         <h3 class="font-bold text-lg text-gray-800 mb-2">【タイトル案】</h3>
+                         <ul class="list-disc list-inside bg-gray-50 p-3 rounded">
+                             <li>【科学解説】水素吸入はなぜ効くのか？専門家がデータで徹底解明</li>
+                             <li>知らないと損する『水素』の真実｜副作用ほぼゼロの治療ガス？</li>
+                             <li>医療の未来？分子状水素のすべて - 作用機序から安全性まで</li>
+                         </ul>
+                     </div>
+                     <div>
+                         <h3 class="font-bold text-lg text-gray-800 mb-2">【概要欄】</h3>
+                         <div class="bg-gray-50 p-3 rounded">
+<p>近年、医療や健康分野で注目される「分子状水素」。かつてはただの不活性ガスと考えられていましたが、今ではその驚くべき可能性が科学的に解明されつつあります。この動画では、最新の科学的レビュー報告書に基づき、以下の点を分かりやすく解説します。</p>
+<ul class="list-disc list-inside my-2">
+    <li>なぜ水素は「選択的に」体に良い影響を与えるのか？</li>
+    <li>体内にどれくらいのスピードで届くのか？（データで見る）</li>
+    <li>吸入、水素水、何が違う？</li>
+    <li>爆発しないの？安全性は本当に大丈夫？</li>
+</ul>
+<p>複雑な科学を、インフォグラフィックで直感的に理解できる内容になっています。健康に関心のあるすべての方に見ていただきたい、水素の「真実」です。</p>
+<p>#水素吸入 #分子状水素 #健康 #科学</p>
+<p>※本動画は科学的情報提供を目的としており、特定の製品や治療法を推奨するものではありません。</p>
+                         </div>
+                     </div>
+                     <div>
+                         <h3 class="font-bold text-lg text-gray-800 mb-2">【サムネイル生成プロンプト案】</h3>
+                         <ul class="list-disc list-inside bg-gray-50 p-3 rounded">
+                            <li>YouTube thumbnail, dynamic and scientific. A glowing H2 molecule at the center. Arrows point to icons of a brain, heart, and DNA, illustrating its effects. A futuristic blue grid background. Text overlay in bold Japanese: "水素の真実". High contrast, vibrant blue and white colors.</li>
+                            <li>Photo-realistic YouTube thumbnail. A person is peacefully using a nasal cannula for hydrogen inhalation. In the background, a split screen shows a microscopic view of cells on one side and a glowing "H₂→H₂O" formula on the other. Title text in Japanese: "なぜ効く？". Clean, modern, medical aesthetic.</li>
+                            <li>Infographic-style YouTube thumbnail. A large, bold question mark made of water bubbles on the left. On the right, the chemical symbol "H₂" with a plus sign icon. Main title in Japanese at the bottom: "知らないと損する". Bright, curious, and clean design.</li>
+                         </ul>
+                     </div>
+                      <div>
+                         <h3 class="font-bold text-lg text-gray-800 mb-2">【BGM生成AI (SUNO)用プロンプト案】</h3>
+                         <ul class="list-disc list-inside bg-gray-50 p-3 rounded">
+                            <li>Calm, inspirational, and slightly futuristic corporate background music. Gentle piano melody with subtle electronic pads and a soft, unobtrusive beat. Optimistic and thoughtful mood, suitable for a scientific explanation video.</li>
+                            <li>Minimalist, ambient, electronic track. Slow-paced, with soft synth pads, gentle arpeggios, and a sense of wonder and discovery. No strong drums. Perfect for a deep dive into science and technology.</li>
+                             <li>Uplifting and hopeful cinematic background music. Starts with a simple piano, gradually building with strings and a soft electronic rhythm. Creates a feeling of breakthrough and positive future possibilities. Instrumental.</li>
+                         </ul>
+                     </div>
+                 </div>
+                 <div class="narration-script p-4 mt-8 rounded-md">
+                    <p class="text-sm md:text-base text-gray-700">ご視聴いただきありがとうございました。このスライドの内容を元に、ぜひ動画コンテンツを作成してみてください。タイトルや概要、サムネイル、BGMのアイデアが、その一助となれば幸いです。</p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Pagination -->
+        <div class="flex justify-between items-center p-4 bg-gray-200">
+            <button id="prev-btn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400">前へ</button>
+            <div id="slide-counter" class="font-bold text-gray-700"></div>
+            <button id="next-btn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400">次へ</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const slides = document.querySelectorAll('.slide');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const slideCounter = document.getElementById('slide-counter');
+            let currentSlide = 0;
+            const totalSlides = slides.length;
+            let kineticsChart, deliveryChart;
+
+            function showSlide(index) {
+                slides.forEach((slide, i) => {
+                    slide.classList.toggle('active', i === index);
+                });
+                currentSlide = index;
+                updatePagination();
+                
+                if (index === 4 && !kineticsChart) {
+                    renderKineticsChart();
+                }
+                if (index === 5 && !deliveryChart) {
+                    renderDeliveryChart();
+                }
+            }
+
+            function updatePagination() {
+                slideCounter.textContent = `${currentSlide + 1} / ${totalSlides}`;
+                prevBtn.disabled = currentSlide === 0;
+                nextBtn.disabled = currentSlide === totalSlides - 1;
+            }
+
+            prevBtn.addEventListener('click', () => {
+                if (currentSlide > 0) {
+                    showSlide(currentSlide - 1);
+                }
+            });
+
+            nextBtn.addEventListener('click', () => {
+                if (currentSlide < totalSlides - 1) {
+                    showSlide(currentSlide + 1);
+                }
+            });
+
+            function renderKineticsChart() {
+                 kineticsChart = new Chart(document.getElementById('kineticsChart').getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: ['0分', '10分', '30分', '60分'],
+                        datasets: [{
+                            label: '血中水素飽和度 (%)',
+                            data: [0, 2.0, 2.2, 2.5],
+                            borderColor: '#2563eb',
+                            backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: { beginAtZero: true, title: { display: true, text: '飽和度 (%)' } }
+                        },
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+            
+            function renderDeliveryChart() {
+                deliveryChart = new Chart(document.getElementById('deliveryChart').getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['吸入療法', '水素豊富水', '経皮/入浴', '静脈投与(IV)'],
+                        datasets: [{
+                            label: '全身への送達効率 (相対値)',
+                            data: [100, 45, 25, 10],
+                            backgroundColor: ['#2563eb', '#60a5fa', '#93c5fd', '#bfdbfe'],
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                         scales: {
+                            x: { title: { display: true, text: '相対的効率' } }
+                        },
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+
+            showSlide(0);
+        });
+    </script>
+</body>
+</html>
