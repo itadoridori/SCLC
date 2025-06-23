@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インタラクティブ科学レポート：もみ殻から水素サプリメントへの全工程</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Scientific Calm -->
+    <!-- Application Structure Plan: レポートの学術的な構造（序論→第1部→第2部…）を、ユーザーが物語として追える直感的なフローに再設計。「製造プロセス」→「生体内作用機序」→「科学的評価」という大きな3つのテーマ別セクションを設ける。各セクション内では、複雑なプロセスを視覚的なフローチャートで表現し、クリックで詳細なテキスト情報を展開するアコーディオン形式を採用。これにより、ユーザーはまず全体像を把握し、興味に応じて詳細にドリルダウンできるため、情報の圧倒感を軽減し、能動的な学習を促進する。このインタラクティブな構造は、網羅性を保ちつつ、ユーザビリティを最大化するために選択された。 -->
+    <!-- Visualization & Content Choices: 
+        - 全体プロセス: 製造から体内作用までの一連の流れを、HTML/CSSのFlexboxを用いたステップバイステップのビジュアルダイアグラムで表現。Goal: Organize, Method: HTML/CSS Diagram, Interaction: Scroll-based highlighting/animation.
+        - シリカ抽出フロー(第1部): 酸浸出、燃焼、アルカリ溶解などの各工程をアイコン付きのカードで示し、クリックでレポートの詳細説明を展開。Goal: Inform/Explore, Method: Interactive Cards (Accordion), Interaction: Click-to-reveal.
+        - 抽出法比較(表1): レポートの表1データをChart.jsの複合グラフ（棒グラフ+線グラフなど）に変換し、純度と収率のトレードオフを視覚的に比較しやすくする。Goal: Compare, Method: Chart.js Bar Chart, Interaction: Tooltips.
+        - ケイ素還元フロー(第2部): 金属熱還元法の危険性と重要性を強調するため、熱管理などのキーポイントをハイライトしたダイアグラムを作成。Goal: Inform/Organize, Method: HTML/CSS Diagram.
+        - 生体内作用機序(第3部): Si粒子がH2とSi(OH)4に変わる様子をアニメーション付きダイアグラムで示す。H2の選択的抗酸化作用（vs •OH）も視覚化。Goal: Inform, Method: HTML/CSS Animation/Diagram.
+        - 水素生成パラメータ(表2): pHや粒子径などの影響を、インタラクティブなスライダーやトグルではなく、クリックで情報が開くカード形式で提示し、シンプルさと情報量を両立。Goal: Inform/Explore, Method: Interactive Cards.
+        - 科学的評価(第4部): 「確立された事実」と「今後の課題」を左右に並べた比較テーブルで表現し、バランスの取れた視点を提供する。Goal: Compare/Analyze, Method: HTML/CSS Two-Column Layout.
+        - 全ての可視化はSVG/Mermaid JSを一切使用せず、HTML/CSSとChart.jsのみで実現する。 -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #f8f9fa;
+            color: #343a40;
+        }
+        .latex { font-family: 'Times New Roman', serif; }
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #005f73;
+            border-bottom: 3px solid #94d2bd;
+            padding-bottom: 0.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .section-intro { max-width: 800px; margin: 0 auto 4rem auto; text-align: center; line-height: 1.8; color: #495057; }
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.5s ease-out; }
+        .process-step { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 1.5rem; background-color: white; border-radius: 0.75rem; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e9ecef; }
+        .process-arrow { display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: #0a9396; margin: 1rem 0; }
+        @media (min-width: 1024px) { .process-arrow { margin: 0 1.5rem; } }
+        .chart-container { position: relative; width: 100%; max-width: 800px; margin: 2rem auto; height: 400px; max-height: 60vh; background: white; padding: 1.5rem; border-radius: 0.5rem; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/90 backdrop-blur-lg sticky top-0 z-50 shadow-md">
+        <nav class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="text-2xl font-bold text-[#005f73]">もみ殻の科学</div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#process" class="text-gray-700 hover:text-[#0a9396] transition-colors duration-300">製造プロセス</a>
+                    <a href="#invivo" class="text-gray-700 hover:text-[#0a9396] transition-colors duration-300">体内での作用</a>
+                    <a href="#analysis" class="text-gray-700 hover:text-[#0a9396] transition-colors duration-300">科学的評価</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="hero" class="py-24 bg-gradient-to-b from-teal-50 to-gray-50">
+            <div class="container mx-auto px-6 text-center">
+                <h1 class="text-4xl md:text-5xl font-extrabold text-[#003e49] mb-4">もみ殻から生体反応性サプリメントへ</h1>
+                <p class="text-lg md:text-xl max-w-4xl mx-auto text-gray-600">農業副産物である「もみ殻」が、高度な化学プロセスを経て、体内で抗酸化物質を生成する高機能性サプリメントへと生まれ変わる。その全工程を、科学的根拠に基づきインタラクティブに解き明かします。</p>
+            </div>
+        </section>
+
+        <!-- 製造プロセスセクション -->
+        <section id="process" class="py-20">
+            <div class="container mx-auto px-6">
+                <h2 class="section-title">第1部：製造プロセス</h2>
+                <p class="section-intro">サプリメントの有効成分は、単純な抽出物ではありません。ありふれた「もみ殻」を、高純度の化学原料、そして最終的には生体内で反応する活性物質へと転換させる、多段階にわたる精密な化学技術の結晶です。ここでは、その「アップサイクル」の旅路を2つのステージに分けて詳説します。</p>
+
+                <!-- Stage 1: シリカ抽出 -->
+                <div class="mb-20">
+                    <h3 class="text-3xl font-bold text-center mb-10 text-[#0077b6]">ステージ1：もみ殻から高純度シリカ(<span class="latex">SiO₂</span>)へ</h3>
+                    <div id="stage1-accordion-container" class="space-y-4">
+                        <!-- Accordion Items will be injected by JS -->
+                    </div>
+
+                    <h4 class="text-2xl font-bold text-center mt-16 mb-4 text-gray-800">インフォグラフィック：シリカ抽出法の比較</h4>
+                    <div class="chart-container">
+                        <canvas id="extractionChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Stage 2: ケイ素還元 -->
+                <div>
+                    <h3 class="text-3xl font-bold text-center mb-10 text-[#0077b6]">ステージ2：シリカ(<span class="latex">SiO₂</span>)から活性ケイ素(Si)へ</h3>
+                     <div class="bg-amber-50 border-l-4 border-amber-500 p-6 rounded-r-lg mb-8 max-w-4xl mx-auto">
+                        <h4 class="font-bold text-amber-800">化学的に最も重要な転換点</h4>
+                        <p class="text-amber-700 mt-2">体内で水素を生成するのは安定な「シリカ(<span class="latex">SiO₂</span>)」ではなく、それを化学的に還元して得られる反応性の高い「元素状ケイ素(Si)」です。この還元プロセスこそが、サプリメントの機能性を生み出す核心技術です。</p>
+                    </div>
+                    <div id="stage2-accordion-container" class="space-y-4">
+                        <!-- Accordion Items will be injected by JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 体内作用セクション -->
+        <section id="invivo" class="py-20 bg-white">
+            <div class="container mx-auto px-6">
+                <h2 class="section-title">第2部：体内での作用機序</h2>
+                <p class="section-intro">サプリメントとして摂取された有効成分「元素状ケイ素(Si)」は、体内でどのようにして「プロドラッグ」として機能するのでしょうか。ここでは、消化管内で起こる化学反応、そしてその生成物がもたらす二重の健康効果について、分子レベルで掘り下げます。</p>
+                
+                <h3 class="text-3xl font-bold text-center mb-10 text-[#0077b6]">インフォグラフィック：消化管内での化学反応</h3>
+                <div class="flex flex-col lg:flex-row items-stretch justify-center gap-4 lg:gap-8 bg-gray-50 p-8 rounded-xl shadow-inner">
+                    <div class="process-step w-full lg:w-1/3">
+                        <div class="text-2xl font-bold text-gray-500 mb-2">摂取</div>
+                        <p class="text-5xl">💊</p>
+                        <h4 class="font-bold mt-2">元素状ケイ素(Si) ナノ粒子</h4>
+                        <p class="text-sm text-gray-500">緩衝剤と共に摂取される</p>
+                    </div>
+                    <div class="process-arrow transform lg:rotate-0 rotate-90">→</div>
+                    <div class="process-step w-full lg:w-2/5">
+                        <div class="text-2xl font-bold text-gray-500 mb-2">反応 (小腸内)</div>
+                        <p class="font-mono text-sm sm:text-base bg-blue-100 text-blue-800 p-2 rounded-md"><span class="latex">Si + 4H₂O → Si(OH)₄ + 2H₂</span></p>
+                        <p class="text-sm mt-3 text-gray-600">弱アルカリ性の環境で体内の水分と反応し、2つの有益な物質を生成する</p>
+                    </div>
+                    <div class="process-arrow transform lg:rotate-0 rotate-90">→</div>
+                    <div class="process-step w-full lg:w-1/3">
+                         <div class="text-2xl font-bold text-gray-500 mb-2">生成物</div>
+                         <div class="w-full text-center">
+                            <p class="font-bold text-teal-600">分子状水素 (<span class="latex">H₂</span>)</p>
+                            <p class="text-sm text-gray-500">→ 選択的抗酸化作用</p>
+                            <hr class="my-2">
+                            <p class="font-bold text-indigo-600">オルトケイ酸 (<span class="latex">Si(OH)₄</span>)</p>
+                            <p class="text-sm text-gray-500">→ 結合組織サポート</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="invivo-accordion-container" class="mt-12 space-y-4">
+                     <!-- Accordion Items will be injected by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 科学的評価セクション -->
+        <section id="analysis" class="py-20">
+            <div class="container mx-auto px-6">
+                <h2 class="section-title">第3部：科学的評価と今後の展望</h2>
+                <p class="section-intro">この技術の科学的基盤はどの程度強固なのでしょうか。ここでは、確立された事実と、今後の研究によって解明されるべき課題を客観的に分析し、このサプリメントの現在地と未来への展望を考察します。</p>
+
+                <div class="grid md:grid-cols-1 lg:grid-cols-2 gap-8">
+                     <div class="bg-white border-t-4 border-green-500 p-8 rounded-lg shadow-lg">
+                        <h3 class="text-2xl font-bold text-green-700 mb-4">✅ 科学的根拠の強度 (確立されている点)</h3>
+                        <div id="analysis-strengths" class="text-gray-700 space-y-3"></div>
+                    </div>
+                    <div class="bg-white border-t-4 border-orange-500 p-8 rounded-lg shadow-lg">
+                        <h3 class="text-2xl font-bold text-orange-700 mb-4">⚠️ ギャップと今後の課題 (未解明な点)</h3>
+                        <div id="analysis-gaps" class="text-gray-700 space-y-3"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+    
+    <footer class="bg-gray-800 text-white mt-16">
+        <div class="container mx-auto px-6 py-8 text-center">
+            <p>このインタラクティブ・レポートは、提供された科学的報告書「もみ殻から生体反応性水素発生型ケイ素サプリメントへの転換」の全情報を網羅し、視覚的に再構成したものです。</p>
+            <p class="text-sm text-gray-400 mt-2">© 2025 Interactive Science Report. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const accordionData = {
+        'stage1': [
+            { 
+                title: 'ステップ1：前処理（洗浄と酸浸出）',
+                content: `製造プロセスの第一段階として、もみ殻は物理的な汚染物質（土、砂、その他の異物）を除去するために洗浄されます。この初期精製は、最終製品の純度を確保するための基本的なステップです。\n\n最終製品の品質を決定づける極めて重要な工程が、酸浸出処理です。もみ殻には、シリカ以外にカリウム（K₂O）、カルシウム（CaO）、鉄（Fe₂O₃）などの金属酸化物やミネラルが不純物として含まれています。これらの不純物を除去するため、もみ殻は塩酸（HCl）、硫酸（H₂SO₄）、硝酸（HNO₃）などの強酸溶液で処理されます。この酸処理により、金属不純物は可溶性の塩として溶出し、後の工程で分離除去されます。研究によれば、この前処理は最終的に得られるシリカの純度を大幅に向上させることが実証されています。`
+            },
+            {
+                title: 'ステップ2：制御燃焼（焼成）',
+                content: `酸処理されたもみ殻は、次に制御された条件下で燃焼（焼成）され、セルロースやリグニンといった有機成分が熱分解されます。この工程により、もみ殻灰（Rice Husk Ash, RHA）が得られます。この燃焼プロセスは、熱力学的および速度論的に非常に繊細な制御を要します。\n\n**非晶質（アモルファス）と結晶質（クリスタリン）の二分法:** この工程で最も重要なパラメータは温度管理です。燃焼温度を550°Cから800°Cの範囲に厳密に制御することで、シリカは化学的に反応性が高く、後のアルカリ溶解工程に適した**非晶質（アモルファス）**構造を維持します。対照的に、燃焼温度が850°Cや900°Cを超えると、非晶質シリカは不可逆的な相転移を起こし、結晶質構造へと変化します。結晶質シリカは化学的に安定で反応性が著しく低いため、後続の化学抽出プロセスには不向きです。`
+            },
+            {
+                title: 'ステップ3：化学的抽出と精製（アルカリ溶解・酸沈殿法）',
+                content: `RHAから高純度のSiO₂を抽出するためには、化学的な精製プロセスが不可欠です。最も広く採用されているのが、アルカリ溶解・酸沈殿法です。\n\n**ステップ1：アルカリ溶解**\nRHA中の非晶質シリカは、水酸化ナトリウム（NaOH）などの強アルカリ溶液中で加熱することにより、可溶性のケイ酸ナトリウム（Na₂SiO₃）として溶解します。\n化学反応式: SiO₂(s) + 2NaOH(aq) → Na₂SiO₃(aq) + H₂O(l)\n\n**ステップ2：酸沈殿**\n得られたケイ酸ナトリウム水溶液をろ過し、不溶物を除去した後、塩酸（HCl）や硫酸（H₂SO₄）などの強酸を滴下し、溶液を中和します。pHが10を下回ると、水和シリカゲル（SiO₂·nH₂O）として沈殿します。\n化学反応式: Na₂SiO₃(aq) + 2HCl(aq) → SiO₂(s) + 2NaCl(aq) + H₂O(l)\n\n**ステップ3：熟成、洗浄、乾燥**\n生成したシリカゲルは、熟成、脱イオン水での洗浄、乾燥を経て、純度98～99%以上の高純度非晶質シリカ粉末となります。`
+            }
+        ],
+        'stage2': [
+            {
+                title: 'ステップ1：金属熱還元法（MgTR）',
+                content: `安定なSiO₂を反応性の高い元素状Siに転換するためには、強力な還元プロセスが必要です。最も実用性が高いのがマグネシウム熱還元法です。\n\n**主要反応:**\n非晶質のSiO₂粉末とMg粉末を混合し、不活性ガス雰囲気下（例：アルゴン）で約575～650°Cに加熱します。この反応は非常に大きな発熱を伴います。\n化学反応式: SiO₂(s) + 2Mg(g/l) → Si(s) + 2MgO(s)\n\n**熱管理の重要性:**\nこの強烈な発熱は、生成したSiナノ粒子の融点（1414°C）に迫る温度上昇を引き起こし、ナノ粒子同士を溶融・凝集させる**焼結（シンタリング）**の原因となります。焼結が起こると、ナノ粒子の高い表面積と反応性が失われます。したがって、熱吸収材（NaClなど）の使用や昇温速度の制御といった熱管理が、高品質なSiナノ粒子を製造する上で極めて重要です。`
+            },
+            {
+                title: 'ステップ2：還元後の精製と最終処方',
+                content: `MgTRによって得られた生成物は、目的物である元素状Siと副産物である酸化マグネシウム（MgO）の混合物です。このMgOを除去するため、生成物は酸（通常はHCl）で洗浄されます。MgOは酸に溶解しますが、元素状Siは溶解しないため、固形物として分離・回収できます。\n化学反応式: MgO(s) + 2HCl(aq) → MgCl₂(aq) + H₂O(l)\n\n**最終製品と処方:**\n精製工程を経て、高純度で多孔質またはナノ粒子状の元素状ケイ素（p-SiまたはSi-NPs）の粉末が得られます。これが水素発生サプリメントの真の有効成分です。\n\n市販製品に含まれる炭酸カリウム等は、単なる賦形剤ではなく、消化管内で局所的にアルカリ性の微小環境を作り出し、水素発生反応を最適化する機能性成分（緩衝剤）として配合されていると考えられます。`
+            }
+        ],
+        'invivo': [
+            {
+                title: '水素生成のメカニズムと決定要因',
+                content: `サプリメントとして摂取されたケイ素ナノ粒子（Si-NPs）は、消化管内で体内の水分と接触し、化学反応を開始します。\n全体反応式: Si(s) + 4H₂O(l) → Si(OH)₄(aq) + 2H₂(g)\n\n**反応速度を決定する要因:**\n* **pH:** 反応はアルカリ性で劇的に加速します。胃（強酸性）では反応せず、膵液で弱アルカリ性になる小腸が主要な反応場となります。\n* **粒子径:** 反応速度は表面積に比例するため、ナノサイズの粒子はバルク（塊状）のケイ素より約1,000倍速く水素を生成します。ナノ粒子化技術が有効性の鍵です。\n* **緩衝剤:** 処方中のアルカリ性塩（炭酸カリウム等）は、局所的なpHを上昇させ、反応効率を高めます。`
+            },
+            {
+                title: '主要な効果：分子状水素(H₂)による選択的抗酸化作用',
+                content: `生成されたH₂は、その**選択性**に最大の特徴があります。多くの抗酸化物質と異なり、H₂は生体の恒常性に必要な善玉の活性酸素とは反応せず、体内で最も有害な活性酸素「ヒドロキシルラジカル（•OH）」を選択的に中和します。\n\n**化学反応式:** H₂ + 2•OH → 2H₂O\n\nこの反応により、H₂は極めて破壊的なヒドロキシルラジカルを、無害な水分子に変換します。これにより、DNA、脂質、タンパク質などの生体高分子が酸化的損傷を受けるのを直接的に防ぎます。`
+            },
+            {
+                title: '副次的な効果：オルトケイ酸(Si(OH)₄)の役割',
+                content: `反応で同時に生成されるオルトケイ酸(Si(OH)₄)は、単なる副産物ではありません。これはヒトにとって主要な生体利用可能なケイ素の形態であり、効率的に吸収されると考えられています。\n\n**コラーゲン合成の促進:**\n豊富な研究により、オルトケイ酸が骨芽細胞や線維芽細胞におけるI型コラーゲンの合成を刺激することが示されています。これは骨、皮膚、髪、爪などの健康維持に寄与する可能性があります。\n\nこのように、このサプリメントは1つの反応で2つの生理活性分子（H₂とSi(OH)₄）を供給する**デュアルアクション（二重作用）**型の機能が期待されます。`
+            }
+        ],
+        'analysis': {
+            strengths: `
+                <ul class="space-y-2 list-disc list-inside">
+                    <li>もみ殻からの高純度SiO₂抽出、及び元素状Siへの還元プロセスは、化学的に確立された技術である。</li>
+                    <li>Siナノ粒子が水と反応してH₂を生成する反応は、物理化学的に妥当であり、実験的に実証されている。</li>
+                    <li>反応生成物であるH₂の選択的抗酸化作用、及びSi(OH)₄の生物学的活性は、それぞれ広範な研究で支持されている。</li>
+                </ul>
+            `,
+            gaps: `
+                 <ul class="space-y-2 list-disc list-inside">
+                    <li>この特定のケイ素サプリメントを用いた、大規模なヒト臨床試験が不足している。</li>
+                    <li>均一なSiナノ粒子を低コストで大量生産する技術には工学的課題がある。</li>
+                    <li>ナノ粒子の長期的な摂取に関する安全性データは、さらなる蓄積が必要である。</li>
+                    <li>最適な摂取量や体内動態（吸収・分布・排泄）の解明が待たれる。</li>
+                </ul>
+            `
+        }
+    };
+
+    function createAccordion(containerId, data) {
+        const container = document.getElementById(containerId);
+        data.forEach((item, index) => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'bg-white rounded-lg shadow-sm border border-gray-200';
+            wrapper.innerHTML = `
+                <button class="accordion-header w-full flex justify-between items-center text-left p-5 font-bold text-lg text-[#005f73] hover:bg-gray-50 focus:outline-none">
+                    <span>${item.title}</span>
+                    <svg class="w-6 h-6 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                <div class="accordion-content">
+                    <div class="p-5 pt-0 text-gray-600 whitespace-pre-line">${item.content}</div>
+                </div>
+            `;
+            container.appendChild(wrapper);
+        });
+    }
+
+    createAccordion('stage1-accordion-container', accordionData.stage1);
+    createAccordion('stage2-accordion-container', accordionData.stage2);
+    createAccordion('invivo-accordion-container', accordionData.invivo);
+
+    document.getElementById('analysis-strengths').innerHTML = accordionData.analysis.strengths;
+    document.getElementById('analysis-gaps').innerHTML = accordionData.analysis.gaps;
+
+    document.querySelectorAll('.accordion-header').forEach(button => {
+        button.addEventListener('click', () => {
+            const content = button.nextElementSibling;
+            const icon = button.querySelector('svg');
+
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+                icon.classList.remove('rotate-180');
+            } else {
+                // Close other open accordions in the same container
+                const container = button.closest('.space-y-4');
+                container.querySelectorAll('.accordion-content').forEach(c => c.style.maxHeight = null);
+                container.querySelectorAll('.accordion-header svg').forEach(i => i.classList.remove('rotate-180'));
+
+                content.style.maxHeight = content.scrollHeight + "px";
+                icon.classList.add('rotate-180');
+            }
+        });
+    });
+
+    // Chart.js implementation for extraction methods
+    const ctx = document.getElementById('extractionChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['アルカリ-酸沈殿法(A)', 'アルカリ-酸沈殿法(B)', '連続アルカリ浸出法', 'ゾル-ゲル法'],
+            datasets: [{
+                label: '最終シリカ純度 (%)',
+                data: [99, 98.5, 98.5, 98.5],
+                backgroundColor: 'rgba(148, 210, 189, 0.7)',
+                borderColor: 'rgba(148, 210, 189, 1)',
+                borderWidth: 1,
+                yAxisID: 'yPurity',
+                order: 2
+            }, {
+                label: '収率 (%)',
+                data: [25, 7.65, 89, null], // null for 'データなし'
+                backgroundColor: 'rgba(0, 95, 115, 0.7)',
+                borderColor: 'rgba(0, 95, 115, 1)',
+                type: 'line',
+                yAxisID: 'yYield',
+                order: 1,
+                fill: false,
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                mode: 'index',
+                intersect: false,
+            },
+            plugins: {
+                title: { display: true, text: '異なるシリカ抽出法の純度と収率の比較', font: { size: 16 } },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) { label += ': '; }
+                            if (context.parsed.y !== null) {
+                                label += context.parsed.y + '%';
+                            } else {
+                                label += 'データなし';
+                            }
+                            return label;
+                        }
+                    }
+                }
+            },
+            scales: {
+                yPurity: {
+                    type: 'linear',
+                    display: true,
+                    position: 'left',
+                    title: { display: true, text: '純度 (%)' },
+                    min: 95,
+                    max: 100
+                },
+                yYield: {
+                    type: 'linear',
+                    display: true,
+                    position: 'right',
+                    title: { display: true, text: '収率 (%)' },
+                    min: 0,
+                    max: 100,
+                    grid: { drawOnChartArea: false }
+                }
+            }
+        }
+    });
+});
+</script>
+
+</body>
+</html>

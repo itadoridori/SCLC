@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インタラクティブ・スライド：もみ殻から水素サプリへの科学</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans JP', sans-serif; background-color: #F0F2F5; }
+        .slide { display: none; }
+        .active-slide { display: block; }
+        .slide-container { min-height: 75vh; }
+        .narration-box { background-color: #263238; color: #ECEFF1; font-size: 1.1rem; line-height: 1.8; }
+        .latex { font-family: 'Times New Roman', serif; font-style: italic; }
+        .chart-container { position: relative; width: 100%; max-width: 800px; height: 400px; margin: 1rem auto; background-color: #ffffff; padding: 1.5rem; border-radius: 0.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .pagination-dot { transition: background-color 0.3s ease; }
+        .active-dot { background-color: #1976D2; }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-4">
+
+    <div id="slideshow-container" class="w-full max-w-5xl bg-white shadow-2xl rounded-2xl overflow-hidden">
+        
+        <!-- Slide 1: Title -->
+        <div class="slide active-slide">
+            <div class="slide-container p-8 md:p-16 flex flex-col items-center justify-center text-center bg-gradient-to-br from-blue-50 to-indigo-100">
+                <div class="text-6xl mb-6">🌾 → ✨</div>
+                <h2 class="text-4xl md:text-5xl font-black text-gray-800 mb-4">農業の奇跡</h2>
+                <h3 class="text-2xl md:text-3xl font-bold text-blue-700">もみ殻から生まれる未来のサプリメント</h3>
+                <p class="mt-6 text-gray-600 max-w-2xl">ありふれた農業副産物が、最先端の科学によって、私たちの健康に貢献する高機能性物質へと生まれ変わる。その驚くべき旅路を、今から紐解いていきましょう。</p>
+            </div>
+            <div class="narration-box p-6">
+                私たちの食卓に欠かせない「お米」。その生産過程で大量に発生する「もみ殻」が、実は未来の健康を支える宝の山かもしれない、と考えたことはありますか？このプレゼンテーションでは、ただの農業廃棄物だと思われていたもみ殻が、最先端の科学技術によって、驚くべき機能を持つサプリメントへと生まれ変わる全貌を、ステップバイステップで解き明かしていきます。
+            </div>
+        </div>
+
+        <!-- Slide 2: The Potential -->
+        <div class="slide">
+            <div class="slide-container p-8 md:p-12 flex flex-col items-center justify-center text-center">
+                <h2 class="text-3xl font-bold text-gray-800 mb-8">もみ殻に眠る「隠された宝」</h2>
+                <div class="w-full max-w-md p-8 bg-green-50 rounded-xl border-2 border-green-200">
+                    <div class="text-7xl">💎</div>
+                    <p class="text-2xl font-bold my-4">主成分の約20%は<br><span class="text-4xl text-green-700">シリカ (<span class="latex">SiO₂</span>)</span></p>
+                    <p class="text-gray-600">これは他の植物に比べて、著しく高い含有率です。この天然由来のシリカこそが、すべての物語の始まりとなります。</p>
+                </div>
+            </div>
+             <div class="narration-box p-6">
+                もみ殻の価値の源泉、それは主成分の約20%を占める「シリカ」にあります。シリカ、化学式で書くと<span class="latex">SiO₂</span>は、ガラスや半導体の原料としても知られる非常に安定した物質です。この豊富な植物由来シリカを、いかにして価値あるものへと「アップサイクル」するか。それが科学者たちの挑戦でした。
+            </div>
+        </div>
+        
+        <!-- Slide 3: Stage 1 Flowchart -->
+        <div class="slide">
+            <div class="slide-container p-8 md:p-12 flex flex-col items-center justify-center">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">ステージ1：もみ殻から高純度シリカへ</h2>
+                <div class="w-full flex flex-col md:flex-row items-center justify-around gap-4 text-center">
+                    <div class="p-4 bg-gray-100 rounded-lg shadow-md">
+                        <div class="text-5xl">①</div><h3 class="text-xl font-bold mt-2">酸処理</h3><p>不純物を除去</p>
+                    </div>
+                    <div class="text-4xl text-blue-500 font-bold">→</div>
+                    <div class="p-4 bg-gray-100 rounded-lg shadow-md">
+                        <div class="text-5xl">②</div><h3 class="text-xl font-bold mt-2">制御燃焼</h3><p>550-800℃で有機物を燃焼</p>
+                    </div>
+                    <div class="text-4xl text-blue-500 font-bold">→</div>
+                    <div class="p-4 bg-gray-100 rounded-lg shadow-md">
+                         <div class="text-5xl">③</div><h3 class="text-xl font-bold mt-2">化学抽出</h3><p>アルカリで溶かし酸で固める</p>
+                    </div>
+                </div>
+                <div class="mt-8 p-6 bg-blue-100 rounded-xl w-full max-w-lg text-center">
+                    <p class="text-xl font-bold text-blue-800">結果：純度99%以上の「非晶質シリカ」粉末が完成</p>
+                </div>
+            </div>
+            <div class="narration-box p-6">
+                最初のステージは、もみ殻から純粋なシリカだけを取り出す精製プロセスです。まず、酸で金属などの不純物を洗い流します。次に、厳密に温度管理された炉で有機物を燃やし去ります。この温度管理が重要で、高すぎるとシリカが反応性の低い結晶に変わってしまうのです。最後に、化学の力を使い、シリカだけを選択的に溶かし出し、再び固めることで、純度99%以上の真っ白な粉末が完成します。
+            </div>
+        </div>
+
+        <!-- Slide 4: Chart -->
+        <div class="slide">
+            <div class="slide-container p-8 md:p-12 flex flex-col items-center justify-center">
+                 <h2 class="text-3xl font-bold text-gray-800 mb-2 text-center">データで見る抽出法の性能</h2>
+                 <p class="text-center text-gray-600 mb-4 max-w-2xl mx-auto">様々な抽出法には、純度と収率にトレードオフがあります。開発者は目的に応じて最適な方法を選択します。</p>
+                 <div class="chart-container">
+                    <canvas id="extractionChart"></canvas>
+                 </div>
+            </div>
+            <div class="narration-box p-6">
+                こちらのグラフは、異なるシリカ抽出法の性能を比較したものです。青い棒グラフが「純度」を、緑の棒グラフが「収率」、つまりどれだけ多くのシリカを回収できたかを示しています。ご覧の通り、非常に高い純度を達成する方法は収率が低くなる傾向があるなど、一長一短です。製品開発では、こうしたデータを元に、コストと品質のバランスを考え、最適なプロセスが選択されるのです。
+            </div>
+        </div>
+
+        <!-- Slide 5: The Misconception -->
+        <div class="slide">
+            <div class="slide-container p-8 md:p-12 flex flex-col items-center justify-center">
+                <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">ここで重要な化学の真実</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
+                    <div class="p-8 bg-red-100 rounded-xl text-center border-2 border-red-300">
+                        <p class="text-6xl mb-4">❌</p>
+                        <h3 class="text-2xl font-bold text-red-800">誤解</h3>
+                        <p class="mt-2 text-lg">シリカ(<span class="latex">SiO₂</span>)が直接、体内で水素を生成するわけでは<span class="font-bold">ない</span>。</p>
+                    </div>
+                     <div class="p-8 bg-green-100 rounded-xl text-center border-2 border-green-300">
+                        <p class="text-6xl mb-4">✅</p>
+                        <h3 class="text-2xl font-bold text-green-800">事実</h3>
+                        <p class="mt-2 text-lg">真の有効成分は、シリカを還元して作られる「<span class="font-bold">元素状ケイ素(Si)</span>」である。</p>
+                    </div>
+                </div>
+            </div>
+            <div class="narration-box p-6">
+                ここで、製品のメカニズムを理解する上で、最も重要な化学の事実をお伝えします。サプリメントの機能の源は、実はシリカそのものではありません。安定したシリカは、体内で水素を発生させることはないのです。真の有効成分は、シリカから酸素を奪う「還元」という化学プロセスを経て作られる、非常に反応性の高い「元素状ケイ素」なのです。
+            </div>
+        </div>
+        
+        <!-- Slide 6: Stage 2 -->
+        <div class="slide">
+            <div class="slide-container p-8 md:p-12 flex flex-col items-center justify-center">
+                 <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">ステージ2：核心となる化学転換</h2>
+                <div class="w-full max-w-2xl p-8 bg-gray-800 text-white rounded-xl shadow-2xl">
+                    <h3 class="text-2xl font-bold text-center text-cyan-300 mb-4">マグネシウム熱還元法</h3>
+                    <p class="text-center mb-6">高純度シリカをマグネシウムと共に650℃前後で加熱し、酸素を奪い取ります。</p>
+                    <div class="bg-gray-900 text-center p-4 rounded-lg font-mono text-xl md:text-2xl text-yellow-300">
+                        <span class="latex">SiO₂ + 2Mg → Si + 2MgO</span>
+                    </div>
+                    <div class="mt-6 p-4 bg-red-900/50 border-l-4 border-red-400">
+                        <h4 class="font-bold text-red-300">重要課題：熱管理 🔥</h4>
+                        <p class="text-red-200">強烈な反応熱でケイ素粒子が溶けて塊になる「焼結」を防ぐ精密な温度制御が、製品の品質を左右します。</p>
+                    </div>
+                </div>
+            </div>
+            <div class="narration-box p-6">
+                次のステージは、このサプリメント技術の心臓部、「マグネシウム熱還元法」です。高純度シリカとマグネシウムを混ぜて加熱することで、シリカから酸素が奪われ、目的の元素状ケイ素が生成されます。ただし、この反応は非常に激しく、大きな熱を発生します。この熱をうまくコントロールしないと、せっかくできたケイ素のナノ粒子が溶けてしまい、その効果が失われてしまうため、高度な技術が求められます。
+            </div>
+        </div>
+
+        <!-- Slide 7: In-Vivo -->
+        <div class="slide">
+            <div class="slide-container p-8 md:p-12 flex flex-col items-center justify-center">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">ステージ3：体内での魔法の始まり</h2>
+                <div class="w-full max-w-3xl text-center">
+                     <p class="text-lg mb-4">経口摂取されたケイ素ナノ粒子(Si)は、小腸で体内の水分(<span class="latex">H₂O</span>)と反応し…</p>
+                     <div class="bg-indigo-100 p-6 rounded-lg shadow-inner font-mono text-xl md:text-2xl text-indigo-800 mb-6">
+                        <span class="latex">Si + 4H₂O → Si(OH)₄ + 2H₂</span>
+                     </div>
+                     <p class="text-lg mb-4">…2つの有益な物質をその場で生成します。</p>
+                     <div class="flex justify-around mt-4">
+                        <div class="p-4 bg-green-100 rounded-lg">
+                            <h3 class="text-2xl font-bold text-green-800">分子状水素 (<span class="latex">H₂</span>)</h3>
+                            <p>選択的抗酸化物質</p>
+                        </div>
+                        <div class="p-4 bg-purple-100 rounded-lg">
+                            <h3 class="text-2xl font-bold text-purple-800">オルトケイ酸 (<span class="latex">Si(OH)₄</span>)</h3>
+                            <p>結合組織をサポート</p>
+                        </div>
+                     </div>
+                </div>
+            </div>
+             <div class="narration-box p-6">
+                最終ステージは、私たちの体内で起こります。サプリメントとして摂取されたケイ素のナノ粒子は、胃酸では反応せず、弱アルカリ性である小腸に到達すると、体内の水分と反応を開始します。この反応によって、「分子状水素」と「オルトケイ酸」という、二つの異なる健康効果を持つ物質が、その場で同時に生成されるのです。
+            </div>
+        </div>
+        
+        <!-- Slide 8: Benefit 1 Hydrogen -->
+        <div class="slide">
+             <div class="slide-container p-8 md:p-12 flex flex-col items-center justify-center">
+                <h2 class="text-3xl font-bold text-gray-800 mb-2 text-center">二重作用①：分子状水素の選択的抗酸化力</h2>
+                <p class="text-center text-gray-600 mb-6">生成された水素(<span class="latex">H₂</span>)は、悪玉活性酸素だけを狙い撃ちします。</p>
+                <div class="w-full max-w-xl p-6 bg-white rounded-xl shadow-lg">
+                     <div class="flex items-center justify-center gap-4">
+                        <div class="text-5xl">👿</div>
+                        <div class="text-center">
+                            <p class="font-bold">ヒドロキシルラジカル</p>
+                            <p class="text-sm">(最も有害な活性酸素)</p>
+                        </div>
+                        <div class="text-4xl mx-4">+</div>
+                        <div class="text-5xl">🦸</div>
+                         <div class="text-center">
+                            <p class="font-bold">分子状水素(<span class="latex">H₂</span>)</p>
+                            <p class="text-sm">(サプリから生成)</p>
+                        </div>
+                     </div>
+                     <div class="text-5xl text-center my-4">↓</div>
+                     <div class="flex items-center justify-center gap-4 p-4 bg-green-100 rounded-lg">
+                         <div class="text-5xl">💧</div>
+                         <div class="text-center">
+                             <p class="text-2xl font-bold text-green-800">無害な水 (<span class="latex">H₂O</span>) に変換</p>
+                         </div>
+                     </div>
+                </div>
+                 <p class="text-center text-gray-600 mt-6 max-w-xl">体に必要な善玉の活性酸素とは反応せず、悪玉だけを無害化する、非常にインテリジェントな抗酸化物質です。</p>
+            </div>
+             <div class="narration-box p-6">
+                一つ目の作用は、分子状水素による抗酸化です。私たちの体内には、細胞を傷つけ老化や病気の原因となる「悪玉」活性酸素が存在します。水素は、その中でも最も有害な「ヒドロキシルラジカル」を選択的に見つけ出し、化学反応によって無害な水に変えてしまいます。驚くべきことに、体に必要な「善玉」の活性酸素には手を出さない、非常に賢い働きをするのです。
+            </div>
+        </div>
+
+        <!-- Slide 9: Benefit 2 Silicic Acid -->
+        <div class="slide">
+             <div class="slide-container p-8 md:p-12 flex flex-col items-center justify-center">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">二重作用②：オルトケイ酸による組織サポート</h2>
+                <div class="w-full max-w-xl p-8 bg-purple-50 rounded-xl shadow-lg text-center">
+                    <div class="text-5xl mb-4">✨</div>
+                    <h3 class="text-2xl font-bold text-purple-800 mb-4">オルトケイ酸 (<span class="latex">Si(OH)₄</span>)</h3>
+                    <p class="text-lg text-gray-700">吸収されやすい形のケイ素であり、コラーゲンの合成をサポートします。</p>
+                    <div class="flex justify-around mt-6 text-2xl font-bold text-purple-700">
+                        <span>骨 🦴</span>
+                        <span>肌 💖</span>
+                        <span>髪 👩</span>
+                        <span>爪 💅</span>
+                    </div>
+                </div>
+            </div>
+             <div class="narration-box p-6">
+                そして、もう一つの作用が、同時に生成されるオルトケイ酸によるものです。これは、私たちの体が吸収しやすい形のケイ素であり、健康な骨、弾力のある肌、美しい髪や爪を構成する主要なタンパク質、「コラーゲン」の合成をサポートする働きがあることが研究で示唆されています。つまり、このサプリメントは、内側からの抗酸化と、組織の構築サポートという、二つの恩恵を同時にもたらす可能性を秘めているのです。
+            </div>
+        </div>
+
+        <!-- Slide 10: Verdict -->
+        <div class="slide">
+            <div class="slide-container p-8 md:p-12 flex flex-col items-center justify-center">
+                <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">最終評価：科学的妥当性と今後の展望</h2>
+                <div class="w-full max-w-3xl p-8 bg-white rounded-xl shadow-2xl">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h3 class="text-2xl font-bold text-green-600 mb-3 border-b-2 border-green-200 pb-2">✅ 科学的根拠の強度</h3>
+                            <ul class="list-disc list-inside space-y-2 text-gray-700">
+                                <li>化学プロセスは確立されている。</li>
+                                <li>作用機序は化学的・生化学的に合理的。</li>
+                                <li>生成物（<span class="latex">H₂</span>と<span class="latex">Si(OH)₄</span>）の有益性は多くの研究で支持。</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-orange-600 mb-3 border-b-2 border-orange-200 pb-2">⚠️ 今後の課題</h3>
+                            <ul class="list-disc list-inside space-y-2 text-gray-700">
+                                <li>このサプリに特化した大規模なヒト臨床試験が不足。</li>
+                                <li>ナノ粒子の長期的な安全性に関するデータの蓄積が必要。</li>
+                                <li>低コストでの大量生産技術。</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="narration-box p-6">
+                結論です。もみ殻から水素発生型ケイ素サプリメントを作る技術は、化学的・生化学的に見て、非常に合理的で、その作用機序も科学的に妥当性が高いと言えます。しかし、そのポテンシャルが、この特定の製品において、人間で確かに効果があるという最終的な証明には、まだ多くの質の高い臨床研究が必要です。これは、持続可能な資源活用と健康科学が融合した、非常にエキサイティングな分野であり、今後の研究から目が離せません。
+            </div>
+        </div>
+        
+        <!-- Slide 11: Youtube -->
+        <div class="slide">
+            <div class="slide-container p-8 md:p-12 bg-gray-800 text-white">
+                 <h2 class="text-3xl font-bold text-center mb-8">YouTubeコンテンツ制作者様へ</h2>
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-xl font-bold text-cyan-300 mb-3">【タイトル案】</h3>
+                        <ol class="list-decimal list-inside space-y-2 bg-gray-700 p-4 rounded-lg">
+                            <li>【科学解説】農業廃棄物「もみ殻」が最強の抗酸化サプリになるって本当？</li>
+                            <li>体内で水素を作る！？次世代サプリ「ケイ素プロドラッグ」の全貌</li>
+                            <li>老化の原因を狙い撃ち！もみ殻由来サプリの驚くべき化学反応</li>
+                        </ol>
+
+                        <h3 class="text-xl font-bold text-cyan-300 mt-6 mb-3">【概要欄】</h3>
+                        <div class="bg-gray-700 p-4 rounded-lg text-sm space-y-2">
+                            <p>ただの農業廃棄物だと思われていた「もみ殻」が、最先端の科学技術によって、体内で「水素」を発生させる驚きのサプリメントに生まれ変わります。この動画では、その製造プロセスから、体内で起こる化学反応、そして期待される健康効果まで、科学的根拠に基づいて徹底解説します。</p>
+                            <p>#科学 #解説 #健康 #サプリメント #水素 #ケイ素 #シリカ #抗酸化 #アンチエイジング #もみ殻</p>
+                        </div>
+                    </div>
+                     <div>
+                        <h3 class="text-xl font-bold text-cyan-300 mb-3">【サムネイル生成プロンプト案】</h3>
+                        <ol class="list-decimal list-inside space-y-2 bg-gray-700 p-4 rounded-lg">
+                            <li>A visually striking split image. On the left, a pile of rice husks. On the right, a glowing, futuristic pill with molecular structures floating around it. An arrow connects the two. Bold Japanese text: "ただのゴミじゃない！" (Not Just Trash!)</li>
+                            <li>A person's silhouette with their gut area glowing brightly. Inside the glowing area, an animated chemical reaction showing Si nanoparticles turning into H₂ gas bubbles. Bold Japanese text: "体内で水素、発生中！" (Generating Hydrogen in the Body!)</li>
+                            <li>A close-up shot of a hand holding a glowing capsule. In the background, a rice paddy field. Bold Japanese text: "もみ殻の奇跡" (Miracle of Rice Husks).</li>
+                        </ol>
+
+                        <h3 class="text-xl font-bold text-cyan-300 mt-6 mb-3">【BGM生成用 SUNO AI プロンプト案】</h3>
+                        <ol class="list-decimal list-inside space-y-2 bg-gray-700 p-4 rounded-lg">
+                            <li>Uplifting and inspiring corporate background music, instrumental, hopeful piano melody with a light electronic beat and subtle string pads, for a science and technology presentation.</li>
+                            <li>Minimalist and curious electronic ambient track, calm synth pads, gentle arpeggios, a sense of discovery and wonder, instrumental, focus music.</li>
+                            <li>Positive and flowing cinematic music, orchestral, grand piano and strings building slowly to an inspirational climax, suitable for a story about innovation and potential.</li>
+                        </ol>
+                    </div>
+                 </div>
+            </div>
+            <div class="narration-box p-6">
+                ご視聴いただき、ありがとうございました。このプレゼンテーションが、科学の面白さや、身近なものが持つ無限の可能性を感じるきっかけとなれば幸いです。もしよろしければ、チャンネル登録と高評価をお願いいたします。
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Pagination -->
+    <div class="flex items-center justify-center mt-6">
+        <button id="prevBtn" class="px-4 py-2 bg-gray-300 text-gray-800 rounded-l-lg hover:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed">前へ</button>
+        <div id="pagination-dots" class="flex items-center justify-center px-4"></div>
+        <button id="nextBtn" class="px-4 py-2 bg-gray-300 text-gray-800 rounded-r-lg hover:bg-gray-400">次へ</button>
+    </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const slides = document.querySelectorAll('.slide');
+        const nextBtn = document.getElementById('nextBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const dotsContainer = document.getElementById('pagination-dots');
+        let currentSlide = 0;
+
+        function createDots() {
+            slides.forEach((_, i) => {
+                const dot = document.createElement('div');
+                dot.classList.add('pagination-dot', 'w-3', 'h-3', 'bg-gray-400', 'rounded-full', 'mx-1', 'cursor-pointer');
+                dot.addEventListener('click', () => {
+                    showSlide(i);
+                });
+                dotsContainer.appendChild(dot);
+            });
+        }
+
+        function updateDots() {
+            const dots = dotsContainer.querySelectorAll('.pagination-dot');
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('active-dot', i === currentSlide);
+            });
+        }
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.toggle('active-slide', i === index);
+            });
+            currentSlide = index;
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === slides.length - 1;
+            updateDots();
+        }
+
+        nextBtn.addEventListener('click', () => {
+            if (currentSlide < slides.length - 1) {
+                showSlide(currentSlide + 1);
+            }
+        });
+
+        prevBtn.addEventListener('click', () => {
+            if (currentSlide > 0) {
+                showSlide(currentSlide - 1);
+            }
+        });
+        
+        createDots();
+        showSlide(0);
+
+        // Chart.js implementation
+        const ctx = document.getElementById('extractionChart').getContext('2d');
+        const chartData = {
+            labels: ['アルカリ-酸沈殿法(A)', 'アルカリ-酸沈殿法(B)', '連続アルカリ浸出法', 'ゾル-ゲル法'],
+            datasets: [
+                {
+                    label: '最終シリカ純度 (%)',
+                    data: [99, 98.5, 98.5, 98.5],
+                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1,
+                    yAxisID: 'yPurity'
+                },
+                {
+                    label: '収率 (%)',
+                    data: [25, 7.65, 89, null], // null for 'データなし'
+                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1,
+                    yAxisID: 'yYield'
+                }
+            ]
+        };
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: chartData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { ticks: { font: { size: 10 } } },
+                    yPurity: {
+                        type: 'linear', position: 'left',
+                        beginAtZero: false, min: 90, max: 100,
+                        title: { display: true, text: '純度 (%)' }
+                    },
+                    yYield: {
+                        type: 'linear', position: 'right',
+                        beginAtZero: true, max: 100,
+                        title: { display: true, text: '収率 (%)' },
+                        grid: { drawOnChartArea: false }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) { label += ': '; }
+                                if (context.parsed.y !== null) {
+                                    label += context.parsed.y + '%';
+                                } else {
+                                    label += 'データなし';
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
