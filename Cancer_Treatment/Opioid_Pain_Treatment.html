@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>オピオイド疼痛治療インタラクティブガイド</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Harmony -->
+    <!-- Application Structure Plan: 利用者の不安解消と実践的な行動喚起を目的とした、タスク指向の4セクション構成。1) まずよくある誤解を解き、心理的障壁を下げる。2) 次に最も関心の高い副作用について、インタラクティブなタブで情報を選べるようにし、チャートで視覚的に理解を促す。3) 薬の比較はシンプルな表で提示。4) 最後に、具体的なコミュニケーション方法をガイドし、患者が主体的に治療に参加できるよう促す。この構造は、レポートの章立てとは異なり、利用者の心理的プロセス（不安→理解→実践）に沿って設計されており、情報の消化と行動変容を最大化することを目的としている。 -->
+    <!-- Visualization & Content Choices: レポート情報：副作用の持続期間（便秘 vs 吐き気・眠気）→ ゴール：副作用の性質の違いを直感的に伝え、便秘への継続的な対策の重要性を強調する → Viz/Presentation Method：Chart.jsによる横棒グラフ → Interaction：ホバー時のツールチップで補足情報を表示 → Justification：文章で読むよりも、「便秘はずっと続くが、他は一時的」という重要な違いが一目でわかるため、利用者の理解度と記憶定着が高まる。これにより、適切なセルフケア行動につながりやすくなる。→ Library/Method: Chart.js (Canvas)。その他の図表は、HTMLとTailwind CSSによる構造化された要素（カード、テーブル、リスト）で表現し、インタラクティブ性はJavaScriptで制御する。 -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .nav-link {
+            transition: color 0.3s, border-color 0.3s;
+        }
+        .nav-link:hover {
+            color: #0d9488;
+        }
+        .active-nav-link {
+            color: #0d9488;
+            border-bottom: 2px solid #0d9488;
+        }
+        .side-effect-btn.active {
+            background-color: #0d9488;
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <header class="bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-3">
+                <h1 class="text-lg md:text-xl font-bold text-teal-700">穏やかな毎日のために</h1>
+                <div class="hidden md:flex space-x-6">
+                    <a href="#intro" class="nav-link text-slate-600 font-medium pb-1">はじめに</a>
+                    <a href="#side-effects" class="nav-link text-slate-600 font-medium pb-1">副作用の管理</a>
+                    <a href="#medicines" class="nav-link text-slate-600 font-medium pb-1">お薬の種類</a>
+                    <a href="#communication" class="nav-link text-slate-600 font-medium pb-1">医師との連携</a>
+                </div>
+                <div class="md:hidden">
+                    <select id="mobile-nav" class="bg-white border border-slate-300 rounded-md py-1 px-2 text-slate-700">
+                        <option value="#hero">トップ</option>
+                        <option value="#intro">はじめに</option>
+                        <option value="#side-effects">副作用の管理</option>
+                        <option value="#medicines">お薬の種類</option>
+                        <option value="#communication">コミュニケーション</option>
+                    </select>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="hero" class="bg-teal-50 py-12 md:py-20">
+            <div class="container mx-auto px-4 text-center">
+                <h2 class="text-3xl md:text-4xl font-bold text-teal-800 mb-4">オピオイドとの上手な付き合い方</h2>
+                <p class="max-w-3xl mx-auto text-slate-600">がんの痛みを和らげるオピオイド鎮痛薬。正しい知識を持ち、副作用を上手に管理することで、<br class="hidden md:inline">あなたらしい、穏やかな毎日を取り戻すことができます。このガイドが、その一助となることを願っています。</p>
+            </div>
+        </section>
+
+        <section id="intro" class="py-16 md:py-24">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-12">
+                    <h3 class="text-2xl md:text-3xl font-bold text-slate-800">はじめに：よくある3つの誤解</h3>
+                    <p class="mt-2 text-slate-500 max-w-2xl mx-auto">オピオイド治療を始める前に、多くの方が抱く不安や誤解を解消しましょう。正しい知識は、安心して治療に臨むための第一歩です。</p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-teal-500">
+                        <h4 class="text-xl font-bold text-teal-700 mb-3">誤解 1: 中毒になる？</h4>
+                        <p class="text-slate-600">
+                            <span class="font-bold text-slate-700">事実：</span>がんの痛みを和らげるために、医師の管理下で正しく使用する場合、「精神的依存（中毒）」になることは極めて稀です。薬がやめられないと感じるのは、体が薬に慣れる「身体的依存」であり、これは異常なことではありません。医師の指示で徐々に減らせば安全にやめることができます。
+                        </p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-teal-500">
+                        <h4 class="text-xl font-bold text-teal-700 mb-3">誤解 2: もう終わり？</h4>
+                        <p class="text-slate-600">
+                           <span class="font-bold text-slate-700">事実：</span>オピオイドを始めるタイミングは、余命ではなく「痛みの強さ」で決まります。早期からでも、痛みを抑えるために必要であれば使用します。痛みを我慢しないことは、生活の質（QOL）を高め、より良く生きる助けになります。
+                        </p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-teal-500">
+                        <h4 class="text-xl font-bold text-teal-700 mb-3">誤解 3: すぐ効かなくなる？</h4>
+                        <p class="text-slate-600">
+                            <span class="font-bold text-slate-700">事実：</span>長期間使うと効果が弱まる「耐性」が生じることもありますが、多くのオピオイドには上限量がありません。痛みに合わせて量を調整すれば、再び効果が得られます。痛みを我慢して使用を遅らせるメリットはありません。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="side-effects" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-12">
+                    <h3 class="text-2xl md:text-3xl font-bold text-slate-800">副作用の管理：予測して先手を打つ</h3>
+                    <p class="mt-2 text-slate-500 max-w-3xl mx-auto">オピオイドの副作用は予測可能です。特に多い3つの症状について、特徴と対策を知っておくことで、慌てずに対処できます。気になる症状をクリックして、詳細を確認してください。</p>
+                </div>
+
+                <div class="flex justify-center space-x-2 md:space-x-4 mb-8">
+                    <button class="side-effect-btn active text-sm md:text-base font-medium py-2 px-4 rounded-full transition-all duration-300 bg-slate-200 text-slate-700" data-target="constipation">🚽 便秘</button>
+                    <button class="side-effect-btn text-sm md:text-base font-medium py-2 px-4 rounded-full transition-all duration-300 bg-slate-200 text-slate-700" data-target="nausea">🤢 吐き気・嘔吐</button>
+                    <button class="side-effect-btn text-sm md:text-base font-medium py-2 px-4 rounded-full transition-all duration-300 bg-slate-200 text-slate-700" data-target="drowsiness">😴 眠気</button>
+                </div>
+
+                <div class="bg-slate-50 p-6 md:p-8 rounded-xl shadow-inner">
+                    <div id="constipation" class="side-effect-content">
+                        <div class="grid md:grid-cols-2 gap-8 items-center">
+                            <div>
+                                <h4 class="text-xl font-bold text-teal-700 mb-4">便秘：持続的な対策が必要な副作用</h4>
+                                <p class="mb-4 text-slate-600">便秘は、オピオイド服用中は体が慣れることがほとんどなく、継続的な対策が必要です。治療の開始と同時に下剤を始めるのが基本です。</p>
+                                <div class="space-y-4">
+                                    <div>
+                                        <h5 class="font-bold text-slate-700">薬での対策</h5>
+                                        <ul class="list-disc list-inside text-slate-600 mt-1">
+                                            <li>オピオイド開始と同時に下剤を併用</li>
+                                            <li>便を柔らかくする薬と、腸を動かす薬を組み合わせる</li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <h5 class="font-bold text-slate-700">生活の工夫</h5>
+                                        <ul class="list-disc list-inside text-slate-600 mt-1">
+                                            <li>十分な水分補給を心がける</li>
+                                            <li>無理のない範囲での散歩や運動</li>
+                                            <li>お腹のマッサージ</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="sideEffectChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="nausea" class="side-effect-content hidden">
+                         <h4 class="text-xl font-bold text-teal-700 mb-4">吐き気・嘔吐：多くは一時的な副作用</h4>
+                        <p class="mb-4 text-slate-600">開始時や増量時に見られますが、多くは1週間ほどで体が慣れて自然に治まります。辛いときは吐き気止めで乗り切りましょう。</p>
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div>
+                                <h5 class="font-bold text-slate-700">薬での対策</h5>
+                                <ul class="list-disc list-inside text-slate-600 mt-1">
+                                    <li>辛い場合は医師に相談し、吐き気止めを処方してもらう</li>
+                                    <li>体が慣れたら、吐き気止めは中止を検討する</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h5 class="font-bold text-slate-700">生活の工夫</h5>
+                                <ul class="list-disc list-inside text-slate-600 mt-1">
+                                    <li>少量ずつ、回数を分けて食事をとる</li>
+                                    <li>冷たい食事や、匂いの少ないものを選ぶ</li>
+                                    <li>室内の換気を良くする</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="drowsiness" class="side-effect-content hidden">
+                        <h4 class="text-xl font-bold text-teal-700 mb-4">眠気：多くは一時的な副作用</h4>
+                        <p class="mb-4 text-slate-600">吐き気と同様、開始時や増量時に見られ、数日で慣れることがほとんどです。ただし、呼びかけに反応しにくいほどの強い眠気は危険なサインです。</p>
+                         <div class="grid md:grid-cols-2 gap-8">
+                            <div>
+                                <h5 class="font-bold text-slate-700">管理と注意点</h5>
+                                <ul class="list-disc list-inside text-slate-600 mt-1">
+                                    <li>痛みが和らいだことによる「心地よい眠気」か区別する</li>
+                                    <li>強い眠気（呼びかけても起きない等）はすぐに医師に連絡</li>
+                                    <li>転倒に注意し、ゆっくり動く</li>
+                                    <li class="font-bold text-red-600">自動車の運転や危険な作業は絶対に避ける</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h5 class="font-bold text-slate-700">考えられる対応</h5>
+                                <ul class="list-disc list-inside text-slate-600 mt-1">
+                                     <li>医師が薬の量を調整したり、種類を変更したりする</li>
+                                     <li>眠気の原因が他（感染症など）にないか調べる</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="medicines" class="py-16 md:py-24">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-12">
+                    <h3 class="text-2xl md:text-3xl font-bold text-slate-800">お薬の種類と選択</h3>
+                    <p class="mt-2 text-slate-500 max-w-3xl mx-auto">オピオイドには様々な種類があり、体の状態や副作用の出やすさに合わせて最適な薬が選ばれます。ここでは代表的なお薬の特徴を紹介します。</p>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full min-w-max bg-white rounded-lg shadow-md overflow-hidden">
+                        <thead class="bg-teal-600 text-white">
+                            <tr>
+                                <th class="py-3 px-4 text-left font-semibold">薬剤名</th>
+                                <th class="py-3 px-4 text-left font-semibold">主な剤形</th>
+                                <th class="py-3 px-4 text-left font-semibold">特徴</th>
+                                <th class="py-3 px-4 text-left font-semibold">腎機能が悪い時の注意</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200">
+                            <tr class="hover:bg-slate-50">
+                                <td class="py-3 px-4 font-medium">モルヒネ</td>
+                                <td class="py-3 px-4 text-slate-600">飲み薬、坐薬、注射</td>
+                                <td class="py-3 px-4 text-slate-600">長年の標準薬。様々な剤形がある。</td>
+                                <td class="py-3 px-4 text-slate-600 font-medium bg-red-50">代謝物が溜まりやすく、原則使用を避ける。</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="py-3 px-4 font-medium">オキシコドン</td>
+                                <td class="py-3 px-4 text-slate-600">飲み薬、注射</td>
+                                <td class="py-3 px-4 text-slate-600">標準薬の一つ。モルヒネと似た効果。</td>
+                                <td class="py-3 px-4 text-slate-600 bg-yellow-50">慎重な投与が必要。</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="py-3 px-4 font-medium">フェンタニル</td>
+                                <td class="py-3 px-4 text-slate-600">貼り薬、口の粘膜から吸収する薬</td>
+                                <td class="py-3 px-4 text-slate-600">貼り薬は安定した痛みに便利。便秘・吐き気が少ない傾向。</td>
+                                <td class="py-3 px-4 text-slate-600 font-medium bg-green-50">比較的安全に使用できる。第一選択肢。</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                 <div class="mt-8 bg-teal-50 border-l-4 border-teal-500 p-6 rounded-r-lg">
+                    <h4 class="font-bold text-teal-800 text-lg">豆知識：オピオイドスイッチング</h4>
+                    <p class="text-teal-900 mt-2">今の薬で効果が不十分だったり、副作用が辛かったりする場合、別の種類のオピオイドに変更すること（スイッチング）で、状況が劇的に改善することがあります。これは治療の失敗ではなく、より良い状態を目指すための積極的な一手です。</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="communication" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-12">
+                    <h3 class="text-2xl md:text-3xl font-bold text-slate-800">医師との連携：あなたの言葉が治療の鍵</h3>
+                    <p class="mt-2 text-slate-500 max-w-3xl mx-auto">痛みは、あなたにしか分かりません。あなたの感覚や言葉が、最適な治療を見つけるための最も重要な情報です。次のポイントを参考に、あなたの状態を伝えてみましょう。</p>
+                </div>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="bg-slate-50 p-6 rounded-lg shadow-sm">
+                        <h4 class="text-xl font-bold text-teal-700 mb-3">① 痛みを数字で伝える</h4>
+                        <p class="text-slate-600 mb-4">「全く痛くないを0、最悪の痛みを10」として、今の痛みを数字で表現してみましょう。</p>
+                        <div class="flex justify-between items-center text-xs text-slate-500">
+                            <span>0 (なし)</span>
+                            <span>5 (中くらい)</span>
+                            <span>10 (最悪)</span>
+                        </div>
+                        <input type="range" min="0" max="10" value="5" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                    </div>
+                     <div class="bg-slate-50 p-6 rounded-lg shadow-sm">
+                        <h4 class="text-xl font-bold text-teal-700 mb-3">② 痛みの性質を言葉で伝える</h4>
+                        <p class="text-slate-600">どんな痛みですか？具体的な言葉は、痛みの原因を探る手がかりになります。</p>
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <span class="bg-teal-100 text-teal-800 text-sm font-medium px-3 py-1 rounded-full">ズキズキ</span>
+                            <span class="bg-teal-100 text-teal-800 text-sm font-medium px-3 py-1 rounded-full">ジンジン</span>
+                            <span class="bg-teal-100 text-teal-800 text-sm font-medium px-3 py-1 rounded-full">ビリッ</span>
+                            <span class="bg-teal-100 text-teal-800 text-sm font-medium px-3 py-1 rounded-full">締め付けられる</span>
+                        </div>
+                    </div>
+                     <div class="bg-slate-50 p-6 rounded-lg shadow-sm lg:col-span-1">
+                        <h4 class="text-xl font-bold text-teal-700 mb-3">③ 生活への影響を伝える</h4>
+                        <p class="text-slate-600">痛みのせいで、具体的に何に困っていますか？あなたの目標が治療の目標になります。</p>
+                        <ul class="list-disc list-inside text-slate-600 mt-2 space-y-1">
+                            <li>夜、眠れない</li>
+                            <li>食事がとれない</li>
+                            <li>座っていられない</li>
+                            <li>散歩ができない</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white border border-teal-200 p-6 rounded-lg shadow-sm md:col-span-2 lg:col-span-3">
+                        <h4 class="text-xl font-bold text-teal-700 mb-3">④ レスキュー薬（頓服薬）の使用回数を伝える</h4>
+                         <p class="text-slate-600">ベースの薬とは別に、急な痛みに対して使うのがレスキュー薬です。我慢せずに使い、もし1日に3回以上使う日が続くようなら、それはベースの薬が足りていないサインです。必ず医師や看護師に伝えましょう。これは治療を調整するための重要な情報です。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-slate-800 text-white py-10">
+        <div class="container mx-auto px-4 text-center">
+            <p class="font-bold text-lg mb-2">痛みからの解放は、より良く生きるための権利です。</p>
+            <p class="text-slate-300">このガイドが、患者様とご家族が安心して疼痛治療に臨み、穏やかな日々を取り戻すための一助となれば幸いです。<br>不明な点や不安なことは、一人で抱え込まずに医師、看護師、薬剤師にご相談ください。</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const sideEffectButtons = document.querySelectorAll('.side-effect-btn');
+            const sideEffectContents = document.querySelectorAll('.side-effect-content');
+
+            sideEffectButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetId = button.dataset.target;
+
+                    sideEffectButtons.forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    button.classList.add('active');
+
+                    sideEffectContents.forEach(content => {
+                        if (content.id === targetId) {
+                            content.classList.remove('hidden');
+                        } else {
+                            content.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+
+            const ctx = document.getElementById('sideEffectChart').getContext('2d');
+            const sideEffectChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['吐き気・嘔吐', '眠気', '便秘'],
+                    datasets: [{
+                        label: '副作用が続く期間の目安',
+                        data: [1, 1, 3], 
+                        backgroundColor: [
+                            'rgba(59, 130, 246, 0.6)',
+                            'rgba(16, 185, 129, 0.6)',
+                            'rgba(239, 68, 68, 0.6)'
+                        ],
+                        borderColor: [
+                            'rgba(59, 130, 246, 1)',
+                            'rgba(16, 185, 129, 1)',
+                            'rgba(239, 68, 68, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    const labels = {0: ' ', 1: '一時的', 2: ' ', 3: '持続的'};
+                                    return labels[value];
+                                },
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            },
+                            grid: {
+                                display: false
+                            }
+                        },
+                        y: {
+                           ticks: {
+                                font: {
+                                    size: 14,
+                                }
+                           }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    const value = context.raw;
+                                    if(value === 1) {
+                                        label += '多くは数日〜1週間で体が慣れます。';
+                                    } else {
+                                        label += '服用中は継続的な対策が必要です。';
+                                    }
+                                    return label;
+                                }
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: '副作用の持続性の違い',
+                            font: {
+                                size: 16
+                            },
+                            padding: {
+                                top: 10,
+                                bottom: 20
+                            }
+                        }
+                    }
+                }
+            });
+
+            const mobileNav = document.getElementById('mobile-nav');
+            mobileNav.addEventListener('change', (e) => {
+                const targetId = e.target.value;
+                if (targetId) {
+                    document.querySelector(targetId).scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+            
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('main section');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active-nav-link');
+                            if (link.getAttribute('href').substring(1) === entry.target.id) {
+                                link.classList.add('active-nav-link');
+                            }
+                        });
+                    }
+                });
+            }, { rootMargin: "-50% 0px -50% 0px" });
+
+            sections.forEach(section => {
+                if (section.id) {
+                    observer.observe(section);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
