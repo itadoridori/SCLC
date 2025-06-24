@@ -3,19 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ヒドロモルフォン臨床情報ナビゲーター</title>
+    <title>ヒドロモルフォン インフォグラフィック臨床ガイド</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
-    <!-- Chosen Palette: Clinical Calm -->
-    <!-- Application Structure Plan: このSPAは、医療従事者のタスクに基づいた情報アーキテクチャを採用。上部の固定ナビゲーション（「概要」「使い方」「副作用」「注意点」「換算ツール」）により、ユーザーは目的のセクションに即座にアクセスできる。この構造は、従来のレポートの直線的な構成とは異なり、臨床上の意思決定プロセス（薬剤の選択→投与設計→副作用管理→特定患者への配慮）を反映しており、必要な情報を迅速に見つけられるように設計されている。インタラクティブな換算ツールや動的な比較チャートを組み込むことで、単なる情報提供に留まらず、実践的な臨床判断を支援するツールとしての価値を高めている。 -->
-    <!-- Visualization & Content Choices: 1. 薬物動態比較 (PK): Goal: 即放性と徐放性の違いを視覚的に示す. Viz: Chart.jsのラインチャート. Interaction: ホバーでTmax値表示. Justification: テキストよりもグラフの方が吸収速度の違いを直感的に理解できるため。 2. オピオイド換算ツール: Goal: 安全な用量換算を支援する. Viz: HTMLフォームとJSによる計算機. Interaction: ユーザーが薬剤と用量を入力すると、換算結果と安全上の警告が表示される. Justification: 手計算によるミスを防ぎ、安全性（25-50%減量）を喚起する実用的な機能であるため。 3. 副作用管理: Goal: 管理手順を明確に提示する. Viz: タブと箇条書きによる構造化されたテキスト. Interaction: タブ切り替えで表示を制御. Justification: 情報を整理し、認知負荷を軽減するため。 4. 特定患者への注意: Goal: 腎機能障害のリスクを強調する. Viz: 色分けされた表とUnicodeアイコン. Interaction: 静的だが視覚的に強調. Justification: 重大なリスクを直感的に伝え、安全な処方を促すため。 -->
+    <!-- Chosen Palette: Professional Medical Blue -->
+    <!-- Application Structure Plan: このSPAは、ユーザーが情報を段階的に深く理解できるよう、スクロールベースの探索的デザインを採用しています。上部のナビゲーションは、レポートの論理的な流れ（基本情報→薬理→使用法→スイッチング→副作用→特定患者）に沿っており、ユーザーは関心のあるセクションに直接ジャンプできます。各セクションは、テキストとインフォグラフィック（チャート、図、強調表示されたボックス）を組み合わせた「チャンク」として構成されています。この構造は、長文のレポートを消化しやすくし、特に薬物動態の比較や副作用管理のような複雑なトピックにおいて視覚的な補助を提供することで、迅速な理解と記憶の定着を促進します。 -->
+    <!-- Visualization & Content Choices: 1. 薬物動態 (PK) プロファイル: Goal: IR製剤とER製剤の吸収速度の違いを直感的に示す。Viz: Chart.jsのラインチャート。Interaction: ホバーでTmaxの参考値を表示。Justification: グラフはTmaxと持続時間の違いをテキストよりもはるかに明確に伝えます。2. 代謝経路: Goal: CYP450を介さない利点と、H3Gの腎排泄リスクを視覚化する。Viz: HTML/CSSによるフロー図（アイコン付き）。Interaction: なし（静的な図）。Justification: 複雑な代謝プロセスを単純化し、利点とリスクの二面性を一目で理解できるようにします。3. オピオイド換算表: Goal: 安全なスイッチングを支援する。Viz: HTMLの表と、目立つ警告ボックス。Interaction: なし（静的な表）。Justification: 臨床的な安全性と正確性を最優先するため、計算ツールではなく、出典に基づいた静的な換算表と、減量を促す強力な視覚的警告を組み合わせています。4. 副作用管理: Goal: 具体的で実践的な対処法を提示する。Viz: HTML/CSSによる構造化されたリストとアイコン。Interaction: なし。Justification: テキスト情報をアイコンや階層構造で整理し、スキャンしやすくすることで、緊急時の迅速な情報アクセスをサポートします。 -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
         body {
             font-family: 'Inter', 'Noto Sans JP', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
         }
         .chart-container {
             position: relative;
@@ -26,353 +28,358 @@
             height: 300px;
             max-height: 400px;
         }
-        @media (min-width: 768px) {
-            .chart-container {
-                height: 350px;
-            }
+        @media (min-width: 768px) { .chart-container { height: 350px; } }
+        .nav-link {
+            position: relative;
+            padding-bottom: 4px;
+            color: #475569;
+            transition: color 0.3s;
         }
-        .tab-button.active {
-            border-color: #3b82f6;
-            background-color: #eff6ff;
-            color: #2563eb;
-            font-weight: 600;
+        .nav-link:hover { color: #0369a1; }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #0369a1;
+            transform: scaleX(0);
+            transform-origin: bottom right;
+            transition: transform 0.3s ease-out;
         }
-        .tab-button {
-            border-color: #d1d5db;
+        .nav-link:hover::after {
+            transform: scaleX(1);
+            transform-origin: bottom left;
         }
-        .tab-content {
-            display: none;
+        .section-card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
         }
-        .tab-content.active {
-            display: block;
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #082f49;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .infographic-box {
+            border-left: 4px solid #0ea5e9;
+            background-color: #f0f9ff;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
         }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800">
-
-    <header class="bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-50">
+<body>
+    <header class="bg-white/90 backdrop-blur-lg shadow-md sticky top-0 z-50">
         <div class="container mx-auto px-4">
-            <div class="flex items-center justify-between h-16">
-                <h1 class="text-xl md:text-2xl font-bold text-sky-700">ヒドロモルフォン臨床情報ナビ</h1>
-                <nav class="hidden md:flex space-x-4">
-                    <a href="#overview" class="text-slate-600 hover:text-sky-600 transition-colors">概要</a>
-                    <a href="#usage" class="text-slate-600 hover:text-sky-600 transition-colors">使い方</a>
-                    <a href="#side-effects" class="text-slate-600 hover:text-sky-600 transition-colors">副作用管理</a>
-                    <a href="#precautions" class="text-slate-600 hover:text-sky-600 transition-colors">注意すべき患者</a>
-                    <a href="#converter" class="text-slate-600 hover:text-sky-600 transition-colors">換算ツール</a>
+            <div class="flex items-center justify-between h-20">
+                <h1 class="text-xl md:text-2xl font-bold text-sky-800">ヒドロモルフォン臨床ガイド</h1>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="#overview" class="nav-link">概要</a>
+                    <a href="#pharmacology" class="nav-link">薬理作用</a>
+                    <a href="#usage" class="nav-link">使い方</a>
+                    <a href="#switching" class="nav-link">スイッチング</a>
+                    <a href="#side-effects" class="nav-link">副作用</a>
+                    <a href="#populations" class="nav-link">特定患者</a>
                 </nav>
-                 <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-slate-600 hover:bg-slate-100">
-                    <span class="block w-6 h-0.5 bg-current"></span>
-                    <span class="block w-6 h-0.5 bg-current mt-1.5"></span>
-                    <span class="block w-6 h-0.5 bg-current mt-1.5"></span>
+                <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-slate-600 hover:bg-slate-100">
+                    <span class="block w-6 h-0.5 bg-current"></span><span class="block w-6 h-0.5 bg-current mt-1.5"></span><span class="block w-6 h-0.5 bg-current mt-1.5"></span>
                 </button>
             </div>
         </div>
         <div id="mobile-menu" class="md:hidden hidden bg-white border-t">
-            <a href="#overview" class="block py-2 px-4 text-slate-600 hover:bg-slate-50">概要</a>
-            <a href="#usage" class="block py-2 px-4 text-slate-600 hover:bg-slate-50">使い方</a>
-            <a href="#side-effects" class="block py-2 px-4 text-slate-600 hover:bg-slate-50">副作用管理</a>
-            <a href="#precautions" class="block py-2 px-4 text-slate-600 hover:bg-slate-50">注意すべき患者</a>
-            <a href="#converter" class="block py-2 px-4 text-slate-600 hover:bg-slate-50">換算ツール</a>
+            <a href="#overview" class="block py-3 px-4 text-slate-600 hover:bg-slate-50">概要</a>
+            <a href="#pharmacology" class="block py-3 px-4 text-slate-600 hover:bg-slate-50">薬理作用</a>
+            <a href="#usage" class="block py-3 px-4 text-slate-600 hover:bg-slate-50">使い方</a>
+            <a href="#switching" class="block py-3 px-4 text-slate-600 hover:bg-slate-50">スイッチング</a>
+            <a href="#side-effects" class="block py-3 px-4 text-slate-600 hover:bg-slate-50">副作用</a>
+            <a href="#populations" class="block py-3 px-4 text-slate-600 hover:bg-slate-50">特定患者</a>
         </div>
     </header>
 
     <main class="container mx-auto px-4 py-8 md:py-12">
 
-        <section id="overview" class="mb-16 scroll-mt-24">
-            <h2 class="text-3xl font-bold text-slate-800 mb-4 text-center">ヒドロモルフォンとは</h2>
-            <p class="max-w-3xl mx-auto text-center text-slate-600 mb-8">
-                ヒドロモルフォン（ナルラピド®, ナルサス®）は、がん疼痛治療における強力なオピオイド鎮痛薬です。このセクションでは、その基本的な特徴を概観します。他のオピオイドと比較した際の利点と、特に注意すべき点を理解することで、適切な薬剤選択の第一歩となります。
-            </p>
-            <div class="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-                <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-green-500">
-                    <h3 class="font-bold text-lg mb-2 text-green-700">低い薬物相互作用リスク</h3>
-                    <p class="text-slate-600">CYP450酵素系で代謝されないため、多くの薬剤を併用している患者（ポリファーマシー）において、薬物動態学的相互作用のリスクが低く、予測可能で安全性の高い選択肢となります。</p>
-                </div>
-                <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-red-500">
-                    <h3 class="font-bold text-lg mb-2 text-red-700">腎機能障害で特に注意</h3>
-                    <p class="text-slate-600">神経毒性を持つ代謝物（H3G）が腎臓から排泄されるため、腎機能が低下した患者では体内に蓄積し、せん妄やミオクローヌスを引き起こすリスクが増大します。用量調節または使用回避の検討が必須です。</p>
-                </div>
-                <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-sky-500">
-                    <h3 class="font-bold text-lg mb-2 text-sky-700">高い服薬アドヒアランス</h3>
-                    <p class="text-slate-600">徐放性製剤のナルサス®は1日1回の投与で持続的な鎮痛効果が得られるため、患者の服薬負担を軽減し、アドヒアランスの向上に貢献します。</p>
+        <section id="overview" class="scroll-mt-24">
+            <h2 class="section-title">概要：新しい治療選択肢</h2>
+            <div class="section-card">
+                <p class="text-slate-600 mb-6 text-center max-w-3xl mx-auto">ヒドロモルフォンは、2017年に日本で承認された比較的新しい強オピオイド鎮痛薬です。モルヒネやオキシコドンと並ぶ、がん疼痛管理の重要な選択肢として位置づけられています。この薬剤は、特にポリファーマシー（多剤併用）の患者において予測可能で安全な治療を提供できる可能性がある一方で、腎機能が低下した患者には重大なリスクをもたらすという二面性を持っています。</p>
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="bg-green-50 p-6 rounded-lg border border-green-200 text-center">
+                        <div class="text-4xl mb-3">✅</div>
+                        <h3 class="font-bold text-lg mb-2 text-green-800">低い薬物相互作用リスク</h3>
+                        <p class="text-sm text-green-700">CYP450酵素系で代謝されないため、多くの薬剤との相互作用が少なく、治療の予測可能性が高いです。</p>
+                    </div>
+                    <div class="bg-red-50 p-6 rounded-lg border border-red-200 text-center">
+                         <div class="text-4xl mb-3">⚠️</div>
+                        <h3 class="font-bold text-lg mb-2 text-red-800">腎機能障害で重篤なリスク</h3>
+                        <p class="text-sm text-red-700">神経毒性を持つ代謝物(H3G)が蓄積し、せん妄やミオクローヌスを引き起こすため、極めて慎重な投与が必要です。</p>
+                    </div>
+                    <div class="bg-sky-50 p-6 rounded-lg border border-sky-200 text-center">
+                         <div class="text-4xl mb-3">⏱️</div>
+                        <h3 class="font-bold text-lg mb-2 text-sky-800">高い服薬アドヒアランス</h3>
+                        <p class="text-sm text-sky-700">徐放性製剤「ナルサス®」は1日1回投与のため、患者の服薬負担を軽減し、コンプライアンスを向上させます。</p>
+                    </div>
                 </div>
             </div>
         </section>
-        
-        <section id="usage" class="mb-16 scroll-mt-24">
-            <h2 class="text-3xl font-bold text-slate-800 mb-4 text-center">製剤の戦略的な使い方</h2>
-            <p class="max-w-3xl mx-auto text-center text-slate-600 mb-8">
-                効果的な疼痛管理は、持続痛を抑える徐放性製剤（ナルサス®）と、突出痛に対応する即放性製剤（ナルラピド®）の戦略的な組み合わせによって達成されます。ここでは、それぞれの製剤の役割と薬物動態の違い、そして具体的な投与方法について解説します。
-            </p>
 
-            <div class="bg-white p-6 rounded-lg shadow-lg">
+        <section id="pharmacology" class="scroll-mt-24">
+            <h2 class="section-title">薬理作用のインフォグラフィック</h2>
+            <div class="section-card">
+                <h3 class="text-xl font-bold mb-4 text-center text-slate-700">薬物動態プロファイル：2つの製剤の役割</h3>
+                <p class="text-slate-600 mb-6 text-center max-w-3xl mx-auto">即放性「ナルラピド®」と徐放性「ナルサス®」は、血中濃度の推移が大きく異なります。この違いを理解することが、戦略的な疼痛管理の鍵となります。</p>
                 <div class="grid md:grid-cols-2 gap-8 items-center">
-                    <div>
-                        <h3 class="text-xl font-bold mb-4">製剤の役割分担</h3>
-                        <div class="space-y-4">
+                    <div class="chart-container">
+                        <canvas id="pkChart"></canvas>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="p-4 rounded-lg bg-orange-50 border border-orange-200">
+                            <h4 class="font-bold text-lg text-orange-700">ナルラピド® (即放性)</h4>
+                            <p class="text-sm text-orange-600"><strong>速効性:</strong> 約0.8時間で血中濃度が最大に。突出痛への迅速な対応（レスキュー）や、用量調節（タイトレーション）に最適です。</p>
+                        </div>
+                        <div class="p-4 rounded-lg bg-blue-50 border border-blue-200">
+                            <h4 class="font-bold text-lg text-blue-700">ナルサス® (徐放性)</h4>
+                            <p class="text-sm text-blue-600"><strong>持続性:</strong> 4-8.9時間かけて緩やかに血中濃度が最大となり、24時間安定した効果を発揮。持続痛（ベースペイン）の管理を担います。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <h3 class="text-xl font-bold mb-4 text-center text-slate-700">代謝経路：利点とリスクの源泉</h3>
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div class="text-center p-4">
+                        <div class="text-6xl mb-4">💊</div>
+                        <h4 class="font-semibold text-lg">ヒドロモルフォン</h4>
+                    </div>
+                    <div class="relative p-4">
+                        <div class="flex items-center mb-4">
+                            <span class="text-3xl mr-4">➡️</span>
                             <div>
-                                <h4 class="font-semibold text-lg text-blue-600">ナルサス® (徐放性錠)</h4>
-                                <p class="text-slate-600 ml-4 border-l-2 border-blue-200 pl-4">持続する基礎痛（ベースラインペイン）を24時間コントロールする<strong class="font-bold">「定時薬」</strong>。1日1回投与。</p>
+                                <h4 class="font-semibold text-lg">肝臓でのグルクロン酸抱合</h4>
+                                <p class="text-sm text-slate-500">(UGT酵素による代謝)</p>
                             </div>
+                        </div>
+                         <div class="flex items-center">
+                            <span class="text-3xl mr-4">➡️</span>
                             <div>
-                                <h4 class="font-semibold text-lg text-orange-600">ナルラピド® (即放性錠)</h4>
-                                <p class="text-slate-600 ml-4 border-l-2 border-orange-200 pl-4">急な痛みの増強（突出痛）に対応する<strong class="font-bold">「頓用薬（レスキュー薬）」</strong>。また、治療開始時の用量調節にも使用。</p>
+                                <h4 class="font-semibold text-lg text-purple-700">H3G (代謝物)</h4>
                             </div>
                         </div>
-                        <div class="mt-6 p-4 bg-blue-50 rounded-lg">
-                           <h4 class="font-semibold text-md mb-2">レスキュー投与量の目安</h4>
-                           <p class="text-slate-700">ナルラピド®の1回レスキュー量は、定時投与されているヒドロモルフォン1日総投与量の <strong class="text-blue-700 text-lg">1/6 〜 1/4</strong> が推奨されます。</p>
-                           <p class="text-sm text-slate-500 mt-2">例：ナルサス® 24mg/日で安定している場合、1回レスキュー量は 4mg (24mgの1/6) となります。</p>
-                        </div>
                     </div>
-                    <div>
-                        <h3 class="text-xl font-bold mb-4 text-center">薬物動態 (PK) プロファイル比較</h3>
-                        <div class="chart-container">
-                            <canvas id="pkChart"></canvas>
-                        </div>
-                        <p class="text-xs text-center text-slate-500 mt-2">ナルラピド®は速やかに、ナルサス®は緩やかに血中濃度が上昇します。</p>
+                </div>
+                <div class="mt-6 grid md:grid-cols-2 gap-6">
+                    <div class="infographic-box border-green-500 bg-green-50">
+                        <h4 class="font-bold text-green-800">臨床的利点：CYP450を介さない</h4>
+                        <p class="text-sm text-green-700 mt-2">他の多くの薬剤が利用するCYP酵素系を介さずに代謝されるため、薬物相互作用のリスクが低く、特に多剤併用中の患者にとって安全性の高い選択肢となりえます。</p>
+                    </div>
+                    <div class="infographic-box border-red-500 bg-red-50">
+                        <h4 class="font-bold text-red-800">臨床的リスク：H3Gの腎排泄</h4>
+                        <p class="text-sm text-red-700 mt-2">代謝物H3Gは神経毒性を持ち、腎臓から排泄されます。腎機能が低下するとH3Gが体内に蓄積し、せん妄やミオクローヌスなどの中枢神経系毒性を引き起こす危険性が高まります。</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="side-effects" class="mb-16 scroll-mt-24">
-            <h2 class="text-3xl font-bold text-slate-800 mb-4 text-center">副作用とその管理</h2>
-            <p class="max-w-3xl mx-auto text-center text-slate-600 mb-8">
-                ヒドロモルフォンも他のオピオイドと同様に副作用を伴いますが、その多くは予測と対策が可能です。このセクションでは、一般的な副作用と重篤な副作用の管理方法を、実践的なアルゴリズムに沿って解説します。予防的なアプローチが患者のQOL維持の鍵です。
-            </p>
-            <div class="bg-white p-6 rounded-lg shadow-lg">
-                <div id="side-effects-tabs-buttons" class="flex border-b mb-6">
-                    <button data-tab="common" class="tab-button flex-1 py-2 px-4 border-b-2 font-medium text-slate-500 hover:bg-slate-100 transition-colors">一般的な副作用</button>
-                    <button data-tab="serious" class="tab-button flex-1 py-2 px-4 border-b-2 font-medium text-slate-500 hover:bg-slate-100 transition-colors">重篤な副作用</button>
+        <section id="usage" class="scroll-mt-24">
+            <h2 class="section-title">戦略的な使い方と用量調節</h2>
+            <div class="section-card">
+                <p class="text-slate-600 mb-6 text-center max-w-3xl mx-auto">ヒドロモルフォンは、日本では「中等度から高度の疼痛を伴う各種癌における鎮痛」にのみ適応があります。効果的な管理には、定時薬とレスキュー薬の適切な使い分けが不可欠です。</p>
+                <div class="infographic-box mb-8">
+                    <h4 class="font-bold text-lg text-center text-sky-800">レスキュー投与量（ナルラピド®）の基本ルール</h4>
+                    <p class="text-center text-slate-700 mt-2">突出痛に対する1回レスキュー量は、定時薬（ナルサス®等）の</p>
+                    <p class="text-center text-3xl font-bold text-sky-600 my-2">1日総投与量の 1/6 〜 1/4</p>
+                    <p class="text-center text-slate-700">が推奨されます。</p>
                 </div>
-                <div id="side-effects-tabs-content">
-                    <div id="tab-common" class="tab-content space-y-6">
-                        <article>
-                            <h4 class="font-bold text-lg text-amber-800 mb-2">オピオイド誘発性便秘 (OIC)</h4>
-                            <p class="text-slate-600 mb-3">耐性が形成されにくいため、継続的な対策が必須です。</p>
-                            <ol class="list-decimal list-inside space-y-2 text-slate-700">
-                                <li><strong class="font-semibold">予防:</strong> オピオイド開始と同時に、刺激性下剤（センノシド等）や浸透圧性下剤（酸化マグネシウム等）を定期内服する。</li>
-                                <li><strong class="font-semibold">調整:</strong> 便の性状や回数に応じて、下剤の用量を適宜調整する。</li>
-                                <li><strong class="font-semibold">難治性の場合:</strong> 末梢性μ-オピオイド受容体拮抗薬（ナルデメジン）の使用や、他のオピオイドへの変更を検討する。</li>
-                            </ol>
-                        </article>
-                         <article>
-                            <h4 class="font-bold text-lg text-teal-800 mb-2">悪心・嘔吐 (OINV)</h4>
-                            <p class="text-slate-600 mb-3">通常、数日〜1週間で耐性が形成されます。</p>
-                             <ol class="list-decimal list-inside space-y-2 text-slate-700">
-                                <li><strong class="font-semibold">治療（原則、発現後）:</strong> 原因に応じて制吐薬を選択する。
-                                    <ul class="list-disc list-inside ml-6 mt-1">
-                                        <li>持続性の悪心 → ドパミンD2拮抗薬（プロクロルペラジン等）</li>
-                                        <li>めまいを伴う悪心 → 抗ヒスタミン薬</li>
-                                        <li>胃排出遅延による悪心 → 消化管運動改善薬（メトクロプラミド等）</li>
-                                    </ul>
-                                </li>
-                                <li><strong class="font-semibold">難治性の場合:</strong> 他のオピオイドへの変更を検討する。</li>
-                            </ol>
-                        </article>
-                         <article>
-                            <h4 class="font-bold text-lg text-indigo-800 mb-2">傾眠・めまい</h4>
-                            <p class="text-slate-600 mb-3">通常、数日で耐性が形成されますが、呼吸抑制の初期徴候の可能性もあります。</p>
-                             <ol class="list-decimal list-inside space-y-2 text-slate-700">
-                                <li><strong class="font-semibold">評価:</strong> 他の原因（電解質異常等）を除外し、鎮静の程度を評価する。</li>
-                                <li><strong class="font-semibold">観察:</strong> 呼吸状態を注意深く観察する。</li>
-                                <li><strong class="font-semibold">介入:</strong> 軽度なら経過観察。重度または患者の苦痛が強い場合は、減量やオピオイドスイッチングを検討する。</li>
-                            </ol>
-                        </article>
-                    </div>
-                    <div id="tab-serious" class="tab-content space-y-6">
-                        <article>
-                            <h4 class="font-bold text-lg text-red-700 mb-2">呼吸抑制</h4>
-                            <p class="text-slate-600 mb-3">致死的となりうる最も重大な副作用です。危険因子を持つ患者では特に注意が必要です。</p>
-                            <div class="p-4 bg-red-50 rounded-lg">
-                                <h5 class="font-semibold mb-2 text-red-800">ナロキソン投与の要点</h5>
-                                <ul class="list-disc list-inside space-y-1 text-red-900">
-                                    <li>目標は<strong class="font-bold">適切な換気の回復</strong>であり、完全な覚醒ではない。</li>
-                                    <li>希釈したナロキソン（例: 0.2mgを生食10mLへ）を<strong class="font-bold">少量ずつ（0.02-0.04mg）</strong>、呼吸状態を見ながら緩徐に静注する。</li>
-                                    <li>ナロキソンの半減期は短いため、拮抗後も<strong class="font-bold">継続的な監視</strong>が不可欠。</li>
-                                </ul>
-                            </div>
-                        </article>
-                        <article>
-                            <h4 class="font-bold text-lg text-purple-700 mb-2">中枢神経系毒性（せん妄、ミオクローヌス）</h4>
-                            <p class="text-slate-600 mb-3">主に<strong class="font-semibold">腎機能障害</strong>患者で、代謝物H3Gが蓄積することが原因です。</p>
-                             <ol class="list-decimal list-inside space-y-2 text-slate-700">
-                                <li><strong class="font-semibold">特定:</strong> 症状と腎機能低下の関連を疑う。</li>
-                                <li><strong class="font-semibold">対処:</strong> 第一選択はヒドロモルフォンの減量または中止。より確実な方法は、代謝経路の異なる<strong class="font-semibold">フェンタニル等へのオピオイドスイッチング</strong>。</li>
-                            </ol>
-                        </article>
-                    </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-center border-collapse">
+                        <thead>
+                            <tr class="bg-slate-100">
+                                <th class="p-3 font-semibold border">ナルサス®の1日定時投与量</th>
+                                <th class="p-3 font-semibold border">計算範囲 (1/6〜1/4)</th>
+                                <th class="p-3 font-semibold border">推奨されるナルラピド® 1回量</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td class="p-2 border">6 mg</td><td class="p-2 border">1 - 1.5 mg</td><td class="p-2 border font-bold">1 mg</td></tr>
+                            <tr><td class="p-2 border">12 mg</td><td class="p-2 border">2 - 3 mg</td><td class="p-2 border font-bold">2 mg</td></tr>
+                            <tr><td class="p-2 border">18 mg</td><td class="p-2 border">3 - 4.5 mg</td><td class="p-2 border font-bold">3 - 4 mg</td></tr>
+                            <tr><td class="p-2 border">24 mg</td><td class="p-2 border">4 - 6 mg</td><td class="p-2 border font-bold">4 mg</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                 <p class="text-xs text-slate-500 mt-2 text-right">*ナルサス®錠は割ったり、砕いたり、噛んだりせずにそのまま服用してください。</p>
+            </div>
+        </section>
+
+        <section id="switching" class="scroll-mt-24">
+            <h2 class="section-title">安全なオピオイドスイッチング</h2>
+            <div class="section-card">
+                 <p class="text-slate-600 mb-6 text-center max-w-3xl mx-auto">副作用の管理が困難な場合や、鎮痛効果が不十分な場合にオピオイドスイッチングが考慮されます。等鎮痛用量換算表は有用ですが、その利用には最大限の注意が必要です。</p>
+                <div class="p-4 rounded-lg bg-red-100 border-l-4 border-red-500 mb-8">
+                    <h3 class="font-bold text-lg text-red-800">⚠️ 最重要安全原則：25-50%減量</h3>
+                    <p class="text-red-700 mt-2">オピオイド間の不完全交叉耐性により、計算通りの用量を投与すると過量投与のリスクが非常に高くなります。スイッチングの際は、**必ず計算した投与量から25～50%減量して開始**し、患者の状態を見ながら慎重に用量を再調節してください。</p>
+                </div>
+                <h4 class="font-bold text-lg text-center mb-4 text-slate-700">オピオイド等鎮痛用量換算表</h4>
+                 <div class="overflow-x-auto">
+                    <table class="w-full max-w-lg mx-auto border-collapse">
+                        <thead><tr class="bg-slate-100"><th class="p-3 font-semibold border" colspan="2">経口モルヒネ 30mg 相当</th></tr></thead>
+                        <tbody>
+                            <tr><td class="p-2 border font-semibold">経口モルヒネ</td><td class="p-2 border">30 mg</td></tr>
+                            <tr><td class="p-2 border font-semibold">経口オキシコドン</td><td class="p-2 border">20 mg</td></tr>
+                            <tr class="bg-sky-50"><td class="p-2 border font-bold text-sky-800">経口ヒドロモルフォン</td><td class="p-2 border font-bold text-sky-800">6 mg (モルヒネとの比 5:1)</td></tr>
+                            <tr><td class="p-2 border font-semibold">注射モルヒネ</td><td class="p-2 border">10-15 mg</td></tr>
+                            <tr class="bg-sky-50"><td class="p-2 border font-bold text-sky-800">注射ヒドロモルフォン</td><td class="p-2 border font-bold text-sky-800">1.2 mg</td></tr>
+                            <tr><td class="p-2 border font-semibold">フェンタニル貼付剤</td><td class="p-2 border">0.6 mg/日 (25 mcg/hr)</td></tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </section>
 
-        <section id="precautions" class="mb-16 scroll-mt-24">
-            <h2 class="text-3xl font-bold text-slate-800 mb-4 text-center">注意すべき患者</h2>
-            <p class="max-w-3xl mx-auto text-center text-slate-600 mb-8">
-                特定の背景を持つ患者では、ヒドロモルフォンの効果や副作用の発現が大きく異なる可能性があります。特に腎機能障害は、安全性に直結する最も重要な要素です。ここでは、各集団における具体的な注意点と用量調節の目安を示します。
-            </p>
-            <div class="space-y-6 max-w-3xl mx-auto">
-                <div class="bg-white p-6 rounded-lg shadow-lg border-t-4 border-red-500">
-                    <h3 class="font-bold text-xl mb-3 text-red-700">⚠️ 腎機能障害患者 (最重要)</h3>
-                    <p class="text-slate-600 mb-4">代謝物H3Gの蓄積により、神経毒性（せん妄、ミオクローヌス）のリスクが著しく増大します。呼吸抑制のリスクも高まります。</p>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left">
-                            <thead class="bg-slate-100">
-                                <tr>
-                                    <th class="p-3 font-semibold">腎機能レベル (eGFR)</th>
-                                    <th class="p-3 font-semibold">推奨される用量調節</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="border-b">
-                                    <td class="p-3">中等度障害 (30-59 mL/min)</td>
-                                    <td class="p-3 font-medium text-amber-700">開始用量を 50%以上 減量</td>
-                                </tr>
-                                <tr class="border-b">
-                                    <td class="p-3">高度障害 (&lt;30 mL/min)</td>
-                                    <td class="p-3 font-medium text-red-700">開始用量を 75% 減量、または使用を避ける (フェンタニルが推奨)</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="bg-white p-6 rounded-lg shadow-lg border-t-4 border-amber-500">
-                    <h3 class="font-bold text-xl mb-3 text-amber-700">肝機能障害患者</h3>
-                    <p class="text-slate-600">代謝が遅延し、血中濃度が大幅に上昇する可能性があります。低用量から開始し、投与間隔を延長するなど、慎重な用量調節が必須です。</p>
-                </div>
-                <div class="bg-white p-6 rounded-lg shadow-lg border-t-4 border-sky-500">
-                    <h3 class="font-bold text-xl mb-3 text-sky-700">高齢者</h3>
-                    <p class="text-slate-600">副作用への感受性が高まっています。「低用量から開始し、ゆっくり増量する (Start low, go slow)」の原則を徹底してください。</p>
-                </div>
-            </div>
-        </section>
-
-        <section id="converter" class="scroll-mt-24">
-            <h2 class="text-3xl font-bold text-slate-800 mb-4 text-center">オピオイド換算ツール</h2>
-            <p class="max-w-3xl mx-auto text-center text-slate-600 mb-8">
-                オピオイドスイッチングは、副作用の軽減や鎮痛効果の改善に有効な治療戦略です。このツールは、等鎮痛用量に基づいた計算を補助しますが、あくまで目安です。実際の臨床応用では、必ず安全マージンを考慮してください。
-            </p>
-            <div class="bg-white p-6 md:p-8 rounded-lg shadow-lg max-w-3xl mx-auto">
+        <section id="side-effects" class="scroll-mt-24">
+            <h2 class="section-title">副作用の予防的管理</h2>
+            <div class="section-card">
+                 <p class="text-slate-600 mb-8 text-center max-w-3xl mx-auto">ヒドロモルフォンの一般的な副作用は他のオピオイドと類似していますが、予測と予防的な対応が患者のQOLを大きく左右します。</p>
                 <div class="grid md:grid-cols-2 gap-8">
                     <div>
-                        <div class="space-y-4">
-                            <div>
-                                <label for="from-drug" class="block font-medium mb-1">切り替え前の薬剤</label>
-                                <select id="from-drug" class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                </select>
+                        <h3 class="font-bold text-xl mb-4 text-slate-700">一般的な副作用と対策</h3>
+                        <div class="space-y-6">
+                            <div class="infographic-box">
+                                <h4 class="font-bold text-amber-800">便秘 (OIC)</h4>
+                                <p class="text-sm text-slate-600 mt-1">耐性ができにくいため継続的な対策が必須。</p>
+                                <ul class="list-decimal list-inside text-sm mt-2 space-y-1">
+                                    <li><strong>予防:</strong> オピオイド開始と同時に下剤を併用。</li>
+                                    <li><strong>調整:</strong> 便の状態に応じて下剤を調整。</li>
+                                    <li><strong>難治性:</strong> PAMORA薬やオピオイドスイッチングを検討。</li>
+                                </ul>
                             </div>
-                            <div>
-                                <label for="from-dose" class="block font-medium mb-1">1日総投与量 (mg)</label>
-                                <input type="number" id="from-dose" class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="例: 60">
+                             <div class="infographic-box">
+                                <h4 class="font-bold text-teal-800">悪心・嘔吐 (OINV)</h4>
+                                <p class="text-sm text-slate-600 mt-1">通常は数日で耐性が形成される。</p>
+                                <ul class="list-decimal list-inside text-sm mt-2 space-y-1">
+                                    <li><strong>治療:</strong> 発現後に原因に応じた制吐薬を選択。</li>
+                                    <li><strong>難治性:</strong> オピオイドスイッチングを検討。</li>
+                                </ul>
                             </div>
-                            <div>
-                                <label for="to-drug" class="block font-medium mb-1">切り替え後の薬剤</label>
-                                <select id="to-drug" class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                </select>
+                             <div class="infographic-box">
+                                <h4 class="font-bold text-indigo-800">傾眠・めまい</h4>
+                                <p class="text-sm text-slate-600 mt-1">通常は数日で耐性が形成されるが、呼吸抑制のサインかも。</p>
+                                <ul class="list-decimal list-inside text-sm mt-2 space-y-1">
+                                    <li><strong>評価:</strong> 他の原因を除外し、鎮静の程度を評価。</li>
+                                    <li><strong>観察:</strong> 呼吸状態を注意深くモニタリング。</li>
+                                    <li><strong>介入:</strong> 重度なら減量やスイッチングを検討。</li>
+                                </ul>
                             </div>
                         </div>
                     </div>
-                    <div class="flex flex-col items-center justify-center bg-slate-50 p-6 rounded-lg">
-                        <h4 class="font-semibold text-slate-600 mb-2">換算後の1日投与量目安</h4>
-                        <div id="result-dose" class="text-4xl font-bold text-blue-600 mb-4">-- mg</div>
-                        <div id="safety-warning" class="hidden text-center p-3 bg-red-100 border border-red-200 text-red-800 rounded-md">
-                            <strong class="font-bold">⚠️ 安全性に関する重要警告</strong>
-                            <p class="text-sm mt-1">不完全交叉耐性のリスクを考慮し、計算された投与量から <strong class="font-semibold">25%〜50%減量</strong> して開始し、慎重に用量調節を行ってください。</p>
+                     <div>
+                        <h3 class="font-bold text-xl mb-4 text-red-800">重篤な副作用と対策</h3>
+                        <div class="space-y-6">
+                             <div class="p-4 rounded-lg bg-red-50 border border-red-200">
+                                <h4 class="font-bold text-red-800">呼吸抑制</h4>
+                                <p class="text-sm text-red-700 mt-1">致死的になりうる最も重大な副作用。特に危険因子を持つ患者で注意。</p>
+                                <h5 class="font-semibold text-sm mt-3 mb-1 text-red-800">ナロキソン投与の要点:</h5>
+                                <ul class="list-disc list-inside text-sm mt-2 space-y-1 text-red-700">
+                                    <li>目標は完全な覚醒ではなく、<strong>適切な換気の回復</strong>。</li>
+                                    <li>希釈し、<strong>少量ずつ緩徐に</strong>投与する。</li>
+                                    <li>拮抗後も再発リスクがあるため、<strong>継続的な監視</strong>が必須。</li>
+                                </ul>
+                            </div>
+                            <div class="p-4 rounded-lg bg-purple-50 border border-purple-200">
+                                <h4 class="font-bold text-purple-800">中枢神経系毒性</h4>
+                                <p class="text-sm text-purple-700 mt-1">せん妄やミオクローヌス。主に腎機能障害患者で代謝物(H3G)が蓄積することが原因。</p>
+                                 <h5 class="font-semibold text-sm mt-3 mb-1 text-purple-800">対処法:</h5>
+                                 <p class="text-sm text-purple-700">第一選択は、異なる代謝経路を持つ<strong>フェンタニル等へのオピオイドスイッチング</strong>。</p>
+                            </div>
                         </div>
                     </div>
-                </div>
-                 <div class="mt-8 pt-4 border-t">
-                    <h4 class="font-semibold text-center mb-2">参考：等鎮痛用量換算表（経口モルヒネ30mg相当）</h4>
-                    <p id="conversion-table-display" class="text-sm text-center text-slate-500"></p>
                 </div>
             </div>
         </section>
+
+        <section id="populations" class="scroll-mt-24">
+            <h2 class="section-title">特に注意すべき患者</h2>
+            <div class="section-card">
+                 <p class="text-slate-600 mb-8 text-center max-w-3xl mx-auto">腎機能障害は、ヒドロモルフォンの安全性における最大の懸念事項です。患者背景に応じた用量調節が極めて重要となります。</p>
+                 <div class="p-6 rounded-lg bg-red-50 border-t-4 border-red-500 shadow-inner">
+                    <h3 class="font-bold text-xl mb-3 text-red-800">⚠️ 腎機能障害患者：用量調節ガイドライン</h3>
+                    <p class="text-red-700 mb-4">神経毒性を持つ代謝物H3Gの蓄積により、せん妄や呼吸抑制のリスクが著しく増大します。</p>
+                    <table class="w-full text-left">
+                        <thead class="bg-red-100"><tr class="border-b border-red-200"><th class="p-3 font-semibold text-red-900">eGFR (mL/min)</th><th class="p-3 font-semibold text-red-900">推奨される用量調節</th></tr></thead>
+                        <tbody>
+                            <tr class="border-b border-red-200"><td class="p-3">30-59 (中等度)</td><td class="p-3 font-bold text-amber-700">開始用量を 50%以上 減量</td></tr>
+                            <tr class=""><td class="p-3"> <30 (高度)</td><td class="p-3 font-bold text-red-700">開始用量を 75% 減量、または使用を避ける (フェンタニル推奨)</td></tr>
+                        </tbody>
+                    </table>
+                 </div>
+                 <div class="grid md:grid-cols-2 gap-6 mt-6">
+                    <div class="p-4 rounded-lg bg-amber-50 border-t-4 border-amber-500 shadow-inner">
+                        <h3 class="font-bold text-lg mb-2 text-amber-800">肝機能障害患者</h3>
+                        <p class="text-sm text-amber-700">代謝が遅延し血中濃度が上昇するため、低用量から開始し、投与間隔の延長も検討します。</p>
+                    </div>
+                     <div class="p-4 rounded-lg bg-sky-50 border-t-4 border-sky-500 shadow-inner">
+                        <h3 class="font-bold text-lg mb-2 text-sky-800">高齢者</h3>
+                        <p class="text-sm text-sky-700">副作用への感受性が高いため、「Start low, go slow」の原則を徹底します。</p>
+                    </div>
+                 </div>
+            </div>
+        </section>
+
     </main>
 
     <footer class="bg-slate-800 text-slate-300 mt-16">
-        <div class="container mx-auto px-4 py-6 text-center text-sm">
+        <div class="container mx-auto px-4 py-8 text-center text-sm">
             <p>このアプリケーションは、提供された臨床レポートに基づき作成されたものです。実際の臨床判断は、必ず最新の添付文書やガイドラインを参照し、個々の患者の状態に応じて担当医の責任において行ってください。</p>
-            <p class="mt-2">&copy; 2025 Clinical Info Navigator. All rights reserved.</p>
+            <p class="mt-2 text-slate-400">&copy; 2025 Infographic Clinical Guide</p>
         </div>
     </footer>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-
-    const setupMobileMenu = () => {
-        const menuButton = document.getElementById('mobile-menu-button');
-        const mobileMenu = document.getElementById('mobile-menu');
-        if (menuButton && mobileMenu) {
-            menuButton.addEventListener('click', () => {
-                mobileMenu.classList.toggle('hidden');
-            });
-
-            mobileMenu.addEventListener('click', (e) => {
-                if (e.target.tagName === 'A') {
-                    mobileMenu.classList.add('hidden');
-                }
-            });
-        }
-    };
-
-    const setupTabs = (containerId) => {
-        const container = document.getElementById(containerId);
-        if (!container) return;
-        
-        const tabButtons = container.querySelector(containerId + '-buttons');
-        const tabContents = container.querySelector(containerId + '-content');
-
-        if (!tabButtons || !tabContents) return;
-
-        const buttons = tabButtons.querySelectorAll('.tab-button');
-        const contents = tabContents.querySelectorAll('.tab-content');
-
-        buttons.forEach(button => {
-            button.addEventListener('click', () => {
-                buttons.forEach(btn => btn.classList.remove('active'));
-                button.classList.add('active');
-                
-                contents.forEach(content => content.classList.remove('active'));
-                const activeContent = tabContents.querySelector(`#tab-${button.dataset.tab}`);
-                if (activeContent) {
-                    activeContent.classList.add('active');
-                }
-            });
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    if (mobileMenuButton && mobileMenu) {
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
         });
-        
-        if(buttons.length > 0) {
-            buttons[0].click();
-        }
-    };
+        mobileMenu.addEventListener('click', (e) => {
+            if (e.target.tagName === 'A') {
+                mobileMenu.classList.add('hidden');
+            }
+        });
+    }
 
-    const renderPKChart = () => {
-        const ctx = document.getElementById('pkChart');
-        if (!ctx) return;
-
-        new Chart(ctx, {
+    const pkCtx = document.getElementById('pkChart');
+    if (pkCtx) {
+        new Chart(pkCtx, {
             type: 'line',
             data: {
-                labels: ['0', '1', '2', '4', '6', '8', '10', '12', '16', '24'],
+                labels: ['0', '1', '2', '4', '6', '8', '12', '16', '24'],
                 datasets: [
                     {
                         label: 'ナルラピド® (即放性)',
-                        data: [0, 100, 80, 40, 20, 10, 5, 2, 0, 0],
+                        data: [0, 95, 80, 40, 20, 10, 2, 1, 0],
                         borderColor: 'rgb(234, 88, 12)',
                         backgroundColor: 'rgba(234, 88, 12, 0.1)',
                         fill: true,
                         tension: 0.4,
-                        pointRadius: 0,
+                        pointRadius: 2,
                     },
                     {
                         label: 'ナルサス® (徐放性)',
-                        data: [0, 10, 25, 60, 85, 100, 95, 80, 60, 40],
+                        data: [0, 10, 25, 60, 85, 95, 80, 60, 40],
                         borderColor: 'rgb(59, 130, 246)',
                         backgroundColor: 'rgba(59, 130, 246, 0.1)',
                         fill: true,
                         tension: 0.4,
-                        pointRadius: 0,
+                        pointRadius: 2,
                     }
                 ]
             },
@@ -380,22 +387,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    title: { display: false },
                     tooltip: {
                         mode: 'index',
                         intersect: false,
-                        callbacks: {
+                         callbacks: {
                             label: function(context) {
                                 let label = context.dataset.label || '';
-                                if(label) {
-                                    label += ': '
-                                }
-                                label += '相対的血中濃度';
                                 if(context.dataset.label === 'ナルラピド® (即放性)' && context.label === '1') {
-                                     label += ' (Tmax ≈ 0.8h)'
+                                     return label + ' (Tmax ≈ 0.8h)';
                                 }
                                 if(context.dataset.label === 'ナルサス® (徐放性)' && context.label === '8') {
-                                     label += ' (Tmax ≈ 4-8.9h)'
+                                     return label + ' (Tmax ≈ 4-8.9h)';
                                 }
                                 return label;
                             }
@@ -403,110 +405,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     },
                 },
                 scales: {
-                    x: {
-                        display: true,
-                        title: {
-                            display: true,
-                            text: '投与後時間 (h)'
-                        }
-                    },
-                    y: {
-                        display: true,
-                        title: {
-                            display: true,
-                            text: '相対的血中濃度'
-                        },
-                        ticks: {
-                            callback: function(value, index, ticks) {
-                                return '';
-                            }
-                        }
-                    }
+                    x: { title: { display: true, text: '投与後時間 (h)' } },
+                    y: { title: { display: true, text: '相対的血中濃度' }, ticks: { callback: (v) => '' } }
                 }
             }
         });
-    };
-
-    const setupConverter = () => {
-        const fromDrugEl = document.getElementById('from-drug');
-        const toDrugEl = document.getElementById('to-drug');
-        const fromDoseEl = document.getElementById('from-dose');
-        const resultDoseEl = document.getElementById('result-dose');
-        const safetyWarningEl = document.getElementById('safety-warning');
-        const tableDisplayEl = document.getElementById('conversion-table-display');
-        
-        if (!fromDrugEl || !toDrugEl || !fromDoseEl || !resultDoseEl) return;
-
-        const conversionData = {
-            '経口モルヒネ': 30,
-            '経口オキシコドン': 20,
-            '経口ヒドロモルフォン': 6,
-            '経口タペンタドール': 100,
-            '注射モルヒネ': 10,
-            '注射オキシコドン': 15,
-            '注射ヒドロモルフォン': 1.2,
-            'フェンタニル貼付剤 (mcg/hr)': 25 * 24 / 1000, 
-        };
-
-        const drugNames = Object.keys(conversionData);
-
-        drugNames.forEach(drug => {
-            const option1 = document.createElement('option');
-            option1.value = drug;
-            option1.textContent = drug.replace(' (mcg/hr)', '');
-            fromDrugEl.appendChild(option1);
-
-            const option2 = document.createElement('option');
-            option2.value = drug;
-            option2.textContent = drug.replace(' (mcg/hr)', '');
-            toDrugEl.appendChild(option2);
-        });
-        
-        let tableText = [];
-        for (const [key, value] of Object.entries(conversionData)) {
-            let unit = 'mg';
-            let name = key;
-             if(key.includes('mcg/hr')) {
-                unit = 'mcg/hr';
-                name = 'フェンタニル貼付剤';
-            }
-            tableText.push(`${name}: ${key.includes('mcg/hr') ? 25 : value}${unit}`);
-        }
-        tableDisplayEl.textContent = tableText.join(' / ');
-
-        fromDrugEl.value = '経口モルヒネ';
-        toDrugEl.value = '経口ヒドロモルフォン';
-
-        const calculateConversion = () => {
-            const fromDrug = fromDrugEl.value;
-            const toDrug = toDrugEl.value;
-            const fromDose = parseFloat(fromDoseEl.value);
-
-            if (!fromDrug || !toDrug || isNaN(fromDose) || fromDose <= 0) {
-                resultDoseEl.textContent = '-- mg';
-                safetyWarningEl.classList.add('hidden');
-                return;
-            }
-
-            const fromRatio = conversionData[fromDrug];
-            const toRatio = conversionData[toDrug];
-
-            const toDose = (fromDose / fromRatio) * toRatio;
-            
-            let unit = toDrug.includes('mcg/hr') ? 'mcg/hr' : 'mg';
-            resultDoseEl.textContent = `${toDose.toFixed(2)} ${unit}`;
-            safetyWarningEl.classList.remove('hidden');
-        };
-
-        fromDrugEl.addEventListener('change', calculateConversion);
-        toDrugEl.addEventListener('change', calculateConversion);
-        fromDoseEl.addEventListener('input', calculateConversion);
-    };
-
-    setupMobileMenu();
-    setupTabs('#side-effects');
-    renderPKChart();
-    setupConverter();
+    }
 });
 </script>
 
