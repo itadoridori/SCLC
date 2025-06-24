@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>【インフォグラフィック完全版】水素と健康の科学</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Scientific Blue & Natural Green -->
+    <!-- Application Structure Plan: This SPA is designed as a comprehensive, long-scroll visual report, transforming the dense source text into an engaging infographic journey. The structure follows a logical discovery path: 1) Defining the core subject to eliminate confusion. 2) Visualizing the physical challenges of the most common product (hydrogen water). 3) Presenting and scientifically evaluating all alternative solutions (supplements vs. diet). 4) Explaining the biological 'how' and 'why' with clear diagrams. 5) Providing a final, actionable summary. This narrative structure is more intuitive for learning than the original report's academic chaptering. The "don't summarize too much" requirement is met by including detailed tables, chemical formulas, and specific safety data (like ULs) within the infographic components, ensuring scientific completeness. -->
+    <!-- Visualization & Content Choices: 
+        1.  Report Info: Terminology (H₂, H⁺, etc.). -> Goal: Disambiguate. -> Viz: Accordion cards. -> Interaction: Click-to-reveal. -> Justification: Breaks down complex definitions into manageable chunks, fulfilling the need for detail without initial overload. -> Method: HTML/JS.
+        2.  Report Info: H₂ water volatility, container issues. -> Goal: Visualize physical limits. -> Viz: Interactive Line Chart + detailed info-cards from source Table 1. -> Interaction: Buttons to toggle chart data. -> Justification: The chart provides an instant visual impact of loss, while the cards retain the detailed pros/cons from the report. -> Library: Chart.js + HTML/CSS.
+        3.  Report Info: Supplements (Mg, Coral Ca, Silica) & dietary methods. -> Goal: Compare alternatives with scientific rigor. -> Viz: A set of "Science Dossier" cards for supplements with chemical formulas and a "Scientific Validity" meter. A separate, detailed infographic for dietary methods. -> Interaction: Static, clear visuals. -> Justification: Directly translates the report's evaluation into a visual score, while also presenting the underlying chemical reactions and safety warnings. This avoids over-simplification. -> Method: HTML/CSS.
+        4.  Report Info: Pharmacokinetics and biological mechanisms. -> Goal: Explain the 'how' simply. -> Viz: Multi-step infographic flow diagrams (absorption paths, cellular actions). -> Justification: Transforms the text-heavy 'Mechanism' chapter into an easy-to-follow visual narrative. -> Method: HTML/CSS with Unicode icons.
+        5. Report Info: Final comparison and recommendations (Table 3). -> Goal: Provide clear takeaways. -> Viz: A comprehensive, scrollable summary table that directly mirrors the structure and content of the report's Table 3. -> Justification: Fulfills the "don't summarize" requirement by presenting the final analysis in its full detail, allowing users to compare all options side-by-side. -> Method: HTML/CSS.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Noto Sans JP', sans-serif; background-color: #f8fafc; color: #1e293b; }
+        .chart-container { position: relative; width: 100%; max-width: 600px; margin: auto; height: 350px; }
+        @media (max-width: 640px) { .chart-container { height: 300px; } }
+        .tab-button.active { background-color: #3b82f6; color: white; }
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-in-out; }
+        .accordion-item.open .accordion-content { max-height: 500px; }
+        .accordion-item.open .accordion-arrow { transform: rotate(180deg); }
+        .validity-meter { background: linear-gradient(90deg, #ef4444 0%, #f97316 25%, #facc15 50%, #84cc16 75%, #22c55e 100%); }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header -->
+    <header class="bg-white/90 backdrop-blur-md sticky top-0 z-50 border-b border-slate-200">
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <h1 class="text-xl font-bold text-blue-600">水素と健康の科学【完全版】</h1>
+            <div class="hidden md:flex space-x-6 text-sm font-medium text-slate-600">
+                <a href="#section-1" class="hover:text-blue-600 transition-colors">定義</a>
+                <a href="#section-2" class="hover:text-blue-600 transition-colors">水素水</a>
+                <a href="#section-3" class="hover:text-blue-600 transition-colors">体内発生</a>
+                <a href="#section-4" class="hover:text-blue-600 transition-colors">作用機序</a>
+                <a href="#section-5" class="hover:text-blue-600 transition-colors">結論</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="bg-white text-center py-20 px-4 border-b">
+            <h2 class="text-4xl md:text-5xl font-bold text-slate-800 tracking-tight">科学的根拠に基づく、<br class="md:hidden">水素の完全ガイド</h2>
+            <p class="max-w-3xl mx-auto mt-4 text-lg text-slate-600">巷に溢れる情報から真実を見抜くために。分子状水素に関する包括的な科学レビューを、インフォグラフィックで完全解説します。</p>
+            <div class="mt-8">
+                <a href="#section-1" class="bg-blue-600 text-white font-bold py-3 px-8 rounded-full hover:bg-blue-700 transition-transform transform hover:scale-105">解説を始める</a>
+            </div>
+        </section>
+
+        <!-- Section 1: Definitions -->
+        <section id="section-1" class="py-20 px-4">
+            <div class="container mx-auto">
+                <div class="text-center mb-12">
+                    <span class="text-blue-500 font-semibold tracking-wider">CHAPTER I</span>
+                    <h3 class="text-3xl font-bold mt-2">用語の科学的整理</h3>
+                    <p class="mt-3 max-w-2xl mx-auto text-slate-600">議論の前に、まず言葉を定義します。研究対象の「分子状水素」と、混同されがちな他の用語を明確に区別しましょう。</p>
+                </div>
+                <div id="accordion-container" class="max-w-3xl mx-auto space-y-3">
+                    <!-- JS will inject accordion items here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Hydrogen Water -->
+        <section id="section-2" class="bg-white py-20 px-4 border-t">
+            <div class="container mx-auto">
+                <div class="text-center mb-12">
+                    <span class="text-blue-500 font-semibold tracking-wider">CHAPTER II</span>
+                    <h3 class="text-3xl font-bold mt-2">水素水の物理化学的限界</h3>
+                    <p class="mt-3 max-w-2xl mx-auto text-slate-600">最も一般的な水素水。しかし、その有効性は物理的な制約（溶解度・安定性）を理解せずには語れません。</p>
+                </div>
+                
+                <div class="max-w-5xl mx-auto bg-slate-50 p-8 rounded-2xl shadow-sm">
+                    <h4 class="text-xl font-bold text-center mb-8">限界①：溶解度 - 飽和濃度という壁</h4>
+                    <div class="grid md:grid-cols-3 gap-8 text-center">
+                        <div class="bg-white p-6 rounded-lg">
+                            <div class="text-4xl font-bold text-blue-600">1.6</div>
+                            <div class="font-semibold">ppm (mg/L)</div>
+                            <p class="text-xs mt-2 text-slate-500">1気圧・常温で水に溶ける水素の理論上の最大濃度。多くの科学研究の基準値。</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg">
+                            <div class="text-4xl font-bold text-blue-600">0.8</div>
+                            <div class="font-semibold">mmol/L</div>
+                            <p class="text-xs mt-2 text-slate-500">モル濃度での表記。科学論文で用いられる単位。</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg">
+                            <div class="text-4xl font-bold text-blue-600">＞1.6</div>
+                            <div class="font-semibold">ppm (過飽和)</div>
+                            <p class="text-xs mt-2 text-slate-500">高圧下でのみ達成可能。開封した瞬間から急速に1.6ppm以下へ低下する不安定な状態。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="max-w-5xl mx-auto mt-12">
+                    <h4 class="text-xl font-bold text-center mb-8">限界②：安定性 - 容器と時間との戦い</h4>
+                    <div class="grid md:grid-cols-2 gap-8 items-center">
+                        <div class="bg-slate-50 p-6 rounded-2xl shadow-sm">
+                            <h5 class="font-bold text-center mb-4">開封後の濃度低下シミュレーション</h5>
+                            <div class="chart-container">
+                                <canvas id="concentrationChart"></canvas>
+                            </div>
+                            <div class="mt-4 text-center">
+                                <div id="container-toggle" class="inline-flex rounded-md shadow-sm">
+                                    <button type="button" data-container="aluminum" class="tab-button active px-4 py-2 text-sm font-medium border border-gray-200 rounded-l-lg focus:z-10">アルミ容器</button>
+                                    <button type="button" data-container="pet" class="tab-button px-4 py-2 text-sm font-medium border-t border-b border-r border-gray-200 rounded-r-md focus:z-10">ペットボトル</button>
+                                </div>
+                            </div>
+                            <p id="chart-caption" class="text-center mt-3 text-xs text-slate-500"></p>
+                        </div>
+                        <div class="space-y-4">
+                             <div class="bg-white p-4 rounded-lg border-l-4 border-green-500">
+                                <h6 class="font-bold">✓ アルミパウチ</h6>
+                                <p class="text-sm text-slate-600">水素バリア性が非常に高く、最も濃度維持に適している。長期保存・携帯向き。</p>
+                             </div>
+                             <div class="bg-white p-4 rounded-lg border-l-4 border-red-500">
+                                <h6 class="font-bold">✗ ペットボトル / ガラス瓶</h6>
+                                <p class="text-sm text-slate-600">水素分子が素材を容易に透過するため、飲用時に水素が残存している可能性は極めて低い。</p>
+                             </div>
+                             <p class="text-center text-sm font-bold text-blue-700 bg-blue-100 p-3 rounded-lg">結論：水素水は「作り置き」や「ちびちび飲み」はNG。「生成・開封後、直ちに飲み切る」ことが絶対条件。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Internal Generation -->
+        <section id="section-3" class="py-20 px-4 border-t">
+            <div class="container mx-auto">
+                <div class="text-center mb-12">
+                    <span class="text-blue-500 font-semibold tracking-wider">CHAPTER III</span>
+                    <h3 class="text-3xl font-bold mt-2">体内での水素発生という代替戦略</h3>
+                    <p class="mt-3 max-w-2xl mx-auto text-slate-600">水素水の不安定さを克服するため、体内で直接水素を作るサプリメントや、食事によるアプローチが研究されています。</p>
+                </div>
+
+                <div class="mb-16">
+                    <h4 class="text-2xl font-bold text-center mb-2">A. 水素発生サプリメントの科学的評価</h4>
+                    <p class="text-center text-slate-500 mb-8 max-w-xl mx-auto">製品ごとに作用機序の科学的妥当性は大きく異なります。</p>
+                    <div id="supplement-cards-container" class="grid md:grid-cols-1 lg:grid-cols-3 gap-8">
+                        <!-- JS will inject supplement dossier cards here -->
+                    </div>
+                </div>
+                
+                <div>
+                     <h4 class="text-2xl font-bold text-center mb-2">B. 食事による腸内での「内因性」水素産生</h4>
+                     <p class="text-center text-slate-500 mb-8 max-w-xl mx-auto">最も自然で持続可能なアプローチ。</p>
+                     <div class="bg-green-50 border-t-4 border-green-500 p-8 rounded-lg shadow-lg max-w-4xl mx-auto">
+                        <div class="grid md:grid-cols-3 gap-8 items-center">
+                            <div class="md:col-span-2">
+                                <h5 class="text-xl font-bold text-green-800">体内の"水素工場"：腸内細菌叢</h5>
+                                <p class="mt-3 text-green-700">ヒトの大腸に生息する100兆個もの細菌は、食事由来の「食物繊維」を発酵させる過程で、大量の水素ガスを産生します。その量は1日に10リットルに達するとも推定され、コップ一杯の水素水を遥かに凌駕する可能性があります。</p>
+                                <p class="mt-4 font-semibold">水素産生菌のエサ（基質）となる食物繊維:</p>
+                                <ul class="text-sm text-green-700 list-disc list-inside mt-2 space-y-1">
+                                    <li><strong>フラクタン類:</strong> ゴボウ、キクイモ、タマネギ、バナナなど</li>
+                                    <li><strong>レジスタントスターチ:</strong> 全粒穀物、豆類、冷めた米や芋</li>
+                                </ul>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-6xl">🥦 + 🦠 = 💨(H₂)</div>
+                                <p class="mt-2 font-bold text-lg">食物繊維 + 腸内細菌</p>
+                                <p class="mt-4 bg-green-200 text-green-800 font-bold p-3 rounded-lg">水素ガス ＋ 短鎖脂肪酸<br>(相乗効果)</p>
+                            </div>
+                        </div>
+                     </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Section 4: Biological Mechanism -->
+        <section id="section-4" class="bg-white py-20 px-4 border-t">
+            <div class="container mx-auto">
+                <div class="text-center mb-16">
+                    <span class="text-blue-500 font-semibold tracking-wider">CHAPTER IV</span>
+                    <h3 class="text-3xl font-bold mt-2">分子状水素の体内動態と作用機序</h3>
+                    <p class="mt-3 max-w-2xl mx-auto text-slate-600">体内に取り込まれた水素($H_2$)は、どう動き、どう作用するのかを可視化します。</p>
+                </div>
+                
+                <div class="max-w-5xl mx-auto">
+                    <h4 class="font-bold text-xl text-center mb-8">ステップ1：吸収 → 分布 → 排泄</h4>
+                    <div class="grid md:grid-cols-3 gap-1">
+                        <!-- Absorption -->
+                        <div class="text-center p-4">
+                            <div class="text-4xl">📥</div>
+                            <h5 class="font-bold mt-2">吸収</h5>
+                            <ul class="text-sm mt-2 text-left space-y-2">
+                                <li class="bg-slate-50 p-2 rounded"><strong>飲用/サプリ:</strong> 胃・腸から吸収</li>
+                                <li class="bg-slate-50 p-2 rounded"><strong>食事:</strong> 大腸から吸収</li>
+                            </ul>
+                        </div>
+                        <!-- Distribution -->
+                        <div class="text-center p-4">
+                            <div class="text-4xl">🌐</div>
+                            <h5 class="font-bold mt-2">分布</h5>
+                            <p class="text-sm mt-2 bg-slate-50 p-3 rounded">極小分子のため全身の細胞、脳やミトコンドリアにまで速やかに到達。</p>
+                        </div>
+                        <!-- Elimination -->
+                        <div class="text-center p-4">
+                            <div class="text-4xl">📤</div>
+                            <h5 class="font-bold mt-2">排泄</h5>
+                             <p class="text-sm mt-2 bg-slate-50 p-3 rounded">余った分は主に呼吸を通じて速やかに体外へ排出される。</p>
+                        </div>
+                    </div>
+                    <div class="text-center mt-4">
+                        <p class="text-sm text-blue-600 bg-blue-50 p-3 rounded-lg max-w-3xl mx-auto"><strong>ポイント：</strong>吸収経路の違いが重要。肝臓疾患には飲用（肝初回通過効果）、腸疾患には食事（大腸で持続発生）が有利な可能性があり、病態に応じた個別化が示唆される。</p>
+                    </div>
+
+                    <div class="border-t my-16"></div>
+
+                    <h4 class="font-bold text-xl text-center mb-8">ステップ2：細胞レベルでの3つの主な作用</h4>
+                     <div class="grid md:grid-cols-3 gap-8">
+                        <div class="bg-blue-50 p-6 rounded-lg text-center border-t-4 border-blue-400">
+                            <div class="text-5xl mb-3">🛡️</div>
+                            <h5 class="font-bold text-lg">1. 選択的抗酸化</h5>
+                            <p class="text-sm mt-2 text-slate-600">細胞に有害な「悪玉」活性酸素（•OH, ONOO⁻）だけを選んで中和。体に必要な「善玉」活性酸素にはほぼ反応しない。</p>
+                        </div>
+                        <div class="bg-green-50 p-6 rounded-lg text-center border-t-4 border-green-400">
+                            <div class="text-5xl mb-3">🌿</div>
+                            <h5 class="font-bold text-lg">2. 抗炎症作用</h5>
+                            <p class="text-sm mt-2 text-slate-600">炎症を引き起こす物質（炎症性サイトカイン）の産生を抑制し、体の過剰な炎症反応を緩和する。</p>
+                        </div>
+                        <div class="bg-yellow-50 p-6 rounded-lg text-center border-t-4 border-yellow-400">
+                            <div class="text-5xl mb-3">⚙️</div>
+                            <h5 class="font-bold text-lg">3. 細胞シグナル調節</h5>
+                            <p class="text-sm mt-2 text-slate-600">「Nrf2経路」を活性化し、体が本来持つ抗酸化酵素群の産生を促進。細胞自身の防御力を高める司令塔として機能。</p>
+                        </div>
+                     </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: Conclusion -->
+        <section id="section-5" class="py-20 px-4 border-t">
+            <div class="container mx-auto">
+                <div class="text-center mb-12">
+                    <span class="text-blue-500 font-semibold tracking-wider">CHAPTER V</span>
+                    <h3 class="text-3xl font-bold mt-2">総括と推奨事項</h3>
+                    <p class="mt-3 max-w-2xl mx-auto text-slate-600">これまでの科学的分析を統合し、エビデンスに基づいた推奨アプローチを提示します。</p>
+                </div>
+                
+                <div class="bg-white p-4 sm:p-8 rounded-xl shadow-lg overflow-x-auto">
+                    <h4 class="text-xl font-bold text-center mb-6">水素供給戦略の統合的比較表</h4>
+                    <table class="w-full min-w-[1200px] text-sm text-left">
+                        <thead class="text-xs text-slate-700 uppercase bg-slate-100">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 rounded-l-lg">戦略</th>
+                                <th scope="col" class="px-6 py-3">メカニズム</th>
+                                <th scope="col" class="px-6 py-3">持続性</th>
+                                <th scope="col" class="px-6 py-3">科学的妥当性</th>
+                                <th scope="col" class="px-6 py-3">安全性/リスク</th>
+                                <th scope="col" class="px-6 py-3 rounded-r-lg">最適な利用ケース</th>
+                            </tr>
+                        </thead>
+                        <tbody id="comparison-table-body">
+                            <!-- JS will inject table rows here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-16 max-w-3xl mx-auto bg-red-50 border border-red-200 p-6 rounded-lg text-center">
+                    <h5 class="font-bold text-red-800 text-lg">⚠️ 最終警告：疑似科学的製品の見分け方</h5>
+                    <p class="text-sm mt-2 text-red-700">「活性水素」「マイナス水素イオン」「マイクロクラスター」等の用語は、科学的根拠が乏しいマーケティング用語です。万能薬のような過剰な宣伝や、個人の体験談のみを根拠とする製品には十分注意してください。</p>
+                </div>
+            </div>
+        </section>
+    </main>
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const appData = {
+            accordionItems: [
+                { title: "分子状水素 (H₂)", badge: "研究対象", badgeColor: "bg-blue-100 text-blue-800", content: "2つの水素原子が結合した安定した中性のガス分子。近年の医学研究で治療効果が示唆されているのは、この分子状水素です。" },
+                { title: "水素イオン (H⁺)", badge: "pH関連", badgeColor: "bg-green-100 text-green-800", content: "酸性・アルカリ性(pH)を決める因子で、プロトンそのもの。分子状水素とは全くの別物です。" },
+                { title: "マイナス水素イオン (H⁻)", badge: "化学的に不安定", badgeColor: "bg-yellow-100 text-yellow-800", content: "化学的には「水素化物イオン」。水と即座に反応してH₂を発生させるため、安定して体内に届くという主張は困難。関連製品はH₂発生剤を含むと考えられます。" },
+                { title: "活性水素", badge: "疑似科学用語", badgeColor: "bg-red-100 text-red-800", content: "科学的に定義されていないマーケティング用語。不安定な原子状水素(H)を示唆することがありますが、研究対象の安定した分子状水素(H₂)とは異なります。" }
+            ],
+            concentrationData: {
+                aluminum: { label: 'アルミ容器', data: [1.6, 1.5, 1.2, 0.8, 0.5, 0.2, 0.1], borderColor: 'rgba(59, 130, 246, 1)', caption: '水素が抜けにくく濃度は比較的維持されますが、それでも時間と共に減少します。' },
+                pet: { label: 'ペットボトル', data: [1.6, 0.4, 0.1, 0, 0, 0, 0], borderColor: 'rgba(239, 68, 68, 1)', caption: '水素分子が容易に透過し、濃度は急速にゼロに近づきます。' }
+            },
+            supplementCards: [
+                {
+                    title: "マグネシウムベース",
+                    mechanism: "Mgと胃酸が反応しH₂を発生",
+                    formula: "Mg + 2H₂O → Mg(OH)₂ + H₂",
+                    validity: 90,
+                    pros: ["作用機序が明確", "持続性が高い"],
+                    cons: ["Mgの過剰摂取リスク(耐容上限量350mg/日)", "腎機能障害者は禁忌"]
+                },
+                {
+                    title: "サンゴカルシウムベース",
+                    mechanism: "焼成Caが水と反応しH₂を発生（推定）",
+                    formula: "CaH₂ + 2H₂O → Ca(OH)₂ + 2H₂",
+                    validity: 45,
+                    pros: ["近年、一部で学術研究が開始"],
+                    cons: ["作用機序の主張が非科学的", "品質・安全性が不明確"]
+                },
+                {
+                    title: "シリカハイドライド",
+                    mechanism: "「安定化マイナス水素イオン」の放出（主張）",
+                    formula: "（化学式による実証なし）",
+                    validity: 10,
+                    pros: ["（信頼できるものなし）"],
+                    cons: ["作用機序が科学的常識と矛盾", "信頼できる臨床エビデンスが乏しい"]
+                }
+            ],
+             comparisonTableData: [
+                { strategy: "水素水（既製品）", mechanism: "H₂溶解水を摂取", persistence: "短時間", validity: "高い", safety: "容器による濃度低下が課題", useCase: "外出先での手軽な摂取、肝臓への急性的供給" },
+                { strategy: "水素水（オンサイト生成）", mechanism: "生成直後のH₂水を摂取", persistence: "短時間", validity: "高い（濃度が確実）", safety: "水の過剰摂取リスク", useCase: "家庭での日常的な高濃度摂取" },
+                { strategy: "Mgベースサプリ", mechanism: "消化管内でH₂を生成", persistence: "数時間以上", validity: "高い（化学反応が明確）", safety: "Mg耐容上限量(350mg/日)厳守、腎障害者禁忌", useCase: "持続的な水素供給、旅行先など" },
+                { strategy: "食事による腸内産生", mechanism: "腸内細菌が食物繊維を発酵", persistence: "数時間～半日以上", validity: "非常に高い（栄養学の基本）", safety: "非常に安全", useCase: "腸内環境改善を含む、最も自然でホリスティックな健康維持" },
+                { strategy: "その他サプリ（サンゴCa, シリカ等）", mechanism: "不明確または非科学的", persistence: "不明瞭", validity: "低い", safety: "安全性評価が困難", useCase: "科学的根拠に基づいた推奨は困難" }
+            ]
+        };
+
+        // Smooth Scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+
+        // Accordion
+        const accordionContainer = document.getElementById('accordion-container');
+        appData.accordionItems.forEach(item => {
+            const el = document.createElement('div');
+            el.className = 'accordion-item bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden';
+            el.innerHTML = `
+                <button class="accordion-header w-full flex justify-between items-center p-4 text-left">
+                    <div class="flex items-center">
+                        <span class="font-semibold text-slate-800">${item.title}</span>
+                        <span class="ml-3 text-xs font-semibold px-2 py-0.5 rounded-full ${item.badgeColor}">${item.badge}</span>
+                    </div>
+                    <span class="accordion-arrow text-slate-400 transition-transform duration-300">▼</span>
+                </button>
+                <div class="accordion-content px-4 pb-4 text-slate-600 text-sm">
+                    <p>${item.content}</p>
+                </div>
+            `;
+            accordionContainer.appendChild(el);
+        });
+        accordionContainer.addEventListener('click', e => {
+            const header = e.target.closest('.accordion-header');
+            if (header) {
+                const item = header.parentElement;
+                item.classList.toggle('open');
+            }
+        });
+        
+        // Supplement Cards
+        const supplementContainer = document.getElementById('supplement-cards-container');
+        appData.supplementCards.forEach(card => {
+            const cardEl = document.createElement('div');
+            cardEl.className = 'bg-white p-6 rounded-lg shadow-md border-t-4 flex flex-col';
+            let borderColorClass = card.validity > 70 ? 'border-green-500' : card.validity > 30 ? 'border-yellow-500' : 'border-red-500';
+            cardEl.classList.add(borderColorClass);
+            
+            let prosList = card.pros.map(p => `<li class="flex items-start"><span class="text-green-500 mr-2 mt-1 shrink-0">✓</span><span>${p}</span></li>`).join('');
+            let consList = card.cons.map(c => `<li class="flex items-start"><span class="text-red-500 mr-2 mt-1 shrink-0">✗</span><span>${c}</span></li>`).join('');
+
+            cardEl.innerHTML = `
+                <div class="flex-grow">
+                    <h5 class="text-lg font-bold">${card.title}</h5>
+                    <p class="text-xs text-slate-500 mt-1">${card.mechanism}</p>
+                    <div class="my-3 p-2 bg-slate-100 rounded text-center font-mono text-sm">${card.formula}</div>
+                    <div class="text-sm mt-4 space-y-2">
+                        <ul class="space-y-1">${prosList}</ul>
+                        <ul class="space-y-1 mt-2">${consList}</ul>
+                    </div>
+                </div>
+                <div class="mt-4 pt-4 border-t">
+                    <p class="text-xs font-semibold mb-1 text-slate-600">科学的妥当性</p>
+                    <div class="w-full bg-slate-200 rounded-full h-2.5">
+                        <div class="validity-meter h-2.5 rounded-full" style="width: ${card.validity}%"></div>
+                    </div>
+                </div>
+            `;
+            supplementContainer.appendChild(cardEl);
+        });
+
+        // Concentration Chart
+        const ctxConcentration = document.getElementById('concentrationChart').getContext('2d');
+        const chartCaption = document.getElementById('chart-caption');
+        let concentrationChart;
+
+        function renderConcentrationChart(containerType) {
+            if (concentrationChart) { concentrationChart.destroy(); }
+            const chartData = appData.concentrationData[containerType];
+            chartCaption.textContent = chartData.caption;
+
+            concentrationChart = new Chart(ctxConcentration, {
+                type: 'line',
+                data: {
+                    labels: ['直後', '30分', '1時間', '3時間', '5時間', '12時間', '24時間'],
+                    datasets: [{
+                        label: chartData.label, data: chartData.data, borderColor: chartData.borderColor, backgroundColor: chartData.borderColor.replace('1)', '0.1)'),
+                        borderWidth: 2.5, tension: 0.2, fill: true, pointBackgroundColor: chartData.borderColor, pointRadius: 4, pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, max: 1.8, title: { display: true, text: '濃度 (ppm)' } },
+                        x: { title: { display: true, text: '開封後の時間' } }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+        const containerToggle = document.getElementById('container-toggle');
+        containerToggle.addEventListener('click', (e) => {
+            const button = e.target.closest('button');
+            if (button && !button.classList.contains('active')) {
+                renderConcentrationChart(button.dataset.container);
+                containerToggle.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+            }
+        });
+        renderConcentrationChart('aluminum');
+
+        // Comparison Table
+        const tableBody = document.getElementById('comparison-table-body');
+        appData.comparisonTableData.forEach(row => {
+            const tr = document.createElement('tr');
+            tr.className = 'bg-white border-b hover:bg-slate-50';
+            tr.innerHTML = `
+                <th scope="row" class="px-6 py-4 font-medium text-slate-900 whitespace-nowrap">${row.strategy}</th>
+                <td class="px-6 py-4">${row.mechanism}</td>
+                <td class="px-6 py-4">${row.persistence}</td>
+                <td class="px-6 py-4 font-semibold ${row.validity.includes('高い') ? 'text-green-600' : 'text-red-600'}">${row.validity}</td>
+                <td class="px-6 py-4">${row.safety}</td>
+                <td class="px-6 py-4">${row.useCase}</td>
+            `;
+            tableBody.appendChild(tr);
+        });
+    });
+    </script>
+</body>
+</html>
