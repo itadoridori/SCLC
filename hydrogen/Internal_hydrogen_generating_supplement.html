@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>【図解】体内水素発生サプリの科学｜その正体、本当に安全？</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+        }
+        .gradient-text {
+            background: linear-gradient(to right, #3b82f6, #1e40af);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid #e5e7eb; /* gray-200 */
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .tag {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-weight: 700;
+            font-size: 0.875rem;
+        }
+        .tag-green { background-color: #dcfce7; color: #166534; } /* green-100, green-800 */
+        .tag-amber { background-color: #fef3c7; color: #854d0e; } /* amber-100, amber-800 */
+        .tag-red { background-color: #fee2e2; color: #991b1b; }   /* red-100, red-800 */
+        
+        .reaction-box {
+            background-color: #f1f5f9; /* slate-100 */
+            border-radius: 0.5rem;
+            padding: 1rem;
+            font-family: 'Inter', monospace;
+            text-align: center;
+            border: 1px dashed #cbd5e1; /* slate-300 */
+        }
+        .icon-wrapper {
+            width: 64px;
+            height: 64px;
+            background-color: #e0f2fe; /* sky-100 */
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+        .validity-bar {
+            height: 1.5rem;
+            border-radius: 0.75rem;
+            background-color: #e5e7eb; /* gray-200 */
+            overflow: hidden;
+        }
+        .validity-fill {
+            height: 100%;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            transition: width 1s ease-out;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Header Section -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-xl md:text-2xl font-bold text-gray-800">
+                <span class="gradient-text">体内水素サプリ</span>の科学
+            </h1>
+            <nav class="hidden md:flex space-x-6">
+                <a href="#substances" class="text-gray-600 hover:text-blue-600">溶質の正体</a>
+                <a href="#terminology" class="text-gray-600 hover:text-blue-600">用語解説</a>
+                <a href="#efficacy" class="text-gray-600 hover:text-blue-600">有効性と安全性</a>
+                <a href="#conclusion" class="text-gray-600 hover:text-blue-600">結論</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 py-8 md:py-16">
+
+        <!-- Hero Section -->
+        <section class="text-center mb-16 md:mb-24">
+            <h2 class="text-3xl md:text-5xl font-bold mb-4 leading-tight">
+                その一粒、本当に<span class="gradient-text">水素</span>を産みますか？
+            </h2>
+            <p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
+                飲んだ後に体内で水素を発生させると謳うサプリメント。その科学的根拠を、インフォグラフィックスで徹底解剖します。
+            </p>
+        </section>
+
+        <!-- Section 1: Hydrogen-Generating Substances -->
+        <section id="substances" class="mb-16 md:mb-24">
+            <h3 class="text-2xl md:text-3xl font-bold text-center mb-12">溶質の正体は？ 主要3物質を徹底比較</h3>
+            <div class="grid md:grid-cols-3 gap-8">
+
+                <!-- Card 1: Elemental Silicon -->
+                <div class="card p-6 flex flex-col">
+                    <div class="icon-wrapper bg-blue-100">
+                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </div>
+                    <h4 class="text-xl font-bold text-center mb-2">元素ケイ素 (Si)</h4>
+                    <p class="text-center text-gray-500 mb-4">大阪大学発のpH応答性モデル</p>
+                    <div class="mb-4">
+                        <p class="font-bold text-sm mb-1">反応メカニズム:</p>
+                        <div class="reaction-box">
+                           <p>Si + 2H₂O → SiO₂ + 2H₂↑</p>
+                        </div>
+                    </div>
+                     <div class="mb-4">
+                        <p class="font-bold text-sm mb-1">反応生成物:</p>
+                        <p class="text-gray-700">二酸化ケイ素(SiO₂) - 食品添加物</p>
+                    </div>
+                    <div class="mt-auto">
+                        <p class="font-bold text-sm mb-2 text-center">科学的妥当性</p>
+                        <div class="validity-bar">
+                            <div class="validity-fill bg-green-600" style="width: 95%;">高い</div>
+                        </div>
+                    </div>
+                    <div class="mt-4 text-center">
+                        <span class="tag tag-green">論文あり</span>
+                    </div>
+                </div>
+
+                <!-- Card 2: Metallic Magnesium -->
+                <div class="card p-6 flex flex-col">
+                    <div class="icon-wrapper bg-emerald-100">
+                        <svg class="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <h4 class="text-xl font-bold text-center mb-2">金属マグネシウム (Mg)</h4>
+                    <p class="text-center text-gray-500 mb-4">医療バイオマテリアルとしても研究</p>
+                    <div class="mb-4">
+                        <p class="font-bold text-sm mb-1">反応メカニズム:</p>
+                        <div class="reaction-box">
+                            <p>Mg + 2H₂O → Mg(OH)₂ + H₂↑</p>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <p class="font-bold text-sm mb-1">反応生成物:</p>
+                        <p class="text-gray-700">水酸化マグネシウム(Mg(OH)₂) - 医薬品</p>
+                    </div>
+                    <div class="mt-auto">
+                        <p class="font-bold text-sm mb-2 text-center">科学的妥当性</p>
+                        <div class="validity-bar">
+                             <div class="validity-fill bg-green-600" style="width: 90%;">高い</div>
+                        </div>
+                    </div>
+                    <div class="mt-4 text-center">
+                        <span class="tag tag-green">臨床研究多数</span>
+                    </div>
+                </div>
+
+                <!-- Card 3: Calcined Coral Calcium -->
+                <div class="card p-6 flex flex-col border-red-300">
+                    <div class="icon-wrapper bg-red-100">
+                        <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <h4 class="text-xl font-bold text-center mb-2">焼成サンゴカルシウム</h4>
+                    <p class="text-center text-gray-500 mb-4">作用機序に矛盾を抱える</p>
+                    <div class="mb-4">
+                        <p class="font-bold text-sm mb-1">提唱される反応:</p>
+                         <div class="reaction-box text-sm">
+                           <p class="line-through">CaH₂ + 2H₂O → Ca(OH)₂ + 2H₂↑</p>
+                           <p class="text-red-600 font-bold mt-1">（危険物で非現実的）</p>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <p class="font-bold text-sm mb-1">主成分の反応:</p>
+                        <p class="text-gray-700">CaO + H₂O → Ca(OH)₂ <span class="font-bold text-red-600">(水素は発生しない)</span></p>
+                    </div>
+                    <div class="mt-auto">
+                        <p class="font-bold text-sm mb-2 text-center">科学的妥当性</p>
+                        <div class="validity-bar">
+                             <div class="validity-fill bg-red-600" style="width: 15%;">低い</div>
+                        </div>
+                    </div>
+                    <div class="mt-4 text-center">
+                         <span class="tag tag-red">矛盾あり</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Terminology -->
+        <section id="terminology" class="mb-16 md:mb-24 bg-white p-8 rounded-2xl shadow-lg">
+            <h3 class="text-2xl md:text-3xl font-bold text-center mb-12">要注意！ 科学に見せかけたマーケティング用語</h3>
+            
+            <!-- Subsection 2.1: Nano -->
+            <div class="mb-12">
+                <h4 class="text-xl md:text-2xl font-bold text-center mb-8">「ナノ化」の3つの顔</h4>
+                <div class="grid md:grid-cols-3 gap-8 text-center">
+                    <div class="p-4 border rounded-lg bg-slate-50">
+                        <h5 class="font-bold mb-2">① ナノバブル (妥当)</h5>
+                        <p class="text-sm text-gray-600">極小の水素の泡を水に溶かす技術。体外で水素水を作る方法。</p>
+                    </div>
+                    <div class="p-4 border rounded-lg bg-slate-50">
+                        <h5 class="font-bold mb-2">② ナノ/マイクロ粒子 (原理は妥当)</h5>
+                        <p class="text-sm text-gray-600">原料を細かくし反応速度を上げる技術。化学工学の基本原理。</p>
+                    </div>
+                    <div class="p-4 border rounded-lg bg-red-50 border-red-200">
+                        <h5 class="font-bold mb-2 text-red-700">③ ナノ水 (非科学的)</h5>
+                        <p class="text-sm text-red-600">水自体を「細かくする」という主張。科学的根拠は無い。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subsection 2.2: Minus Hydrogen Ion -->
+            <div>
+                <h4 class="text-xl md:text-2xl font-bold text-center mb-8">「マイナス水素イオン」の誤謬</h4>
+                <div class="flex flex-col md:flex-row items-center justify-center gap-8">
+                    <!-- Correct: Molecular Hydrogen -->
+                    <div class="w-full md:w-1/2 p-6 rounded-lg bg-green-50 border-2 border-green-200 text-center">
+                        <div class="flex items-center justify-center mb-4">
+                           <svg class="w-16 h-16 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                           <h5 class="text-2xl font-bold text-green-800 ml-4">正解: 分子状水素 (H₂)</h5>
+                        </div>
+                        <p class="text-green-700">研究対象となっているのは、この安定した中性のガス分子です。</p>
+                        <div class="mt-4 p-4 bg-white rounded">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 50" class="w-24 mx-auto">
+                                <circle cx="25" cy="25" r="10" fill="#34d399"/>
+                                <circle cx="75" cy="25" r="10" fill="#34d399"/>
+                                <line x1="35" y1="25" x2="65" y2="25" stroke="#34d399" stroke-width="3"/>
+                                <text x="50" y="20" font-family="Arial" font-size="16" text-anchor="middle" fill="#10b981">H₂</text>
+                            </svg>
+                        </div>
+                    </div>
+                     <!-- Incorrect: Hydride Ion -->
+                    <div class="w-full md:w-1/2 p-6 rounded-lg bg-red-50 border-2 border-red-200 text-center">
+                         <div class="flex items-center justify-center mb-4">
+                           <svg class="w-16 h-16 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                           <h5 class="text-2xl font-bold text-red-800 ml-4">誤り: マイナス水素イオン (H⁻)</h5>
+                        </div>
+                        <p class="text-red-700">サプリには存在しない、極めて不安定な化学種。疑似科学用語です。</p>
+                        <div class="mt-4 p-4 bg-white rounded">
+                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 50" class="w-24 mx-auto">
+                                <circle cx="50" cy="25" r="12" fill="#f87171"/>
+                                <text x="50" y="30" font-family="Arial" font-size="20" font-weight="bold" text-anchor="middle" fill="white">-</text>
+                                <text x="70" y="20" font-family="Arial" font-size="16" text-anchor="middle" fill="#ef4444">H⁻</text>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Efficacy and Safety -->
+        <section id="efficacy" class="mb-16 md:mb-24">
+            <h3 class="text-2xl md:text-3xl font-bold text-center mb-12">有効性と安全性は？</h3>
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Efficacy Card -->
+                <div class="card p-8">
+                    <h4 class="text-xl font-bold mb-4">分子状水素(H₂)の有効性</h4>
+                    <div class="flex items-start mb-4">
+                        <svg class="w-8 h-8 text-yellow-500 mr-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                        <p class="text-gray-600">研究は有望だが、まだ<span class="font-bold">予備段階</span>。大規模なヒト臨床試験がさらに必要です。</p>
+                    </div>
+                    <ul class="space-y-2">
+                        <li class="flex items-center"><span class="text-green-500 mr-2">✓</span> 抗酸化・抗炎症作用</li>
+                        <li class="flex items-center"><span class="text-green-500 mr-2">✓</span> 運動能力への示唆</li>
+                        <li class="flex items-center"><span class="text-green-500 mr-2">✓</span> 代謝改善への期待</li>
+                        <li class="flex items-center"><span class="text-yellow-500 mr-2">?</span> 方法論的な弱点を持つ研究が多い</li>
+                        <li class="flex items-center"><span class="text-yellow-500 mr-2">?</span> 商業的バイアスの可能性</li>
+                    </ul>
+                </div>
+                <!-- Safety Card -->
+                <div class="card p-8">
+                    <h4 class="text-xl font-bold mb-4">副生成物の安全性</h4>
+                    <p class="text-gray-600 mb-4">水素を発生させた後に体内に残る物質は安全なのでしょうか？</p>
+                    <div class="space-y-4">
+                        <div class="flex items-center">
+                            <div class="tag tag-green w-32 text-center">安全</div>
+                            <p class="ml-4 font-semibold">二酸化ケイ素 (SiO₂) / 水酸化マグネシウム (Mg(OH)₂)</p>
+                        </div>
+                         <div class="flex items-center">
+                            <div class="tag tag-amber w-32 text-center">注意</div>
+                            <p class="ml-4 font-semibold">水酸化カルシウム (Ca(OH)₂) <span class="text-sm font-normal text-gray-500">(過剰摂取リスク)</span></p>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="tag tag-red w-32 text-center">危険</div>
+                            <p class="ml-4 font-semibold">水素化カルシウム (CaH₂) <span class="text-sm font-normal text-gray-500">(理論上の危険物)</span></p>
+                        </div>
+                    </div>
+                     <div class="mt-6 p-4 bg-blue-50 rounded-lg text-sm">
+                        <p class="font-bold text-blue-800">米国FDAのGRAS通知 (GRN 520):</p>
+                        <p class="text-blue-700">飲料に「分子状水素」を添加すること自体の安全性は認められています。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Conclusion & Recommendations -->
+        <section id="conclusion" class="bg-blue-800 text-white rounded-2xl p-8 md:p-12">
+            <h3 class="text-2xl md:text-3xl font-bold text-center mb-8">結論：賢い消費者のための5つの提言</h3>
+            <div class="max-w-4xl mx-auto grid md:grid-cols-2 gap-x-12 gap-y-8">
+                <div class="flex items-start">
+                    <div class="flex-shrink-0 w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center mr-4 text-xl font-bold">1</div>
+                    <p><strong>反応物質に注目する：</strong>「水素」という言葉だけでなく、「何が」水素を発生させるのか（例：Mg、Si）を確認する。</p>
+                </div>
+                 <div class="flex items-start">
+                    <div class="flex-shrink-0 w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center mr-4 text-xl font-bold">2</div>
+                    <p><strong>発生量の証拠を求める：</strong>第三者機関による水素発生量の定量データがあるか確認する。</p>
+                </div>
+                <div class="flex items-start">
+                    <div class="flex-shrink-0 w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center mr-4 text-xl font-bold">3</div>
+                    <p><strong>疑似科学を認識する：</strong>「マイナス水素イオン」などの用語は、科学的根拠の欠如を示す危険信号（レッドフラッグ）と見なす。</p>
+                </div>
+                <div class="flex items-start">
+                    <div class="flex-shrink-0 w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center mr-4 text-xl font-bold">4</div>
+                    <p><strong>有効性の現状を理解する：</strong>研究は途上であり、過度な期待はせず冷静に評価する。</p>
+                </div>
+                <div class="flex items-start col-span-1 md:col-span-2 justify-center">
+                     <div class="flex-shrink-0 w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center mr-4 text-xl font-bold">5</div>
+                    <p><strong>安全性を最優先する：</strong>化学的に明確で安全な副生成物（SiO₂、Mg(OH)₂）を持つ製品を選ぶ。</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+    
+    <!-- Footer -->
+    <footer class="text-center py-8 bg-slate-100 mt-16">
+        <p class="text-gray-500">このページは、提供された科学的分析レポートに基づき、情報を視覚的に整理したものです。</p>
+        <p class="text-gray-500 text-sm">最終的な製品の選択は、ご自身の判断と責任において行ってください。</p>
+    </footer>
+
+</body>
+</html>
