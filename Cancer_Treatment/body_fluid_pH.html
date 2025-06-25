@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>体液の秘密：血液だけじゃない！カラダを巡るpHの物語</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', 'Inter', sans-serif;
+            background-color: #f1f5f9;
+        }
+        .gradient-text {
+            background: linear-gradient(to right, #2563eb, #7c3aed, #db2777);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .section-card {
+            background-color: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+            margin-bottom: 2rem;
+        }
+        .label-tag {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        .ph-value {
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+        .analogy-box {
+            border-left: 4px solid;
+            padding-left: 1rem;
+            margin-top: 1.5rem;
+        }
+        /* Animation for pulsating effect */
+        @keyframes pulse-bg {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
+        }
+        .pulse-bg-slow {
+            animation: pulse-bg 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Header -->
+    <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                 <svg class="w-8 h-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 3.75H6A2.25 2.25 0 0 0 3.75 6v1.5M16.5 3.75H18A2.25 2.25 0 0 1 20.25 6v1.5m0 9V18A2.25 2.25 0 0 1 18 20.25h-1.5m-9 0H6A2.25 2.25 0 0 1 3.75 18v-1.5M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                </svg>
+                <h1 class="text-xl md:text-2xl font-bold text-gray-800">体液pHの深層世界</h1>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 md:px-6 py-8 md:py-12">
+
+        <!-- Hero Section -->
+        <section class="text-center mb-16">
+            <h2 class="text-3xl md:text-5xl font-bold mb-4">
+                <span class="gradient-text">血液のpHは、物語の序章にすぎない。</span>
+            </h2>
+            <p class="text-lg md:text-xl text-gray-600 max-w-4xl mx-auto">
+                血液のpHが「7.4」に保たれているのはなぜか？そして、細胞が直接浸る「組織液」、免疫が働く「リンパ液」、脳を守る「脳脊髄液」では何が起きているのか？体からのメッセージを紐解く旅へようこそ。
+            </p>
+        </section>
+
+        <!-- 1. Blood Section -->
+        <section class="section-card">
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div class="text-center">
+                    <div class="relative inline-block">
+                        <svg class="w-48 h-48 text-red-100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="50" fill="currentColor"/></svg>
+                        <div class="absolute inset-0 flex flex-col justify-center items-center">
+                            <span class="text-red-700 font-bold text-lg">血液</span>
+                            <span class="ph-value text-red-600">7.4</span>
+                            <span class="label-tag bg-red-100 text-red-800">極めて安定</span>
+                        </div>
+                    </div>
+                    <p class="mt-4 text-sm text-gray-500">（正常範囲: 7.35-7.45）</p>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-bold mb-4 text-red-700">基準となる存在：全身を守る「安定した高速道路」</h3>
+                    <p class="text-gray-600 mb-6">血液は、豊富なタンパク質（ヘモグロビン等）による高い緩衝能を持ち、pHを厳密に一定に保ちます。これは全身の細胞が安定して活動するための絶対条件です。</p>
+                    <div class="space-y-4">
+                        <div class="flex items-start"><div class="label-tag bg-red-100 text-red-800 mr-3">肺（速攻）</div><p class="text-sm text-gray-600">呼吸で酸性の二酸化炭素を排出</p></div>
+                        <div class="flex items-start"><div class="label-tag bg-red-100 text-red-800 mr-3">腎臓（持続）</div><p class="text-sm text-gray-600">尿として不要な酸を排泄</p></div>
+                    </div>
+                    <div class="analogy-box border-red-500">
+                        <p class="font-bold text-red-800">例えるなら…</p>
+                        <p class="text-gray-700">国中のインフラを支える、常に円滑な交通が保証された「高速道路」。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Interstitial Fluid Section -->
+        <section class="section-card">
+             <div class="text-center mb-8">
+                <h3 class="text-2xl font-bold mb-2 text-orange-700">細胞の最前線：状況を映す「変化しやすい生活道路」</h3>
+                <p class="text-gray-600 max-w-3xl mx-auto">細胞が直接浸る組織液は、血液とは全く違う世界。タンパク質が少ないため緩衝能が低く、pHは局所の細胞活動を敏感に反映して激しく変動します。</p>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div class="text-center p-6 bg-gray-50 rounded-lg">
+                    <h4 class="font-bold mb-4">安静時</h4>
+                     <div class="relative inline-block">
+                        <svg class="w-48 h-48 text-green-100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="50" fill="currentColor"/></svg>
+                        <div class="absolute inset-0 flex flex-col justify-center items-center">
+                            <span class="text-green-700 font-bold text-lg">組織液</span>
+                            <span class="ph-value text-green-600">~7.35</span>
+                            <span class="label-tag bg-green-100 text-green-800">やや酸性</span>
+                        </div>
+                    </div>
+                    <p class="mt-4 text-sm text-gray-600">細胞の穏やかな代謝活動を反映。</p>
+                </div>
+                <div class="text-center p-6 bg-red-50 rounded-lg">
+                     <h4 class="font-bold mb-4">激しい運動中 (筋肉)</h4>
+                     <div class="relative inline-block">
+                        <svg class="w-48 h-48 text-red-100 pulse-bg-slow" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="50" fill="currentColor"/></svg>
+                        <div class="absolute inset-0 flex flex-col justify-center items-center">
+                            <span class="text-red-700 font-bold text-lg">組織液</span>
+                            <span class="ph-value text-red-600">~6.9</span>
+                            <span class="label-tag bg-red-100 text-red-800">急激に酸性化</span>
+                        </div>
+                    </div>
+                    <p class="mt-4 text-sm text-gray-600">乳酸が放出され、局所pHが急低下。この<span class="font-bold text-red-600">pH低下が信号となり</span>、血管が拡張して血流が増加します。</p>
+                </div>
+            </div>
+             <div class="mt-8">
+                 <h4 class="font-bold text-center text-lg mb-4">病気との関わり</h4>
+                <div class="grid md:grid-cols-2 gap-4">
+                     <div class="p-4 bg-purple-50 rounded-lg border-l-4 border-purple-400">
+                         <h5 class="font-bold text-purple-800">がんの微小環境</h5>
+                         <p class="text-sm text-gray-600">がんは周囲を酸性(pH 5.5-7.0)に変え、免疫細胞の攻撃をかわし、増殖・転移しやすい環境を作り出します。</p>
+                     </div>
+                     <div class="p-4 bg-yellow-50 rounded-lg border-l-4 border-yellow-500">
+                         <h5 class="font-bold text-yellow-800">糖尿病</h5>
+                         <p class="text-sm text-gray-600">組織液の慢性的な酸性化は、インスリンの効き目を悪くする（インスリン抵抗性）一因になることが示唆されています。</p>
+                     </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Lymph Section -->
+        <section class="section-card">
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                 <div>
+                    <h3 class="text-2xl font-bold mb-4 text-green-700">免疫の司令塔へ：組織の情報を運ぶ「偵察ドローン」</h3>
+                    <p class="text-gray-600 mb-6">リンパ液は組織液を回収したもので、そのpHは元の組織の状態をそのまま反映します。つまり、組織の健康状態を伝える「メッセージ」を運んでいるのです。</p>
+                     <div class="analogy-box border-green-500">
+                        <p class="font-bold text-green-800">例えるなら…</p>
+                        <p class="text-gray-700">最前線（組織）の状況を撮影し、司令部（リンパ節）に持ち帰る「偵察ドローン」。</p>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <div class="relative inline-block">
+                        <svg class="w-48 h-48 text-green-100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M50 0 C 77.6 0 100 22.4 100 50 C 100 77.6 77.6 100 50 100 C 22.4 100 0 77.6 0 50 C 0 22.4 22.4 0 50 0 Z" fill="currentColor"/>
+                            <path d="M50 15 C 69.3 15 85 30.7 85 50 C 85 69.3 69.3 85 50 85 C 30.7 85 15 69.3 15 50 C 15 30.7 30.7 15 50 15 Z" fill="#a7f3d0"/>
+                            <text x="50" y="45" font-size="12" text-anchor="middle" fill="#065f46" font-weight="bold">リンパ節</text>
+                            <text x="50" y="65" font-size="20" text-anchor="middle" fill="#047857" font-weight="bold">~6.8</text>
+                        </svg>
+                        
+                        <div class="absolute inset-0 flex flex-col justify-center items-center">
+                           
+                        </div>
+                    </div>
+                    <p class="mt-4 text-sm text-gray-600">リンパ節内のT細胞領域は、意図的に<span class="font-bold text-green-700">酸性</span>に保たれ、免疫の暴走を防ぐ「ブレーキ」として機能しています。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. CSF Section -->
+        <section class="section-card">
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                 <div class="text-center">
+                    <div class="relative inline-block">
+                        <svg class="w-48 h-48 text-blue-100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="50" fill="currentColor"/></svg>
+                        <div class="absolute inset-0 flex flex-col justify-center items-center">
+                            <span class="text-blue-700 font-bold text-lg">脳脊髄液</span>
+                            <span class="ph-value text-blue-600">~7.33</span>
+                            <span class="label-tag bg-blue-100 text-blue-800">超厳密に制御</span>
+                        </div>
+                    </div>
+                    <p class="mt-4 text-sm text-gray-500">緩衝能が極めて低く、非常に脆弱。</p>
+                </div>
+                 <div>
+                    <h3 class="text-2xl font-bold mb-4 text-blue-700">最重要区画：厳重に守られた「聖域」</h3>
+                    <p class="text-gray-600 mb-6">脳を守る脳脊髄液(CSF)のpHは、生命維持の最重要課題。血液脳関門と脈絡叢という特殊な組織によって、外部の影響から守られ、精密にコントロールされています。</p>
+                    <ul class="space-y-3">
+                        <li class="flex items-start">
+                            <span class="label-tag bg-blue-100 text-blue-800 mr-3 shrink-0">駆動因子</span>
+                            <p class="text-sm text-gray-600">血液中の<span class="font-bold">二酸化炭素(CO₂)</span>が脳内に拡散することで、CSFのpHは変動する。</p>
+                        </li>
+                         <li class="flex items-start">
+                            <span class="label-tag bg-blue-100 text-blue-800 mr-3 shrink-0">防御機構</span>
+                            <p class="text-sm text-gray-600">脈絡叢が<span class="font-bold">NBCe2</span>というポンプを使い、アルカリ性の重炭酸イオンをCSFへ供給して酸性化を打ち消す。</p>
+                        </li>
+                         <li class="flex items-start">
+                            <span class="label-tag bg-blue-100 text-blue-800 mr-3 shrink-0">自己防衛</span>
+                             <p class="text-sm text-gray-600">CSFのpH低下（酸性化）は、脳血流を増加させる最強のシグナル。CO₂を洗い流し、脳を守る。</p>
+                        </li>
+                    </ul>
+                     <div class="analogy-box border-blue-500">
+                        <p class="font-bold text-blue-800">例えるなら…</p>
+                        <p class="text-gray-700">国家の中枢を守る、厳重なセキュリティシステムを備えた「聖域」。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Conclusion -->
+        <section class="text-center p-8 bg-gray-800 text-white rounded-xl">
+             <h3 class="text-2xl md:text-3xl font-bold mb-4">結論：体液pHは、目的別に制御される</h3>
+            <p class="max-w-3xl mx-auto mb-6 text-gray-300">
+                血液の「全体的な安定」と、組織液やリンパ液の「局所的な変動」、そして脳脊髄液の「徹底的な保護」。私たちの体は、場所ごとに異なる目的のために、pHという情報を巧みに使い分けています。この精緻なバランスこそが、生命活動の根幹を支えているのです。
+            </p>
+             <div class="flex justify-center items-center text-gray-400 text-sm">
+                <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg>
+                <span>本ページは科学的知見を基にした教育用コンテンツです。医学的診断に代わるものではありません。</span>
+            </div>
+        </section>
+
+    </main>
+</body>
+</html>
