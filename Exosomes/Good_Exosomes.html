@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>善玉エクソソーム：がん治療の未来を拓くナノメッセンジャー</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', 'Inter', sans-serif;
+            background-color: #f8fafc; /* cool-gray-50 */
+            color: #1f2937; /* cool-gray-800 */
+        }
+        .hero-gradient {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #93c5fd 100%);
+        }
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            line-height: 1.2;
+            color: #111827; /* cool-gray-900 */
+        }
+        .subsection-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1e3a8a; /* blue-800 */
+        }
+        .card {
+            background-color: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .icon-bubble {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #dbeafe; /* blue-100 */
+            color: #1d4ed8; /* blue-700 */
+        }
+        .infographic-arrow {
+            position: relative;
+            padding: 1rem 0;
+            text-align: center;
+        }
+        .infographic-arrow::after {
+            content: '▼';
+            font-size: 2rem;
+            color: #93c5fd; /* blue-300 */
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-15px);
+            }
+            60% {
+                transform: translateY(-7px);
+            }
+        }
+        .benefit-icon { color: #16a34a; /* green-600 */ }
+        .limit-icon { color: #dc2626; /* red-600 */ }
+    </style>
+</head>
+<body class="bg-slate-50">
+
+    <!-- Hero Section -->
+    <header class="hero-gradient text-white py-20 px-4">
+        <div class="container mx-auto text-center">
+            <h1 class="text-4xl md:text-6xl font-bold mb-4 leading-tight">善玉エクソソーム</h1>
+            <p class="text-xl md:text-2xl font-light">がん治療の未来を拓く、驚異のナノメッセンジャー</p>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-16">
+
+        <!-- Section 1: What are Exosomes? -->
+        <section class="mb-24">
+            <h2 class="section-title text-center mb-12">エクソソームとは？<br>細胞間のメッセージを運ぶ超小型カプセル</h2>
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="prose max-w-none lg:prose-lg text-gray-700">
+                    <p>私たちの体を作る約37兆個の細胞は、常に互いにコミュニケーションを取り合っています。その重要な手段の一つが「エクソソーム」です。</p>
+                    <p>エクソソームは細胞から放出される直径100ナノメートル（髪の毛の太さの約1/1000）ほどの極小カプセル。内部にタンパク質や遺伝情報（RNA）などを詰め込み、他の細胞に届けることで、体の様々な機能を調節しています。</p>
+                    <p>しかし、がんの世界では、このエクソソームが「善玉」と「悪玉」の二つの顔を持つことが分かってきました。</p>
+                </div>
+                <div class="card p-8">
+                    <div class="flex flex-col md:flex-row gap-6">
+                        <!-- Bad Exosome -->
+                        <div class="flex-1 text-center border-b-2 md:border-b-0 md:border-r-2 border-red-200 pb-4 md:pb-0 md:pr-6">
+                            <h3 class="text-xl font-bold text-red-600 mb-2">悪玉エクソソーム</h3>
+                            <div class="w-20 h-20 mx-auto bg-red-100 rounded-full flex items-center justify-center mb-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-red-600" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <p class="text-sm">がん細胞が放出し、がんの増殖、転移、免疫逃避を助ける。</p>
+                        </div>
+                        <!-- Good Exosome -->
+                        <div class="flex-1 text-center">
+                            <h3 class="text-xl font-bold text-blue-600 mb-2">善玉エクソソーム</h3>
+                            <div class="w-20 h-20 mx-auto bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <p class="text-sm">正常な細胞が放出し、がんの増殖を抑制したり、免疫細胞を活性化させる。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Sources of Good Exosomes -->
+        <section class="mb-24">
+            <h2 class="section-title text-center mb-12">希望の源泉：<br>善玉エクソソームはどこから来るのか？</h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- MSC -->
+                <div class="card p-6 flex flex-col">
+                    <div class="icon-bubble mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" /></svg>
+                    </div>
+                    <h3 class="font-bold text-xl mb-2">間葉系幹細胞 (MSC)</h3>
+                    <p class="text-gray-600 text-sm mb-4 flex-grow">組織の修復を担う細胞。がん抑制性の遺伝子情報をがん細胞に届け、増殖を抑える。</p>
+                    <div class="mt-auto pt-4 border-t border-gray-200">
+                        <p class="text-sm font-semibold benefit-icon flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>がん組織に集まりやすい</p>
+                        <p class="text-sm font-semibold limit-icon flex items-center mt-1"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg>時にがんを促進する二面性</p>
+                    </div>
+                </div>
+                <!-- DC -->
+                <div class="card p-6 flex flex-col">
+                    <div class="icon-bubble mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+                    </div>
+                    <h3 class="font-bold text-xl mb-2">樹状細胞 (DC)</h3>
+                    <p class="text-gray-600 text-sm mb-4 flex-grow">免疫の司令塔。がんの目印を他の免疫細胞に伝え、攻撃を促す「無細胞ワクチン」として機能。</p>
+                     <div class="mt-auto pt-4 border-t border-gray-200">
+                        <p class="text-sm font-semibold benefit-icon flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>強力な免疫活性化</p>
+                        <p class="text-sm font-semibold limit-icon flex items-center mt-1"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg>生産コストが高い</p>
+                    </div>
+                </div>
+                <!-- Plants -->
+                <div class="card p-6 flex flex-col">
+                    <div class="icon-bubble mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" /></svg>
+                    </div>
+                    <h3 class="font-bold text-xl mb-2">植物 (ショウガ、ブドウ等)</h3>
+                    <p class="text-gray-600 text-sm mb-4 flex-grow">食べ物由来のナノ粒子。抗酸化・抗炎症作用を持つ成分を含み、安全性が高い。</p>
+                     <div class="mt-auto pt-4 border-t border-gray-200">
+                        <p class="text-sm font-semibold benefit-icon flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>経口摂取・大量生産が可能</p>
+                        <p class="text-sm font-semibold limit-icon flex items-center mt-1"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg>内在性の治療効果は限定的</p>
+                    </div>
+                </div>
+                <!-- Milk -->
+                <div class="card p-6 flex flex-col">
+                    <div class="icon-bubble mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+                    </div>
+                    <h3 class="font-bold text-xl mb-2">牛乳</h3>
+                    <p class="text-gray-600 text-sm mb-4 flex-grow">胃酸に強く、腸まで届きやすい。薬を内部に搭載し、体内に吸収されやすくするキャリアとして有望。</p>
+                     <div class="mt-auto pt-4 border-t border-gray-200">
+                        <p class="text-sm font-semibold benefit-icon flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>薬の吸収率を劇的に向上</p>
+                        <p class="text-sm font-semibold limit-icon flex items-center mt-1"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg>精製プロセスが複雑</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Mechanism of Action -->
+        <section class="mb-24 bg-white py-16 rounded-2xl shadow-inner">
+            <h2 class="section-title text-center mb-12">どうやってがんと戦うのか？<br>善玉エクソソームの必殺技</h2>
+            <div class="grid md:grid-cols-3 gap-12 text-center">
+                <!-- 1. Delivery -->
+                <div>
+                    <div class="icon-bubble mx-auto mb-4 bg-green-100 text-green-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l2-2h8a1 1 0 001-1z" /></svg>
+                    </div>
+                    <h3 class="subsection-title mb-2 text-green-700">司令を伝達</h3>
+                    <p class="text-gray-600">がん細胞の増殖を止める遺伝情報（miR-16-5pなど）を直接届け、がんの活動にブレーキをかける。</p>
+                </div>
+                <!-- 2. Apoptosis -->
+                <div>
+                    <div class="icon-bubble mx-auto mb-4 bg-yellow-100 text-yellow-700">
+                       <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    </div>
+                    <h3 class="subsection-title mb-2 text-yellow-700">自爆スイッチを起動</h3>
+                    <p class="text-gray-600">がん細胞が自ら死滅する「アポトーシス」という現象を引き起こすシグナルを送る。</p>
+                </div>
+                <!-- 3. Immune Activation -->
+                <div>
+                    <div class="icon-bubble mx-auto mb-4 bg-purple-100 text-purple-700">
+                       <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7.014A8.003 8.003 0 0122 12c0 3.771-2.69 6.937-6.343 7.343z" /></svg>
+                    </div>
+                    <h3 class="subsection-title mb-2 text-purple-700">免疫軍を覚醒</h3>
+                    <p class="text-gray-600">「敵はここにいるぞ！」と免疫細胞（T細胞、NK細胞）にがんの存在を知らせ、攻撃態勢を整えさせる。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Engineering Exosomes -->
+        <section class="mb-24">
+            <h2 class="section-title text-center mb-12">治療効果を最大化する<br>エクソソーム・エンジニアリング</h2>
+            <p class="text-center max-w-3xl mx-auto mb-12 text-lg text-gray-700">
+                天然のエクソソームも強力ですが、科学の力でさらに賢く、強力な「治療用ナノマシン」へと進化させています。
+            </p>
+            <div class="card p-8 lg:p-12">
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <!-- Step 1: Cargo Loading -->
+                    <div class="text-center">
+                        <h3 class="subsection-title mb-4">Step 1: 荷物を搭載する (カーゴ搭載)</h3>
+                        <div class="relative w-48 h-48 mx-auto mb-4">
+                            <div class="absolute inset-0 bg-blue-500 rounded-full opacity-30"></div>
+                            <div class="absolute inset-2 bg-blue-400 rounded-full opacity-50"></div>
+                            <div class="absolute inset-4 bg-white rounded-full flex items-center justify-center">
+                                <span class="font-bold text-blue-700 text-lg">エクソソーム</span>
+                            </div>
+                            <!-- Cargo items -->
+                            <div class="absolute top-0 left-0 animate-pulse">
+                                <div class="bg-red-500 text-white text-xs rounded-full px-2 py-1">抗がん剤</div>
+                            </div>
+                             <div class="absolute bottom-0 right-0 animate-pulse" style="animation-delay: 0.5s;">
+                                <div class="bg-green-500 text-white text-xs rounded-full px-2 py-1">治療用RNA</div>
+                            </div>
+                            <div class="absolute bottom-8 left-0 animate-pulse" style="animation-delay: 1s;">
+                                <div class="bg-purple-500 text-white text-xs rounded-full px-2 py-1">遺伝子編集</div>
+                            </div>
+                        </div>
+                        <p class="text-gray-600">超音波や電気の力でエクソソームに抗がん剤や治療用RNAなどを詰め込み、強力な「ナノ爆弾」を作ります。</p>
+                    </div>
+                    
+                    <!-- Step 2: Surface Engineering -->
+                    <div class="text-center">
+                        <h3 class="subsection-title mb-4">Step 2: 宛先を設定する (表面修飾)</h3>
+                        <div class="relative w-48 h-48 mx-auto mb-4">
+                             <div class="absolute inset-0 bg-blue-500 rounded-full"></div>
+                             <div class="absolute inset-2 bg-white rounded-full flex items-center justify-center">
+                                <span class="font-bold text-blue-700 text-lg">エクソソーム</span>
+                            </div>
+                            <!-- Targeting Ligands -->
+                            <div class="absolute -top-2 left-1/2 -translate-x-1/2">
+                                <div class="bg-yellow-400 w-4 h-8 rounded-t-full"></div>
+                                <div class="font-bold text-yellow-600 text-xs">標的分子</div>
+                            </div>
+                            <div class="absolute -bottom-2 left-1/2 -translate-x-1/2 rotate-180">
+                                <div class="bg-yellow-400 w-4 h-8 rounded-t-full"></div>
+                            </div>
+                             <div class="absolute -right-2 top-1/2 -translate-y-1/2 rotate-90">
+                                <div class="bg-yellow-400 w-4 h-8 rounded-t-full"></div>
+                            </div>
+                            <div class="absolute -left-2 top-1/2 -translate-y-1/2 -rotate-90">
+                                <div class="bg-yellow-400 w-4 h-8 rounded-t-full"></div>
+                            </div>
+                        </div>
+                        <p class="text-gray-600">エクソソームの表面に、がん細胞だけが持つ「鍵穴」に合う「鍵」（ペプチドやアプタマー）を取り付け、確実にがん細胞に届けます。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: Road to Clinic -->
+        <section>
+             <h2 class="section-title text-center mb-12">実用化への道のり：<br>課題と未来への展望</h2>
+            <div class="max-w-4xl mx-auto">
+                <div class="bg-white p-8 rounded-2xl shadow-lg">
+                    <div class="relative">
+                        <!-- Timeline -->
+                        <div class="border-l-4 border-blue-300 absolute h-full top-0 left-4"></div>
+                        
+                        <!-- Step 1: Research -->
+                        <div class="flex items-center w-full mb-8">
+                            <div class="bg-blue-500 text-white w-8 h-8 rounded-full flex items-center justify-center z-10">1</div>
+                            <div class="ml-6">
+                                <h3 class="font-bold text-lg text-blue-800">基礎研究【進行中】</h3>
+                                <p class="text-gray-600">善玉エクソソームの発見と作用メカニズムの解明。</p>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Pre-clinical -->
+                         <div class="flex items-center w-full mb-8">
+                            <div class="bg-blue-500 text-white w-8 h-8 rounded-full flex items-center justify-center z-10">2</div>
+                            <div class="ml-6">
+                                <h3 class="font-bold text-lg text-blue-800">前臨床試験【進行中】</h3>
+                                <p class="text-gray-600">動物モデルでの安全性と有効性の確認。エンジニアリング技術の開発。</p>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Clinical Trials -->
+                         <div class="flex items-center w-full mb-8">
+                            <div class="bg-blue-500 text-white w-8 h-8 rounded-full flex items-center justify-center z-10">3</div>
+                            <div class="ml-6">
+                                <h3 class="font-bold text-lg text-blue-800">臨床試験【一部開始】</h3>
+                                <p class="text-gray-600">ヒトでの安全性と効果を検証 (膵臓がん、肺がん等)。</p>
+                            </div>
+                        </div>
+                        
+                         <!-- Step 4: Approval & Practice -->
+                         <div class="flex items-center w-full">
+                            <div class="bg-gray-400 text-white w-8 h-8 rounded-full flex items-center justify-center z-10">4</div>
+                            <div class="ml-6">
+                                <h3 class="font-bold text-lg text-gray-500">承認・実用化【未来】</h3>
+                                <p class="text-gray-500">標準治療として多くの患者に届ける。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-12 pt-8 border-t-2 border-dashed">
+                        <h3 class="subsection-title text-center mb-6">乗り越えるべき壁</h3>
+                        <div class="grid md:grid-cols-3 gap-6 text-center">
+                            <div>
+                                <div class="icon-bubble mx-auto mb-3 bg-red-100 text-red-700">
+                                   <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" /></svg>
+                                </div>
+                                <h4 class="font-bold">大量生産 (収量)</h4>
+                                <p class="text-sm text-gray-600">治療に必要な量を安定的かつ低コストで製造する技術。</p>
+                            </div>
+                             <div>
+                                <div class="icon-bubble mx-auto mb-3 bg-red-100 text-red-700">
+                                   <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" /></svg>
+                                </div>
+                                <h4 class="font-bold">品質の均一化 (標準化)</h4>
+                                <p class="text-sm text-gray-600">どのバッチでも同じ品質と効果を保証する基準の確立。</p>
+                            </div>
+                             <div>
+                                <div class="icon-bubble mx-auto mb-3 bg-red-100 text-red-700">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                </div>
+                                <h4 class="font-bold">安全性と規制</h4>
+                                <p class="text-sm text-gray-600">長期的な安全性を証明し、国の承認を得るためのルール作り。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white mt-24 py-8">
+        <div class="container mx-auto text-center text-sm">
+            <p>このページは提供された学術レポートに基づき、がん治療におけるエクソソーム研究の現状を解説する目的で作成されました。</p>
+            <p class="mt-2 text-gray-400">&copy; 2024 善玉エクソソーム研究情報. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+</body>
+</html>
