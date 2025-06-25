@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>癌とエクソソーム：微生物が操る細胞間コミュニケーション</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', 'Inter', sans-serif;
+            background-color: #f8fafc; /* cool-gray-50 */
+            color: #1f2937; /* cool-gray-800 */
+        }
+        .section-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            color: #111827; /* cool-gray-900 */
+        }
+        .subsection-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: #1f2937;
+            border-left: 4px solid;
+            padding-left: 1rem;
+        }
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.1);
+        }
+        .icon-bubble {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+        .bacteria-theme {
+            --theme-color: #f97316; /* orange-500 */
+            --theme-bg: #fff7ed; /* orange-50 */
+        }
+        .virus-theme {
+            --theme-color: #8b5cf6; /* violet-500 */
+            --theme-bg: #f5f3ff; /* violet-50 */
+        }
+        .comparison-theme {
+            --theme-color: #10b981; /* emerald-500 */
+            --theme-bg: #ecfdf5; /* emerald-50 */
+        }
+        .future-theme {
+            --theme-color: #3b82f6; /* blue-500 */
+            --theme-bg: #eff6ff; /* blue-50 */
+        }
+        .section-theme {
+            border-color: var(--theme-color);
+        }
+        .bg-theme {
+            background-color: var(--theme-bg);
+        }
+        .text-theme {
+            color: var(--theme-color);
+        }
+        .icon-bubble-theme {
+            background-color: var(--theme-bg);
+            border: 2px solid var(--theme-color);
+        }
+        /* スクロールアニメーション用 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in-section {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4">
+            <h1 class="text-2xl font-bold text-gray-800">癌とエクソソーム：微生物が操る細胞間コミュニケーション</h1>
+            <p class="text-gray-600">細菌やウイルスが放出する「エクソソーム」が、がんを引き起こす可能性を探る</p>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+
+        <!-- Section 1: エクソソームとは？ -->
+        <section id="intro-exosome" class="mb-20 fade-in-section">
+            <h2 class="section-title">1. 細胞間の超小型メッセンジャー「エクソソーム」</h2>
+            <p class="text-lg text-gray-700 mb-8">私たちの体の中では、細胞同士が常に情報をやり取りしています。その重要な手段の一つが「細胞外小胞（EVs）」。エクソソームはその一種で、単なる"細胞のゴミ"ではなく、重要なメッセージを運ぶ"運び屋"だったのです。</p>
+
+            <!-- Infographic: Types of EVs -->
+            <div class="grid md:grid-cols-3 gap-8 text-center mb-12">
+                <div class="card p-6">
+                    <div class="flex justify-center mb-4">
+                        <svg class="w-16 h-16 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0c-.454-.303-.977-.454-1.5-.454V5.454c.523 0 1.046-.151 1.5-.454a2.704 2.704 0 013 0 2.704 2.704 0 003 0 2.704 2.704 0 013 0 2.704 2.704 0 003 0c.454.303.977.454 1.5.454v10.092zM15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">エクソソーム</h3>
+                    <p class="text-gray-600">直径 30-150 nm。細胞内部のエンドソームから放出される最も小さい小胞。</p>
+                </div>
+                <div class="card p-6">
+                     <div class="flex justify-center mb-4">
+                        <svg class="w-16 h-16 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">マイクロベシクル</h3>
+                    <p class="text-gray-600">直径 50-1000 nm。細胞膜が直接ちぎれて形成される。</p>
+                </div>
+                <div class="card p-6">
+                     <div class="flex justify-center mb-4">
+                        <svg class="w-16 h-16 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">アポトーシス小体</h3>
+                    <p class="text-gray-600">直径 50-5000 nm。細胞死の過程で放出される最大の小胞。</p>
+                </div>
+            </div>
+
+            <!-- Infographic: Exosome Cargo & Function -->
+            <div class="card bg-gray-50 p-8">
+                 <h3 class="subsection-title border-gray-400">エクソソームの「積み荷」と役割</h3>
+                 <div class="md:flex md:items-center md:space-x-8">
+                    <div class="md:w-1/3 text-center mb-6 md:mb-0">
+                        <div class="relative inline-block">
+                             <!-- Exosome SVG -->
+                            <svg viewBox="0 0 200 200" class="w-48 h-48">
+                                <circle cx="100" cy="100" r="90" fill="#a5b4fc" />
+                                <circle cx="100" cy="100" r="80" fill="#c7d2fe" />
+                                <!-- Cargo items -->
+                                <path d="M70 80 Q 80 70 90 80" stroke="#4f46e5" fill="none" stroke-width="5"/>
+                                <circle cx="120" cy="75" r="10" fill="#4f46e5"/>
+                                <rect x="105" y="110" width="20" height="20" fill="#4f46e5" transform="rotate(45 115 120)"/>
+                                <path d="M75 115 L 85 130 L 95 115" stroke="#4f46e5" fill="none" stroke-width="5"/>
+                            </svg>
+                            <p class="font-bold mt-2">エクソソーム</p>
+                        </div>
+                    </div>
+                    <div class="md:w-2/3 grid grid-cols-2 gap-6">
+                        <div class="flex items-start space-x-3">
+                            <div class="icon-bubble bg-indigo-100"><svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M12 6a2 2 0 100-4 2 2 0 000 4zm0 14a2 2 0 100-4 2 2 0 000 4zm6-8a2 2 0 100-4 2 2 0 000 4zm-12 0a2 2 0 100-4 2 2 0 000 4z"></path></svg></div>
+                            <div>
+                                <h4 class="font-bold text-lg">タンパク質</h4>
+                                <p class="text-gray-600">細胞の機能を変える指示書。</p>
+                            </div>
+                        </div>
+                         <div class="flex items-start space-x-3">
+                            <div class="icon-bubble bg-indigo-100"><svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg></div>
+                            <div>
+                                <h4 class="font-bold text-lg">核酸 (RNA/DNA)</h4>
+                                <p class="text-gray-600">遺伝情報を伝え、受け手細胞の設計図を書き換える。</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <div class="icon-bubble bg-indigo-100"><svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M12 8v-1.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L1.57 8.572a2 2 0 00-1.414 1.414V12a2 2 0 002 2h18a2 2 0 002-2v-2.014a2 2 0 00-1.414-1.414l-1.57-.312z"></path></svg></div>
+                            <div>
+                                <h4 class="font-bold text-lg">脂質</h4>
+                                <p class="text-gray-600">小胞の構造を維持し、シグナル伝達にも関与。</p>
+                            </div>
+                        </div>
+                         <div class="flex items-start space-x-3">
+                            <div class="icon-bubble bg-indigo-100"><svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 14l9-5-9-5-9 5 9 5z"></path><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0112 20.055a11.952 11.952 0 01-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0112 20.055a11.952 11.952 0 01-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222 4 2.222V20M12 14.5L8 12"></path></svg></div>
+                            <div>
+                                <h4 class="font-bold text-lg">敵対的乗っ取り</h4>
+                                <p class="text-gray-600">病原体はこの便利なシステムを乗っ取り、病気を広める「トロイの木馬」として利用する。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Bacterial Exosomes -->
+        <section id="bacterial-exosomes" class="mb-20 fade-in-section bacteria-theme">
+            <h2 class="section-title">2. 細菌が放つ「がん促進ミサイル」</h2>
+            <p class="text-lg text-gray-700 mb-8">細菌もエクソソームに似た小胞（BEVs）を放出します。これらが「発がん性カーゴ」を運び、がんの発生と進行に深く関与するという仮説が提唱されています。</p>
+            
+            <div class="card bg-theme p-8">
+                <h3 class="subsection-title section-theme">細菌エクソソーム（BEVs）のがん促進メカニズム</h3>
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 text-center">
+                    <!-- Mechanism 1 -->
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <div class="icon-bubble icon-bubble-theme mx-auto"><svg class="w-8 h-8 text-theme" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 8l-8 8"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 16l-8-8"></path></svg></div>
+                        <h4 class="font-bold">発がん性カーゴの送達</h4>
+                        <p class="text-sm text-gray-600">毒素や発がん性タンパク質を細胞に直接届け、がん化を促す。</p>
+                    </div>
+                    <!-- Mechanism 2 -->
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <div class="icon-bubble icon-bubble-theme mx-auto"><svg class="w-8 h-8 text-theme" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2h8a2 2 0 002-2v-1a2 2 0 012-2h1.945M7.938 6.126a9 9 0 118.124 0M12 3v1"></path></svg></div>
+                        <h4 class="font-bold">慢性炎症の誘導</h4>
+                        <p class="text-sm text-gray-600">持続的な炎症を引き起こし、がんが発生しやすい環境を作る。</p>
+                    </div>
+                    <!-- Mechanism 3 -->
+                    <div class="bg-white p-4 rounded-lg shadow">
+                         <div class="icon-bubble icon-bubble-theme mx-auto"><svg class="w-8 h-8 text-theme" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg></div>
+                        <h4 class="font-bold">免疫応答の操作</h4>
+                        <p class="text-sm text-gray-600">免疫細胞の働きを抑え、がん細胞が攻撃から逃れるのを助ける。</p>
+                    </div>
+                    <!-- Mechanism 4 -->
+                    <div class="bg-white p-4 rounded-lg shadow">
+                         <div class="icon-bubble icon-bubble-theme mx-auto"><svg class="w-8 h-8 text-theme" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg></div>
+                        <h4 class="font-bold">腫瘍微小環境の改変</h4>
+                        <p class="text-sm text-gray-600">がん細胞の増殖や転移を助ける環境（土壌）を整備する。</p>
+                    </div>
+                </div>
+
+                <div class="mt-8 bg-white/70 p-6 rounded-lg">
+                    <h4 class="subsection-title border-orange-500">ケーススタディ：ヘリコバクター・ピロリと胃がん</h4>
+                    <div class="md:flex items-center gap-8">
+                        <div class="md:w-1/3 text-center mb-4 md:mb-0">
+                             <!-- H. pylori Infographic -->
+                             <svg viewBox="0 0 400 350" xmlns="http://www.w3.org/2000/svg" class="rounded-lg shadow-md mx-auto bg-orange-50 w-full">
+                                <defs>
+                                    <marker id="arrow-bact" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#f97316" />
+                                    </marker>
+                                    <!-- H. pylori shape -->
+                                    <g id="hpylori">
+                                        <path d="M-20,0 C-20,-15 10,-15 20,0 C10,15 -20,15 -20,0 Z" fill="#fdba74"/>
+                                        <path d="M15 0 L 30 -5 M15 0 L 30 0 M15 0 L 30 5" stroke="#f97316" stroke-width="2"/>
+                                    </g>
+                                    <!-- OMV with cargo -->
+                                    <g id="omv">
+                                        <circle cx="0" cy="0" r="10" fill="#fed7aa" stroke="#fb923c" stroke-width="1.5"/>
+                                        <text x="-1" y="2" font-family="sans-serif" font-size="8" fill="#c2410c" font-weight="bold">C</text>
+                                        <text x="0" y="9" font-family="sans-serif" font-size="8" fill="#c2410c" font-weight="bold">V</text>
+                                    </g>
+                                    <!-- Cancer Cell -->
+                                    <g id="cancerCell">
+                                         <path d="M0,15 C-20,20 -15,-20 0,-15 C15,-20 20,20 0,15" fill="#fca5a5"/>
+                                         <circle cx="0" cy="-2" r="8" fill="#ef4444"/>
+                                    </g>
+                                </defs>
+                                
+                                <!-- Step 1: H. pylori releases OMVs -->
+                                <g transform="translate(80, 80)">
+                                    <use href="#hpylori"/>
+                                    <text x="0" y="35" font-family="Noto Sans JP, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="#9a3412">1. ピロリ菌</text>
+                                </g>
+                                <g transform="translate(130, 50)">
+                                    <use href="#omv"/>
+                                    <text x="0" y="-15" font-family="Noto Sans JP, sans-serif" font-size="12" text-anchor="middle" fill="#9a3412">OMV (CagA, VacA)</text>
+                                </g>
+                                <path d="M100 80 C 110 70, 120 60, 125 55" stroke="#fb923c" stroke-width="2" fill="none" stroke-dasharray="4 2"/>
+
+                                <!-- Step 2: OMVs target gastric cell -->
+                                <path d="M140 60 C 180 80, 220 100, 250, 120" stroke="#fb923c" stroke-width="2" fill="none" marker-end="url(#arrow-bact)"/>
+                                <text x="190" y="70" font-family="Noto Sans JP, sans-serif" font-size="14" font-weight="bold" fill="#9a3412">2. 毒素を送達</text>
+
+                                <!-- Step 3: Gastric cell is damaged -->
+                                <g transform="translate(280, 180)">
+                                    <path d="M0,70 C -100,80 -90,-80 0,-70 C 90,-80 100,80 0,70" fill="#fed7aa" stroke="#fb923c" stroke-width="2"/>
+                                    <circle cx="0" cy="-20" r="20" fill="#f97316"/>
+                                    <text x="0" y="-18" font-family="Noto Sans JP, sans-serif" font-size="12" text-anchor="middle" fill="white">核</text>
+                                    <text x="0" y="95" font-family="Noto Sans JP, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="#9a3412">3. 胃上皮細胞</text>
+                                    <!-- Damage indicators -->
+                                    <text x="25" y="10" font-family="sans-serif" font-size="12" fill="#c2410c">CagA: 増殖/破壊</text>
+                                    <path d="M15 -20 L 25 0" stroke="#c2410c" stroke-width="2"/>
+                                    <text x="-40" y="40" font-family="sans-serif" font-size="12" fill="#c2410c">VacA: 細胞傷害</text>
+                                    <path d="M-20 40 l-5 -5 l5 5 l-5 5" stroke="#c2410c" stroke-width="2"/>
+                                </g>
+
+                                <!-- Step 4: Chronic Inflammation -->
+                                <g transform="translate(150, 280)">
+                                    <path d="M0 0 Q 15 10 30 0 T 60 0 T 90 0 T 120 0" stroke="#ef4444" fill="none" stroke-width="3" />
+                                     <path d="M5 10 Q 20 20 35 10 T 65 10 T 95 10 T 125 10" stroke="#ef4444" fill="none" stroke-width="3" stroke-opacity="0.6"/>
+                                    <text x="60" y="40" font-family="Noto Sans JP, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="#9a3412">4. 慢性炎症</text>
+                                </g>
+                                <path d="M 280 250 C 250 260, 220 270, 190 280" stroke="#fb923c" stroke-width="2" fill="none" marker-end="url(#arrow-bact)"/>
+                                
+                                <!-- Step 5: Cancer -->
+                                <g transform="translate(80, 280)">
+                                    <use href="#cancerCell" transform="scale(1.2)"/>
+                                     <text x="0" y="45" font-family="Noto Sans JP, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="#9a3412">5. がん化</text>
+                                </g>
+                                 <path d="M 140 285 C 120 285, 100 285, 90 285" stroke="#fb923c" stroke-width="2" fill="none" marker-end="url(#arrow-bact)"/>
+                            </svg>
+                        </div>
+                        <div class="md:w-2/3">
+                            <p class="mb-4">胃がんの最大のリスク因子であるピロリ菌は、この仮説の典型例です。</p>
+                            <ol class="list-decimal list-inside space-y-2 text-gray-700">
+                                <li>ピロリ菌が、発がんタンパク質 <strong>CagA</strong> や毒素 <strong>VacA</strong> を搭載した小胞 (OMV) を放出。</li>
+                                <li>OMVが胃の細胞に侵入し、CagAが細胞の増殖を促し、正常な構造を破壊する。</li>
+                                <li>VacAが細胞を傷つけ、慢性的な炎症が発生し、がん化のリスクが著しく高まる。</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Viral Exosomes -->
+        <section id="viral-exosomes" class="mb-20 fade-in-section virus-theme">
+            <h2 class="section-title">3. ウイルスによるエクソソームシステムの乗っ取り</h2>
+            <p class="text-lg text-gray-700 mb-8">ウイルスは細胞に寄生し、その機能を乗っ取ります。エクソソームの製造・分泌システムも例外ではなく、ウイルスはこれを巧みに利用して感染を広げ、がんを引き起こします。</p>
+
+            <div class="card bg-theme p-8">
+                <h3 class="subsection-title section-theme">ウイルスの「トロイの木馬」戦略</h3>
+                <div class="md:flex items-center gap-8">
+                    <div class="md:w-1/2 text-center mb-6 md:mb-0">
+                         <!-- Virus Hijack Infographic -->
+                        <svg viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg" class="rounded-lg shadow-md mx-auto bg-violet-50 w-full">
+                            <!-- Define markers for arrowheads and other elements -->
+                            <defs>
+                                <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#8b5cf6" />
+                                </marker>
+                                <!-- Virus shape -->
+                                <g id="virus">
+                                    <circle cx="0" cy="0" r="8" fill="#a78bfa"/>
+                                    <path d="M0 -8 L0 -12 M0 8 L0 12 M-8 0 L-12 0 M8 0 L12 0 M-6 -6 L-9 -9 M6 6 L9 9 M-6 6 L-9 9 M6 -6 L9 -9" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round"/>
+                                </g>
+                                <!-- Exosome with viral cargo -->
+                                <g id="viralExosome">
+                                    <circle cx="0" cy="0" r="15" fill="#f5f3ff" stroke="#8b5cf6" stroke-width="2"/>
+                                    <circle cx="0" cy="0" r="3" fill="#6d28d9"/>
+                                    <path d="M-5 2 l 3 -4 l 3 4" stroke="#6d28d9" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                                </g>
+                                 <!-- Immune Cell -->
+                                <g id="immuneCell">
+                                    <path d="M 0,20 C -30,20 -30,-20 0,-20 C 30,-20 30,20 0,20 Z M 10,5 a 10 10 0 0 1 -20 0" fill="#fca5a5"/>
+                                    <circle cx="-5" cy="-2" r="3" fill="#dc2626"/>
+                                     <circle cx="5" cy="-2" r="3" fill="#dc2626"/>
+                                </g>
+                            </defs>
+                        
+                            <!-- Main Scene -->
+                            <!-- 1. Infected Cell -->
+                            <g transform="translate(150, 200)">
+                                <circle cx="0" cy="0" r="120" fill="#ddd6fe" stroke="#c4b5fd" stroke-width="3"/>
+                                <circle cx="-30" cy="-40" r="25" fill="#c4b5fd"/> <!-- Nucleus -->
+                                <text x="-30" y="-35" font-family="sans-serif" font-size="12" text-anchor="middle" fill="#4c1d95">核</text>
+                                
+                                <!-- Virus inside -->
+                                <use href="#virus" transform="translate(-50, 20)"/>
+                                
+                                <!-- MVB (Multivesicular Body) -->
+                                <circle cx="40" cy="30" r="40" fill="#c4b5fd" stroke="#a78bfa" stroke-width="2"/>
+                                <text x="40" y="-15" font-family="sans-serif" font-size="12" text-anchor="middle" fill="#4c1d95">MVB</text>
+                                <use href="#viralExosome" transform="translate(30, 20) scale(0.5)"/>
+                                <use href="#viralExosome" transform="translate(50, 45) scale(0.5)"/>
+                                <use href="#viralExosome" transform="translate(25, 40) scale(0.5)"/>
+                            </g>
+                            <text x="150" y="70" font-family="Noto Sans JP, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#6d28d9">1. ウイルス感染細胞</text>
+                            <text x="150" y="90" font-family="Noto Sans JP, sans-serif" font-size="12" text-anchor="middle" fill="#4c1d95">(エクソソーム工場化)</text>
+                        
+                            <!-- Arrow 1 -->
+                            <path d="M 270, 200 C 320, 200, 320, 150, 370, 150" stroke="#a78bfa" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+                            
+                            <!-- 2. Release of Exosomes -->
+                            <g transform="translate(420, 140)">
+                                <use href="#viralExosome"/>
+                            </g>
+                             <g transform="translate(380, 180)">
+                                <use href="#viralExosome"/>
+                            </g>
+                            <text x="400" y="100" font-family="Noto Sans JP, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#6d28d9">2. 「トロイの木馬」放出</text>
+                        
+                            <!-- 3. Immune Evasion -->
+                            <g transform="translate(350, 300)">
+                                 <use href="#immuneCell" transform="scale(1.2)"/>
+                                 <path d="M-30 -30 L 30 30 M -30 30 L 30 -30" stroke="#ef4444" stroke-width="4" stroke-linecap="round"/>
+                            </g>
+                            <path d="M 380, 195 C 370, 230, 360, 250, 355, 265" stroke="#a78bfa" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+                            <text x="350" y="360" font-family="Noto Sans JP, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#6d28d9">3. 免疫回避</text>
+                            <text x="350" y="378" font-family="Noto Sans JP, sans-serif" font-size="12" text-anchor="middle" fill="#4c1d95">(免疫細胞は無視)</text>
+                            
+                            <!-- 4. Spreading to new cell -->
+                             <path d="M 435, 145 C 480, 145, 480, 200, 520, 220" stroke="#a78bfa" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+                            
+                            <!-- Target Cell -->
+                            <g transform="translate(530, 280)">
+                                <circle cx="0" cy="0" r="60" fill="#a7f3d0" stroke="#34d399" stroke-width="3"/>
+                                <text x="0" y="5" font-family="Noto Sans JP, sans-serif" font-size="12" text-anchor="middle" fill="#047857">標的細胞</text>
+                            </g>
+                             <text x="530" y="365" font-family="Noto Sans JP, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#6d28d9">4. 新たな細胞へ感染</text>
+                        </svg>
+                    </div>
+                    <div class="md:w-1/2">
+                        <p class="mb-4">感染した細胞を「工場」に変え、ウイルス成分を詰め込んだエクソソームを大量生産させます。</p>
+                        <ul class="space-y-4">
+                            <li class="flex items-start">
+                                <svg class="w-6 h-6 text-theme mr-3 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                                <div><strong>感染拡大：</strong>ウイルス粒子や遺伝情報をエクソソームに隠し、免疫の攻撃をかわしながら他の細胞へ届ける。</div>
+                            </li>
+                             <li class="flex items-start">
+                                <svg class="w-6 h-6 text-theme mr-3 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                                <div><strong>免疫回避：</strong>ウイルスの"おとり"エクソソームを放出し、免疫システムを混乱・抑制させる。</div>
+                            </li>
+                             <li class="flex items-start">
+                                <svg class="w-6 h-6 text-theme mr-3 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.121 10.121L12 12.242 9.879 10.121a3 3 0 10-4.242 4.242l4.242 4.243a1.5 1.5 0 002.122 0l4.242-4.243a3 3 0 00-4.242-4.242z"></path></svg>
+                                <div><strong>「土壌」の準備：</strong>周辺の細胞環境を改変し、がんが増殖しやすいように"整地"する。</div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                 <div class="mt-8 bg-white/70 p-6 rounded-lg">
+                    <h4 class="subsection-title border-violet-500">ケーススタディ：エプスタイン・バー・ウイルス (EBV) と鼻咽頭がん</h4>
+                    <p class="mb-4">EBV感染細胞は、がん促進タンパク質 <strong>LMP1</strong> を搭載したエクソソームを放出。これが隣の細胞に取り込まれると、</p>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li>細胞の増殖・浸潤・血管新生を促すスイッチをONにする。</li>
+                        <li>免疫のブレーキ役である <strong>PD-L1</strong> を増やさせ、免疫細胞からの攻撃をブロックする。</li>
+                        <li>炎症と免疫抑制が同時に起こる、がんの増殖に最適な環境を作り出す。</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Integration and Critique -->
+        <section id="critique" class="mb-20 fade-in-section comparison-theme">
+            <h2 class="section-title">4. 2つの「がん原因説」：対立か、協力か？</h2>
+            <p class="text-lg text-gray-700 mb-8">がんの原因として広く知られているのは「体細胞突然変異説」です。微生物エクソソーム仮説は、これとどう関わるのでしょうか。</p>
+
+            <div class="grid lg:grid-cols-2 gap-8">
+                <!-- Somatic Mutation Theory -->
+                <div class="card p-6">
+                    <h3 class="text-2xl font-bold mb-3">主流：体細胞突然変異説</h3>
+                    <div class="flex items-center mb-4">
+                        <div class="icon-bubble bg-gray-200 mr-4"><svg class="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path></svg></div>
+                        <p class="font-semibold">がんの原因は、細胞自身のDNAに変異が蓄積すること。</p>
+                    </div>
+                    <p class="text-gray-600"><strong>要因：</strong>紫外線、化学物質、複製の際のエラーなど、主に内的なランダムイベント。</p>
+                    <p class="text-gray-600"><strong>感染症の役割：</strong>慢性炎症を引き起こし、細胞分裂を増やすことで「変異の機会」を増やす間接的なリスク因子。</p>
+                </div>
+                <!-- Microbial Exosome Hypothesis -->
+                <div class="card p-6 bg-theme">
+                     <h3 class="text-2xl font-bold mb-3">新説：微生物エクソソーム仮説</h3>
+                    <div class="flex items-center mb-4">
+                        <div class="icon-bubble bg-white mr-4"><svg class="w-8 h-8 text-theme" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5h.01"></path></svg></div>
+                        <p class="font-semibold">がんの原因は、外部の微生物からエクソソームで運ばれる発がん因子。</p>
+                    </div>
+                    <p class="text-gray-600"><strong>要因：</strong>細菌やウイルスが「発がんスターターキット」を送り込む、標的化された外的な攻撃。</p>
+                    <p class="text-gray-600"><strong>感染症の役割：</strong>発がん物質を直接送り込む、直接的な原因物質。</p>
+                </div>
+            </div>
+
+            <!-- Integrated Model -->
+            <div class="card mt-8 p-8">
+                <h3 class="subsection-title section-theme">統合モデル：2つの説は協力しあう</h3>
+                <p class="text-center text-lg mb-6">実際には、この2つの説は相乗的に作用しているのかもしれません。</p>
+                <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4">
+                    <div class="text-center p-4 bg-gray-100 rounded-lg"><strong>1. 微生物エクソソームが<br>最初の「一撃」</strong><br><small>(細胞増殖 & 炎症)</small></div>
+                    <div class="text-2xl font-bold text-gray-400">→</div>
+                     <div class="text-center p-4 bg-gray-100 rounded-lg"><strong>2. 炎症と増殖が<br>DNA変異を加速</strong><br><small>(体細胞突然変異)</small></div>
+                    <div class="text-2xl font-bold text-gray-400">→</div>
+                     <div class="text-center p-4 bg-gray-100 rounded-lg"><strong>3. エクソソームが<br>免疫から保護</strong><br><small>(免疫抑制)</small></div>
+                     <div class="text-2xl font-bold text-gray-400">→</div>
+                    <div class="text-center p-4 bg-red-100 text-red-700 rounded-lg"><strong>がん発生</strong></div>
+                </div>
+            </div>
+
+            <div class="mt-12">
+                 <h3 class="subsection-title section-theme">研究の課題 (証明への道のり)</h3>
+                 <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-white p-4 rounded-lg shadow-sm flex items-center"><div class="icon-bubble-theme icon-bubble mr-4 flex-shrink-0"><svg class="w-6 h-6 text-theme" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 10a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path></svg></div><div><strong>分離・精製の困難さ：</strong>純粋なエクソソームだけを取り出す技術が確立されていない。</div></div>
+                    <div class="bg-white p-4 rounded-lg shadow-sm flex items-center"><div class="icon-bubble-theme icon-bubble mr-4 flex-shrink-0"><svg class="w-6 h-6 text-theme" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg></div><div><strong>標準化の欠如：</strong>研究室ごとに手法が異なり、結果の比較が難しい。</div></div>
+                    <div class="bg-white p-4 rounded-lg shadow-sm flex items-center"><div class="icon-bubble-theme icon-bubble mr-4 flex-shrink-0"><svg class="w-6 h-6 text-theme" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div><div><strong>機能証明の壁：</strong>エクソソームの「積み荷」が、実際に体内でがんを引き起こすことを証明するのが難しい。</div></div>
+                    <div class="bg-white p-4 rounded-lg shadow-sm flex items-center"><div class="icon-bubble-theme icon-bubble mr-4 flex-shrink-0"><svg class="w-6 h-6 text-theme" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg></div><div><strong>臨床応用へのハードル：</strong>治療への応用には、安全性や倫理面で多くの課題がある。</div></div>
+                 </div>
+            </div>
+        </section>
+
+        <!-- Section 5: Conclusion & Future -->
+        <section id="conclusion" class="fade-in-section future-theme">
+             <h2 class="section-title">5. 結論と今後の展望</h2>
+            <div class="card bg-theme p-8">
+                <h3 class="subsection-title section-theme">結論：がん研究の新たなパラダイム</h3>
+                <p class="mb-6 text-lg">微生物エクソソーム仮説は、感染症、マイクロバイオーム、がん生物学の境界を曖昧にし、がんの原因を新たな視点から捉え直すものです。細菌やウイルスが放出するエクソソームが、発がんの直接的な引き金となり、がんの進行を助ける環境を積極的に作り出しているという証拠は増え続けています。</p>
+                
+                <h3 class="subsection-title section-theme">今後の研究への提言</h3>
+                <p class="mb-6">この仮説を確立し、新たな治療法へ繋げるためには、以下の研究が不可欠です。</p>
+                 <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 text-center">
+                    <!-- Future 1 -->
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <div class="icon-bubble icon-bubble-theme mx-auto"><svg class="w-8 h-8 text-theme" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 16v-2m8-8h-2M4 12H2m15.364 6.364l-1.414-1.414M6.05 6.05l-1.414-1.414m12.728 0l-1.414 1.414M6.05 17.95l-1.414 1.414M12 12a5 5 0 11-10 0 5 5 0 0110 0z"></path></svg></div>
+                        <h4 class="font-bold">技術開発</h4>
+                        <p class="text-sm text-gray-600">エクソソームを正確に追跡・分析する新技術。</p>
+                    </div>
+                    <!-- Future 2 -->
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <div class="icon-bubble icon-bubble-theme mx-auto"><svg class="w-8 h-8 text-theme" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg></div>
+                        <h4 class="font-bold">因果関係の証明</h4>
+                        <p class="text-sm text-gray-600">動物モデルでエクソソームががんを起こすことを直接証明する。</p>
+                    </div>
+                    <!-- Future 3 -->
+                    <div class="bg-white p-4 rounded-lg shadow">
+                         <div class="icon-bubble icon-bubble-theme mx-auto"><svg class="w-8 h-8 text-theme" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg></div>
+                        <h4 class="font-bold">ヒトでの研究</h4>
+                        <p class="text-sm text-gray-600">血液検査で将来のがんリスクを予測するバイオマーカーの探索。</p>
+                    </div>
+                    <!-- Future 4 -->
+                    <div class="bg-white p-4 rounded-lg shadow">
+                         <div class="icon-bubble icon-bubble-theme mx-auto"><svg class="w-8 h-8 text-theme" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg></div>
+                        <h4 class="font-bold">新たな治療戦略</h4>
+                        <p class="text-sm text-gray-600">エクソソームの産生や働きを阻害する新しいタイプの治療薬開発。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white text-center py-6 mt-12">
+        <p>&copy; 2025 微生物エクソソーム仮説レビュー. All rights reserved.</p>
+        <p class="text-sm text-gray-400 mt-2">このページは提供された科学文献のレビューに基づき、教育目的で作成されました。</p>
+    </footer>
+
+    <script>
+        // Simple fade-in animation on scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in-section');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('section').forEach(section => {
+            observer.observe(section);
+        });
+    </script>
+</body>
+</html>
