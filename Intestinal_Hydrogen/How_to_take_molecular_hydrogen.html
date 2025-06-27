@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分子状水素 あなたに最適な取り込み方は？</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', 'Roboto', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+        .hero-gradient {
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+        }
+        .card-gradient-1 { background: linear-gradient(135deg, #67e8f9, #06b6d4); }
+        .card-gradient-2 { background: linear-gradient(135deg, #5eead4, #14b8a6); }
+        .card-gradient-3 { background: linear-gradient(135deg, #a78bfa, #8b5cf6); }
+        .card-gradient-4 { background: linear-gradient(135deg, #fca5a5, #ef4444); }
+        .section-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background-color: #3b82f6;
+            border-radius: 2px;
+        }
+        .stat-card {
+            background-color: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            height: 100%;
+        }
+        .recommendation-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .recommendation-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Hero Section -->
+    <header class="hero-gradient text-white text-center py-20 px-4">
+        <div class="container mx-auto">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 animate-fade-in-down">分子状水素 あなたに最適な取り込み方は？</h1>
+            <p class="text-lg md:text-xl max-w-3xl mx-auto animate-fade-in-up">4つの主要な摂取方法を科学的データとインフォグラフィックで徹底比較。自分に合った方法を見つけましょう。</p>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-8">
+        
+        <!-- Introduction -->
+        <section class="mb-16">
+            <p class="text-center text-lg max-w-4xl mx-auto text-slate-600">
+                分子状水素($H_2$)は、優れた抗酸化作用を持つことから、健康や医療の分野で注目されています。しかし、その効果を最大限に引き出すには、どのように体内に取り込むかが重要です。ここでは、主要な4つの方法「ガス吸引」「水素水」「サプリメント」「腸内産生」を、有効性、実用性、コストの観点から分かりやすく比較します。
+            </p>
+        </section>
+
+        <!-- 4 Methods Section -->
+        <section class="mb-16">
+            <h2 class="section-title">4つの水素摂取方法を徹底解剖</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+                <!-- Method 1: Gas Inhalation -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300">
+                    <div class="card-gradient-1 p-6 text-white">
+                        <h3 class="text-2xl font-bold flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-3"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path><path d="m15.5 16.5-1.5-3-1.5 3h3z"></path><path d="M12 13.5V6"></path><path d="m8.5 16.5 1.5-3 1.5 3h-3z"></path></svg>水素ガス吸引</h3>
+                        <p class="opacity-90">高濃度の水素を直接、全身へ</p>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                            <!-- Infographic: Body Pathway -->
+                            <div class="text-center">
+                                <h4 class="font-bold mb-2 text-blue-600">体内へのルート</h4>
+                                <svg viewBox="0 0 100 120" class="w-full h-auto max-w-[150px] mx-auto">
+                                    <path d="M50 10 C 60 10 70 20 70 30 S 60 50 50 50 S 40 40 40 30 S 40 10 50 10" fill="#e0f2fe"/>
+                                    <path d="M50 50 L 50 80 L 40 110 L 60 110 L 50 80" fill="#e0f2fe"/>
+                                    <text x="50" y="8" font-size="8" text-anchor="middle">脳</text>
+                                    <path d="M50 55 C 40 65, 60 65, 50 75" fill="#fecaca"/>
+                                    <text x="50" y="68" font-size="8" text-anchor="middle">心臓</text>
+                                    <path d="M45 40 L 30 55 L 45 70 Z" fill="#e0f2fe"/>
+                                    <text x="35" y="60" font-size="8" text-anchor="middle">肺</text>
+                                    <path d="M55 40 L 70 55 L 55 70 Z" fill="#e0f2fe"/>
+                                    <!-- Arrow -->
+                                    <path d="M30 65 C 50 25, 80 45, 70 25" stroke="#0ea5e9" stroke-width="2" fill="none" stroke-dasharray="3 3"/>
+                                    <polygon points="68,22 70,25 73,23" fill="#0ea5e9"/>
+                                </svg>
+                                <p class="text-sm text-slate-500 mt-1">肺から吸収され、血流に乗り脳や心臓など全身へ迅速に到達。</p>
+                            </div>
+                            <!-- Infographic: Stats -->
+                            <div class="grid grid-cols-2 gap-2 text-center text-white">
+                                <div class="stat-card card-gradient-1">
+                                    <div class="font-bold text-lg">血中濃度</div>
+                                    <div class="text-3xl font-bold">高</div>
+                                    <div class="text-xs opacity-80">(8-32μM)</div>
+                                </div>
+                                <div class="stat-card card-gradient-1">
+                                    <div class="font-bold text-lg">持続時間</div>
+                                    <div class="text-3xl font-bold">短</div>
+                                    <div class="text-xs opacity-80">(吸引中)</div>
+                                </div>
+                                <div class="stat-card card-gradient-1">
+                                    <div class="font-bold text-lg">速さ</div>
+                                    <div class="text-3xl font-bold">最速</div>
+                                    <div class="text-xs opacity-80">(数分)</div>
+                                </div>
+                                <div class="stat-card card-gradient-1">
+                                    <div class="font-bold text-lg">利便性</div>
+                                    <div class="text-3xl font-bold">低</div>
+                                    <div class="text-xs opacity-80">(装置必要)</div>
+                                </div>
+                            </div>
+                        </div>
+                         <div class="space-y-4">
+                            <div><span class="font-bold text-green-600">Pros:</span> 最も迅速かつ高濃度に水素を供給可能。急性疾患の治療補助として期待。</div>
+                            <div><span class="font-bold text-red-600">Cons:</span> 装置が必須で高価。日常生活での利用には不便。</div>
+                            <div><span class="font-bold text-slate-600">コスト:</span> 初期投資が数十万〜と非常に高額。</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Method 2: Hydrogen Water -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300">
+                    <div class="card-gradient-2 p-6 text-white">
+                        <h3 class="text-2xl font-bold flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-3"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path><path d="m14.5 12.5-2-2-2 2"></path><path d="m14.5 16.5-2-2-2 2"></path></svg>水素水飲用</h3>
+                        <p class="opacity-90">手軽に摂取、肝臓へのアプローチ</p>
+                    </div>
+                    <div class="p-6">
+                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                            <!-- Infographic: Body Pathway -->
+                            <div class="text-center">
+                                <h4 class="font-bold mb-2 text-teal-600">体内へのルート</h4>
+                                <svg viewBox="0 0 100 120" class="w-full h-auto max-w-[150px] mx-auto">
+                                    <path d="M50 50 L 50 80 L 40 110 L 60 110 L 50 80" fill="#ccfbf1"/>
+                                    <path d="M50 70 L 65 75 L 65 90 L 50 95 Z" fill="#fde68a" />
+                                    <text x="58" y="85" font-size="8" text-anchor="middle">肝臓</text>
+                                    <path d="M50 80 C 40 90, 40 100, 50 110" fill="#ccfbf1"/>
+                                    <text x="45" y="95" font-size="8" text-anchor="middle">腸</text>
+                                    <!-- Arrow -->
+                                    <path d="M45 95 C 45 85, 50 85, 55 85" stroke="#14b8a6" stroke-width="2" fill="none" stroke-dasharray="3 3"/>
+                                    <polygon points="53,82 55,85 53,88" fill="#14b8a6"/>
+                                </svg>
+                                <p class="text-sm text-slate-500 mt-1">小腸で吸収後、門脈を通りまず肝臓へ高濃度で到達。全身への広がりは限定的。</p>
+                            </div>
+                            <!-- Infographic: Stats -->
+                            <div class="grid grid-cols-2 gap-2 text-center text-white">
+                                <div class="stat-card card-gradient-2">
+                                    <div class="font-bold text-lg">血中濃度</div>
+                                    <div class="text-3xl font-bold">中</div>
+                                    <div class="text-xs opacity-80">(肝臓)</div>
+                                </div>
+                                <div class="stat-card card-gradient-2">
+                                    <div class="font-bold text-lg">持続時間</div>
+                                    <div class="text-3xl font-bold">中</div>
+                                    <div class="text-xs opacity-80">(1-2時間)</div>
+                                </div>
+                                <div class="stat-card card-gradient-2">
+                                    <div class="font-bold text-lg">速さ</div>
+                                    <div class="text-3xl font-bold">速</div>
+                                    <div class="text-xs opacity-80">(数分〜)</div>
+                                </div>
+                                <div class="stat-card card-gradient-2">
+                                    <div class="font-bold text-lg">利便性</div>
+                                    <div class="text-3xl font-bold">高</div>
+                                    <div class="text-xs opacity-80">(携帯可能)</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <div><span class="font-bold text-green-600">Pros:</span> 手軽で日常に取り入れやすい。肝臓への効果が特に期待される。</div>
+                            <div><span class="font-bold text-red-600">Cons:</span> 水素が抜けやすい。全身への供給量はガス吸引に劣る。</div>
+                            <div><span class="font-bold text-slate-600">コスト:</span> 1日あたり約250円〜540円 (1L飲用の場合)。</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Method 3: Supplements -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300">
+                    <div class="card-gradient-3 p-6 text-white">
+                        <h3 class="text-2xl font-bold flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-3"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"></path><path d="m8.5 8.5 7 7"></path></svg>水素発生サプリ</h3>
+                        <p class="opacity-90">長時間持続、最高の利便性</p>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                            <!-- Infographic: Body Pathway -->
+                           <div class="text-center">
+                                <h4 class="font-bold mb-2 text-violet-600">体内へのルート</h4>
+                                <svg viewBox="0 0 100 120" class="w-full h-auto max-w-[150px] mx-auto">
+                                    <path d="M50 80 C 40 90, 40 100, 50 110" fill="#ede9fe"/>
+                                    <text x="45" y="95" font-size="8" text-anchor="middle">腸</text>
+                                    <circle cx="50" cy="95" r="5" fill="#a78bfa"/>
+                                    <path d="M50 95 Q 30 70, 50 50 Q 70 70, 50 95" stroke="#8b5cf6" stroke-width="1.5" fill="none" stroke-dasharray="2 2"/>
+                                    <text x="50" y="70" font-size="7" text-anchor="middle">全身へ持続的に放出</text>
+                                </svg>
+                                <p class="text-sm text-slate-500 mt-1">胃腸内でゆっくりと反応し、長時間にわたり水素を発生させ続ける。</p>
+                            </div>
+                            <!-- Infographic: Stats -->
+                            <div class="grid grid-cols-2 gap-2 text-center text-white">
+                                <div class="stat-card card-gradient-3">
+                                    <div class="font-bold text-lg">血中濃度</div>
+                                    <div class="text-3xl font-bold">低?</div>
+                                    <div class="text-xs opacity-80">(持続型)</div>
+                                </div>
+                                <div class="stat-card card-gradient-3">
+                                    <div class="font-bold text-lg">持続時間</div>
+                                    <div class="text-3xl font-bold">最長</div>
+                                    <div class="text-xs opacity-80">(〜24時間)</div>
+                                </div>
+                                <div class="stat-card card-gradient-3">
+                                    <div class="font-bold text-lg">速さ</div>
+                                    <div class="text-3xl font-bold">遅</div>
+                                    <div class="text-xs opacity-80">(ゆっくり)</div>
+                                </div>
+                                <div class="stat-card card-gradient-3">
+                                    <div class="font-bold text-lg">利便性</div>
+                                    <div class="text-3xl font-bold">最高</div>
+                                    <div class="text-xs opacity-80">(カプセル)</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <div><span class="font-bold text-green-600">Pros:</span> 携帯性・利便性が抜群。長時間、持続的に水素を供給できる可能性。</div>
+                            <div><span class="font-bold text-red-600">Cons:</span> 製品の品質に差がある。実際の血中濃度データが乏しい。</div>
+                            <div><span class="font-bold text-slate-600">コスト:</span> 1日あたり数十円〜数百円。</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Method 4: Intestinal Bacteria -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300">
+                    <div class="card-gradient-4 p-6 text-white">
+                        <h3 class="text-2xl font-bold flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-3"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline><path d="M12 18h.01"></path><path d="M16 12h.01"></path><path d="M12 12h.01"></path><path d="M8 12h.01"></path><path d="M16 18h.01"></path><path d="M8 18h.01"></path></svg>腸内細菌による産生</h3>
+                        <p class="opacity-90">食事から自然に、コストゼロで</p>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                            <!-- Infographic: Body Pathway -->
+                            <div class="text-center">
+                                <h4 class="font-bold mb-2 text-red-600">体内へのルート</h4>
+                                <svg viewBox="0 0 100 120" class="w-full h-auto max-w-[150px] mx-auto">
+                                    <path d="M50 80 C 40 90, 40 100, 50 110" fill="#fee2e2"/>
+                                    <text x="45" y="95" font-size="8" text-anchor="middle">腸内細菌</text>
+                                    <path d="M60 85 L 70 80 L 70 70 L 60 75" fill="#fde68a"/>
+                                    <text x="65" y="78" font-size="8" text-anchor="middle">肝臓</text>
+                                    <!-- Arrow -->
+                                    <path d="M55 90 C 60 88, 60 80, 65 78" stroke="#ef4444" stroke-width="1.5" fill="none" stroke-dasharray="3 3"/>
+                                </svg>
+                                <p class="text-sm text-slate-500 mt-1">食物繊維を腸内細菌が分解する際に発生。一部が血中に吸収される。</p>
+                            </div>
+                            <!-- Infographic: Stats -->
+                            <div class="grid grid-cols-2 gap-2 text-center text-white">
+                                <div class="stat-card card-gradient-4">
+                                    <div class="font-bold text-lg">血中濃度</div>
+                                    <div class="text-3xl font-bold">低</div>
+                                    <div class="text-xs opacity-80">(変動大)</div>
+                                </div>
+                                <div class="stat-card card-gradient-4">
+                                    <div class="font-bold text-lg">持続時間</div>
+                                    <div class="text-3xl font-bold">不定</div>
+                                    <div class="text-xs opacity-80">(食事依存)</div>
+                                </div>
+                                <div class="stat-card card-gradient-4">
+                                    <div class="font-bold text-lg">制御性</div>
+                                    <div class="text-3xl font-bold">不可</div>
+                                    <div class="text-xs opacity-80">(個人差大)</div>
+                                </div>
+                                <div class="stat-card card-gradient-4">
+                                    <div class="font-bold text-lg">コスト</div>
+                                    <div class="text-3xl font-bold">ゼロ</div>
+                                    <div class="text-xs opacity-80">(食費のみ)</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <div><span class="font-bold text-green-600">Pros:</span> コストがかからない。健康的な食生活と両立できる。</div>
+                            <div><span class="font-bold text-red-600">Cons:</span> 水素の供給量をコントロールできず、効果は個人差が非常に大きい。</div>
+                            <div><span class="font-bold text-slate-600">コスト:</span> 追加コストなし。</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Comparison Table Section -->
+        <section class="mb-16">
+            <h2 class="section-title">ひと目でわかる！総合比較表</h2>
+            <div class="bg-white rounded-xl shadow-lg overflow-x-auto">
+                <table class="w-full text-sm text-left text-slate-500">
+                    <thead class="text-xs text-slate-700 uppercase bg-slate-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3">特性</th>
+                            <th scope="col" class="px-6 py-3 text-center">ガス吸引</th>
+                            <th scope="col" class="px-6 py-3 text-center">水素水</th>
+                            <th scope="col" class="px-6 py-3 text-center">サプリメント</th>
+                            <th scope="col" class="px-6 py-3 text-center">腸内産生</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="bg-white border-b">
+                            <th scope="row" class="px-6 py-4 font-medium text-slate-900 whitespace-nowrap">ピーク血中濃度</th>
+                            <td class="px-6 py-4 text-center"><span class="bg-red-100 text-red-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded">高い</span></td>
+                            <td class="px-6 py-4 text-center"><span class="bg-yellow-100 text-yellow-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded">中程度 (肝臓)</span></td>
+                            <td class="px-6 py-4 text-center"><span class="bg-blue-100 text-blue-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded">低い (持続)</span></td>
+                            <td class="px-6 py-4 text-center"><span class="bg-gray-100 text-gray-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded">低い/変動</span></td>
+                        </tr>
+                        <tr class="bg-slate-50 border-b">
+                            <th scope="row" class="px-6 py-4 font-medium text-slate-900 whitespace-nowrap">主要な作用部位</th>
+                            <td class="px-6 py-4 text-center">全身 (脳・心臓)</td>
+                            <td class="px-6 py-4 text-center">肝臓・消化管</td>
+                            <td class="px-6 py-4 text-center">消化管・全身</td>
+                            <td class="px-6 py-4 text-center">消化管・肝臓</td>
+                        </tr>
+                        <tr class="bg-white border-b">
+                            <th scope="row" class="px-6 py-4 font-medium text-slate-900 whitespace-nowrap">作用の速さ</th>
+                            <td class="px-6 py-4 text-center">非常に速い</td>
+                            <td class="px-6 py-4 text-center">速い</td>
+                            <td class="px-6 py-4 text-center">遅い</td>
+                            <td class="px-6 py-4 text-center">非常に遅い</td>
+                        </tr>
+                        <tr class="bg-slate-50 border-b">
+                            <th scope="row" class="px-6 py-4 font-medium text-slate-900 whitespace-nowrap">作用持続時間</th>
+                             <td class="px-6 py-4 text-center">短い</td>
+                            <td class="px-6 py-4 text-center">中程度</td>
+                            <td class="px-6 py-4 text-center">長い</td>
+                            <td class="px-6 py-4 text-center">変動/持続</td>
+                        </tr>
+                        <tr class="bg-white border-b">
+                            <th scope="row" class="px-6 py-4 font-medium text-slate-900 whitespace-nowrap">初期コスト</th>
+                            <td class="px-6 py-4 text-center">非常に高い</td>
+                            <td class="px-6 py-4 text-center">低い</td>
+                            <td class="px-6 py-4 text-center">非常に低い</td>
+                            <td class="px-6 py-4 text-center">なし</td>
+                        </tr>
+                        <tr class="bg-slate-50">
+                            <th scope="row" class="px-6 py-4 font-medium text-slate-900 whitespace-nowrap">利便性</th>
+                            <td class="px-6 py-4 text-center">低い</td>
+                            <td class="px-6 py-4 text-center">高い</td>
+                            <td class="px-6 py-4 text-center">非常に高い</td>
+                            <td class="px-6 py-4 text-center">食事依存</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Recommendation Section -->
+        <section>
+            <h2 class="section-title">目的別！あなたにおすすめの方法は？</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Rec 1 -->
+                <div class="recommendation-card bg-white p-6 rounded-lg shadow-md border-t-4 border-cyan-500">
+                    <h3 class="font-bold text-lg mb-2 text-cyan-600">集中ケア・医療応用</h3>
+                    <p class="text-slate-600 mb-4">緊急時や特定の疾患に対し、迅速・強力なアプローチが必要な場合。</p>
+                    <div class="text-center font-bold text-cyan-700 bg-cyan-50 p-3 rounded-md">👉 水素ガス吸引</div>
+                </div>
+                <!-- Rec 2 -->
+                <div class="recommendation-card bg-white p-6 rounded-lg shadow-md border-t-4 border-teal-500">
+                    <h3 class="font-bold text-lg mb-2 text-teal-600">肝臓の健康サポート</h3>
+                    <p class="text-slate-600 mb-4">肝機能や脂肪肝が気になる方。肝臓に的を絞ってアプローチしたい場合。</p>
+                    <div class="text-center font-bold text-teal-700 bg-teal-50 p-3 rounded-md">👉 水素水飲用</div>
+                </div>
+                <!-- Rec 3 -->
+                <div class="recommendation-card bg-white p-6 rounded-lg shadow-md border-t-4 border-violet-500">
+                    <h3 class="font-bold text-lg mb-2 text-violet-600">日々の健康維持</h3>
+                    <p class="text-slate-600 mb-4">生活習慣病予防、疲労回復など、毎日の健康管理に手軽に取り入れたい場合。</p>
+                    <div class="text-center font-bold text-violet-700 bg-violet-50 p-3 rounded-md">👉 水素水 or サプリ</div>
+                </div>
+                <!-- Rec 4 -->
+                 <div class="recommendation-card bg-white p-6 rounded-lg shadow-md border-t-4 border-red-500">
+                    <h3 class="font-bold text-lg mb-2 text-red-600">コストをかけずに</h3>
+                    <p class="text-slate-600 mb-4">まずはコストをかけずに、自然な形で水素の恩恵を受けたい場合。</p>
+                    <div class="text-center font-bold text-red-700 bg-red-50 p-3 rounded-md">👉 食生活の改善</div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer class="bg-slate-800 text-slate-400 text-center p-6 mt-16">
+        <div class="container mx-auto">
+            <p class="mb-2">本ページの情報は、提供された分析レポートを基に作成された教育目的のものです。医学的なアドバイスに代わるものではありません。</p>
+            <p>&copy; 2024 分子状水素情報センター. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Chosen Palette: Calm Harmony -->
+    <!-- Application Structure Plan: A thematic, single-page application designed for a learning journey. It starts with a high-level "Why," visually explains the "How" (production), provides an interactive "What to do" (diet toolkit), adds nuance with "Where it goes" (consumption), reinforces the "Benefits," and concludes with "The Future." This user-centric flow is more intuitive for a general audience than the original report's scientific chapter structure, prioritizing engagement and actionable insights. -->
+    <!-- Visualization & Content Choices: Report Info: Fiber types' hydrogen yield -> Goal: Compare/Choose -> Viz: Interactive Chart.js bar chart + filterable food cards -> Interaction: Clicking a fiber card filters foods and highlights the chart bar -> Justification: Active exploration is more engaging than a static table. | Report Info: Hydrogen consumer competition -> Goal: Explain -> Viz: HTML/CSS diagram -> Interaction: Toggling a "sulfate" button visually alters the competitive balance -> Justification: Makes an abstract concept tangible. | Report Info: Production/Benefit concepts -> Goal: Inform -> Viz: HTML/CSS diagrams & icon-based cards -> Justification: Simplifies complex processes for quick comprehension. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <title>インタラクティブ・レポート：腸内水素の科学</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans JP', sans-serif; }
+        .hero-bg { background-color: #f0f4f8; }
+        .section-title { @apply text-3xl font-bold text-slate-800 text-center mb-4; }
+        .section-subtitle { @apply text-lg text-slate-600 text-center max-w-3xl mx-auto mb-12; }
+        .card { @apply bg-white p-6 rounded-2xl shadow-lg transition-transform duration-300 hover:scale-[1.02]; }
+        .icon-wrapper { @apply w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4; }
+        .chart-container { position: relative; width: 100%; max-width: 700px; height: 350px; margin-left: auto; margin-right: auto; }
+        @media (max-width: 768px) { .chart-container { height: 300px; } }
+        .nav-button { @apply px-4 py-2 rounded-full text-sm font-semibold transition-colors duration-200; }
+        .nav-button.active { @apply bg-sky-500 text-white shadow-md; }
+        .nav-button:not(.active) { @apply bg-white text-slate-600 hover:bg-sky-100; }
+        .food-card { @apply bg-slate-50 border border-slate-200 rounded-lg p-4 text-center transition-opacity duration-300; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-700">
+
+    <!-- Header -->
+    <header class="hero-bg">
+        <div class="container mx-auto px-6 py-16 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4">あなたの腸は「水素」工場だった</h1>
+            <p class="text-xl text-slate-700 max-w-3xl mx-auto">食事から、体内で「賢い抗酸化物質」である分子状水素を作り出す。最新科学が解き明かす、腸内細菌の驚くべき力と、その恩恵を最大化するための食事戦略を探求しましょう。</p>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-16">
+
+        <!-- Section 1: How it Works -->
+        <section id="how-it-works" class="mb-24">
+            <h2 class="section-title">腸内水素ファクトリーの仕組み</h2>
+            <p class="section-subtitle">私たちが食べた食物繊維は、どのようにして水素に変わるのでしょうか？このセクションでは、腸内で繰り広げられる3ステップの生産プロセスをわかりやすく解説します。これは、私たちの体が持つ驚異的な内なる能力の核心です。</p>
+            <div class="grid md:grid-cols-3 gap-8 items-start text-center">
+                <!-- Step 1 -->
+                <div class="card">
+                    <div class="icon-wrapper bg-green-100 text-green-600">
+                        <span class="text-3xl">🌿</span>
+                    </div>
+                    <h3 class="font-bold text-xl text-slate-800 mb-2">Step 1: 原料の投入 (食物繊維)</h3>
+                    <p>消化できない食物繊維が、腸内細菌のための「原料」として大腸に到着します。これは、水素生産の出発点です。</p>
+                </div>
+                <!-- Step 2 -->
+                <div class="card">
+                    <div class="icon-wrapper bg-yellow-100 text-yellow-600">
+                         <span class="text-3xl">🦠</span>
+                    </div>
+                    <h3 class="font-bold text-xl text-slate-800 mb-2">Step 2: 細菌による発酵</h3>
+                    <p>主に*Bacteroides*属などの腸内細菌が、食物繊維を分解（発酵）します。この過程で、代謝を維持するために余分な電子を処理する必要が生じます。</p>
+                </div>
+                <!-- Step 3 -->
+                <div class="card">
+                    <div class="icon-wrapper bg-sky-100 text-sky-600">
+                         <span class="text-3xl">💨</span>
+                    </div>
+                    <h3 class="font-bold text-xl text-slate-800 mb-2">Step 3: 水素($H_2$)の発生</h3>
+                    <p>「ヒドロゲナーゼ」という酵素が、余った電子をプロトン(H⁺)と結合させ、分子状水素($H_2$)を放出。これが代謝のボトルネックを解消する鍵です。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Diet Toolkit -->
+        <section id="diet-toolkit" class="mb-24">
+            <h2 class="section-title">水素産生を高める食事ツールキット</h2>
+            <p class="section-subtitle">すべての食物繊維が同じように水素を産生するわけではありません。このインタラクティブなツールキットを使って、どの繊維が最も効果的で、どのような食品や調理法があなたの「内なる水素工場」の生産性を最大化するのかを探ってみましょう。</p>
+            <div class="card">
+                <div class="md:flex gap-8">
+                    <!-- Chart -->
+                    <div class="md:w-1/2 mb-8 md:mb-0">
+                        <h3 class="text-xl font-bold text-center mb-4 text-slate-800">食物繊維タイプ別 水素産生ポテンシャル</h3>
+                        <div class="chart-container">
+                            <canvas id="fiberChart"></canvas>
+                        </div>
+                    </div>
+                    <!-- Food List -->
+                    <div class="md:w-1/2">
+                        <h3 class="text-xl font-bold text-center mb-4 text-slate-800">高インパクト食品リスト</h3>
+                        <div id="fiber-nav" class="flex flex-wrap justify-center gap-2 mb-6">
+                            <!-- Buttons will be injected by JS -->
+                        </div>
+                        <div id="food-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                            <!-- Food cards will be injected by JS -->
+                        </div>
+                         <div id="cooking-tip" class="mt-6 p-4 bg-sky-50 border-l-4 border-sky-400 rounded-r-lg hidden">
+                            <h4 class="font-bold text-sky-800">調理マジック：冷やすだけで効果UP！</h4>
+                            <p class="text-sm text-sky-700">イモ類や米を調理後に冷やすと、最強の水素原料「レジスタントスターチ(RS3)」に変化します。再加熱しても効果は持続します。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Gut Marketplace -->
+        <section id="gut-marketplace" class="mb-24">
+            <h2 class="section-title">腸内水素マーケットの真実</h2>
+            <p class="section-subtitle">産生された水素は、すべてが体に吸収されるわけではありません。腸内では、3種類の微生物が水素を奪い合う「市場競争」が起きています。このバランスが、最終的にあなたの体が受け取る恩恵を左右します。</p>
+            <div class="card md:flex items-center gap-8">
+                <div class="md:w-1/3 text-center mb-8 md:mb-0">
+                    <h3 class="text-xl font-bold text-slate-800 mb-2">水素生産者</h3>
+                    <div class="icon-wrapper bg-sky-100 text-sky-600 text-3xl">💨</div>
+                    <p class="font-semibold text-2xl text-sky-500">H₂ プール</p>
+                    <p class="text-sm">食物繊維から水素が供給される</p>
+                </div>
+                <div class="md:w-2/3">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-bold text-slate-800">水素消費者レース</h3>
+                        <div class="flex items-center space-x-2">
+                             <span class="text-sm font-medium">硫酸塩の摂取:</span>
+                             <button id="sulfate-toggle" class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors bg-slate-300">
+                                <span class="sr-only">硫酸塩の有無を切り替え</span>
+                                <span class="inline-block w-4 h-4 transform bg-white rounded-full transition-transform translate-x-1"></span>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="consumer-lanes" class="space-y-4">
+                        <!-- Consumer lanes will be generated by JS -->
+                    </div>
+                    <p id="marketplace-summary" class="mt-4 text-sm text-center bg-slate-100 p-3 rounded-lg"></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Health Benefits -->
+        <section id="health-benefits" class="mb-24">
+            <h2 class="section-title">水素がもたらす3つの健康パワー</h2>
+            <p class="section-subtitle">消費されずに残った貴重な水素は、血流に乗って全身へ運ばれます。そこで、私たちの体を守るための様々な重要な役割を果たします。これが、食事で水素を増やすことの究極的な目標です。</p>
+            <div class="grid md:grid-cols-3 gap-8 text-center">
+                <div class="card">
+                    <div class="icon-wrapper bg-blue-100 text-blue-600"><span class="text-3xl">🛡️</span></div>
+                    <h3 class="font-bold text-xl text-slate-800 mb-2">選択的アンチオキシダント</h3>
+                    <p>最も有害な活性酸素だけを選んで無力化。体を守るのに必要な「善玉」活性酸素は攻撃しない、賢い働きをします。</p>
+                </div>
+                <div class="card">
+                    <div class="icon-wrapper bg-orange-100 text-orange-600"><span class="text-3xl">🔥</span></div>
+                    <h3 class="font-bold text-xl text-slate-800 mb-2">抗炎症作用</h3>
+                    <p>体内の過剰な炎症を引き起こす物質（炎症性サイトカイン）の産生を抑制し、静かな体内環境をサポートします。</p>
+                </div>
+                <div class="card">
+                    <div class="icon-wrapper bg-purple-100 text-purple-600"><span class="text-3xl">🧬</span></div>
+                    <h3 class="font-bold text-xl text-slate-800 mb-2">細胞シグナル調整</h3>
+                    <p>遺伝子の働きを調整し、体が本来持つ防御システム（Nrf2経路など）を活性化させ、細胞レベルから健康を支えます。</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Section 5: The Future -->
+        <section id="future" class="bg-white rounded-2xl p-8 md:p-12 shadow-inner">
+            <h2 class="section-title">未来の栄養学：あなただけの最適解へ</h2>
+            <p class="section-subtitle">同じものを食べても効果が違うのはなぜ？それは、あなたの腸内細菌の構成がユニークだからです。このセクションでは、なぜ個人差が生まれるのか、そして将来的にはどのようにして「あなただけの最適な食事法」が見つかるのかを解説します。</p>
+             <div class="max-w-3xl mx-auto text-center">
+                 <div class="bg-slate-100 rounded-lg p-6 flex flex-col md:flex-row items-center gap-6">
+                     <div class="text-5xl flex-shrink-0">🔬</div>
+                     <div>
+                        <h4 class="font-bold text-xl mb-2 text-left text-slate-800">「レスポンダー」と「ノンレスポンダー」</h4>
+                        <p class="text-slate-600 text-left">食物繊維への反応は、それを分解する菌や水素を産生する菌がいるかどうかに依存します。これが個人差（レスポンダー現象）の正体です。究極の目標は、単に水素を増やすだけでなく、酪酸など他の有益な物質とのバランスを最適化すること。将来的には、腸内環境の検査によって、あなたに最適な繊維の組み合わせが見つかる時代が来るでしょう。</p>
+                     </div>
+                 </div>
+             </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-800 text-white mt-16 py-10">
+        <div class="container mx-auto px-6 text-center">
+            <p class="font-bold text-lg mb-2">今日から始める、内なる水素革命</p>
+            <p class="text-slate-400 max-w-xl mx-auto">このレポートが、あなたの食生活を見直し、健康を内側から育むきっかけとなれば幸いです。</p>
+        </div>
+    </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    // --- DIET TOOLKIT DATA & LOGIC ---
+    const fiberData = [
+        { id: 'rs', name: 'レジスタントスターチ', yield: 90, foods: ['ポテトサラダ', '冷やご飯', '豆類', 'パスタサラダ'], tip: '調理後に冷やすことでRS3が劇的に増加。水素産生に最も効果的な戦略の一つ。' },
+        { id: 'inulin', name: 'イヌリン/FOS', yield: 85, foods: ['玉ねぎ', 'ニンニク', 'ごぼう', 'アスパラガス'], tip: '高発酵性で、速やかに水素を産生するプレバイオティクスの代表格。' },
+        { id: 'pectin', name: 'ペクチン', yield: 75, foods: ['りんご', '人参', 'ベリー類', '柑橘類の皮'], tip: '水溶性が高く、腸内細菌によってほぼ完全に発酵される。' },
+        { id: 'beta-glucan', name: 'β-グルカン', yield: 65, foods: ['オーツ麦', '大麦', 'きのこ類'], tip: '水溶性で、メタボリックヘルスにも良い影響が報告されている。' },
+        { id: 'cellulose', name: 'セルロース/不溶性', yield: 20, foods: ['葉物野菜の筋', 'ふすま', 'ナッツ類'], tip: '発酵性が低く、水素産生への貢献は限定的だが、便通改善には重要。' }
+    ];
+
+    const fiberNav = document.getElementById('fiber-nav');
+    const foodGrid = document.getElementById('food-grid');
+    const cookingTip = document.getElementById('cooking-tip');
+    let activeFiber = 'rs';
+
+    function renderFoodGrid() {
+        const selectedFiber = fiberData.find(f => f.id === activeFiber);
+        foodGrid.innerHTML = '';
+        selectedFiber.foods.forEach(food => {
+            const foodEl = document.createElement('div');
+            foodEl.className = 'food-card';
+            foodEl.textContent = food;
+            foodGrid.appendChild(foodEl);
+        });
+        cookingTip.style.display = activeFiber === 'rs' ? 'block' : 'none';
+    }
+
+    function renderNav() {
+        fiberNav.innerHTML = '';
+        fiberData.forEach(fiber => {
+            const button = document.createElement('button');
+            button.className = 'nav-button';
+            button.textContent = fiber.name;
+            button.dataset.id = fiber.id;
+            if (fiber.id === activeFiber) {
+                button.classList.add('active');
+            }
+            button.addEventListener('click', () => {
+                activeFiber = fiber.id;
+                renderNav();
+                renderFoodGrid();
+                updateChartHighlight();
+            });
+            fiberNav.appendChild(button);
+        });
+    }
+    
+    // Chart.js instance
+    const ctx = document.getElementById('fiberChart').getContext('2d');
+    const fiberChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: fiberData.map(f => f.name.replace('/', '/\n')),
+            datasets: [{
+                label: '水素産生ポテンシャル',
+                data: fiberData.map(f => f.yield),
+                backgroundColor: fiberData.map(f => f.id === activeFiber ? '#0ea5e9' : '#bae6fd'),
+                borderColor: fiberData.map(f => f.id === activeFiber ? '#0284c7' : '#7dd3fc'),
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            indexAxis: 'y',
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) { label += ': '; }
+                            if (context.parsed.x !== null) {
+                                label += context.parsed.x + ' (相対値)';
+                            }
+                            return label;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: { display: false },
+                    title: { display: true, text: '相対的水素産生量' }
+                },
+                y: { grid: { display: false } }
+            }
+        }
+    });
+
+    function updateChartHighlight() {
+        fiberChart.data.datasets[0].backgroundColor = fiberData.map(f => f.id === activeFiber ? '#0ea5e9' : '#bae6fd');
+        fiberChart.data.datasets[0].borderColor = fiberData.map(f => f.id === activeFiber ? '#0284c7' : '#7dd3fc');
+        fiberChart.update();
+    }
+
+    // --- GUT MARKETPLACE DATA & LOGIC ---
+    const consumers = [
+        { id: 'srb', name: '硫酸還元菌 (SRB)', affinity: { low: 50, high: 90 }, output: '硫化水素', color: 'red' },
+        { id: 'methanogen', name: 'メタン菌', affinity: { low: 70, high: 40 }, output: 'メタン', color: 'purple' },
+        { id: 'acetogen', name: 'アセトゲン', affinity: { low: 30, high: 20 }, output: '酢酸 (SCFA)', color: 'green' }
+    ];
+    const sulfateToggle = document.getElementById('sulfate-toggle');
+    const consumerLanes = document.getElementById('consumer-lanes');
+    const marketplaceSummary = document.getElementById('marketplace-summary');
+    let sulfatePresent = false;
+
+    function renderMarketplace() {
+        consumerLanes.innerHTML = '';
+        const currentAffinityKey = sulfatePresent ? 'high' : 'low';
+
+        // Sort by current affinity to show the winner on top
+        const sortedConsumers = [...consumers].sort((a, b) => b.affinity[currentAffinityKey] - a.affinity[currentAffinityKey]);
+        
+        let winnerName = sortedConsumers[0].name;
+
+        sortedConsumers.forEach((consumer, index) => {
+            const lane = document.createElement('div');
+            lane.className = `flex items-center gap-4 p-3 bg-${consumer.color}-50 rounded-lg border-2 border-transparent`;
+            
+            if (index === 0) {
+                lane.style.borderColor = `rgb(${getComputedStyle(document.documentElement).getPropertyValue('--color-' + consumer.color + '-400')})`;
+                lane.classList.add('shadow-md');
+            }
+            
+            const affinity = consumer.affinity[currentAffinityKey];
+
+            lane.innerHTML = `
+                <div class="w-1/3 font-bold text-${consumer.color}-800">${consumer.name}</div>
+                <div class="w-2/3">
+                    <div class="w-full bg-slate-200 rounded-full h-4">
+                        <div class="bg-${consumer.color}-500 h-4 rounded-full" style="width: ${affinity}%"></div>
+                    </div>
+                </div>
+                <div class="w-1/4 text-right font-semibold text-${consumer.color}-600">${consumer.output}</div>
+            `;
+            consumerLanes.appendChild(lane);
+        });
+
+        if (sulfatePresent) {
+            marketplaceSummary.textContent = `硫酸塩が豊富な環境では、熱力学的に最も有利な「${winnerName}」が水素を独占しがちです。これにより、有毒な硫化水素の産生が増加する可能性があります。`;
+        } else {
+            marketplaceSummary.textContent = `硫酸塩が少ない環境では、「${winnerName}」が優位に立ちますが、他の菌も水素を利用するチャンスがあります。これにより、有益な酢酸の産生が増える可能性があります。`;
+        }
+    }
+
+    sulfateToggle.addEventListener('click', () => {
+        sulfatePresent = !sulfatePresent;
+        sulfateToggle.classList.toggle('bg-sky-500', sulfatePresent);
+        sulfateToggle.classList.toggle('bg-slate-300', !sulfatePresent);
+        sulfateToggle.querySelector('span').classList.toggle('translate-x-5', sulfatePresent);
+        sulfateToggle.querySelector('span').classList.toggle('translate-x-1', !sulfatePresent);
+        renderMarketplace();
+    });
+
+    // Initial renders
+    renderNav();
+    renderFoodGrid();
+    renderMarketplace();
+});
+</script>
+</body>
+</html>
