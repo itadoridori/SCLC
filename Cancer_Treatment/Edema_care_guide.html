@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>がん緩和ケア：インタラクティブ浮腫管理ガイド</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony -->
+    <!-- Application Structure Plan: A top-navigation based single-page application (SPA) to provide a focused, non-overwhelming user experience for patients and families. The structure prioritizes immediate safety assessment, followed by cause exploration, practical self-care, and support resources. This task-oriented design is more intuitive than a linear report, allowing users to quickly find actionable information relevant to their immediate concerns (e.g., "Is this an emergency?"). Key interactions include a DVT checklist, a comparative chart for edema types, and a safety-gated guide for massage, all designed to enhance understanding and ensure user safety. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: DVT vs. Lymphedema vs. Systemic Edema comparison (Table 1). Goal: Compare. Viz/Method: Interactive bar chart (Chart.js). Interaction: Hover to see details. Justification: More engaging and easier to digest on mobile than a static table. Library: Chart.js.
+        - Report Info: Lymphedema staging (ISL). Goal: Show change/progression. Viz/Method: Horizontal bar chart. Interaction: Hover to see stage descriptions. Justification: Visually communicates the progressive nature of the condition. Library: Chart.js.
+        - Report Info: Self-care steps (massage, exercise). Goal: Inform/Instruct. Viz/Method: Step-by-step guides with HTML/CSS icons and diagrams. Interaction: Safety-gate button for massage. Justification: Visual instructions are easier to follow; the safety gate is a critical UX feature to prevent harm. Method: HTML/CSS/JS.
+        - Report Info: Nutrition advice. Goal: Inform. Viz/Method: Filterable card grid. Interaction: Click filters to sort foods. Justification: Allows users to easily find relevant food suggestions. Method: HTML/CSS/JS.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Noto Sans JP', sans-serif; }
+        .chart-container { position: relative; width: 100%; max-width: 600px; margin-left: auto; margin-right: auto; height: 350px; max-height: 50vh; }
+        @media (max-width: 768px) { .chart-container { height: 300px; max-height: 60vh; } }
+        .nav-button { transition: all 0.3s ease; }
+        .nav-button.active { background-color: #0d9488; color: white; }
+        .nav-button:not(.active):hover { background-color: #f0fdfa; }
+        .content-section { display: none; }
+        .content-section.active { display: block; animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .dvt-checklist-item.checked { background-color: #fecaca; text-decoration: line-through; }
+        .food-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .food-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); }
+    </style>
+</head>
+<body class="bg-stone-50 text-gray-800">
+
+    <div id="app" class="max-w-5xl mx-auto p-4 sm:p-6 lg:p-8">
+        <header class="mb-8">
+            <h1 class="text-3xl font-bold text-teal-700 text-center mb-2">進行がん患者さんのための浮腫（むくみ）ケアガイド</h1>
+            <p class="text-center text-gray-600 mb-6">ご自身とご家族の安楽な毎日のために</p>
+            <nav class="flex flex-wrap justify-center gap-2 sm:gap-4 bg-white p-3 rounded-xl shadow-md">
+                <button data-target="home" class="nav-button active text-sm sm:text-base font-bold py-2 px-3 sm:px-5 rounded-lg">ホーム</button>
+                <button data-target="causes" class="nav-button text-sm sm:text-base font-bold py-2 px-3 sm:px-5 rounded-lg">原因を知る</button>
+                <button data-target="self-care" class="nav-button text-sm sm:text-base font-bold py-2 px-3 sm:px-5 rounded-lg">セルフケア</button>
+                <button data-target="support" class="nav-button text-sm sm:text-base font-bold py-2 px-3 sm:px-5 rounded-lg">サポート</button>
+            </nav>
+        </header>
+
+        <main>
+            <section id="home" class="content-section active">
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h2 class="text-2xl font-bold text-teal-700 mb-4">はじめに：安楽な生活を目指して</h2>
+                    <p class="text-gray-700 mb-6">
+                        進行した小細胞肺癌の療養生活における「足のむくみ」は、つらい症状です。このガイドは、患者さんとご家族が浮腫を正しく理解し、適切に対処することで、苦痛を和らげ、可能な限り安楽な日常生活を送るためのお手伝いをします。まずは、むくみの状態を一緒に確認していきましょう。
+                    </p>
+                    <div class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-r-lg mb-8" role="alert">
+                        <h3 class="font-bold text-xl mb-3">⚠️ 緊急性の確認：安全第一のチェックリスト</h3>
+                        <p class="mb-4">以下の症状は、危険な「深部静脈血栓症（DVT）」のサインかもしれません。一つでも当てはまる場合は、マッサージなどは行わず、すぐに医療チーム（医師、看護師）に連絡してください。</p>
+                        <div id="dvt-checklist" class="space-y-2">
+                            <label class="dvt-checklist-item flex items-center p-3 bg-white rounded-md border border-gray-200 cursor-pointer hover:bg-red-100 transition-colors">
+                                <input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-red-600 focus:ring-red-500">
+                                <span class="ml-3 text-gray-900">片方の脚だけが、急に腫れてきた</span>
+                            </label>
+                            <label class="dvt-checklist-item flex items-center p-3 bg-white rounded-md border border-gray-200 cursor-pointer hover:bg-red-100 transition-colors">
+                                <input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-red-600 focus:ring-red-500">
+                                <span class="ml-3 text-gray-900">ふくらはぎに痛みや、押した時の痛み（圧痛）がある</span>
+                            </label>
+                            <label class="dvt-checklist-item flex items-center p-3 bg-white rounded-md border border-gray-200 cursor-pointer hover:bg-red-100 transition-colors">
+                                <input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-red-600 focus:ring-red-500">
+                                <span class="ml-3 text-gray-900">むくんだ部分が赤くなったり、熱っぽく感じる</span>
+                            </label>
+                             <label class="dvt-checklist-item flex items-center p-3 bg-white rounded-md border border-gray-200 cursor-pointer hover:bg-red-100 transition-colors">
+                                <input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-red-600 focus:ring-red-500">
+                                <span class="ml-3 text-gray-900">突然の息切れや、深呼吸で悪化する胸の痛みがある（肺血栓塞栓症の疑い）</span>
+                            </label>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">あなたのむくみはどのタイプ？</h3>
+                    <p class="text-gray-700 mb-4">むくみの原因は一つではありません。下のグラフは、主な原因ごとの特徴を比較したものです。ご自身の症状と見比べて、原因を理解する手がかりにしてください。（グラフの項目にカーソルを合わせると詳細が表示されます）</p>
+                    <div class="chart-container">
+                        <canvas id="edemaComparisonChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <section id="causes" class="content-section">
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h2 class="text-2xl font-bold text-teal-700 mb-4">なぜ、むくむのか？：原因の探求</h2>
+                    <p class="text-gray-700 mb-6">
+                        下肢の浮腫は、様々な原因が複雑に絡み合って生じます。主な原因として、①血流の滞り（深部静脈血栓症）、②リンパの流れの滞り（がん性リンパ浮腫）、③体全体の水分バランスの乱れ（全身性浮腫）の3つが挙げられます。それぞれの特徴を理解することが、適切なケアへの第一歩です。
+                    </p>
+                    <div class="space-y-6">
+                        <div class="border border-gray-200 rounded-lg p-4">
+                            <h3 class="text-xl font-bold text-red-600">1. 深部静脈血栓症（DVT）</h3>
+                            <p class="mt-2 text-gray-600">脚の深い部分の静脈に血栓（血の塊）ができ、血流をせき止める状態。がん患者さんはリスクが高く、緊急の対応が必要です。血栓が肺に飛ぶ「肺血栓塞栓症」は命に関わります。</p>
+                        </div>
+                        <div class="border border-gray-200 rounded-lg p-4">
+                            <h3 class="text-xl font-bold text-blue-600">2. がん性リンパ浮腫</h3>
+                            <p class="mt-2 text-gray-600">骨盤内などへの転移によりリンパ節が塞がれ、タンパク質を多く含むリンパ液が脚に溜まる状態。放置すると徐々に進行し、皮膚が硬くなったり、感染症（蜂窩織炎）を繰り返しやすくなります。</p>
+                             <div class="mt-4">
+                                <h4 class="font-bold text-gray-700 mb-2">リンパ浮腫の進行度（国際リンパ学会分類）</h4>
+                                <div class="chart-container" style="height: 300px;">
+                                    <canvas id="lymphedemaStageChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="border border-gray-200 rounded-lg p-4">
+                            <h3 class="text-xl font-bold text-green-600">3. 全身性浮腫</h3>
+                            <p class="mt-2 text-gray-600">がんの進行に伴う栄養状態の悪化（低アルブミン血症）や、心臓・腎臓の機能低下、長期間の臥床（不動）など、体全体の問題によって水分が溜まる状態。通常、両脚に左右対称に現れ、指で押すと跡が残りやすいのが特徴です。</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="self-care" class="content-section">
+                 <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h2 class="text-2xl font-bold text-teal-700 mb-4">お家でできるセルフケア</h2>
+                    <p class="text-gray-700 mb-6">
+                        浮腫のつらさを和らげるためには、日々のケアがとても大切です。ここでは、ご家庭で安全に行える「スキンケア」「運動・姿勢」「マッサージ」「食事」の4つの柱をご紹介します。安楽を最優先し、無理のない範囲で続けていきましょう。
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        
+                        <div class="bg-blue-50 p-6 rounded-lg border border-blue-200">
+                            <h3 class="text-xl font-bold text-blue-800 mb-3">① スキンケア：感染を防ぐ砦</h3>
+                            <p class="mb-4">むくんだ皮膚は薄く、傷つきやすいため、細菌感染（蜂窩織炎）を防ぐことが最重要です。<strong>「保清・保湿・保護」</strong>を心がけましょう。</p>
+                            <ul class="space-y-3">
+                                <li class="flex items-start"><span class="text-blue-600 font-bold mr-2">🧼</span><div><strong>保清：</strong>低刺激の石鹸で優しく洗い、指の間まで丁寧に拭きます。</div></li>
+                                <li class="flex items-start"><span class="text-blue-600 font-bold mr-2">💧</span><div><strong>保湿：</strong>入浴後などに保湿クリームを塗り、乾燥やひび割れを防ぎます。</div></li>
+                                <li class="flex items-start"><span class="text-blue-600 font-bold mr-2">🛡️</span><div><strong>保護：</strong>切り傷、虫刺され、日焼けなど、あらゆる刺激から皮膚を守ります。</div></li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-green-50 p-6 rounded-lg border border-green-200">
+                            <h3 class="text-xl font-bold text-green-800 mb-3">② 運動・姿勢：流れを助ける工夫</h3>
+                            <p class="mb-4">重力と筋肉の動きを利用して、脚に溜まった水分を心臓に戻す手助けをします。</p>
+                             <ul class="space-y-3">
+                                <li class="flex items-start"><span class="text-green-600 font-bold mr-2">🛌</span><div><strong>姿勢（挙上）：</strong>横になる時や座る時は、クッションを使い、常に脚を心臓より高く保ちます。</div></li>
+                                <li class="flex items-start"><span class="text-green-600 font-bold mr-2">🦶</span><div><strong>運動（足首の曲げ伸ばし）：</strong>ベッドや椅子に座ったまま、ゆっくり足首を曲げたり伸ばしたりを繰り返します。ふくらはぎの筋肉がポンプの役割を果たします。</div></li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-yellow-50 p-6 rounded-lg border border-yellow-200 md:col-span-2">
+                            <h3 class="text-xl font-bold text-yellow-800 mb-3">③ マッサージ：安楽のための触れ合い</h3>
+                            <p class="mb-4">ここでのマッサージは、浮腫を「治す」ためではなく、<strong>安楽やリラックス、安心感</strong>を得るためのものです。始める前に、必ず下の安全確認を行ってください。</p>
+                            <div id="massage-safety-gate" class="bg-red-100 border-l-4 border-red-500 p-4 rounded-r-lg">
+                                <h4 class="font-bold text-red-800 text-lg">⚠️ 最重要：マッサージ前の安全確認</h4>
+                                <p class="my-2 text-red-700">DVTや皮膚感染症の疑いがある時にマッサージを行うと、症状を悪化させる危険があります。以下の項目に<strong>一つも当てはまらないこと</strong>を確認してください。</p>
+                                <ul class="list-disc list-inside text-red-700 space-y-1">
+                                    <li>片脚だけの急な腫れ、痛み、赤み、熱感</li>
+                                    <li>皮膚の感染（赤く熱を持ち、痛む）</li>
+                                    <li>未治療の重い心臓の病気</li>
+                                    <li>開いた傷や、じくじくした滲出液</li>
+                                </ul>
+                                <button id="safety-confirm-btn" class="mt-4 bg-teal-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-teal-700 transition-colors">上記に当てはまらないことを確認しました</button>
+                            </div>
+                            <div id="massage-instructions" class="hidden mt-4">
+                                <h4 class="font-bold text-yellow-900 mb-2">安全なマッサージの手順</h4>
+                                <ol class="list-decimal list-inside space-y-2 text-gray-700">
+                                    <li><strong>準備：</strong>部屋を暖かくし、楽な姿勢で。摩擦を減らすためオイルやローションを少量使います。</li>
+                                    <li><strong>方向：</strong><strong>必ず足先から心臓へ（つま先→脚の付け根）</strong>向かって、一方向になでます。</li>
+                                    <li><strong>圧の強さ：</strong><strong>ごくごく優しく。</strong>手のひら全体で包み込むように、皮膚の表面が動く程度。</li>
+                                    <li><strong>速さ：</strong>非常にゆっくり、リズミカルな動きを心がけます。</li>
+                                    <li><strong>手順：</strong>①脚の付け根→②太もも→③ふくらはぎ→④足先の順に、下から上へとなで上げます。常に「痛くないですか？」と確認しながら行いましょう。</li>
+                                </ol>
+                            </div>
+                        </div>
+
+                        <div class="bg-purple-50 p-6 rounded-lg border border-purple-200 md:col-span-2">
+                            <h3 class="text-xl font-bold text-purple-800 mb-3">④ 食事の工夫：体の中からサポート</h3>
+                            <p class="mb-4">栄養は、むくみの管理と体力維持に不可欠です。塩分を控え、タンパク質をしっかり摂ることが基本です。食欲がない時は、食べやすく栄養価の高いものを選びましょう。</p>
+                            <div class="mb-4">
+                                <span class="font-bold mr-4">食品フィルター:</span>
+                                <button class="food-filter-btn active bg-purple-600 text-white py-1 px-3 rounded-full text-sm" data-filter="all">すべて</button>
+                                <button class="food-filter-btn bg-purple-200 text-purple-800 py-1 px-3 rounded-full text-sm" data-filter="potassium">カリウム豊富</button>
+                                <button class="food-filter-btn bg-purple-200 text-purple-800 py-1 px-3 rounded-full text-sm" data-filter="protein">タンパク質豊富</button>
+                            </div>
+                            <div id="food-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                                <!-- Food cards will be injected here by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                 </div>
+            </section>
+
+            <section id="support" class="content-section">
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h2 class="text-2xl font-bold text-teal-700 mb-4">包括的な支援ネットワーク</h2>
+                    <p class="text-gray-700 mb-6">
+                        在宅療養は、一人やご家族だけで抱え込むものではありません。専門家のサポートや公的な制度を上手に活用し、支援の輪を広げることが、質の高い療養生活の鍵となります。
+                    </p>
+                    <div class="space-y-4">
+                        <details class="group bg-gray-50 p-4 rounded-lg cursor-pointer">
+                            <summary class="flex justify-between items-center font-bold text-lg text-gray-800">
+                                <span>在宅での専門的サポート</span>
+                                <span class="group-open:rotate-90 transition-transform">▶</span>
+                            </summary>
+                            <div class="mt-3 text-gray-700">
+                                <p><strong>訪問看護：</strong>看護師が自宅を訪問し、健康状態のチェックや医療処置、療養上のアドバイスを提供します。</p>
+                                <p class="mt-2"><strong>訪問リハビリテーション：</strong>理学療法士などが訪問し、関節の運動や日常生活動作の訓練を行います。</p>
+                                <p class="mt-2"><strong>訪問介護：</strong>ヘルパーが食事や入浴などの身体介護や、生活援助を行います。</p>
+                                <p class="mt-3 text-sm text-gray-500">※これらのサービスは主に介護保険で利用できます。ケアマネジャーにご相談ください。</p>
+                            </div>
+                        </details>
+                        <details class="group bg-gray-50 p-4 rounded-lg cursor-pointer">
+                            <summary class="flex justify-between items-center font-bold text-lg text-gray-800">
+                                <span>経済的・社会的な支援制度</span>
+                                <span class="group-open:rotate-90 transition-transform">▶</span>
+                            </summary>
+                             <div class="mt-3 text-gray-700">
+                                <p><strong>高額療養費制度：</strong>医療費の自己負担額が上限を超えた場合に払い戻される制度です。「限度額適用認定証」を事前に入手すると便利です。</p>
+                                <p class="mt-2"><strong>傷病手当金：</strong>会社員の方が病気で仕事を休んだ場合に支給されます。</p>
+                                <p class="mt-2"><strong>医療費控除：</strong>年間の医療費が一定額を超えた場合、確定申告で税金が還付されます。</p>
+                            </div>
+                        </details>
+                        <details class="group bg-gray-50 p-4 rounded-lg cursor-pointer">
+                            <summary class="flex justify-between items-center font-bold text-lg text-gray-800">
+                                <span>介護者自身のケア</span>
+                                <span class="group-open:rotate-90 transition-transform">▶</span>
+                            </summary>
+                            <div class="mt-3 text-gray-700">
+                                <p>ご家族は「第二の患者」とも言われます。ご自身の心と体の健康を保つことは、質の高い介護を続けるために不可欠です。</p>
+                                <ul class="list-disc list-inside mt-2 space-y-1">
+                                    <li>一人で抱え込まず、信頼できる人に話す</li>
+                                    <li>公的サービスを利用して休息時間をとる（レスパイト）</li>
+                                    <li>ご自身の健康管理も大切にする</li>
+                                </ul>
+                            </div>
+                        </details>
+                        <details class="group bg-gray-50 p-4 rounded-lg cursor-pointer">
+                            <summary class="flex justify-between items-center font-bold text-lg text-gray-800">
+                                <span>相談窓口</span>
+                                <span class="group-open:rotate-90 transition-transform">▶</span>
+                            </summary>
+                            <div class="mt-3 text-gray-700">
+                                <p><strong>がん相談支援センター：</strong>全国のがん診療連携拠点病院などに設置されている無料の相談窓口です。病気や治療、生活のことなど、何でも相談できます。</p>
+                                <p class="mt-2"><strong>患者会・患者支援団体：</strong>同じ境遇の仲間と情報交換や支え合いができます。（例：NPO法人肺がん患者の会ワンステップ）</p>
+                           </div>
+                        </details>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const navButtons = document.querySelectorAll('.nav-button');
+            const contentSections = document.querySelectorAll('.content-section');
+            const app = {
+                charts: {},
+                init: function() {
+                    this.setupNavigation();
+                    this.setupDVTChecklist();
+                    this.setupMassageGate();
+                    this.setupFoodFilter();
+                    this.createCharts();
+                    this.populateFoodGrid();
+                },
+                setupNavigation: function() {
+                    navButtons.forEach(button => {
+                        button.addEventListener('click', () => {
+                            const targetId = button.dataset.target;
+
+                            navButtons.forEach(btn => btn.classList.remove('active'));
+                            button.classList.add('active');
+
+                            contentSections.forEach(section => {
+                                section.classList.remove('active');
+                                if (section.id === targetId) {
+                                    section.classList.add('active');
+                                }
+                            });
+                        });
+                    });
+                },
+                setupDVTChecklist: function() {
+                    const checklistItems = document.querySelectorAll('.dvt-checklist-item');
+                    checklistItems.forEach(item => {
+                        const checkbox = item.querySelector('input[type="checkbox"]');
+                        checkbox.addEventListener('change', () => {
+                            item.classList.toggle('checked', checkbox.checked);
+                        });
+                    });
+                },
+                setupMassageGate: function() {
+                    const confirmBtn = document.getElementById('safety-confirm-btn');
+                    const instructions = document.getElementById('massage-instructions');
+                    const gate = document.getElementById('massage-safety-gate');
+                    confirmBtn.addEventListener('click', () => {
+                        gate.style.display = 'none';
+                        instructions.classList.remove('hidden');
+                        instructions.classList.add('active');
+                    });
+                },
+                createCharts: function() {
+                    this.createComparisonChart();
+                    this.createLymphedemaStageChart();
+                },
+                createComparisonChart: function() {
+                    const ctx = document.getElementById('edemaComparisonChart').getContext('2d');
+                    if(this.charts.comparison) this.charts.comparison.destroy();
+                    this.charts.comparison = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['左右差', '発症の速さ', '痛み', '皮膚の色・温度', '圧痕(くぼみ)'],
+                            datasets: [
+                                {
+                                    label: '深部静脈血栓症(DVT)',
+                                    data: [5, 5, 4, 4, 3],
+                                    backgroundColor: 'rgba(239, 68, 68, 0.7)',
+                                    borderColor: 'rgba(239, 68, 68, 1)',
+                                    borderWidth: 1
+                                },
+                                {
+                                    label: 'リンパ浮腫',
+                                    data: [4, 2, 2, 2, 4],
+                                    backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                                    borderColor: 'rgba(59, 130, 246, 1)',
+                                    borderWidth: 1
+                                },
+                                {
+                                    label: '全身性浮腫',
+                                    data: [1, 2, 1, 1, 5],
+                                    backgroundColor: 'rgba(34, 197, 94, 0.7)',
+                                    borderColor: 'rgba(34, 197, 94, 1)',
+                                    borderWidth: 1
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            indexAxis: 'y',
+                            scales: {
+                                x: {
+                                    display: false,
+                                    max: 5,
+                                },
+                                y: {
+                                    ticks: { font: { size: 14, family: "'Noto Sans JP', sans-serif" } }
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    position: 'top',
+                                    labels: { font: { size: 12, family: "'Noto Sans JP', sans-serif" } }
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            const type = context.dataset.label;
+                                            const feature = context.label;
+                                            let description = '';
+                                            const value = context.raw;
+
+                                            const details = {
+                                                '左右差': ['通常、片側性', '通常、片側性(両側性も有)', '常に両側性'],
+                                                '発症の速さ': ['突然', '徐々に進行', '徐々に進行'],
+                                                '痛み': ['鋭い痛みを伴うことが多い', '重だるさ、張り感', '通常は痛くない'],
+                                                '皮膚の色・温度': ['赤み・熱感を伴うことが多い', '通常は正常', '通常は正常か蒼白'],
+                                                '圧痕(くぼみ)': ['伴うことがある', '初期は圧痕性、進行すると非圧痕性', '常に明瞭な圧痕性']
+                                            };
+                                            
+                                            let detailIndex = 0;
+                                            if (type === 'リンパ浮腫') detailIndex = 1;
+                                            if (type === '全身性浮腫') detailIndex = 2;
+
+                                            return `${type}: ${details[feature][detailIndex]}`;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                },
+                createLymphedemaStageChart: function() {
+                    const ctx = document.getElementById('lymphedemaStageChart').getContext('2d');
+                    if(this.charts.lymphedema) this.charts.lymphedema.destroy();
+                    this.charts.lymphedema = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['0期 (潜在期)', 'I期 (可逆期)', 'II期 (非可逆期)', 'III期 (象皮病)'],
+                            datasets: [{
+                                label: '進行度',
+                                data: [1, 2, 3, 4],
+                                backgroundColor: [
+                                    'rgba(191, 219, 254, 0.8)',
+                                    'rgba(147, 197, 253, 0.8)',
+                                    'rgba(96, 165, 250, 0.8)',
+                                    'rgba(59, 130, 246, 0.8)'
+                                ],
+                                borderColor: [
+                                    'rgba(191, 219, 254, 1)',
+                                    'rgba(147, 197, 253, 1)',
+                                    'rgba(96, 165, 250, 1)',
+                                    'rgba(59, 130, 246, 1)'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            indexAxis: 'y',
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                x: { display: false },
+                                y: { ticks: { font: { size: 12, family: "'Noto Sans JP', sans-serif" } } }
+                            },
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            const descriptions = [
+                                                '症状なし。リンパ輸送能は低下。',
+                                                '圧痕性。挙上で改善する。',
+                                                '挙上では改善しない。組織が硬化し始める。',
+                                                '圧痕なし。皮膚が硬く変化する（象皮様）。'
+                                            ];
+                                            return descriptions[context.dataIndex];
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                },
+                foodData: [
+                    { name: 'バナナ', category: 'potassium', emoji: '🍌' },
+                    { name: 'かぼちゃ', category: 'potassium', emoji: '🎃' },
+                    { name: 'アボカド', category: 'potassium', emoji: '🥑' },
+                    { name: 'ほうれん草', category: 'potassium', emoji: '🥬' },
+                    { name: '鶏肉', category: 'protein', emoji: '🍗' },
+                    { name: '魚', category: 'protein', emoji: '🐟' },
+                    { name: '卵', category: 'protein', emoji: '🥚' },
+                    { name: '豆腐', category: 'protein', emoji: '⬜' },
+                    { name: 'ヨーグルト', category: ['potassium', 'protein'], emoji: '🍦' },
+                    { name: '納豆', category: 'protein', emoji: '🟫' },
+                    { name: '牛乳', category: 'protein', emoji: '🥛' },
+                    { name: 'さといも', category: 'potassium', emoji: '🥔' },
+                ],
+                populateFoodGrid: function(filter = 'all') {
+                    const grid = document.getElementById('food-grid');
+                    grid.innerHTML = '';
+                    const filteredData = filter === 'all' 
+                        ? this.foodData 
+                        : this.foodData.filter(food => 
+                            Array.isArray(food.category) ? food.category.includes(filter) : food.category === filter
+                          );
+                    
+                    filteredData.forEach(food => {
+                        const card = document.createElement('div');
+                        card.className = 'food-card bg-white p-3 rounded-lg text-center shadow cursor-pointer border border-gray-200';
+                        card.innerHTML = `
+                            <div class="text-4xl">${food.emoji}</div>
+                            <p class="mt-2 font-bold text-gray-700">${food.name}</p>
+                        `;
+                        grid.appendChild(card);
+                    });
+                },
+                setupFoodFilter: function() {
+                    const filterButtons = document.querySelectorAll('.food-filter-btn');
+                    filterButtons.forEach(button => {
+                        button.addEventListener('click', () => {
+                            filterButtons.forEach(btn => {
+                                btn.classList.remove('active', 'bg-purple-600', 'text-white');
+                                btn.classList.add('bg-purple-200', 'text-purple-800');
+                            });
+                            button.classList.add('active', 'bg-purple-600', 'text-white');
+                            button.classList.remove('bg-purple-200', 'text-purple-800');
+                            
+                            this.populateFoodGrid(button.dataset.filter);
+                        });
+                    });
+                }
+            };
+
+            app.init();
+        });
+    </script>
+</body>
+</html>

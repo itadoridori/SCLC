@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>がん性浮腫のインタラクティブ・ケアガイド</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony (Stone, Teal, Amber) -->
+    <!-- Application Structure Plan: 利用者が特定の疑問やタスク（「なぜむくむのか？」「自分でできるケアは何か？」）に直接アクセスできるよう、レポートの情報をテーマ別の6つのセクション（ホーム、原因、痛みと薬、セルフケア、専門治療、サポート）に再構成しました。固定サイドバーナビゲーションにより、長いページをスクロールすることなく、必要な情報へ即座に移動できます。特に、最も緊急性の高い「危険な兆候」をホーム画面の最上部に配置し、安全性を最優先しました。このタスク指向の構造は、情報を探している患者さんやご家族にとって、直線的なレポート形式よりもはるかに直感的で実用的です。 -->
+    <!-- Visualization & Content Choices: 
+        - [情報：緊急時のサイン] -> [目標：警告] -> [手法：アイコン付き警告パネル] -> [インタラクション：なし（直接表示）] -> [理由：最も重要な安全情報を即座に認識させるため] -> [ライブラリ：Tailwind CSS]
+        - [情報：浮腫の種類の見分け方] -> [目標：比較・診断補助] -> [手法：インタラクティブな症状選択テーブル] -> [インタラクション：症状ボタンをクリックすると、関連する浮腫タイプと解説が表示される] -> [理由：利用者が自身の状況に当てはめて理解を深められるようにするため] -> [ライブラリ：Vanilla JS, Tailwind CSS]
+        - [情報：疼痛管理の選択肢] -> [目標：意思決定支援] -> [手法：Chart.jsのドーナツチャートと連動する解説テキスト] -> [インタラクション：チャートの各部分をクリックすると、対応する鎮痛薬の情報が表示される] -> [理由：薬剤選択のプロセスを視覚的かつ段階的に示し、複雑なガイドラインを分かりやすくするため] -> [ライブラリ：Chart.js, Vanilla JS]
+        - [情報：セルフケア、複合的理学療法] -> [目標：整理・指示] -> [手法：アイコン付きカードグリッド、タブ、ステップバイステップ図] -> [インタラクション：カードやタブをクリックすると詳細情報が表示される] -> [理由：多様なケア方法を整理し、視覚的に分かりやすく提示するため] -> [ライブラリ：Vanilla JS, Tailwind CSS]
+        - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Noto Sans JP', sans-serif; }
+        .chart-container { position: relative; width: 100%; max-width: 450px; margin-left: auto; margin-right: auto; height: 320px; max-height: 400px; }
+        @media (min-width: 768px) { .chart-container { height: 350px; } }
+        .nav-link { transition: all 0.2s ease-in-out; }
+        .nav-link.active { background-color: #0d9488; color: white; }
+        .nav-link:not(.active):hover { background-color: #f1f5f9; color: #111827; }
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+        .symptom-btn { transition: background-color 0.2s; }
+        .symptom-btn.selected { background-color: #f59e0b; color: white; }
+    </style>
+</head>
+<body class="bg-stone-50 text-gray-800">
+
+    <div class="flex min-h-screen">
+        <nav id="sidebar" class="w-64 bg-white shadow-lg fixed top-0 left-0 h-full z-10 p-4 flex flex-col space-y-2">
+            <h1 class="text-2xl font-bold text-teal-700 pb-4 border-b border-stone-200">ケアガイド</h1>
+            <a href="#home" class="nav-link active text-lg font-medium text-gray-700 p-3 rounded-lg flex items-center">
+                <span class="mr-3">🏠</span> ホーム
+            </a>
+            <a href="#why" class="nav-link text-lg font-medium text-gray-700 p-3 rounded-lg flex items-center">
+                <span class="mr-3">❓</span> なぜむくむの？
+            </a>
+            <a href="#pain" class="nav-link text-lg font-medium text-gray-700 p-3 rounded-lg flex items-center">
+                <span class="mr-3">💊</span> 痛みと薬
+            </a>
+            <a href="#selfcare" class="nav-link text-lg font-medium text-gray-700 p-3 rounded-lg flex items-center">
+                <span class="mr-3">👐</span> 自分でできるケア
+            </a>
+            <a href="#professional" class="nav-link text-lg font-medium text-gray-700 p-3 rounded-lg flex items-center">
+                <span class="mr-3">🏥</span> 専門的な治療
+            </a>
+            <a href="#support" class="nav-link text-lg font-medium text-gray-700 p-3 rounded-lg flex items-center">
+                <span class="mr-3">🤝</span> サポート情報
+            </a>
+        </nav>
+
+        <main class="ml-64 flex-1 p-6 md:p-10">
+            <section id="home" class="content-section active">
+                <h2 class="text-3xl font-bold text-teal-800 mb-4">進行がんの浮腫（むくみ）と共に</h2>
+                <p class="text-lg text-gray-600 mb-8">
+                    このガイドは、進行がんの患者さんとそのご家族が、浮腫（むくみ）という症状を正しく理解し、日々の生活の質を向上させるための情報を提供するものです。緩和ケアの視点から、症状の原因、ご自身でできる対策、そして専門的な治療法までを、わかりやすく解説します。一人で抱え込まず、適切な知識とサポートを活用していきましょう。
+                </p>
+
+                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-6 rounded-lg shadow-md">
+                    <h3 class="text-2xl font-bold mb-4 flex items-center"><span class="text-3xl mr-3">❗</span>緊急時のサイン (レッドフラグ)</h3>
+                    <p class="mb-4">以下の症状が現れた場合は、重篤な合併症の可能性があります。<strong>すぐに主治医に連絡するか、救急車を呼ぶなどの対応をしてください。</strong></p>
+                    <ul class="space-y-3 list-disc list-inside">
+                        <li class="font-medium">むくんだ腕や脚が<strong class="text-red-600">急に赤く腫れ、熱っぽくなる、寒気や熱</strong>が出る（蜂窩織炎の疑い）</li>
+                        <li class="font-medium">片方の脚（特にふくらはぎ）が<strong class="text-red-600">急に痛くなり、腫れる</strong>（深部静脈血栓症の疑い）</li>
+                        <li class="font-medium">突然の<strong class="text-red-600">息切れや胸の痛み</strong>（肺塞栓症や心不全の疑い）</li>
+                        <li class="font-medium">顔や首が<strong class="text-red-600">急激に腫れ、呼吸や飲み込みが困難</strong>になる（上大静脈症候群の疑い）</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="why" class="content-section">
+                <h2 class="text-3xl font-bold text-teal-800 mb-4">なぜむくむの？原因を探る</h2>
+                <p class="text-lg text-gray-600 mb-8">
+                    がんによる浮腫は、いくつかの原因が複雑に絡み合って起こります。ご自身の症状がどれに近いかを知ることは、適切な対策への第一歩です。下の表で当てはまる症状をクリックすると、考えられる原因の解説が表示されます。
+                </p>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                        <button class="symptom-btn p-4 border border-stone-300 rounded-lg hover:bg-stone-100" data-symptom="lymphedema">腕や脚の片側がゆっくり腫れ、硬くなってきた</button>
+                        <button class="symptom-btn p-4 border border-stone-300 rounded-lg hover:bg-stone-100" data-symptom="albumin">両足が柔らかく腫れ、指で押すと跡が残る</button>
+                        <button class="symptom-btn p-4 border border-stone-300 rounded-lg hover:bg-stone-100" data-symptom="heart">夕方になると足が腫れ、息切れもする</button>
+                        <button class="symptom-btn p-4 border border-stone-300 rounded-lg hover:bg-stone-100" data-symptom="kidney">朝、顔やまぶたが特にむくむ</button>
+                        <button class="symptom-btn p-4 border border-stone-300 rounded-lg hover:bg-stone-100" data-symptom="svc">顔・首・両腕が急にむくみ、赤みを帯びる</button>
+                        <button class="symptom-btn p-4 border border-stone-300 rounded-lg hover:bg-stone-100" data-symptom="dvt">片脚だけが急に痛みと共に腫れてきた</button>
+                    </div>
+                    <div id="why-result" class="p-6 bg-amber-50 rounded-lg min-h-[150px] flex items-center justify-center">
+                        <p class="text-gray-500">気になる症状をクリックしてください。</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="pain" class="content-section">
+                <h2 class="text-3xl font-bold text-teal-800 mb-4">痛みと薬の正しい関係</h2>
+                 <p class="text-lg text-gray-600 mb-6">
+                    痛みの緩和は非常に重要ですが、一部の鎮痛薬（特にロキソプロフェンなどのNSAIDs）は、副作用として浮腫を悪化させることがあります。これは、薬が腎臓での水分や塩分の排出を妨げるために起こります。下のチャートをクリックして、浮腫のリスクを考慮した、より安全な痛みとの付き合い方を確認しましょう。
+                </p>
+                <div class="bg-white p-6 rounded-lg shadow-md flex flex-col lg:flex-row items-center gap-8">
+                    <div class="chart-container flex-shrink-0">
+                        <canvas id="painChart"></canvas>
+                    </div>
+                    <div id="pain-explanation" class="flex-grow">
+                        <h3 id="pain-title" class="text-2xl font-bold text-teal-700 mb-3">チャートの各項目をクリックしてください</h3>
+                        <p id="pain-text" class="text-gray-700">痛みの強さに応じた推奨される薬の選択肢が表示されます。</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="selfcare" class="content-section">
+                <h2 class="text-3xl font-bold text-teal-800 mb-4">自分でできるケア</h2>
+                <p class="text-lg text-gray-600 mb-8">
+                    浮腫の管理は、日々の小さな積み重ねが大切です。ここでは、生活の質を保つためにご自身でできる基本的なケアを紹介します。気になる項目をクリックして、具体的な方法を確認しましょう。
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="care-card bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow cursor-pointer" data-care="skincare">
+                        <h3 class="text-xl font-bold text-teal-700 mb-2 flex items-center"><span class="text-3xl mr-3">🧼</span>スキンケア</h3>
+                        <p>感染を防ぐための第一歩。清潔・保湿・保護の3原則が重要です。</p>
+                    </div>
+                    <div class="care-card bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow cursor-pointer" data-care="nutrition">
+                        <h3 class="text-xl font-bold text-teal-700 mb-2 flex items-center"><span class="text-3xl mr-3">🍗</span>栄養療法</h3>
+                        <p>タンパク質をしっかり摂り、体の内側からむくみにくい状態を作ります。</p>
+                    </div>
+                    <div class="care-card bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow cursor-pointer" data-care="salt">
+                        <h3 class="text-xl font-bold text-teal-700 mb-2 flex items-center"><span class="text-3xl mr-3">🧂</span>塩分制限</h3>
+                        <p>過剰な塩分は水分を溜め込みます。美味しく減塩するコツを紹介します。</p>
+                    </div>
+                    <div class="care-card bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow cursor-pointer" data-care="elevation">
+                        <h3 class="text-xl font-bold text-teal-700 mb-2 flex items-center"><span class="text-3xl mr-3">🛌</span>患肢挙上と工夫</h3>
+                        <p>重力を利用してむくみを軽減。日常生活での簡単な工夫が効果的です。</p>
+                    </div>
+                     <div class="care-card bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow cursor-pointer" data-care="exercise">
+                        <h3 class="text-xl font-bold text-teal-700 mb-2 flex items-center"><span class="text-3xl mr-3">🤸</span>運動療法</h3>
+                        <p>筋肉を動かすことがリンパの流れを助けます。簡単な運動から始めましょう。</p>
+                    </div>
+                    <div class="care-card bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow cursor-pointer" data-care="monitoring">
+                        <h3 class="text-xl font-bold text-teal-700 mb-2 flex items-center"><span class="text-3xl mr-3">📝</span>セルフモニタリング</h3>
+                        <p>日々の変化を記録し、状態を客観的に把握することが治療に役立ちます。</p>
+                    </div>
+                </div>
+                <div id="care-details" class="mt-8 bg-amber-50 p-6 rounded-lg hidden"></div>
+            </section>
+
+            <section id="professional" class="content-section">
+                <h2 class="text-3xl font-bold text-teal-800 mb-4">専門的な治療</h2>
+                <p class="text-lg text-gray-600 mb-8">
+                    セルフケアだけでは管理が難しい場合、専門家による治療が助けになります。ここでは、リンパ浮腫の標準治療である「複合的理学療法」や、原因に応じた医療的介入について解説します。
+                </p>
+                <div class="bg-white rounded-lg shadow-md">
+                    <div class="border-b border-gray-200">
+                        <nav id="prof-tabs" class="flex -mb-px p-4" aria-label="Tabs">
+                            <button class="prof-tab active text-teal-600 whitespace-nowrap py-4 px-6 border-b-2 font-medium text-lg border-teal-500" data-target="cdt">複合的理学療法 (CDT)</button>
+                            <button class="prof-tab text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-6 border-b-2 font-medium text-lg" data-target="medical">薬物・処置</button>
+                            <button class="prof-tab text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-6 border-b-2 font-medium text-lg" data-target="surgery">外科治療</button>
+                        </nav>
+                    </div>
+                    <div id="prof-content" class="p-6">
+                        <!-- Content will be injected by JS -->
+                    </div>
+                </div>
+            </section>
+
+            <section id="support" class="content-section">
+                <h2 class="text-3xl font-bold text-teal-800 mb-4">一人で悩まないで：サポート情報</h2>
+                <p class="text-lg text-gray-600 mb-8">
+                    浮腫の管理は長期的な取り組みです。身体的なケアだけでなく、経済的、精神的なサポートも重要です。利用できる制度や相談窓口を知り、積極的に活用しましょう。
+                </p>
+                <div class="space-y-6">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold text-teal-700 mb-2">専門的なケアと情報</h3>
+                        <p>「リンパ浮腫外来」や、全国の「がん相談支援センター」が専門的な情報提供や相談に応じてくれます。まずはかかりつけ医や病院の相談室に問い合わせてみましょう。</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold text-teal-700 mb-2">経済的支援制度</h3>
+                        <ul class="list-disc list-inside space-y-2">
+                            <li><strong>療養費支給制度：</strong> 医師の指示で購入した弾性着衣（スリーブやストッキング）や包帯は、申請により費用の一部が払い戻されます。加入している健康保険の窓口にご相談ください。</li>
+                            <li><strong>高額療養費制度：</strong> 手術や入院で医療費が高額になった場合、自己負担額に上限が設けられます。</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold text-teal-700 mb-2">コミュニティと心のサポート</h3>
+                        <p>同じ悩みを持つ仲間と繋がる患者会は、情報交換や精神的な支えの場となります。また、患者さんだけでなく、支えるご家族も大きなストレスを抱えます。辛い時は、精神腫瘍科医や臨床心理士など、心の専門家に相談することも大切です。</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const navLinks = document.querySelectorAll('.nav-link');
+    const contentSections = document.querySelectorAll('.content-section');
+
+    function updateContent(hash) {
+        let targetHash = hash || '#home';
+
+        navLinks.forEach(link => {
+            if (link.getAttribute('href') === targetHash) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
+
+        contentSections.forEach(section => {
+            if ('#' + section.id === targetHash) {
+                section.classList.add('active');
+            } else {
+                section.classList.remove('active');
+            }
+        });
+    }
+
+    navLinks.forEach(link => {
+        link.addEventListener('click', function (e) {
+            e.preventDefault();
+            const targetHash = this.getAttribute('href');
+            history.pushState(null, null, targetHash);
+            updateContent(targetHash);
+        });
+    });
+
+    window.addEventListener('popstate', () => {
+        updateContent(window.location.hash);
+    });
+
+    updateContent(window.location.hash);
+
+    const whyData = {
+        lymphedema: {
+            title: 'リンパ浮腫',
+            text: 'がん細胞がリンパ管を塞いだり、腫瘍がリンパ管を圧迫したりすることで、リンパ液の流れが滞り発生します。初期は指で押すと跡が残りますが、進行すると硬くなるのが特徴です。主に片側の腕や脚に起こります。'
+        },
+        albumin: {
+            title: '低アルブミン血症による浮腫',
+            text: 'がんの影響で栄養状態が悪化し、血液中のタンパク質（アルブミン）が減少すると、血管から水分が漏れやすくなります。全身がむくみやすく、特に両足の甲など、柔らかく圧痕がはっきり残るのが特徴です。'
+        },
+        heart: {
+            title: '心性浮腫',
+            text: '心臓のポンプ機能が低下し、全身の血流が滞ることで生じます。重力の影響を受けやすく、日中の活動後は両脚に、寝ている時間が長いと背中やお尻に現れます。夕方に悪化しやすく、息切れを伴うことがあります。'
+        },
+        kidney: {
+            title: '腎性浮腫',
+            text: '腎臓の機能が低下し、体内の余分な水分や塩分を排出できなくなることで生じます。朝、まぶたや顔のむくみが目立つのが特徴的です。'
+        },
+        svc: {
+            title: '上大静脈症候群',
+            text: '胸部の腫瘍が、上半身の血液を心臓に戻す太い血管（上大静脈）を圧迫することで起こります。顔、首、両腕がむくみ、皮膚が赤紫色になったり、胸の血管が浮き出たりします。頭痛やめまいを伴うこともあります。'
+        },
+        dvt: {
+            title: '深部静脈血栓症 (DVT)',
+            text: 'がんの影響で血液が固まりやすくなり、脚の深い部分の静脈に血栓（血の塊）ができることで生じます。通常、片脚だけが急に赤く腫れ、痛みや熱感を伴います。血栓が肺に飛ぶと命に関わるため、緊急の対応が必要です。'
+        }
+    };
+
+    const symptomBtns = document.querySelectorAll('.symptom-btn');
+    const whyResult = document.getElementById('why-result');
+    symptomBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const symptom = this.dataset.symptom;
+            const data = whyData[symptom];
+
+            symptomBtns.forEach(b => b.classList.remove('selected'));
+            this.classList.add('selected');
+
+            whyResult.innerHTML = `
+                <div class="text-left">
+                    <h4 class="text-xl font-bold text-amber-800 mb-2">${data.title}</h4>
+                    <p class="text-gray-700">${data.text}</p>
+                </div>
+            `;
+        });
+    });
+
+    const painData = {
+        0: { title: '軽度の痛み', text: '浮腫のリスクがある場合、第一選択はアセトアミノフェンです。腎臓への影響が少なく、浮腫を悪化させるリスクが低いためです。ただし肝臓への負担を考慮し、医師の指示通りに服用します。' },
+        1: { title: '中等度〜高度の痛み', text: 'オピオイド鎮痛薬（モルヒネ、オキシコドン等）が標準治療です。浮腫を悪化させるリスクがなく、強力に痛みを抑えます。医師の管理下で適切な量を使えば、安全に管理できます。' },
+        2: { title: '特殊な痛み（神経障害性疼痛）', text: '「電気が走るような」「しびれるような」痛みには、鎮痛補助薬（プレガバリン等）が有効です。オピオイドと併用することで、より効果的に痛みを管理できる場合があります。' },
+    };
+
+    const painCtx = document.getElementById('painChart').getContext('2d');
+    const painChart = new Chart(painCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['軽度の痛み', '中等度〜高度の痛み', '神経障害性疼痛'],
+            datasets: [{
+                data: [33, 34, 33],
+                backgroundColor: ['#34d399', '#f59e0b', '#60a5fa'],
+                borderColor: '#ffffff',
+                borderWidth: 4,
+                hoverOffset: 10
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '60%',
+            plugins: {
+                legend: { position: 'bottom', labels: { font: { size: 14 } } },
+                tooltip: { enabled: false }
+            },
+            onClick: (event, elements) => {
+                if (elements.length > 0) {
+                    const index = elements[0].index;
+                    const data = painData[index];
+                    document.getElementById('pain-title').textContent = data.title;
+                    document.getElementById('pain-text').innerHTML = `${data.text}<br><br><strong class="text-red-600">注意：ロキソプロフェン等のNSAIDsは、腎臓への影響で浮腫を悪化させる可能性があるため、特に浮腫がある場合は自己判断での常用は避け、医師に相談してください。</strong>`;
+                }
+            }
+        }
+    });
+
+    const careData = {
+        skincare: {
+            title: '🧼 スキンケア：感染からの防御線',
+            content: `浮腫のある皮膚は薄く、傷つきやすく、感染（蜂窩織炎）のリスクが高い状態です。以下の3原則を守りましょう。<br>
+                <ul class="list-disc list-inside mt-2 space-y-1">
+                    <li><strong>保清：</strong>低刺激の石鹸を使い、優しく洗い、よくすすぎます。</li>
+                    <li><strong>保湿：</strong>入浴後などに、無香料の保湿剤を塗り、皮膚のバリア機能を保ちます。</li>
+                    <li><strong>保護：</strong>切り傷、虫刺され、日焼けを避けます。締め付ける衣類やアクセサリーもNGです。</li>
+                </ul>`
+        },
+        nutrition: {
+            title: '🍗 栄養療法：体の中から立て直す',
+            content: `低栄養によるアルブミン低下は全身性浮腫の原因になります。<br>
+                <ul class="list-disc list-inside mt-2 space-y-1">
+                    <li><strong>高タンパク・高エネルギー食：</strong>肉、魚、卵、大豆製品などを積極的に摂りましょう。</li>
+                    <li><strong>分食の工夫：</strong>食欲がない時は、食事の回数を増やし、一度の量を減らします。</li>
+                    <li><strong>栄養補助食品の活用：</strong>ゼリーやドリンクタイプなどを活用し、無理なく栄養を補給しましょう。</li>
+                </ul>`
+        },
+        salt: {
+            title: '🧂 塩分制限：水分の溜め込みを防ぐ',
+            content: `過剰な塩分は体内に水分を溜め込み、浮腫を悪化させます。<br>
+                <ul class="list-disc list-inside mt-2 space-y-1">
+                    <li><strong>目標は1日5〜7g：</strong>加工食品や漬物を避け、だし、香辛料、酸味（レモン・酢）、香味野菜（しょうが等）を使い、風味豊かに調理しましょう。</li>
+                    <li><strong>汁物は具だくさんに：</strong>汁を飲む量を減らし、麺類の汁は残す習慣を。</li>
+                </ul>`
+        },
+        elevation: {
+            title: '🛌 患肢挙上と工夫：重力を味方につける',
+            content: `簡単な工夫でリンパ液や血液の還流を助けます。<br>
+                <ul class="list-disc list-inside mt-2 space-y-1">
+                    <li><strong>挙上：</strong>安静時や就寝時、クッションや枕を使い、むくんでいる腕や脚を心臓より高い位置に保ちます。</li>
+                    <li><strong>姿勢：</strong>長時間同じ姿勢を避け、こまめに体を動かしましょう。</li>
+                    <li><strong>衣類：</strong>体を締め付けない、ゆったりとした服や靴を選びましょう。</li>
+                </ul>`
+        },
+        exercise: {
+            title: '🤸 運動療法：筋ポンプ作用を活かす',
+            content: `筋肉の収縮はリンパの流れを促進する重要なポンプです。<br>
+                <ul class="list-disc list-inside mt-2 space-y-1">
+                    <li><strong>簡単な運動から：</strong>足首の曲げ伸ばし、手を握って開くグーパー運動などを、無理のない範囲で行います。</li>
+                    <li><strong>圧迫下での運動：</strong>（専門家の指導のもと）弾性着衣を着用して運動すると、効果が格段に高まります。</li>
+                    <li><strong>ウォーキング：</strong>ゆっくりとしたウォーキングも全身の循環を促します。</li>
+                </ul>`
+        },
+        monitoring: {
+            title: '📝 セルフモニタリング：変化に気づく',
+            content: `日々の状態を記録することで、ケアの効果を確認し、医療者とのコミュニケーションもスムーズになります。<br>
+                <ul class="list-disc list-inside mt-2 space-y-1">
+                    <li><strong>周径測定：</strong>毎日同じ場所（例：ひじの上10cmなど）の太さをメジャーで測ります。</li>
+                    <li><strong>感覚の記録：</strong>重さ、だるさ、痛みを0〜10の数字で記録します。</li>
+                    <li><strong>皮膚の状態：</strong>硬さ、赤み、乾燥、傷の有無などをチェックします。</li>
+                    <li><strong>気づいたこと：</strong>「指輪がきつくなった」など、どんな小さな変化もメモしておきましょう。</li>
+                </ul>`
+        }
+    };
+    
+    const careCards = document.querySelectorAll('.care-card');
+    const careDetails = document.getElementById('care-details');
+    
+    careCards.forEach(card => {
+        card.addEventListener('click', function() {
+            const careType = this.dataset.care;
+            const data = careData[careType];
+            
+            careDetails.innerHTML = `<h4 class="text-2xl font-bold text-gray-800 mb-3">${data.title}</h4><p class="text-gray-700">${data.content}</p>`;
+            careDetails.classList.remove('hidden');
+            
+            careCards.forEach(c => c.classList.remove('ring-2', 'ring-amber-400'));
+            this.classList.add('ring-2', 'ring-amber-400');
+
+            careDetails.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+    });
+
+
+    const profTabs = document.querySelectorAll('.prof-tab');
+    const profContent = document.getElementById('prof-content');
+
+    const profData = {
+        cdt: {
+            title: '複合的理学療法 (CDT)',
+            content: `<p class="mb-4">リンパ浮腫に対する国際的な標準治療です。以下の4つを組み合わせて行います。</p>
+                <div class="space-y-4">
+                    <div class="p-4 bg-stone-100 rounded-lg"><strong>1. 用手的リンパドレナージ (MLD):</strong> 専門家による特殊で穏やかなマッサージ。滞ったリンパ液を正常なリンパ節へ誘導します。</div>
+                    <div class="p-4 bg-stone-100 rounded-lg"><strong>2. 圧迫療法:</strong> 弾性包帯や弾性着衣（スリーブ・ストッキング）で患部を圧迫し、むくみの再発を防ぎます。最も重要な要素です。</div>
+                    <div class="p-4 bg-stone-100 rounded-lg"><strong>3. 圧迫下での運動療法:</strong> 圧迫した状態で運動し、「筋ポンプ作用」を最大限に引き出し、リンパの流れを促進します。</div>
+                    <div class="p-4 bg-stone-100 rounded-lg"><strong>4. スキンケア:</strong> 治療期間を通して、感染予防のための清潔・保湿・保護を徹底します。</div>
+                </div>`
+        },
+        medical: {
+            title: '薬物療法・処置',
+            content: `<p class="mb-4">特定の原因による浮腫に対して、医療的な介入が行われます。</p>
+                <ul class="list-disc list-inside space-y-2">
+                    <li><strong>利尿薬:</strong> 心不全や腎不全が原因の全身性浮腫に使われます。純粋なリンパ浮腫には効果がありません。</li>
+                    <li><strong>抗凝固薬:</strong> 深部静脈血栓症（DVT）の治療薬です。血栓を溶かし、新たな血栓を防ぎます。</li>
+                    <li><strong>ステント留置術:</strong> 上大静脈症候群で血管が圧迫されている場合に、金属の筒（ステント）を内側から広げ、血流を確保する緩和治療です。</li>
+                </ul>`
+        },
+        surgery: {
+            title: '外科治療',
+            content: `<p class="mb-4">リンパ浮腫に対する選択肢として、QOL向上を目指す外科治療があります。</p>
+                <div class="p-4 bg-stone-100 rounded-lg">
+                    <h5 class="font-bold">リンパ管静脈吻合術 (LVA)</h5>
+                    <p>顕微鏡下で、機能しているリンパ管と近くの細い静脈を繋ぎ合わせ、リンパ液のバイパス（う回路）を作る手術です。比較的早期のリンパ浮腫で効果が高いとされますが、進行した症例でも症状の軽減が期待できます。保険適用です。</p>
+                </div>`
+        }
+    };
+
+    function updateProfContent(target) {
+        const data = profData[target];
+        profContent.innerHTML = `
+            <h3 class="text-2xl font-bold text-teal-700 mb-4">${data.title}</h3>
+            <div>${data.content}</div>
+        `;
+    }
+
+    profTabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            profTabs.forEach(t => {
+                t.classList.remove('active', 'text-teal-600', 'border-teal-500');
+                t.classList.add('text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+            });
+            this.classList.add('active', 'text-teal-600', 'border-teal-500');
+            this.classList.remove('text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+            
+            updateProfContent(this.dataset.target);
+        });
+    });
+    
+    updateProfContent('cdt');
+});
+</script>
+
+</body>
+</html>
