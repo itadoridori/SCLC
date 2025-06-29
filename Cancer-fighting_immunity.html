@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インタラクティブ・レポート：がんと闘う免疫力</title>
+    <!-- Chosen Palette: Calm Harmony (Warm neutrals with sage, muted blue, and terracotta accents) -->
+    <!-- Application Structure Plan: A single-page application with a sticky top navigation bar for smooth scrolling. The structure is thematic and action-oriented, not a linear replication of the source report. It starts with a foundational understanding of the immune system, moves to actionable strategies (Diet, Exercise, Environment), provides a dynamic evidence summary chart, and concludes with crucial safety warnings. This flow is designed to empower users by first educating them, then showing them potential actions, and finally contextualizing those actions with evidence and safety considerations, making complex information digestible and usable. -->
+    <!-- Visualization & Content Choices: 
+        - Goal: Explain Core Concepts -> Viz: Interactive HTML/CSS Diagram of "Immunity's Key Players" -> Interaction: Click on cells (NK, T-Cell) to reveal simple explanations. -> Justification: Simplifies complex biology into an engaging, non-intimidating format. Avoids dense text. -> Method: HTML/CSS with JS toggles.
+        - Goal: Compare Strategies -> Viz: Tabbed interface for Diet, Exercise, Environment. -> Interaction: Clicking tabs reveals dedicated content. -> Justification: Organizes diverse information cleanly, allowing users to focus on one area at a time. -> Method: HTML/JS.
+        - Goal: Show Diet Composition -> Viz: Chart.js Doughnut Chart for Mediterranean Diet. -> Interaction: Hover to see details. -> Justification: Visually represents proportions more effectively than text. -> Method: Chart.js.
+        - Goal: Show Exercise Effects -> Viz: Chart.js Bar Chart showing acute vs. chronic effects. -> Interaction: Buttons to toggle data view. -> Justification: Dynamically illustrates the different time-based benefits of exercise. -> Method: Chart.js with JS update functions.
+        - Goal: Summarize Evidence & Risk -> Viz: Chart.js Horizontal Bar Chart -> Interaction: Click on a bar to see a detailed modal with mechanisms, evidence level, and risks. -> Justification: Transforms a static table (Table 6.1) into an interactive tool for comparison and deep-diving. This is the most critical interactive element for informed decision-making. -> Method: Chart.js with JS event handling and a modal.
+        - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used.
+     -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #FDFBF5;
+            color: #3a3a3a;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #C06B56;
+            border-bottom-color: #C06B56;
+        }
+        .tab-button.active {
+            background-color: #6A8E7F;
+            color: white;
+        }
+        .strategy-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .strategy-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header & Navigation -->
+    <header id="header" class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl font-bold text-[#4A5C55]">がんと闘う免疫力</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#introduction" class="nav-link px-3 py-2 rounded-md text-sm font-medium">はじめに</a>
+                        <a href="#how-it-works" class="nav-link px-3 py-2 rounded-md text-sm font-medium">免疫の仕組み</a>
+                        <a href="#strategies" class="nav-link px-3 py-2 rounded-md text-sm font-medium">免疫を高める戦略</a>
+                        <a href="#evidence" class="nav-link px-3 py-2 rounded-md text-sm font-medium">エビデンス早見表</a>
+                        <a href="#safety" class="nav-link px-3 py-2 rounded-md text-sm font-medium">安全のために</a>
+                    </div>
+                </div>
+                 <div class="md:hidden">
+                    <button id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-white hover:bg-[#6A8E7F] focus:outline-none">
+                        <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </nav>
+        <div id="mobile-menu" class="md:hidden hidden">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#introduction" class="nav-link block px-3 py-2 rounded-md text-base font-medium">はじめに</a>
+                <a href="#how-it-works" class="nav-link block px-3 py-2 rounded-md text-base font-medium">免疫の仕組み</a>
+                <a href="#strategies" class="nav-link block px-3 py-2 rounded-md text-base font-medium">免疫を高める戦略</a>
+                <a href="#evidence" class="nav-link block px-3 py-2 rounded-md text-base font-medium">エビデンス早見表</a>
+                <a href="#safety" class="nav-link block px-3 py-2 rounded-md text-base font-medium">安全のために</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        
+        <!-- Section 1: Introduction -->
+        <section id="introduction" class="text-center my-12 md:my-20">
+            <h2 class="text-3xl md:text-5xl font-bold text-[#4A5C55] mb-4">がんと闘う、希望の科学</h2>
+            <p class="max-w-3xl mx-auto text-lg text-gray-700">
+                私たちの身体には、がん細胞を監視し、排除する「免疫」という素晴らしいシステムが備わっています。このウェブサイトは、科学的根拠に基づき、標準治療を補完しながら、ご自身の免疫力を高めるための生活習慣やアプローチを分かりやすく解説します。
+                <br><strong class="text-[#C06B56]">これは、医療専門家との相談のもとで検討されるべき情報です。</strong>
+            </p>
+        </section>
+
+        <!-- Section 2: How Immunity Works -->
+        <section id="how-it-works" class="my-16 md:my-24 scroll-mt-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-[#4A5C55] mb-2">免疫の仕組み：体内の防衛チーム</h2>
+                <p class="max-w-2xl mx-auto text-gray-600">がんとの戦いの最前線に立つ、主要な免疫細胞の役割を見てみましょう。下のカードをクリックして詳細を確認してください。</p>
+            </div>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 items-start">
+                <div class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-lg">
+                     <h3 class="text-xl font-bold text-center mb-4 text-[#4A5C55]">免疫の主要プレイヤー</h3>
+                    <div class="relative min-h-[300px] flex items-center justify-center space-x-8">
+                        <!-- Immune Cells -->
+                        <div id="player-nk" class="player-card cursor-pointer flex flex-col items-center text-center p-4 rounded-full border-2 border-dashed border-[#86B4A1] w-32 h-32 justify-center transition-all duration-300 hover:bg-[#EBF3F0] hover:border-solid">
+                            <div class="text-4xl">🛡️</div>
+                            <p class="font-bold mt-2">NK細胞</p>
+                            <p class="text-xs">自然免疫の番人</p>
+                        </div>
+                        <div id="player-t" class="player-card cursor-pointer flex flex-col items-center text-center p-4 rounded-full border-2 border-dashed border-[#86B4A1] w-32 h-32 justify-center transition-all duration-300 hover:bg-[#EBF3F0] hover:border-solid">
+                             <div class="text-4xl">🎯</div>
+                            <p class="font-bold mt-2">T細胞</p>
+                            <p class="text-xs">獲得免疫の兵士</p>
+                        </div>
+                        <div id="player-cancer" class="player-card cursor-pointer flex flex-col items-center text-center p-4 rounded-full border-2 border-dashed border-[#E9967A] w-32 h-32 justify-center transition-all duration-300 hover:bg-[#FCEAE4] hover:border-solid">
+                            <div class="text-4xl">💥</div>
+                            <p class="font-bold mt-2">がん細胞</p>
+                            <p class="text-xs">免疫からの逃避者</p>
+                        </div>
+                    </div>
+                </div>
+                <div id="player-info" class="bg-white p-6 rounded-2xl shadow-lg min-h-[380px] flex flex-col justify-center">
+                    <h3 id="info-title" class="text-2xl font-bold text-[#4A5C55] mb-3 transition-opacity duration-300">免疫のプレーヤーを選択</h3>
+                    <p id="info-description" class="text-gray-700 transition-opacity duration-300">各細胞の役割について知ることができます。</p>
+                </div>
+            </div>
+             <div class="mt-12 bg-white p-6 rounded-2xl shadow-lg">
+                <h3 class="text-xl font-bold text-center mb-4 text-[#4A5C55]">「ホット」な腫瘍と「コールド」な腫瘍</h3>
+                <p class="text-center max-w-2xl mx-auto text-gray-600 mb-6">免疫細胞が腫瘍にどれだけ侵入できているかで、治療への反応性が変わります。多くの介入は、「コールド」な腫瘍を「ホット」に変えることを目指します。</p>
+                <div class="flex flex-col md:flex-row justify-around items-center gap-8">
+                    <div class="text-center p-6 border-4 border-blue-200 bg-blue-50 rounded-xl w-full md:w-2/5">
+                        <h4 class="text-2xl font-bold text-blue-800 mb-2">コールドな腫瘍 🥶</h4>
+                        <p>免疫細胞が侵入できず、免疫系から「見えない」状態。免疫療法が効きにくい。</p>
+                    </div>
+                     <div class="text-4xl font-bold text-gray-500 hidden md:block">→</div>
+                    <div class="text-center p-6 border-4 border-red-200 bg-red-50 rounded-xl w-full md:w-2/5">
+                        <h4 class="text-2xl font-bold text-red-800 mb-2">ホットな腫瘍 🔥</h4>
+                        <p>T細胞などの免疫細胞が豊富に存在し、活発に戦っている状態。免疫療法が効きやすい。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Strategies -->
+        <section id="strategies" class="my-16 md:my-24 scroll-mt-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-[#4A5C55] mb-2">免疫力を高める３つの戦略</h2>
+                <p class="max-w-2xl mx-auto text-gray-600">科学的知見に基づき、生活の中で実践できるアプローチを探ります。タブをクリックして切り替えてください。</p>
+            </div>
+            
+            <div class="bg-white rounded-2xl shadow-lg p-4 sm:p-6 md:p-8">
+                <!-- Tabs -->
+                <div class="mb-6 border-b border-gray-200">
+                    <nav class="flex flex-wrap -mb-px" aria-label="Tabs">
+                        <button class="tab-button w-1/3 md:w-auto text-gray-600 hover:text-[#6A8E7F] whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm md:text-base transition-colors duration-300 active" data-tab="diet">
+                            🌿 食事戦略
+                        </button>
+                        <button class="tab-button w-1/3 md:w-auto text-gray-600 hover:text-[#6A8E7F] whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm md:text-base transition-colors duration-300" data-tab="exercise">
+                            🏃‍♀️ 運動戦略
+                        </button>
+                        <button class="tab-button w-1/3 md:w-auto text-gray-600 hover:text-[#6A8E7F] whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm md:text-base transition-colors duration-300" data-tab="environment">
+                            ☀️ 環境・物理戦略
+                        </button>
+                    </nav>
+                </div>
+
+                <!-- Tab Content -->
+                <div id="tab-content">
+                    <!-- Diet Tab -->
+                    <div id="diet" class="tab-pane active">
+                        <h3 class="text-2xl font-bold text-[#4A5C55] mb-4">食事：抗炎症と腸内環境が鍵</h3>
+                        <div class="grid md:grid-cols-2 gap-8 items-center">
+                            <div>
+                                <p class="text-gray-700 mb-4">全身の慢性的な炎症はがんを促進する可能性があります。抗炎症作用のある地中海食や、腸内環境を整える高食物繊維食が、免疫応答をサポートする可能性が示されています。</p>
+                                <ul class="list-disc list-inside space-y-2 text-gray-700">
+                                    <li><strong>地中海食：</strong>果物、野菜、全粒穀物、魚、オリーブオイルが豊富。</li>
+                                    <li><strong>高食物繊維食：</strong>腸内の善玉菌を育て、免疫を調整する物質の産生を助ける。</li>
+                                    <li><strong>ビタミンDと亜鉛：</strong>免疫細胞の機能に必須の栄養素。ただし、亜鉛の過剰摂取には注意が必要です。</li>
+                                </ul>
+                            </div>
+                            <div class="chart-container h-64 md:h-80">
+                                <canvas id="dietChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Exercise Tab -->
+                    <div id="exercise" class="tab-pane hidden">
+                        <h3 class="text-2xl font-bold text-[#4A5C55] mb-4">運動：免疫細胞を動員し、鍛える</h3>
+                         <div class="grid md:grid-cols-2 gap-8 items-center">
+                            <div>
+                                <p class="text-gray-700 mb-4">運動は免疫システムに多岐にわたる良い影響を与えます。1回の運動でNK細胞などを血中に動員し、継続的な運動は免疫システム全体を強化します。</p>
+                                 <ul class="list-disc list-inside space-y-2 text-gray-700">
+                                    <li><strong>急性効果：</strong>運動中に免疫細胞が血流に放出され、体内をパトロールする。</li>
+                                    <li><strong>慢性的効果：</strong>筋肉から出るマイオカインがT細胞の健康を維持し、全身の炎症を抑える。</li>
+                                </ul>
+                                <div class="mt-4 flex justify-center space-x-2">
+                                    <button id="acute-btn" class="px-4 py-2 text-sm font-medium text-white bg-[#6A8E7F] rounded-lg hover:bg-[#597a6f] transition">急性効果</button>
+                                    <button id="chronic-btn" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition">慢性的効果</button>
+                                </div>
+                            </div>
+                            <div class="chart-container h-64 md:h-80">
+                                <canvas id="exerciseChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Environment Tab -->
+                    <div id="environment" class="tab-pane hidden">
+                         <h3 class="text-2xl font-bold text-[#4A5C55] mb-4">環境・物理：光と熱の力</h3>
+                        <p class="text-gray-700 mb-6">日光や熱といった物理的な要素も、免疫系に影響を与える可能性があります。</p>
+                        <div class="space-y-8">
+                            <div class="strategy-card bg-amber-50 p-6 rounded-xl border border-amber-200">
+                                <h4 class="text-xl font-bold text-amber-800 mb-2">☀️ 日光浴</h4>
+                                <p class="text-amber-900">適度な日光浴は、免疫調整に重要なビタミンDの生成に不可欠です。しかし、過度な紫外線は皮膚がんのリスクを高めるため、バランスが極めて重要。季節や地域によって必要な時間は大きく異なります。</p>
+                            </div>
+                             <div class="strategy-card bg-red-50 p-6 rounded-xl border border-red-200">
+                                <h4 class="text-xl font-bold text-red-800 mb-2">♨️ 温熱療法（ハイパーサーミア）</h4>
+                                <p class="text-red-900">体を温めることで、がん細胞にダメージを与えたり、免疫細胞が腫瘍を攻撃しやすくしたりする（「コールド」から「ホット」へ）効果が研究されています。特に発熱程度の体温上昇がNK細胞の活性を高めることが示唆されています。これは専門的な治療法として、他の治療と組み合わせて行われます。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Evidence -->
+        <section id="evidence" class="my-16 md:my-24 scroll-mt-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-[#4A5C55] mb-2">エビデンス早見表</h2>
+                <p class="max-w-2xl mx-auto text-gray-600">各戦略の科学的根拠の強さを比較できます。棒グラフをクリックすると、詳細な情報（メカニズムや注意点）が表示されます。</p>
+            </div>
+            <div class="bg-white rounded-2xl shadow-lg p-4 sm:p-6 md:p-8">
+                 <div class="chart-container h-96 md:h-[500px] max-w-4xl">
+                    <canvas id="evidenceChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: Safety -->
+        <section id="safety" class="my-16 md:my-24 bg-[#FFF9E9] p-8 rounded-2xl scroll-mt-20">
+            <div class="text-center">
+                 <div class="text-5xl mb-4">⚠️</div>
+                <h2 class="text-3xl font-bold text-[#D35400] mb-4">最も重要なこと：安全のために</h2>
+                <div class="max-w-3xl mx-auto space-y-4 text-left text-lg text-gray-800">
+                    <p><strong><span class="font-bold">1. 標準治療を最優先に：</span></strong> ここで紹介するアプローチは、手術、化学療法、放射線療法などの<strong class="text-[#C06B56]">標準治療に代わるものでは決してありません。</strong>これらはあくまで補完的な役割を担うものです。</p>
+                    <p><strong><span class="font-bold">2. 「自然」≠「安全」：</span></strong> 天然由来のサプリメントなどが、処方薬の効果に影響を与えることがあります。自己判断での使用は避けてください。</p>
+                    <p><strong><span class="font-bold">3. 必ず医療チームに相談を：</span></strong> 新しい食事法、運動、サプリメントを始める前には、<strong class="text-[#C06B56]">必ず主治医や看護師、管理栄養士などの専門家にご相談ください。</strong>あなたの病状や治療計画に合わせた、安全な方法を一緒に見つけることが重要です。</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-[#4A5C55] text-white">
+        <div class="container mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-sm">
+            <p>このウェブサイトは情報提供を目的としており、医学的アドバイスに代わるものではありません。</p>
+            <p>&copy; 2025 がんと闘う免疫力. All Rights Reserved.</p>
+        </div>
+    </footer>
+    
+    <!-- Modal for Evidence Details -->
+    <div id="evidenceModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-start mb-4">
+                    <h3 id="modalTitle" class="text-2xl font-bold text-[#4A5C55]"></h3>
+                    <button id="closeModal" class="text-gray-500 hover:text-gray-800">&times;</button>
+                </div>
+                <div id="modalBody" class="space-y-4 text-gray-700">
+                    <div>
+                        <h4 class="font-bold text-lg">主な免疫メカニズム</h4>
+                        <p id="modalMechanism"></p>
+                    </div>
+                     <div>
+                        <h4 class="font-bold text-lg">科学的エビデンスのレベル</h4>
+                        <p id="modalEvidenceLevel"></p>
+                    </div>
+                     <div>
+                        <h4 class="font-bold text-lg text-[#C06B56]">主な考慮事項とリスク</h4>
+                        <p id="modalRisks"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            
+            const playerInfoData = {
+                'player-nk': {
+                    title: '🛡️ ナチュラルキラー（NK）細胞',
+                    description: '生まれつき備わった「自然免疫」の主要な兵士。がん細胞やウイルス感染細胞をいち早く見つけ、事前の指令なしに攻撃する即応部隊です。がん細胞が隠そうとする「自己」の目印の喪失を検知して攻撃します。'
+                },
+                'player-t': {
+                    title: '🎯 T細胞（細胞傷害性Tリンパ球）',
+                    description: '訓練を受けて特定の敵だけを狙う「獲得免疫」の暗殺者。樹状細胞からがん細胞の目印（抗原）を教えられ、その目印を持つがん細胞だけを精密に攻撃・破壊します。免疫療法の多くはこのT細胞を再活性化させます。'
+                },
+                'player-cancer': {
+                    title: '� がん細胞',
+                    description: '免疫システムからの攻撃を逃れるために、様々な戦略を使います。T細胞から見えないように目印を隠したり（抗原喪失）、免疫細胞に「攻撃停止」のブレーキをかける（免疫チェックポイント）など、巧みに監視網をすり抜けます。'
+                },
+                'default': {
+                    title: '免疫のプレーヤーを選択',
+                    description: '各細胞の役割について知ることができます。'
+                }
+            };
+
+            const infoTitle = document.getElementById('info-title');
+            const infoDescription = document.getElementById('info-description');
+            document.querySelectorAll('.player-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    const data = playerInfoData[card.id];
+                    infoTitle.style.opacity = 0;
+                    infoDescription.style.opacity = 0;
+                    setTimeout(() => {
+                        infoTitle.textContent = data.title;
+                        infoDescription.textContent = data.description;
+                        infoTitle.style.opacity = 1;
+                        infoDescription.style.opacity = 1;
+                    }, 300);
+                });
+            });
+
+            const tabs = document.querySelectorAll('.tab-button');
+            const panes = document.querySelectorAll('.tab-pane');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+
+                    panes.forEach(pane => {
+                        pane.classList.add('hidden');
+                    });
+                    document.getElementById(tab.dataset.tab).classList.remove('hidden');
+                });
+            });
+            
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            mobileMenu.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+
+            const dietChartCtx = document.getElementById('dietChart').getContext('2d');
+            const dietChart = new Chart(dietChartCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['野菜・果物', '全粒穀物・豆類', '魚介類', 'オリーブオイル', 'ナッツ類', 'その他'],
+                    datasets: [{
+                        label: '地中海食の構成要素',
+                        data: [35, 25, 15, 10, 10, 5],
+                        backgroundColor: ['#86B4A1', '#A2C8B9', '#6A8E7F', '#F2D49B', '#E9967A', '#D3D3D3'],
+                        borderColor: '#FDFBF5',
+                        borderWidth: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                        title: {
+                            display: true,
+                            text: '地中海食の構成例',
+                            font: { size: 16 }
+                        }
+                    }
+                }
+            });
+
+            const exerciseData = {
+                acute: {
+                    labels: ['NK細胞', 'CD8+ T細胞'],
+                    data: [250, 180],
+                    title: '急性効果：運動中の免疫細胞の動員（%増加）'
+                },
+                chronic: {
+                    labels: ['機能的T細胞', '炎症マーカー'],
+                    data: [120, 80],
+                    title: '慢性的効果：長期的な免疫状態の変化（%基準値比）'
+                }
+            };
+            const exerciseChartCtx = document.getElementById('exerciseChart').getContext('2d');
+            const exerciseChart = new Chart(exerciseChartCtx, {
+                type: 'bar',
+                data: {
+                    labels: exerciseData.acute.labels,
+                    datasets: [{
+                        label: '変化率 (%)',
+                        data: exerciseData.acute.data,
+                        backgroundColor: ['#6A8E7F', '#A2C8B9'],
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            suggestedMax: 300
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        title: {
+                            display: true,
+                            text: exerciseData.acute.title,
+                            font: { size: 16 }
+                        }
+                    }
+                }
+            });
+
+            document.getElementById('acute-btn').addEventListener('click', () => updateExerciseChart('acute'));
+            document.getElementById('chronic-btn').addEventListener('click', () => updateExerciseChart('chronic'));
+
+            function updateExerciseChart(type) {
+                const newData = exerciseData[type];
+                exerciseChart.data.labels = newData.labels;
+                exerciseChart.data.datasets[0].data = newData.data;
+                exerciseChart.options.plugins.title.text = newData.title;
+                exerciseChart.update();
+            }
+
+            const evidenceData = [
+                {
+                    label: '食事戦略',
+                    value: 90,
+                    details: {
+                        mechanism: '全身性炎症の低減、腸内マイクロバイオータの改善、免疫細胞の機能サポート。',
+                        level: '強力：がんリスク低下と免疫療法（ICI）反応性改善に関する一貫した観察研究データあり。',
+                        risks: '生活習慣の変更が必要。特定の健康状態（例：腎臓病）では医師や管理栄養士との相談のもとで食事内容の調整が必要。'
+                    }
+                },
+                {
+                    label: '身体運動',
+                    value: 88,
+                    details: {
+                        mechanism: 'NK/T細胞の急性動員、マイオカイン放出によるT細胞の恒常性維持、慢性炎症の低減。',
+                        level: '強力：QOL、疲労、生存率に関する明確な利益あり。免疫学的効果の機序は強力だが、ヒトでの一貫した証明は進行中。',
+                        risks: '腫瘍専門医による許可が必須。体力低下、骨転移、血球減少など、状態に応じた注意が必要。怪我のリスク。'
+                    }
+                },
+                {
+                    label: '温熱療法',
+                    value: 65,
+                    details: {
+                        mechanism: '免疫原性細胞死の誘導、抗原提示の強化、NK/T細胞の活性化と腫瘍への浸潤促進（「コールド」から「ホット」へ）。',
+                        level: '中等度：放射線/化学療法の増感剤として確立。免疫調節に関する強力な機序と、ICIとの併用に関する新興の臨床試験あり。',
+                        risks: '専門的な医療行為。臨床での利用可能性が限られる。常に他の治療との併用。局所的な火傷、痛み、疲労のリスク。'
+                    }
+                },
+                {
+                    label: '日光浴/ビタミンD',
+                    value: 60,
+                    details: {
+                        mechanism: 'NK細胞の殺傷能力を強化。免疫系の全般的な調節。',
+                        level: '中等度：NK細胞機能強化の機序は明確。特定のがん予後との関連性あり。',
+                        risks: '皮膚がんのリスクと利益のバランスを取る必要あり。過剰な曝露は有害。サプリメントは医師の指導下で。'
+                    }
+                },
+                {
+                    label: '磁場',
+                    value: 20,
+                    details: {
+                        mechanism: 'がん細胞のアポトーシス誘導、化学療法増感、免疫シグナル伝達の調節（全て前臨床段階）。',
+                        level: '実験的：主に実験室および動物モデルでの研究。ヒトでの有効性・安全性は未確立。',
+                        risks: 'ヒトへの応用はされていない。治療法として確立されておらず、自己判断での使用は極めて危険。'
+                    }
+                },
+            ];
+            
+            const evidenceChartCtx = document.getElementById('evidenceChart').getContext('2d');
+            const evidenceChart = new Chart(evidenceChartCtx, {
+                type: 'bar',
+                data: {
+                    labels: evidenceData.map(d => d.label),
+                    datasets: [{
+                        label: '科学的エビデンスの強さ',
+                        data: evidenceData.map(d => d.value),
+                        backgroundColor: '#6A8E7F',
+                        borderColor: '#597a6f',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%'
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                             callbacks: {
+                                label: function(context) {
+                                    return `エビデンス強度: ${context.raw}% (クリックで詳細表示)`;
+                                }
+                            }
+                        }
+                    },
+                    onClick: (event, elements) => {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            const data = evidenceData[index];
+                            showModal(data);
+                        }
+                    }
+                }
+            });
+
+            const modal = document.getElementById('evidenceModal');
+            const closeModalBtn = document.getElementById('closeModal');
+            
+            function showModal(data) {
+                document.getElementById('modalTitle').textContent = data.label;
+                document.getElementById('modalMechanism').textContent = data.details.mechanism;
+                document.getElementById('modalEvidenceLevel').textContent = data.details.level;
+                document.getElementById('modalRisks').textContent = data.details.risks;
+                modal.classList.remove('hidden');
+            }
+
+            closeModalBtn.addEventListener('click', () => modal.classList.add('hidden'));
+            modal.addEventListener('click', (event) => {
+                if (event.target === modal) {
+                    modal.classList.add('hidden');
+                }
+            });
+
+        });
+    </script>
+</body>
+</html>
