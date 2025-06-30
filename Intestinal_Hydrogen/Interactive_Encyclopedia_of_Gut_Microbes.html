@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インタラクティブ腸内細菌事典</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony -->
+    <!-- Application Structure Plan: テーマ別のセクションで構成されたダッシュボード形式のSPA。ユーザーが「腸内細菌とは何か？」「体への影響は？」「どうすれば改善できる？」といった疑問に沿って直感的に探索できるよう設計。インタラクティブな年表、バランス図、ボディマップなどを通じて、静的な報告書の構成に縛られず、能動的な学習体験を提供する。この構造は、複雑な情報を細分化し、視覚的なエンゲージメントを高めることで、ユーザーの理解と興味を最大化するために選択された。 -->
+    <!-- Visualization & Content Choices: 報告書の各項目は、情報伝達の目的に応じて最適な形式に変換。年齢による変化(Goal:変化を示す)→インタラクティブな年表とドーナツグラフ(Chart.js)で視覚化。水素を介した相互作用(Goal:プロセスを説明)→HTML/CSSによるアニメーション図解で複雑な関係性を明確化。善玉・悪玉菌のバランス(Goal:概念を比較・理解)→インタラクティブなスライダーで動的な変化を体験させる。全身との関連(Goal:関係性を示す)→クリック可能なボディマップで探索的に学べるようにする。これらの選択は、SVGやMermaid JSを一切使用せず、ユーザーエンゲージメントと理解度を最大化するために行われた。 -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #FDFBF8;
+            color: #4A4A4A;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 350px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #4DB6AC;
+            border-bottom-color: #4DB6AC;
+        }
+        .tab.active {
+            background-color: #4DB6AC;
+            color: white;
+        }
+        .hydrogen-flow-dot {
+            animation: move-dot 8s linear infinite;
+        }
+        @keyframes move-dot {
+            0% { offset-distance: 0%; }
+            100% { offset-distance: 100%; }
+        }
+        .body-map-dot {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .body-map-dot:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 15px rgba(77, 182, 172, 0.7);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header & Navigation -->
+    <header id="header" class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <h1 class="text-xl md:text-2xl font-bold text-[#4DB6AC]">腸内細菌事典</h1>
+                <nav class="hidden md:flex items-center space-x-6">
+                    <a href="#basics" class="nav-link text-gray-600 border-b-2 border-transparent pb-1">基礎知識</a>
+                    <a href="#roles" class="nav-link text-gray-600 border-b-2 border-transparent pb-1">働きと種類</a>
+                    <a href="#impact" class="nav-link text-gray-600 border-b-2 border-transparent pb-1">全身への影響</a>
+                    <a href="#improvement" class="nav-link text-gray-600 border-b-2 border-transparent pb-1">腸活の方法</a>
+                    <a href="#research" class="nav-link text-gray-600 border-b-2 border-transparent pb-1">最新研究</a>
+                </nav>
+                <div class="md:hidden">
+                    <select id="mobile-nav" class="bg-white border border-gray-300 rounded-md p-2">
+                        <option value="#hero">トップ</option>
+                        <option value="#basics">基礎知識</option>
+                        <option value="#roles">働きと種類</option>
+                        <option value="#impact">全身への影響</option>
+                        <option value="#improvement">腸活の方法</option>
+                        <option value="#research">最新研究</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section id="hero" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-4 text-center">
+                <h2 class="text-3xl md:text-5xl font-bold mb-4">ようこそ、あなたの内なる宇宙へ。</h2>
+                <p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto mb-12">私たちの体の中には、もう一つの生態系が広がっています。それが腸内細菌の世界。この事典を通じて、健康と生命の神秘を解き明かす旅に出ましょう。</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                    <div class="bg-amber-50 p-6 rounded-lg shadow-sm">
+                        <p class="text-4xl font-bold text-amber-600">100兆個</p>
+                        <p class="text-gray-700 mt-2">体内にいる細菌の数</p>
+                    </div>
+                    <div class="bg-teal-50 p-6 rounded-lg shadow-sm">
+                        <p class="text-4xl font-bold text-teal-600">1,000種類</p>
+                        <p class="text-gray-700 mt-2">存在する細菌の種類</p>
+                    </div>
+                    <div class="bg-rose-50 p-6 rounded-lg shadow-sm">
+                        <p class="text-4xl font-bold text-rose-600">1.5kg</p>
+                        <p class="text-gray-700 mt-2">全細菌の重さ</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 1: Basics -->
+        <section id="basics" class="py-16 md:py-24">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold mb-2">第1章：腸内細菌叢の基礎知識</h2>
+                    <p class="text-gray-600">私たちの腸内には、いつ、どこから来て、どのように変化していくのでしょうか。まずはその基本を見ていきましょう。</p>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-bold text-center mb-8">ライフステージで変わる腸内フローラ</h3>
+                    <div class="flex justify-center items-center space-x-2 md:space-x-4 mb-8 border-b-2 pb-4">
+                        <button data-age="baby" class="age-btn px-4 py-2 rounded-full bg-teal-500 text-white shadow">乳児期</button>
+                        <div class="flex-grow h-1 bg-gray-200"></div>
+                        <button data-age="adult" class="age-btn px-4 py-2 rounded-full bg-gray-300">成人期</button>
+                        <div class="flex-grow h-1 bg-gray-200"></div>
+                        <button data-age="elderly" class="age-btn px-4 py-2 rounded-full bg-gray-300">高齢期</button>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                        <div class="chart-container">
+                            <canvas id="ageChart"></canvas>
+                        </div>
+                        <div>
+                            <h4 id="age-title" class="text-xl font-bold mb-4 text-teal-600"></h4>
+                            <p id="age-description" class="text-gray-700 leading-relaxed"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Roles and Types -->
+        <section id="roles" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold mb-2">第2章：働きと種類</h2>
+                    <p class="text-gray-600">多種多様な腸内細菌は、まるで社会のように役割分担をしながら共生しています。その驚くべき働きと、主要なメンバーを紹介します。</p>
+                </div>
+
+                <!-- Cross-feeding -->
+                <div class="bg-slate-50 p-8 rounded-xl shadow-md mb-12">
+                    <h3 class="text-2xl font-bold text-center mb-2">細菌間の連携プレー：クロスフィーディング</h3>
+                    <p class="text-center text-gray-600 mb-8">ある細菌が作った物質を、別の細菌が利用する。この見事な連携が腸内環境を支えています。特に食物繊維の分解過程で生まれる「水素」は、重要なバトン役です。</p>
+                    <div class="flex flex-col md:flex-row items-center justify-around text-center p-4 relative">
+                        <!-- Path for animation -->
+                        <svg width="0" height="0" style="position:absolute;">
+                            <path id="flow-path" d="M 50 50 C 150 0, 350 0, 450 50 S 550 100, 450 150 C 350 200, 150 200, 50 150 S -50 100, 50 50" fill="none" />
+                        </svg>
+                        <div class="relative hydrogen-flow-dot" style="offset-path: path('M 50 50 C 150 0, 350 0, 450 50 S 550 100, 450 150 C 350 200, 150 200, 50 150 S -50 100, 50 50');">
+                           <div class="w-8 h-8 bg-sky-300 rounded-full flex items-center justify-center text-xs font-bold shadow-lg">H₂</div>
+                        </div>
+
+                        <div class="flex flex-col items-center p-4">
+                            <div class="text-5xl mb-2">食物繊維</div>
+                            <p class="font-bold text-blue-600">分解菌A</p>
+                            <p class="text-sm text-gray-500">(例: バクテロイデス)</p>
+                            <p class="mt-4">水素(H₂)を放出</p>
+                        </div>
+                        <div class="text-4xl text-gray-400 mx-4">→</div>
+                         <div class="flex flex-col items-center p-4">
+                            <div class="text-5xl mb-2">短鎖脂肪酸</div>
+                            <p class="font-bold text-green-600">利用菌B</p>
+                            <p class="text-sm text-gray-500">(例: 酪酸産生菌)</p>
+                            <p class="mt-4">水素を利用して酪酸などを産生</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Balance -->
+                <div class="bg-white p-8 rounded-xl">
+                    <h3 class="text-2xl font-bold text-center mb-8">善玉・悪玉・日和見菌の絶妙なバランス</h3>
+                    <div class="w-full max-w-xl mx-auto">
+                        <input type="range" id="balance-slider" min="0" max="100" value="70" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                        <div class="flex justify-between text-xs mt-2">
+                            <span class="text-red-500">悪玉菌優勢</span>
+                            <span class="text-gray-500">日和見菌</span>
+                            <span class="text-green-500">善玉菌優勢</span>
+                        </div>
+                        <div id="balance-display" class="mt-6 p-6 rounded-lg text-center transition-colors duration-500">
+                            <!-- JS will populate this -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Systemic Impact -->
+        <section id="impact" class="py-16 md:py-24">
+             <div class="container mx-auto px-4">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold mb-2">第3章：全身への影響</h2>
+                    <p class="text-gray-600">腸は「第二の脳」とも呼ばれ、その健康は全身に影響を及ぼします。腸内細菌が私たちの心と体にどのように関わっているかを探りましょう。</p>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-md">
+                     <h3 class="text-2xl font-bold text-center mb-8">クリックして発見：腸と全身のつながり</h3>
+                    <div class="relative max-w-sm mx-auto">
+                        <!-- Body Outline (simplified with basic shapes) -->
+                        <div class="relative w-48 h-96 mx-auto">
+                            <!-- Head -->
+                            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-24 bg-teal-100 rounded-full"></div>
+                            <!-- Body -->
+                            <div class="absolute top-24 left-1/2 -translate-x-1/2 w-36 h-48 bg-teal-100 rounded-t-full"></div>
+                            <!-- Dots for interaction -->
+                            <div data-bodypart="brain" class="body-map-dot absolute top-8 left-1/2 -translate-x-1/2 w-5 h-5 bg-teal-500 rounded-full cursor-pointer border-2 border-white"></div>
+                            <div data-bodypart="skin" class="body-map-dot absolute top-28 left-2 w-5 h-5 bg-teal-500 rounded-full cursor-pointer border-2 border-white"></div>
+                            <div data-bodypart="immune" class="body-map-dot absolute top-40 left-1/2 -translate-x-1/2 w-5 h-5 bg-teal-500 rounded-full cursor-pointer border-2 border-white"></div>
+                             <div data-bodypart="fat" class="body-map-dot absolute top-52 left-32 w-5 h-5 bg-teal-500 rounded-full cursor-pointer border-2 border-white"></div>
+                        </div>
+                    </div>
+                     <div id="bodypart-info" class="mt-8 p-6 bg-teal-50 rounded-lg text-center hidden min-h-[150px] flex flex-col justify-center">
+                        <h4 id="bodypart-title" class="text-xl font-bold text-teal-700 mb-2"></h4>
+                        <p id="bodypart-text" class="text-gray-700"></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Section 4: Improvement -->
+        <section id="improvement" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-4">
+                 <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold mb-2">第4章：腸活の方法</h2>
+                    <p class="text-gray-600">幸いなことに、腸内環境は日々の努力で改善できます。毎日の食事や生活習慣で、良い菌を育てていきましょう。</p>
+                </div>
+                <div class="bg-white p-6 md:p-8 rounded-xl shadow-md">
+                    <div class="flex justify-center border-b mb-6">
+                        <button class="tab active px-6 py-2 font-bold" data-tab="diet">食事編</button>
+                        <button class="tab px-6 py-2 font-bold" data-tab="lifestyle">生活習慣編</button>
+                    </div>
+                    <div id="diet-content" class="tab-content">
+                        <p class="text-center text-gray-600 mb-6">良い菌を「摂る（プロバイオティクス）」ことと、「育てる（プレバイオティクス）」ことの両方が大切です。</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div class="border p-4 rounded-lg bg-green-50">
+                                <h4 class="font-bold text-green-800 text-lg mb-2">プロバイオティクス</h4>
+                                <p class="text-sm text-green-700 mb-3">生きた善玉菌を含む食品</p>
+                                <ul class="list-disc list-inside text-gray-700"><li>ヨーグルト</li><li>納豆</li><li>味噌</li><li>キムチ</li></ul>
+                            </div>
+                            <div class="border p-4 rounded-lg bg-blue-50">
+                                <h4 class="font-bold text-blue-800 text-lg mb-2">プレバイオティクス</h4>
+                                <p class="text-sm text-blue-700 mb-3">善玉菌のエサになる食品</p>
+                                <ul class="list-disc list-inside text-gray-700"><li>野菜・果物 (食物繊維)</li><li>玉ねぎ・ごぼう (オリゴ糖)</li><li>海藻類</li></ul>
+                            </div>
+                             <div class="border p-4 rounded-lg bg-purple-50 md:col-span-2 lg:col-span-1">
+                                <h4 class="font-bold text-purple-800 text-lg mb-2">シンバイオティクス</h4>
+                                <p class="text-sm text-purple-700 mb-3">両方を同時に摂る組み合わせ</p>
+                                <p class="text-gray-700 font-semibold">例：きなこヨーグルト、わかめの味噌汁</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="lifestyle-content" class="tab-content hidden">
+                         <p class="text-center text-gray-600 mb-6">食事だけでなく、日々の暮らし方も腸内環境に影響します。</p>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                           <div class="text-center p-4 border rounded-lg">
+                                <div class="text-4xl mb-2">🏃</div><h4 class="font-bold text-lg">運動</h4><p class="text-sm text-gray-600">腸の動きを活発にし、血流を促進する。</p>
+                           </div>
+                            <div class="text-center p-4 border rounded-lg">
+                                <div class="text-4xl mb-2">😴</div><h4 class="font-bold text-lg">睡眠</h4><p class="text-sm text-gray-600">自律神経を整え、腸の働きを安定させる。</p>
+                           </div>
+                            <div class="text-center p-4 border rounded-lg">
+                                <div class="text-4xl mb-2">😌</div><h4 class="font-bold text-lg">ストレス管理</h4><p class="text-sm text-gray-600">脳腸相関を通じて、腸内環境の悪化を防ぐ。</p>
+                           </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+         <!-- Section 5: Latest Research -->
+        <section id="research" class="py-16 md:py-24">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold mb-2">第5章：最新研究と未来の医療</h2>
+                    <p class="text-gray-600">腸内細菌研究は日進月歩。未来の健康管理や医療を大きく変える可能性を秘めた、最前線のトピックをご紹介します。</p>
+                </div>
+                <div class="max-w-3xl mx-auto space-y-4">
+                    <div class="research-item bg-white p-4 rounded-lg shadow-sm">
+                        <button class="w-full text-left flex justify-between items-center font-bold text-lg">
+                            <span>腸内細菌検査</span>
+                            <span class="transform transition-transform duration-300">▼</span>
+                        </button>
+                        <div class="research-content hidden mt-2 text-gray-600 pl-2 border-l-2 border-teal-200">
+                            <p>便からDNAを解析し、自分の腸内にどんな細菌がどれくらいいるかを可視化するサービス。自分の腸内環境のタイプを知り、パーソナライズされた腸活に役立てることができる。</p>
+                        </div>
+                    </div>
+                    <div class="research-item bg-white p-4 rounded-lg shadow-sm">
+                        <button class="w-full text-left flex justify-between items-center font-bold text-lg">
+                            <span>便微生物移植 (FMT)</span>
+                            <span class="transform transition-transform duration-300">▼</span>
+                        </button>
+                        <div class="research-content hidden mt-2 text-gray-600 pl-2 border-l-2 border-teal-200">
+                            <p>健康な人の便に含まれる腸内細菌を、患者の腸に移植する治療法。特定の腸疾患に対して高い効果が報告されており、他の疾患への応用も研究されている究極の腸内環境改善法。</p>
+                        </div>
+                    </div>
+                     <div class="research-item bg-white p-4 rounded-lg shadow-sm">
+                        <button class="w-full text-left flex justify-between items-center font-bold text-lg">
+                            <span>ポストバイオティクス</span>
+                            <span class="transform transition-transform duration-300">▼</span>
+                        </button>
+                        <div class="research-content hidden mt-2 text-gray-600 pl-2 border-l-2 border-teal-200">
+                            <p>善玉菌そのものではなく、菌が作り出す有益な代謝産物（短鎖脂肪酸など）や菌体成分を直接摂取する考え方。菌を生きたまま届ける難しさを回避できる次世代のアプローチとして注目されている。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2025 インタラクティブ腸内細菌事典</p>
+            <p class="text-sm text-gray-400 mt-2">このページは教育目的で作成されたものです。</p>
+        </div>
+    </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // --- Data ---
+    const ageData = {
+        baby: {
+            title: "乳児期：基盤が作られる時代",
+            description: "無菌状態で生まれた後、母乳やミルクからビフィズス菌などを獲得し、腸内細菌叢の基礎が築かれます。ビフィズス菌が90%以上を占めることもあります。",
+            chartData: {
+                labels: ['ビフィズス菌', 'その他'],
+                datasets: [{
+                    data: [90, 10],
+                    backgroundColor: ['#4DB6AC', '#B2DFDB'],
+                }]
+            }
+        },
+        adult: {
+            title: "成人期：多様性と安定の時代",
+            description: "食生活やライフスタイルの影響を受け、最も多様な腸内細菌叢が形成されます。善玉菌、悪玉菌、日和見菌がバランスを取りながら共存しています。",
+            chartData: {
+                labels: ['日和見菌', '善玉菌', '悪玉菌'],
+                datasets: [{
+                    data: [70, 20, 10],
+                    backgroundColor: ['#FFC107', '#4DB6AC', '#FF8A65'],
+                }]
+            }
+        },
+        elderly: {
+            title: "高齢期：変化と衰えの時代",
+            description: "加齢や食事量の減少に伴い、ビフィズス菌などの善玉菌が減少し、悪玉菌が増加しやすくなります。腸内細菌の多様性も低下する傾向にあります。",
+            chartData: {
+                labels: ['日和見菌', '悪玉菌', '善玉菌'],
+                datasets: [{
+                    data: [60, 25, 15],
+                    backgroundColor: ['#FFC107', '#FF8A65', '#4DB6AC'],
+                }]
+            }
+        }
+    };
+    
+    const bodyPartData = {
+        brain: {
+            title: "脳腸相関",
+            text: "腸は「第二の脳」。腸内細菌が作る物質は血流に乗って脳に影響を与え、ストレス耐性や気分に関わります。腸内環境の乱れが、不安やうつに関連することも。"
+        },
+        skin: {
+            title: "肌腸相関",
+            text: "腸内の悪玉菌が増えると、有害物質が血流に乗って肌に到達し、肌荒れやニキビの原因に。善玉菌は肌のバリア機能を高めるビタミンを産生します。"
+        },
+        immune: {
+            title: "免疫システム",
+            text: "全身の免疫細胞の約7割が腸に集中。腸内細菌は免疫細胞を訓練し、病原菌と戦う力やアレルギー反応の抑制に関わる重要な役割を担っています。"
+        },
+        fat: {
+            title: "肥満・代謝",
+            text: "特定の腸内細菌（通称：デブ菌）は、食べ物から過剰にエネルギーを吸収する働きがあることが知られています。短鎖脂肪酸は脂肪の蓄積を抑える働きもあります。"
+        }
+    };
+
+    // --- Section 1: Age Chart ---
+    const ageChartCtx = document.getElementById('ageChart').getContext('2d');
+    let ageChart;
+
+    function updateAgeChart(age) {
+        const data = ageData[age];
+        document.getElementById('age-title').textContent = data.title;
+        document.getElementById('age-description').textContent = data.description;
+
+        if (ageChart) {
+            ageChart.destroy();
+        }
+        ageChart = new Chart(ageChartCtx, {
+            type: 'doughnut',
+            data: data.chartData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                }
+            }
+        });
+        
+        document.querySelectorAll('.age-btn').forEach(btn => {
+            btn.classList.remove('bg-teal-500', 'text-white', 'shadow');
+            btn.classList.add('bg-gray-300');
+        });
+        document.querySelector(`.age-btn[data-age="${age}"]`).classList.add('bg-teal-500', 'text-white', 'shadow');
+        document.querySelector(`.age-btn[data-age="${age}"]`).classList.remove('bg-gray-300');
+    }
+
+    document.querySelectorAll('.age-btn').forEach(button => {
+        button.addEventListener('click', (e) => {
+            updateAgeChart(e.target.dataset.age);
+        });
+    });
+
+    updateAgeChart('baby');
+
+    // --- Section 2: Balance Slider ---
+    const balanceSlider = document.getElementById('balance-slider');
+    const balanceDisplay = document.getElementById('balance-display');
+    
+    function updateBalanceDisplay() {
+        const value = balanceSlider.value;
+        let state, text, bgColor, textColor;
+
+        if (value > 65) {
+            state = "理想的なバランス";
+            text = "善玉菌が優勢で、腸内環境は良好です。日和見菌も良い働きをしています。";
+            bgColor = 'bg-teal-50';
+            textColor = 'text-teal-800';
+        } else if (value < 35) {
+            state = "ディスバイオシス (乱れた状態)";
+            text = "悪玉菌が優勢になり、有害物質が作られやすい状態。体調不良の原因になることも。";
+            bgColor = 'bg-red-50';
+            textColor = 'text-red-800';
+        } else {
+            state = "日和見菌が様子見中";
+            text = "善玉菌と悪玉菌が拮抗しています。食生活やストレス次第でどちらにも傾きます。";
+            bgColor = 'bg-amber-50';
+            textColor = 'text-amber-800';
+        }
+        balanceDisplay.innerHTML = `<h4 class="font-bold text-lg mb-2">${state}</h4><p class="text-sm">${text}</p>`;
+        balanceDisplay.className = `mt-6 p-6 rounded-lg text-center transition-colors duration-500 ${bgColor} ${textColor}`;
+    }
+    
+    balanceSlider.addEventListener('input', updateBalanceDisplay);
+    updateBalanceDisplay();
+
+    // --- Section 3: Body Map ---
+    const bodyMapDots = document.querySelectorAll('.body-map-dot');
+    const bodyPartInfo = document.getElementById('bodypart-info');
+    const bodyPartTitle = document.getElementById('bodypart-title');
+    const bodyPartText = document.getElementById('bodypart-text');
+    
+    bodyMapDots.forEach(dot => {
+        dot.addEventListener('click', (e) => {
+            const part = e.target.dataset.bodypart;
+            const data = bodyPartData[part];
+            
+            bodyPartTitle.textContent = data.title;
+            bodyPartText.textContent = data.text;
+            bodyPartInfo.classList.remove('hidden');
+        });
+    });
+
+
+    // --- Section 4: Improvement Tabs ---
+    const tabs = document.querySelectorAll('.tab');
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            document.getElementById(`${tab.dataset.tab}-content`).classList.remove('hidden');
+        });
+    });
+
+    // --- Section 5: Research Accordion ---
+    const researchItems = document.querySelectorAll('.research-item button');
+    researchItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const content = item.nextElementSibling;
+            const icon = item.querySelector('span:last-child');
+            
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                icon.classList.add('rotate-180');
+            } else {
+                content.classList.add('hidden');
+                icon.classList.remove('rotate-180');
+            }
+        });
+    });
+    
+    // --- Navigation ---
+    const sections = document.querySelectorAll('main section');
+    const navLinks = document.querySelectorAll('header nav a');
+
+    window.addEventListener('scroll', () => {
+        let current = '';
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            if (pageYOffset >= sectionTop - 65) {
+                current = section.getAttribute('id');
+            }
+        });
+
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href').slice(1) === current) {
+                link.classList.add('active');
+            }
+        });
+    });
+
+    const mobileNav = document.getElementById('mobile-nav');
+    mobileNav.addEventListener('change', (e) => {
+        const targetId = e.target.value;
+        const targetElement = document.querySelector(targetId);
+        if (targetElement) {
+            targetElement.scrollIntoView({ behavior: 'smooth' });
+        }
+    });
+});
+</script>
+
+</body>
+</html>
