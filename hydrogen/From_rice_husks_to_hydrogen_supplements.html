@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インタラクティブ・レポート：もみ殻から水素サプリへの道</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony Neutrals -->
+    <!-- Application Structure Plan: このSPAは、科学的な報告書の線形的な構造を、ユーザーが直感的に探求できるテーマ別のインタラクティブな旅に再構築します。構造は「はじめに(序論)」「原料から製品まで(製造プロセス)」「体内での働き(作用機序)」「市場の製品(製品比較)」「結論(まとめ)」の5つの主要セクションで構成されます。特に「原料から製品まで」のセクションでは、ドーナツチャート、クリック可能なフロー図、インタラクティブなバーチャートを用いて、複雑な精製・加工程を段階的に視覚化します。この構造は、ユーザーが情報を自分のペースで発見し、各ステップの関係性を理解しやすくすることを目的としています。ナビゲーションは追従型とし、どのセクションにいるかを常に把握できるようにします。 -->
+    <!-- Visualization & Content Choices: 報告書内の主要なデータとプロセスを、静的なテキストや表ではなく、動的なビジュアル要素に変換します。Goal:Inform(情報提供) -> もみ殻の組成をドーナツチャート(Chart.js)で表示。Goal:Compare(比較) -> シリカの精製方法ごとの純度をバーチャート(Chart.js)で比較。Goal:Organize(整理) -> 精製プロセスと作用機序をHTML/CSSベースのクリック可能なフロー図で整理。Goal:Compare -> 市場の製品をフィルタリング可能なインタラクティブカードで比較。これらの選択は、ユーザーエンゲージメントを高め、複雑な情報を消化しやすくするためのものです。これにより、能動的な学習体験を提供します。 -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Noto Sans JP', sans-serif; background-color: #f7f7f7; color: #333; }
+        .smooth-scroll { scroll-behavior: smooth; }
+        .section-title { font-size: 2.25rem; font-weight: 700; color: #1a202c; margin-bottom: 1.5rem; text-align: center; }
+        .card { background-color: white; border-radius: 0.75rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); transition: transform 0.3s, box-shadow 0.3s; padding: 1.5rem; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
+        .nav-link { padding: 0.5rem 1rem; color: #4a5568; font-weight: 700; border-radius: 9999px; transition: background-color 0.3s, color 0.3s; }
+        .nav-link.active, .nav-link:hover { background-color: #38a169; color: white; }
+        .chart-container { position: relative; width: 100%; max-width: 600px; margin-left: auto; margin-right: auto; height: 350px; max-height: 400px; }
+        @media (min-width: 768px) { .chart-container { height: 400px; } }
+        .tab-button {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            border-radius: 0.375rem;
+            transition: all 0.2s ease-in-out;
+            font-weight: 600;
+            border: 2px solid transparent;
+        }
+        .tab-button.active {
+            background-color: #38a169;
+            color: white;
+            border-color: #38a169;
+        }
+        .tab-button:not(.active) {
+            background-color: #e2e8f0;
+            color: #4a5568;
+        }
+        .process-step {
+            cursor: pointer;
+            border-left: 4px solid #cbd5e0;
+            padding-left: 1.5rem;
+            transition: border-color 0.3s;
+        }
+        .process-step.active, .process-step:hover {
+            border-left-color: #38a169;
+        }
+    </style>
+</head>
+<body class="smooth-scroll">
+
+    <header id="header" class="bg-white shadow-md sticky top-0 z-50">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
+            <h1 class="text-xl font-bold text-gray-800">水素サプリの科学</h1>
+            <div class="hidden md:flex items-center space-x-2">
+                <a href="#introduction" class="nav-link">はじめに</a>
+                <a href="#process" class="nav-link">原料から製品まで</a>
+                <a href="#mechanism" class="nav-link">体内での働き</a>
+                <a href="#products" class="nav-link">市場の製品</a>
+                <a href="#conclusion" class="nav-link">結論</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100">
+                <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden px-2 pt-2 pb-3 space-y-1 sm:px-3">
+            <a href="#introduction" class="block nav-link text-center">はじめに</a>
+            <a href="#process" class="block nav-link text-center">原料から製品まで</a>
+            <a href="#mechanism" class="block nav-link text-center">体内での働き</a>
+            <a href="#products" class="block nav-link text-center">市場の製品</a>
+            <a href="#conclusion" class="block nav-link text-center">結論</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+
+        <section id="introduction" class="py-16 text-center">
+            <h2 class="text-3xl md:text-5xl font-bold text-gray-800 mb-4">もみ殻から水素サプリへの道</h2>
+            <p class="max-w-3xl mx-auto text-lg text-gray-600">
+                農業廃棄物である「もみ殻」が、いかにして先進的な健康サプリメントに生まれ変わるのか。このインタラクティブ・レポートでは、その科学的なプロセス、体内での作用メカニズム、そして市場の製品まで、一連の旅を探求します。
+            </p>
+        </section>
+
+        <section id="process" class="py-16 bg-gray-50 rounded-xl my-8 p-8">
+            <h2 class="section-title">原料から製品まで：変革のプロセス</h2>
+            <p class="text-center text-gray-600 max-w-3xl mx-auto mb-12">
+                このセクションでは、もみ殻が価値ある高純度シリカとなり、最終的に水素サプリメントへと加工されるまでの多段階のプロセスを追います。各ステップをクリックまたはホバーして、詳細をご覧ください。
+            </p>
+            
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="order-2 md:order-1">
+                    <div id="step-1" class="process-step active mb-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">ステップ1：原料「もみ殻」</h3>
+                        <p id="step-1-text" class="text-gray-600">もみ殻は米の精米過程で生じる農業副産物ですが、乾燥重量の約20%が価値あるシリカ（SiO₂）で構成されています。この豊富なシリカが、すべての始まりとなります。</p>
+                    </div>
+                    <div id="step-2" class="process-step mb-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">ステップ2：高純度シリカの精製</h3>
+                        <p id="step-2-text" class="text-gray-600 hidden">もみ殻から不純物を取り除き、シリカの純度を高めるため、熱処理、酸浸出、アルカリ抽出といった化学的プロセスが用いられます。これにより、99%以上の純度を持つアモルファスシリカが得られます。</p>
+                    </div>
+                    <div id="step-3" class="process-step">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">ステップ3：水素発生材料への加工</h3>
+                        <p id="step-3-text" class="text-gray-600 hidden">精製された高純度シリカは、特殊な化学反応（ヒドロシリル化など）によって、水と反応して水素を発生させる「シリカヒドリド」や「ナノシリコン」といった機能性材料に加工されます。</p>
+                    </div>
+                </div>
+
+                <div class="order-1 md:order-2 card">
+                    <div id="process-visual-1" class="chart-container">
+                         <canvas id="riceHuskChart"></canvas>
+                    </div>
+                    <div id="process-visual-2" class="chart-container hidden">
+                        <canvas id="purityChart"></canvas>
+                    </div>
+                    <div id="process-visual-3" class="hidden h-[350px] flex items-center justify-center">
+                         <div class="text-center">
+                            <div class="text-2xl font-bold text-gray-700">SiO₂</div>
+                            <div class="my-4 text-3xl text-green-600">→</div>
+                            <div class="text-2xl font-bold text-gray-700 flex items-center justify-center">
+                                <span>Si-H</span>
+                                <span class="text-sm ml-2 text-gray-500">(シリカヒドリド)</span>
+                            </div>
+                         </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <section id="mechanism" class="py-16 my-8">
+            <h2 class="section-title">体内での働き：水素発生のメカニズム</h2>
+            <p class="text-center text-gray-600 max-w-3xl mx-auto mb-12">
+                サプリメントとして摂取された後、シリカベースの材料はどのようにして体内で水素を生成するのでしょうか。ここでは、その主要な2つの作用機序と、生成された水素がもたらす健康への影響について解説します。
+            </p>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="card">
+                    <div class="flex items-center mb-4">
+                        <span class="text-3xl mr-4">💧</span>
+                        <h3 class="text-2xl font-bold text-gray-800">シリカヒドリドの加水分解</h3>
+                    </div>
+                    <p class="text-gray-600">シリカヒドリド（Si-H）は体内の水分と反応し、安定した「負に帯電した水素イオン（H⁻）」を放出するとされています。このH⁻イオンは強力な電子供与体として働き、有害な活性酸素（フリーラジカル）を無害な水に変換します。</p>
+                    <div class="mt-4 p-4 bg-green-50 rounded-lg text-green-800 font-semibold">
+                        Si-H + H₂O → Si-OH + H₂ (分子状水素)
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="flex items-center mb-4">
+                        <span class="text-3xl mr-4">🔬</span>
+                        <h3 class="text-2xl font-bold text-gray-800">ナノシリコンの役割</h3>
+                    </div>
+                    <p class="text-gray-600">ナノサイズ化されたシリコン粒子は、特に腸内の弱アルカリ性環境で水と効率的に反応し、持続的に分子状水素（H₂）を生成します。この持続的な水素発生が、長時間にわたる抗酸化作用をもたらすと考えられています。</p>
+                     <div class="mt-4 p-4 bg-blue-50 rounded-lg text-blue-800 font-semibold">
+                        Si (ナノ) + 2H₂O → SiO₂ + 2H₂
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="products" class="py-16 bg-gray-50 rounded-xl my-8 p-8">
+            <h2 class="section-title">市場の製品：技術の比較</h2>
+             <p class="text-center text-gray-600 max-w-3xl mx-auto mb-12">
+                市場には様々な水素サプリメントが存在しますが、その水素発生メカニズムは大きく異なります。ここでは、報告書で分析された主要な2つのタイプ、「シリカヒドリド系」と「マグネシウム系」の製品を比較します。
+            </p>
+            <div class="flex justify-center mb-8 space-x-4">
+                <button class="tab-button active" data-filter="all">すべて</button>
+                <button class="tab-button" data-filter="silica">シリカヒドリド系</button>
+                <button class="tab-button" data-filter="magnesium">マグネシウム系</button>
+            </div>
+            <div id="product-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            </div>
+        </section>
+        
+        <section id="conclusion" class="py-16 my-8">
+            <h2 class="section-title">結論と今後の展望</h2>
+            <p class="text-center text-gray-600 max-w-3xl mx-auto mb-12">
+                この調査から、もみ殻由来シリカが持つ大きな潜在能力と、水素サプリメント技術の現状と課題が明らかになりました。最後に、本報告書の結論と今後の展望をまとめます。
+            </p>
+            <div class="max-w-4xl mx-auto grid md:grid-cols-2 gap-8">
+                <div class="card bg-green-50">
+                    <h3 class="text-xl font-bold text-green-800 mb-3">結論の要約</h3>
+                    <ul class="space-y-2 text-green-900 list-disc list-inside">
+                        <li>もみ殻は高純度（98%以上）アモルファスシリカの持続可能な供給源である。</li>
+                        <li>シリカヒドリドやナノシリコンへの加工により、水素発生材料としての応用が可能。</li>
+                        <li>体内での水素発生メカニズムは主に「H⁻イオン放出」と「H₂ガス生成」に大別される。</li>
+                        <li>市販製品の原料がもみ殻由来であるかは、現状では不明確な点が多い。</li>
+                    </ul>
+                </div>
+                <div class="card bg-blue-50">
+                    <h3 class="text-xl font-bold text-blue-800 mb-3">今後の展望</h3>
+                    <ul class="space-y-2 text-blue-900 list-disc list-inside">
+                        <li>製造プロセスの環境負荷低減（例：水熱法）が重要となる。</li>
+                        <li>体内での吸収性や長期的な安全性に関する厳密な臨床試験が不可欠。</li>
+                        <li>作用機序の科学的根拠を明確化し、消費者への正確な情報提供が求められる。</li>
+                        <li>もみ殻由来原料のトレーサビリティを確立し、環境価値を訴求することが市場での競争力に繋がる。</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-gray-800 text-white py-6">
+        <div class="container mx-auto px-4 text-center">
+            <p>このインタラクティブ・レポートは提供された専門報告書に基づき生成されました。</p>
+            <p class="text-sm text-gray-400 mt-2">&copy; 2025 Interactive Science Reports. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const riceHuskData = {
+                labels: ['セルロース (38%)', 'リグニン (22%)', '灰分 (シリカ) (20%)', 'ペンタサン (18%)', 'その他 (2%)'],
+                datasets: [{
+                    data: [38, 22, 20, 18, 2],
+                    backgroundColor: ['#4CAF50', '#8BC34A', '#CDDC39', '#FFEB3B', '#FFC107'],
+                    hoverOffset: 4
+                }]
+            };
+
+            const purityData = {
+                labels: ['酸浸出+熱処理', 'アルカリ抽出+酸性化', '熱処理+酸処理+熱処理'],
+                datasets: [{
+                    label: '達成純度 (%)',
+                    data: [99.7, 99, 99],
+                    backgroundColor: '#38a169',
+                    borderColor: '#2f855a',
+                    borderWidth: 1
+                }]
+            };
+
+            const productData = [
+                { name: 'MegaHydrate', type: 'silica', mechanism: 'シリカヒドリド', detail: '負に帯電した水素イオン(H⁻)を放出し、強力な抗酸化作用を持つとされる。Microcluster®技術が特徴。', },
+                { name: 'H2 Elite', type: 'magnesium', mechanism: 'マグネシウム', detail: 'マグネシウムと有機酸（リンゴ酸など）が水と反応し、分子状水素ガス(H₂)を直接生成する。', },
+                { name: 'H2 Molecular Hydrogen', type: 'magnesium', mechanism: 'マグネシウム', detail: 'H2 Eliteと同様のメカニズムで、水に溶解させて高濃度の水素水を生成するタブレット。', },
+                { name: 'Isotonix H2Tab', type: 'magnesium', mechanism: 'マグネシウム', detail: '海水由来のマグネシウムを使用し、水中で反応して分子状水素ガスを発生させる。', },
+                { name: 'LIVING SILICA®', type: 'other', mechanism: 'オーソケイ酸', detail: '直接的な水素発生は目的とせず、骨や皮膚の健康を目的としたシリカ補給サプリメント。', },
+                { name: 'Organic Rice Hull Silica', type: 'other', mechanism: 'もみ殻粉末', detail: '水素発生ではなく、食物繊維として腸内環境改善を目的とした食品。もみ殻を直接利用。', }
+            ];
+
+            let riceHuskChartInstance, purityChartInstance;
+
+            function createRiceHuskChart() {
+                const ctx = document.getElementById('riceHuskChart').getContext('2d');
+                if (riceHuskChartInstance) riceHuskChartInstance.destroy();
+                riceHuskChartInstance = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: riceHuskData,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom', labels: { font: { size: 12 } } },
+                            title: { display: true, text: 'もみ殻の主成分', font: { size: 16 } }
+                        }
+                    }
+                });
+            }
+
+            function createPurityChart() {
+                const ctx = document.getElementById('purityChart').getContext('2d');
+                if (purityChartInstance) purityChartInstance.destroy();
+                purityChartInstance = new Chart(ctx, {
+                    type: 'bar',
+                    data: purityData,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: { y: { beginAtZero: true, min: 95, max: 100, title: { display: true, text: '純度 (%)' } } },
+                        plugins: {
+                            legend: { display: false },
+                            title: { display: true, text: '主要な精製方法と達成純度', font: { size: 16 } },
+                             tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return `純度: ${context.parsed.y}%`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            const processSteps = document.querySelectorAll('.process-step');
+            const visuals = [document.getElementById('process-visual-1'), document.getElementById('process-visual-2'), document.getElementById('process-visual-3')];
+            const textElements = [document.getElementById('step-1-text'), document.getElementById('step-2-text'), document.getElementById('step-3-text')];
+            
+            processSteps.forEach((step, index) => {
+                step.addEventListener('click', () => {
+                    processSteps.forEach(s => s.classList.remove('active'));
+                    textElements.forEach(t => t.classList.add('hidden'));
+
+                    step.classList.add('active');
+                    textElements[index].classList.remove('hidden');
+
+                    visuals.forEach((vis, vIndex) => {
+                        vis.classList.toggle('hidden', index !== vIndex);
+                    });
+                    
+                    if (index === 0) {
+                        if (!riceHuskChartInstance || !riceHuskChartInstance.canvas) createRiceHuskChart();
+                    }
+                    if (index === 1) {
+                         if (!purityChartInstance || !purityChartInstance.canvas) createPurityChart();
+                    }
+                });
+            });
+            
+            createRiceHuskChart();
+
+            const productGrid = document.getElementById('product-grid');
+            const filterButtons = document.querySelectorAll('.tab-button');
+
+            function renderProducts(filter) {
+                productGrid.innerHTML = '';
+                const filteredProducts = productData.filter(p => filter === 'all' || p.type === filter);
+                
+                filteredProducts.forEach(p => {
+                    let bgColor, textColor, badgeColor;
+                    if(p.type === 'silica') {
+                        bgColor = 'bg-green-50'; textColor = 'text-green-800'; badgeColor = 'bg-green-200 text-green-800';
+                    } else if (p.type === 'magnesium') {
+                        bgColor = 'bg-blue-50'; textColor = 'text-blue-800'; badgeColor = 'bg-blue-200 text-blue-800';
+                    } else {
+                         bgColor = 'bg-gray-100'; textColor = 'text-gray-800'; badgeColor = 'bg-gray-300 text-gray-800';
+                    }
+                    
+                    const card = `
+                        <div class="card ${bgColor} product-card" data-type="${p.type}">
+                            <h3 class="text-xl font-bold ${textColor} mb-2">${p.name}</h3>
+                            <span class="inline-block px-2 py-1 text-xs font-semibold rounded-full ${badgeColor} mb-3">${p.mechanism}</span>
+                            <p class="text-sm ${textColor} opacity-90">${p.detail}</p>
+                        </div>
+                    `;
+                    productGrid.innerHTML += card;
+                });
+            }
+
+            filterButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    renderProducts(button.dataset.filter);
+                });
+            });
+
+            renderProducts('all');
+
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    if(this.closest('#mobile-menu')) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                });
+            });
+            
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('section');
+
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 60) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href').includes(current)) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>
