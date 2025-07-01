@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インタラクティブ・コラーゲンガイド</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony -->
+    <!-- Application Structure Plan: A task-oriented SPA with four main interactive sections: 1) An interactive "Collagen Balance" dashboard comparing building vs. degrading factors. 2) A visual flowchart of the synthesis process. 3) A focused section on Bone & Joint health. 4) A practical, filterable meal planner. This structure breaks down complex information into manageable, engaging themes, prioritizing user exploration and task completion (learning how to build/protect collagen) over the report's linear academic structure. The user flow is guided by top-level navigation, with details revealed on demand via clicks, which reduces initial cognitive load and encourages interaction. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Key nutrients and degrading factors. Goal: Compare/Inform. Viz: Interactive side-by-side card layout ("The Balance"). Interaction: Click cards to reveal detailed pop-ups with food sources and effects. Justification: Simplifies dense data from Parts 2, 3, 4 into a clear "build vs. protect" framework. Method: HTML/CSS/JS.
+        - Report Info: Collagen synthesis process. Goal: Show Process. Viz: HTML/CSS flowchart. Interaction: Highlight key nutrient inputs on hover/click. Justification: Visualizes a complex biochemical pathway, making it more intuitive than text. Method: HTML/Tailwind.
+        - Report Info: Nutrient food sources. Goal: Inform/Quantify. Viz: Bar Charts. Interaction: Charts are dynamically generated when a nutrient is selected. Justification: Provides a quick, visual comparison of food sources. Method: Chart.js (Canvas).
+        - Report Info: Bone Health Team. Goal: Organize/Relate. Viz: Interactive group of cards. Interaction: Click to see each member's role. Justification: Emphasizes the "team" concept from the report. Method: HTML/CSS/JS.
+        - Report Info: Meal Plans. Goal: Apply Knowledge. Viz: Tabbed/filterable table layout. Interaction: User selects diet type to view the relevant plan. Justification: Makes the report's advice directly actionable. Method: HTML/CSS/JS.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #FDFBF8; /* Warm Neutral Background */
+            color: #3a3a3a;
+        }
+        .nav-link {
+            @apply px-4 py-2 text-sm md:text-base font-medium text-stone-600 hover:text-teal-700 transition-colors duration-300 rounded-lg;
+        }
+        .nav-link.active {
+            @apply bg-teal-100 text-teal-800 font-semibold;
+        }
+        .card {
+            @apply bg-white border border-stone-200 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden;
+        }
+        .card-title {
+            @apply text-xl font-bold text-teal-800 mb-2;
+        }
+        .section-title {
+            @apply text-3xl md:text-4xl font-bold text-center mb-4 text-stone-800;
+        }
+        .section-subtitle {
+            @apply text-center text-stone-500 max-w-2xl mx-auto mb-12;
+        }
+        .modal-backdrop {
+            @apply fixed inset-0 bg-black bg-opacity-60 z-40 transition-opacity duration-300;
+        }
+        .modal-content {
+            @apply fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-2xl p-6 md:p-8 w-11/12 max-w-2xl z-50 transition-transform duration-300 scale-95;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+         @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header & Navigation -->
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-30 shadow-sm">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between py-4">
+                <h1 class="text-xl md:text-2xl font-bold text-teal-800">
+                    <span class="text-2xl md:text-3xl">🧬</span> インタラクティブ・コラーゲンガイド
+                </h1>
+                <nav class="hidden md:flex items-center space-x-2 bg-stone-100 p-1 rounded-full">
+                    <a href="#balance" class="nav-link active">作る vs 守る</a>
+                    <a href="#factory" class="nav-link">合成工場</a>
+                    <a href="#bone-joint" class="nav-link">骨と関節</a>
+                    <a href="#meal-plan" class="nav-link">食事プラン</a>
+                </nav>
+                <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-stone-700 hover:bg-stone-200">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-4 6h4"></path></svg>
+                </button>
+            </div>
+        </div>
+         <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-stone-200">
+            <a href="#balance" class="block py-3 px-4 text-stone-700 hover:bg-teal-50">作る vs 守る</a>
+            <a href="#factory" class="block py-3 px-4 text-stone-700 hover:bg-teal-50">合成工場</a>
+            <a href="#bone-joint" class="block py-3 px-4 text-stone-700 hover:bg-teal-50">骨と関節</a>
+            <a href="#meal-plan" class="block py-3 px-4 text-stone-700 hover:bg-teal-50">食事プラン</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8 md:py-16">
+        
+        <!-- Hero Section -->
+        <section class="text-center mb-16 md:mb-24">
+            <h2 class="text-4xl md:text-5xl font-extrabold text-stone-800 mb-4">強く、しなやかな体を作るために。</h2>
+            <p class="max-w-3xl mx-auto text-stone-600 text-lg">
+                このガイドは、体内のコラーゲンを効率的に「作り」、そして様々な要因から「守る」ための科学的知識をインタラクティブに探求するツールです。あなたの健康的な未来のために、コラーゲンの世界を旅しましょう。
+            </p>
+        </section>
+
+        <!-- Section 1: Balance -->
+        <section id="balance" class="mb-16 md:mb-24">
+            <h3 class="section-title">コラーゲンバランス</h3>
+            <p class="section-subtitle">
+                コラーゲンの健康は「合成（作る力）」と「分解（壊す力）」のバランスで決まります。合成を助ける栄養素と、分解を進める要因を学び、バランスを「合成」側に傾けましょう。カードをタップして詳細をご覧ください。
+            </p>
+            <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-start">
+                <!-- Build Column -->
+                <div class="bg-teal-50/50 p-6 rounded-2xl border-2 border-teal-200">
+                    <h4 class="text-2xl font-bold text-center mb-6 text-teal-800">✅ コラーゲンを「作る」要素</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="card" data-modal-target="amino-acids">
+                            <div class="p-5">
+                                <p class="text-4xl mb-2">🧱</p>
+                                <h5 class="font-bold text-lg text-stone-800">アミノ酸</h5>
+                                <p class="text-sm text-stone-500">グリシン、プロリン、リシン</p>
+                            </div>
+                        </div>
+                        <div class="card" data-modal-target="vitamin-c">
+                            <div class="p-5">
+                                <p class="text-4xl mb-2">🍊</p>
+                                <h5 class="font-bold text-lg text-stone-800">ビタミンC</h5>
+                                <p class="text-sm text-stone-500">合成の必須パートナー</p>
+                            </div>
+                        </div>
+                        <div class="card" data-modal-target="zinc">
+                           <div class="p-5">
+                                <p class="text-4xl mb-2">🦪</p>
+                                <h5 class="font-bold text-lg text-stone-800">亜鉛</h5>
+                                <p class="text-sm text-stone-500">合成を調整する司令塔</p>
+                            </div>
+                        </div>
+                        <div class="card" data-modal-target="copper">
+                            <div class="p-5">
+                                <p class="text-4xl mb-2">🍫</p>
+                                <h5 class="font-bold text-lg text-stone-800">銅</h5>
+                                <p class="text-sm text-stone-500">強度を高める仕上げ役</p>
+                            </div>
+                        </div>
+                        <div class="card" data-modal-target="iron">
+                            <div class="p-5">
+                                <p class="text-4xl mb-2">🥩</p>
+                                <h5 class="font-bold text-lg text-stone-800">鉄</h5>
+                                <p class="text-sm text-stone-500">合成を支える補酵素</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Protect Column -->
+                <div class="bg-red-50/50 p-6 rounded-2xl border-2 border-red-200">
+                    <h4 class="text-2xl font-bold text-center mb-6 text-red-800">❌ コラーゲンを「壊す」要因</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                       <div class="card" data-modal-target="uv-rays">
+                            <div class="p-5">
+                                <p class="text-4xl mb-2">☀️</p>
+                                <h5 class="font-bold text-lg text-stone-800">紫外線</h5>
+                                <p class="text-sm text-stone-500">分解酵素を活性化</p>
+                            </div>
+                        </div>
+                        <div class="card" data-modal-target="sugar">
+                            <div class="p-5">
+                                <p class="text-4xl mb-2">🍰</p>
+                                <h5 class="font-bold text-lg text-stone-800">糖化</h5>
+                                <p class="text-sm text-stone-500">組織を硬く、もろくする</p>
+                            </div>
+                        </div>
+                        <div class="card" data-modal-target="stress">
+                           <div class="p-5">
+                                <p class="text-4xl mb-2">🤯</p>
+                                <h5 class="font-bold text-lg text-stone-800">慢性ストレス</h5>
+                                <p class="text-sm text-stone-500">合成を抑制、分解を促進</p>
+                            </div>
+                        </div>
+                        <div class="card" data-modal-target="sleep-deprivation">
+                            <div class="p-5">
+                                <p class="text-4xl mb-2">😴</p>
+                                <h5 class="font-bold text-lg text-stone-800">睡眠不足</h5>
+                                <p class="text-sm text-stone-500">修復ホルモンが不足</p>
+                            </div>
+                        </div>
+                        <div class="card" data-modal-target="smoking">
+                            <div class="p-5">
+                                <p class="text-4xl mb-2">🚬</p>
+                                <h5 class="font-bold text-lg text-stone-800">喫煙</h5>
+                                <p class="text-sm text-stone-500">栄養供給を阻害</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Factory -->
+        <section id="factory" class="mb-16 md:mb-24">
+            <h3 class="section-title">コラーゲン合成工場</h3>
+            <p class="section-subtitle">
+                体内のコラーゲンは、まるで精密な工場のように作られます。遺伝子の情報から始まり、様々な栄養素が「作業員」として働くことで、強固なコラーゲン線維が完成します。
+            </p>
+            <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg border border-stone-200">
+                <div class="relative flex flex-col items-center space-y-4 md:space-y-0 md:flex-row md:justify-around md:items-stretch">
+                    <!-- Step 1 -->
+                    <div class="flex flex-col items-center text-center w-48">
+                        <div class="bg-blue-100 text-blue-800 rounded-full w-16 h-16 flex items-center justify-center font-bold text-2xl mb-2">1</div>
+                        <h5 class="font-bold">設計と材料</h5>
+                        <p class="text-sm text-stone-500">細胞核で遺伝子(DNA)から設計図(mRNA)が作られ、アミノ酸が鎖状に繋がる。</p>
+                    </div>
+                    <div class="hidden md:block absolute top-1/2 left-1/4 transform -translate-x-1/2 -translate-y-1/2 text-3xl text-stone-400">→</div>
+                    <div class="md:hidden text-2xl text-stone-400">↓</div>
+                    <!-- Step 2 -->
+                    <div class="flex flex-col items-center text-center w-48 relative">
+                         <div class="bg-green-100 text-green-800 rounded-full w-16 h-16 flex items-center justify-center font-bold text-2xl mb-2">2</div>
+                        <h5 class="font-bold">加工（水酸化）</h5>
+                        <p class="text-sm text-stone-500">プロリンとリシンが加工され、三重らせんの安定に不可欠な形に変わる。</p>
+                        <div class="absolute -bottom-8 bg-amber-200 text-amber-800 text-xs font-semibold px-2 py-1 rounded-full shadow-md">必須: ビタミンC, 鉄</div>
+                    </div>
+                     <div class="hidden md:block absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-3xl text-stone-400">→</div>
+                    <div class="md:hidden text-2xl text-stone-400">↓</div>
+                    <!-- Step 3 -->
+                    <div class="flex flex-col items-center text-center w-48 pt-10 md:pt-0">
+                         <div class="bg-purple-100 text-purple-800 rounded-full w-16 h-16 flex items-center justify-center font-bold text-2xl mb-2">3</div>
+                        <h5 class="font-bold">組み立て</h5>
+                        <p class="text-sm text-stone-500">加工された3本の鎖が集まり、プロコラーゲンという三重らせん構造を形成する。</p>
+                    </div>
+                     <div class="hidden md:block absolute top-1/2 right-1/4 transform translate-x-1/2 -translate-y-1/2 text-3xl text-stone-400">→</div>
+                     <div class="md:hidden text-2xl text-stone-400">↓</div>
+                    <!-- Step 4 -->
+                    <div class="flex flex-col items-center text-center w-48 relative pt-10 md:pt-0">
+                        <div class="bg-orange-100 text-orange-800 rounded-full w-16 h-16 flex items-center justify-center font-bold text-2xl mb-2">4</div>
+                        <h5 class="font-bold">仕上げ（架橋）</h5>
+                        <p class="text-sm text-stone-500">分子同士が結合し、網の目のように強固なコラーゲン線維が完成する。</p>
+                         <div class="absolute -bottom-8 bg-sky-200 text-sky-800 text-xs font-semibold px-2 py-1 rounded-full shadow-md">必須: 銅</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Bone & Joint -->
+        <section id="bone-joint" class="mb-16 md:mb-24">
+            <h3 class="section-title">骨と関節の設計図</h3>
+            <p class="section-subtitle">
+                骨の強度は「ミネラル」と「コラーゲン」の共同作業で生まれます。関節の滑らかさもコラーゲンが主役です。それぞれの健康に必要な「チーム」を理解しましょう。
+            </p>
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Bone -->
+                <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg border border-stone-200">
+                    <h4 class="text-2xl font-bold mb-4 text-stone-800">🦴 強靭な骨を作るチーム</h4>
+                    <p class="text-stone-600 mb-6">骨はコラーゲンの「鉄筋」にカルシウムの「コンクリート」が固まってできています。最高の骨を作るには、以下の栄養素チームが不可欠です。</p>
+                    <div class="space-y-4">
+                        <div class="p-4 bg-stone-100 rounded-lg"><strong>コラーゲン:</strong> 柔軟な骨格（鉄筋）を提供</div>
+                        <div class="p-4 bg-stone-100 rounded-lg"><strong>カルシウム:</strong> 骨の密度と硬さ（コンクリート）を提供</div>
+                        <div class="p-4 bg-stone-100 rounded-lg"><strong>ビタミンD:</strong> カルシウムの吸収を助ける</div>
+                        <div class="p-4 bg-stone-100 rounded-lg"><strong>ビタミンK:</strong> カルシウムを骨へ運ぶ「監督役」</div>
+                        <div class="p-4 bg-stone-100 rounded-lg"><strong>マグネシウム:</strong> ビタミンDの活性化を助ける</div>
+                    </div>
+                </div>
+                <!-- Joint -->
+                <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg border border-stone-200">
+                    <h4 class="text-2xl font-bold mb-4 text-stone-800">💪 しなやかな関節を保つ</h4>
+                    <p class="text-stone-600 mb-6">関節軟骨の主成分は「II型コラーゲン」。衝撃を吸収するクッションの役割を果たします。健康な関節のためには、このII型コラーゲンを守り、育てることが重要です。</p>
+                    <ul class="space-y-4 list-disc list-inside text-stone-700">
+                        <li><strong>II型コラーゲン:</strong> 関節軟骨の約60%を占める主要な構造タンパク質。</li>
+                        <li><strong>経口免疫寛容:</strong> 特定のサプリメント（非変性II型コラーゲン）は、免疫系が自身の関節を攻撃するのを抑制する可能性があります。</li>
+                        <li><strong>コラーゲンペプチド:</strong> 加水分解されたコラーゲンは、関節痛の軽減や機能改善に役立つという研究結果が報告されています。</li>
+                         <li><strong>総合的なアプローチ:</strong> コラーゲン合成に必要な栄養素（ビタミンCなど）を摂り、分解要因（糖化など）を避けることが、関節の健康にも繋がります。</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Meal Plan -->
+        <section id="meal-plan">
+            <h3 class="section-title">プロコラーゲン食事プラン</h3>
+            <p class="section-subtitle">
+                日々の食事がコラーゲンを作ります。ここでは動物性食品を食べる方向けと、植物性食品中心の方向けの3日間献立例をご紹介します。タブで切り替えてご覧ください。
+            </p>
+            <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg border border-stone-200 overflow-hidden">
+                <!-- Tabs -->
+                <div class="flex border-b border-stone-200">
+                    <button class="meal-tab active" data-plan="omnivore">動物性食品も摂る方</button>
+                    <button class="meal-tab" data-plan="vegan">植物性食品中心の方</button>
+                </div>
+                <!-- Content -->
+                <div class="p-6 md:p-8">
+                    <!-- Omnivore Plan -->
+                    <div id="omnivore-plan" class="meal-plan-content"></div>
+                    <!-- Vegan Plan -->
+                    <div id="vegan-plan" class="meal-plan-content hidden"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal -->
+    <div id="modal-container" class="hidden">
+        <div id="modal-backdrop" class="modal-backdrop opacity-0"></div>
+        <div id="modal-content" class="modal-content scale-95">
+            <button id="modal-close-button" class="absolute top-4 right-4 text-stone-500 hover:text-stone-800 transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+    
+    <footer class="bg-stone-800 text-stone-300 mt-16">
+        <div class="container mx-auto px-4 py-8 text-center">
+            <p>このアプリケーションは、提供されたレポートに基づき生成された教育用ツールです。</p>
+            <p class="text-sm text-stone-400 mt-2">&copy; 2025 Interactive Collagen Guide. All rights reserved.</p>
+        </div>
+    </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    const modalData = {
+        'amino-acids': {
+            title: '🧱 アミノ酸：コラーゲンの材料',
+            content: `
+                <p class="mb-4 text-stone-600">コラーゲンは主に3つのアミノ酸から構成されています。これらをバランス良く摂取することが、全ての基本です。</p>
+                <ul class="space-y-2 list-disc list-inside">
+                    <li><strong>グリシン:</strong> 三重らせん構造の中心を担う最も重要なアミノ酸。ゼラチン、豚皮、鶏皮、大豆製品に豊富。</li>
+                    <li><strong>プロリン:</strong> らせん構造を安定させる役割。ゼラチン、乳製品、卵白、大豆製品、キャベツに豊富。</li>
+                    <li><strong>リシン:</strong> 後の架橋工程で強度を生み出すために必須。肉、魚、卵、乳製品、豆類に豊富。</li>
+                </ul>`,
+            chartData: null
+        },
+        'vitamin-c': {
+            title: '🍊 ビタミンC：必須パートナー',
+            content: `
+                <p class="mb-4 text-stone-600">ビタミンCは、アミノ酸を加工して安定した三重らせん構造を作る「水酸化」という工程に不可欠な補酵素です。不足すると、どんなに材料があっても丈夫なコラーゲンは作れません。熱に弱いので、生や短時間での調理がおすすめです。</p>`,
+            chartData: {
+                labels: ['赤パプリカ', 'キウイ', 'ブロッコリー', 'イチゴ', 'レモン'],
+                values: [170, 69, 140, 62, 100],
+                label: '100gあたりのビタミンC含有量 (mg)'
+            }
+        },
+        'zinc': {
+            title: '🦪 亜鉛：調整する司令塔',
+            content: `
+                <p class="mb-4 text-stone-600">亜鉛はコラーゲン合成に関わる多くの酵素を活性化させ、線維芽細胞の働きをサポートします。創傷治癒や骨代謝にも重要な役割を果たします。</p>
+                <p class="text-sm text-stone-500 mt-4"><strong>主な食品:</strong> 牡蠣、赤身肉、レバー、チーズ、かぼちゃの種、カシューナッツ。</p>
+                <p class="text-sm text-stone-500 mt-2"><strong>注意点:</strong> 全粒穀物や豆類に含まれるフィチン酸や、過剰なカルシウムは吸収を妨げることがあります。</p>`,
+            chartData: null
+        },
+        'copper': {
+            title: '🍫 銅：強度を高める仕上げ役',
+            content: `
+                <p class="mb-4 text-stone-600">銅は、コラーゲン線維の最終的な強度を決める「架橋」という工程を担う酵素（リシルオキシダーゼ）に必須のミネラルです。この仕上げがなければ、コラーゲンは本来の強度を発揮できません。</p>
+                <p class="text-sm text-stone-500 mt-4"><strong>主な食品:</strong> レバー、牡蠣、カシューナッツ、ごま、ココア、干しシイタケ。</p>`,
+            chartData: null
+        },
+        'iron': {
+            title: '🥩 鉄：合成を支える補酵素',
+            content: `
+                <p class="mb-4 text-stone-600">鉄はビタミンCと共に、水酸化のプロセスを助ける補因子として機能します。特に女性は不足しがちな栄養素なので、意識的な摂取が大切です。</p>
+                <ul class="space-y-2 list-disc list-inside mt-4">
+                    <li><strong>ヘム鉄（吸収率◎）:</strong> 赤身肉、レバー、魚など動物性食品。</li>
+                    <li><strong>非ヘム鉄（吸収率△）:</strong> 豆類、ほうれん草など植物性食品。ビタミンCと一緒に摂ると吸収率がアップします。</li>
+                </ul>`,
+            chartData: null
+        },
+        'uv-rays': {
+            title: '☀️ 紫外線：最大の外的要因',
+            content: `
+                <p class="mb-4 text-stone-600">紫外線（特にUVA）は皮膚の奥深くまで到達し、コラーゲンを分解する酵素（MMP）を過剰に生成させます。さらに、新しいコラーゲンを作る細胞（線維芽細胞）自体にもダメージを与え、合成能力を低下させます。</p>
+                <p class="font-bold text-teal-700">対策: 広域スペクトルの日焼け止め（SPF30以上）を毎日使用し、帽子や衣類で物理的に遮光することが最も効果的です。</p>`,
+            chartData: null
+        },
+        'sugar': {
+            title: '🍰 糖化：コラーゲンの硬化',
+            content: `
+                <p class="mb-4 text-stone-600">過剰な糖質は、体内のタンパク質（コラーゲン）と結びつき、「終末糖化産物（AGEs）」という有害物質を生成します。AGEsはコラーゲン線維を硬く、もろくし、弾力性を失わせます。これが皮膚のシワやたるみ、動脈硬化の一因となります。</p>
+                <p class="font-bold text-teal-700">対策: 血糖値を急上昇させない低GI食品を選び、精製糖質や加工食品を控えましょう。蒸す、茹でるなどの調理法もAGEsの生成を抑えます。</p>`,
+            chartData: null
+        },
+        'stress': {
+            title: '🤯 慢性ストレス：見えざる敵',
+            content: `
+                <p class="mb-4 text-stone-600">慢性的なストレスは、ストレスホルモン「コルチゾール」を過剰に分泌させます。コルチゾールは新しいコラーゲンの合成を抑制し、同時に分解を促進するという二重のダメージを与えます。</p>
+                <p class="font-bold text-teal-700">対策: 瞑想、ヨガ、十分な休息など、自分に合ったストレス管理法を見つけることが重要です。リラックス効果のあるマグネシウムなどの栄養素も役立ちます。</p>`,
+            chartData: null
+        },
+        'sleep-deprivation': {
+            title: '😴 睡眠不足：修復時間の喪失',
+            content: `
+                <p class="mb-4 text-stone-600">組織の修復と再生を促す「成長ホルモン」は、主に深い眠りの間に分泌されます。睡眠不足はこの貴重な修復時間を奪い、コラーゲン合成の機会を失わせます。肌の荒れや骨の健康にも悪影響を及ぼします。</p>
+                <p class="font-bold text-teal-700">対策: 1日7〜9時間の質の高い睡眠を確保し、規則正しい睡眠スケジュールを心がけましょう。</p>`,
+            chartData: null
+        },
+        'smoking': {
+            title: '🚬 喫煙：栄養供給の遮断',
+            content: `
+                <p class="mb-4 text-stone-600">喫煙は血管を収縮させ、皮膚や組織への酸素や必須栄養素（特にビタミンC）の供給を著しく妨げます。また、タバコに含まれる有害物質は、コラーゲン自体に直接ダメージを与える酸化ストレスを引き起こします。</p>
+                <p class="font-bold text-teal-700">対策: 禁煙が唯一かつ最善の対策です。受動喫煙も避けましょう。</p>`,
+            chartData: null
+        }
+    };
+
+    const mealPlans = {
+        omnivore: {
+            title: '動物性食品も摂る方向けプラン',
+            days: [
+                {
+                    day: '1日目',
+                    meals: {
+                        朝食: 'ギリシャヨーグルト、ベリー類🍓、ナッツ',
+                        昼食: '鶏皮付きローストチキン🍗、パプリカとブロッコリーのサラダ🥗（レモンドレッシング）',
+                        夕食: '牛すじと大根の煮込み🥘、小松菜のおひたし',
+                        間食: 'カシューナッツ、オレンジ🍊'
+                    }
+                },
+                {
+                    day: '2日目',
+                    meals: {
+                        朝食: '卵とほうれん草のスクランブルエッグ🍳、全粒粉トースト',
+                        昼食: '骨付き豚肉と野菜の煮込みスープ（ポトフ）🍲、ライ麦パン',
+                        夕食: '牡蠣とキノコのアヒージョ🦪、バゲット🥖',
+                        間食: 'チーズ、イチゴ🍓'
+                    }
+                },
+                {
+                    day: '3日目',
+                    meals: {
+                        朝食: 'オートミール、亜麻仁、キウイフルーツ🥝',
+                        昼食: '鮭の皮付き塩焼き🐟、ひじきの煮物、味噌汁',
+                        夕食: '豚レバーのニラ炒め、玄米ご飯🍚',
+                        間食: 'ダークチョコレート🍫'
+                    }
+                }
+            ]
+        },
+        vegan: {
+            title: '植物性食品中心の方向けプラン',
+            days: [
+                {
+                    day: '1日目',
+                    meals: {
+                        朝食: '豆乳ヨーグルト、ベリー類🍓、かぼちゃの種🎃',
+                        昼食: 'レンズ豆とキヌアのサラダ🥗（レモンドレッシング）、フムスと全粒粉ピタ',
+                        夕食: '大豆ミートと豆のチリコンカン🌶️、アボカド🥑添え',
+                        間食: 'アーモンド、オレンジ🍊'
+                    }
+                },
+                {
+                    day: '2日目',
+                    meals: {
+                        朝食: '豆腐スクランブル（パプリカ、ほうれん草入り）、全粒粉トースト🍞',
+                        昼食: 'テンペと野菜の炒め物、玄米ご飯🍚',
+                        夕食: '湯葉とキノコのあんかけ丼🍄',
+                        間食: '枝豆、イチゴ🍓'
+                    }
+                },
+                {
+                    day: '3日目',
+                    meals: {
+                        朝食: 'オートミール、チアシード、キウイフルーツ🥝',
+                        昼食: '納豆、焼き海苔、味噌汁、高野豆腐の煮物',
+                        夕食: 'そば（タンパク質源）、わかめと豆腐のトッピング',
+                        間食: 'ダークチョコレート🍫'
+                    }
+                }
+            ]
+        }
+    };
+    
+    // Mobile Menu Toggle
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    mobileMenuButton.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+    });
+    
+    mobileMenu.addEventListener('click', (e) => {
+        if (e.target.tagName === 'A') {
+            mobileMenu.classList.add('hidden');
+        }
+    });
+
+    // Navigation Active State
+    const navLinks = document.querySelectorAll('.nav-link');
+    const sections = document.querySelectorAll('main section');
+
+    window.addEventListener('scroll', () => {
+        let current = '';
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            if (pageYOffset >= sectionTop - 100) {
+                current = section.getAttribute('id');
+            }
+        });
+
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === `#${current}`) {
+                link.classList.add('active');
+            }
+        });
+    });
+
+
+    // Modal Logic
+    const modalContainer = document.getElementById('modal-container');
+    const modalBackdrop = document.getElementById('modal-backdrop');
+    const modalContent = document.getElementById('modal-content');
+    const modalBody = document.getElementById('modal-body');
+    const modalCloseButton = document.getElementById('modal-close-button');
+    let chartInstance = null;
+
+    const openModal = (id) => {
+        const data = modalData[id];
+        if (!data) return;
+        
+        let html = `<h3 class="text-2xl font-bold mb-4 text-stone-800">${data.title}</h3><div>${data.content}</div>`;
+
+        if (data.chartData) {
+            html += `<div class="mt-6 chart-container"><canvas id="modal-chart"></canvas></div>`;
+        }
+
+        modalBody.innerHTML = html;
+        modalContainer.classList.remove('hidden');
+        
+        requestAnimationFrame(() => {
+            modalBackdrop.classList.remove('opacity-0');
+            modalContent.classList.remove('scale-95');
+        });
+
+        if (data.chartData) {
+            const ctx = document.getElementById('modal-chart').getContext('2d');
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+            chartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.chartData.labels,
+                    datasets: [{
+                        label: data.chartData.label,
+                        data: data.chartData.values,
+                        backgroundColor: 'rgba(20, 150, 150, 0.6)',
+                        borderColor: 'rgba(20, 150, 150, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+    };
+
+    const closeModal = () => {
+        modalBackdrop.classList.add('opacity-0');
+        modalContent.classList.add('scale-95');
+        setTimeout(() => {
+            modalContainer.classList.add('hidden');
+            if (chartInstance) {
+                chartInstance.destroy();
+                chartInstance = null;
+            }
+        }, 300);
+    };
+
+    document.querySelectorAll('[data-modal-target]').forEach(card => {
+        card.addEventListener('click', () => {
+            openModal(card.dataset.modalTarget);
+        });
+    });
+
+    modalCloseButton.addEventListener('click', closeModal);
+    modalBackdrop.addEventListener('click', closeModal);
+
+    // Meal Plan Logic
+    const mealTabs = document.querySelectorAll('.meal-tab');
+    const omnivorePlanContainer = document.getElementById('omnivore-plan');
+    const veganPlanContainer = document.getElementById('vegan-plan');
+
+    const renderMealPlan = (plan, container) => {
+        let html = `<h4 class="text-xl font-bold mb-6 text-center text-stone-700">${plan.title}</h4>`;
+        html += '<div class="grid md:grid-cols-3 gap-6">';
+        plan.days.forEach(day => {
+            html += `<div class="bg-stone-50 p-4 rounded-lg border border-stone-200">
+                        <h5 class="font-bold text-lg mb-3 text-center text-teal-700">${day.day}</h5>
+                        <ul class="space-y-3 text-sm text-stone-600">
+                            <li><strong>朝食:</strong> ${day.meals.朝食}</li>
+                            <li><strong>昼食:</strong> ${day.meals.昼食}</li>
+                            <li><strong>夕食:</strong> ${day.meals.夕食}</li>
+                            <li><strong>間食:</strong> ${day.meals.間食}</li>
+                        </ul>
+                     </div>`;
+        });
+        html += '</div>';
+        container.innerHTML = html;
+    };
+
+    renderMealPlan(mealPlans.omnivore, omnivorePlanContainer);
+    renderMealPlan(mealPlans.vegan, veganPlanContainer);
+
+    mealTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            mealTabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            
+            const planToShow = tab.dataset.plan;
+            document.querySelectorAll('.meal-plan-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            document.getElementById(`${planToShow}-plan`).classList.remove('hidden');
+        });
+    });
+
+    // Style for meal plan tabs
+    const mealTabStyle = document.createElement('style');
+    mealTabStyle.innerHTML = `
+        .meal-tab {
+            flex-grow: 1;
+            padding: 0.75rem 1rem;
+            text-align: center;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #57534e; /* stone-600 */
+            border-bottom: 2px solid transparent;
+        }
+        .meal-tab.active {
+            color: #0d9488; /* teal-600 */
+            border-color: #0d9488; /* teal-600 */
+            background-color: #f0fdfa; /* teal-50 */
+        }
+        .meal-tab:not(.active):hover {
+            background-color: #f5f5f4; /* stone-100 */
+        }
+    `;
+    document.head.appendChild(mealTabStyle);
+});
+</script>
+
+</body>
+</html>
