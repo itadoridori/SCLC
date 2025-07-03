@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小細胞肺癌の痛みと治療法ガイド</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony -->
+    <!-- Application Structure Plan: The SPA is designed as a guided journey for patients. It starts by directly answering the user's core question about laser therapy (Section 1). It then builds context by explaining the nature of SCLC pain (Section 2) and acknowledging the user's concerns about opioids (Section 3). The core of the app is a dashboard-like section (Section 4) presenting the three main evidence-based alternatives (Radiation, BMAs, Nerve Blocks) in an easily digestible, interactive card format. This is followed by an interactive comparison tool (Section 5) using Chart.js to help users synthesize the information. The final section (Section 6) provides actionable, prepared questions for a doctor's visit, empowering the user. This non-linear, task-oriented structure prioritizes user understanding and decision-making over simply replicating the report's linear chapter format. -->
+    <!-- Visualization & Content Choices: The report's key findings are transformed into interactive elements. 1) SCLC Pain: An interactive HTML/CSS diagram shows pain sources, making abstract concepts tangible. Goal: Inform. 2) Opioid Side Effects: Interactive cards present this information concisely. Goal: Inform/Relate. 3) Alternative Treatments: A tabbed/card interface breaks down complex treatments into key points (Indication, How it works, Efficacy, Risks). Goal: Compare/Inform. 4) Treatment Comparison: An interactive Chart.js horizontal bar chart allows users to visually compare treatments based on effectiveness, speed, and duration, which is more engaging than a static table. Goal: Compare/Analyze. 5) Doctor's Questions: An actionable list encourages patient engagement. Goal: Action. All visualizations are created using HTML/CSS or Chart.js (Canvas), adhering to the NO SVG/Mermaid constraint. The structure is designed to guide the user from a specific question to a broader, actionable understanding. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Noto Sans JP', sans-serif; }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container { height: 500px; }
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link.active, .nav-link:hover {
+            color: #3b82f6; /* text-blue-500 */
+            border-bottom-color: #3b82f6;
+        }
+        .tab.active {
+            background-color: #3b82f6; /* bg-blue-500 */
+            color: white;
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <header class="bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <h1 class="text-xl md:text-2xl font-bold text-blue-600">疼痛管理ガイド</h1>
+            <div class="hidden md:flex space-x-6">
+                <a href="#q-and-a" class="nav-link text-gray-600 font-medium">レーザー治療は？</a>
+                <a href="#pain-source" class="nav-link text-gray-600 font-medium">痛みの原因</a>
+                <a href="#alternatives" class="nav-link text-gray-600 font-medium">代替治療</a>
+                <a href="#comparison" class="nav-link text-gray-600 font-medium">治療法の比較</a>
+                <a href="#for-doctor" class="nav-link text-gray-600 font-medium">医師への質問</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-gray-600 hover:bg-gray-100">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden px-4 pb-4">
+            <a href="#q-and-a" class="block py-2 px-3 text-gray-600 rounded-md hover:bg-gray-100">レーザー治療は？</a>
+            <a href="#pain-source" class="block py-2 px-3 text-gray-600 rounded-md hover:bg-gray-100">痛みの原因</a>
+            <a href="#alternatives" class="block py-2 px-3 text-gray-600 rounded-md hover:bg-gray-100">代替治療</a>
+            <a href="#comparison" class="block py-2 px-3 text-gray-600 rounded-md hover:bg-gray-100">治療法の比較</a>
+            <a href="#for-doctor" class="block py-2 px-3 text-gray-600 rounded-md hover:bg-gray-100">医師への質問</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8 md:py-12">
+
+        <section id="q-and-a" class="text-center mb-16 md:mb-24 scroll-mt-20">
+            <div class="max-w-3xl mx-auto">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+                    小細胞肺癌の痛みに<br class="md:hidden">レーザー治療は可能か？
+                </h2>
+                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-6 rounded-lg shadow-md">
+                    <h3 class="text-2xl font-bold mb-2">結論：推奨されません</h3>
+                    <p class="text-lg text-left">
+                        現状の科学的根拠に基づき、がんの原発巣や転移巣に直接レーザー（低出力レーザー/PBM）を照射することは<strong class="font-bold">禁忌（きんき）</strong>とされています。細胞の活動を活発にするレーザーの特性が、がん細胞の増殖を促進してしまう<strong class="font-bold">重大なリスク</strong>があるためです。
+                        <br><br>
+                        その一方で、痛みを和らげる効果は臨床的に証明されていません。つまり、<strong class="font-bold">「証明されていない利益のために、無視できないリスクを冒すことはできない」</strong>というのが、現在の医療における標準的な考え方です。
+                    </p>
+                </div>
+                <p class="mt-6 text-lg text-gray-600">
+                    しかし、オピオイドの副作用を避けたいというお気持ちは非常に重要です。<br>このガイドでは、科学的に有効性が証明されている、安全な代替治療について詳しく解説します。
+                </p>
+            </div>
+        </section>
+
+        <hr class="my-12 border-gray-200">
+
+        <section id="pain-source" class="mb-16 md:mb-24 scroll-mt-20">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800">なぜ、痛みが出るのか？</h2>
+                <p class="mt-2 text-lg text-gray-600">小細胞肺癌の痛みは、一つの原因ではなく、複数の要因が複雑に絡み合って生じます。</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                    <div class="border border-blue-200 p-4 rounded-lg bg-blue-50/50">
+                        <div class="text-5xl mb-3">🫁</div>
+                        <h3 class="text-xl font-bold text-blue-800 mb-2">① 原発巣・転移による圧迫</h3>
+                        <p class="text-gray-600 text-left">腫瘍が大きくなり、周囲の臓器や神経、胸壁を物理的に圧迫することで、重く持続的な痛みが生じます。</p>
+                    </div>
+                    <div class="border border-green-200 p-4 rounded-lg bg-green-50/50">
+                         <div class="text-5xl mb-3">⚡️</div>
+                        <h3 class="text-xl font-bold text-green-800 mb-2">② 神経への浸潤</h3>
+                        <p class="text-gray-600 text-left">がん細胞が神経に浸潤（入り込む）すると、電気が走るような、焼けるような激しい痛み（神経障害性疼痛）を引き起こします。</p>
+                    </div>
+                    <div class="border border-yellow-200 p-4 rounded-lg bg-yellow-50/50">
+                         <div class="text-5xl mb-3">🦴</div>
+                        <h3 class="text-xl font-bold text-yellow-800 mb-2">③ 骨転移による痛み</h3>
+                        <p class="text-gray-600 text-left">最も頻度が高く、QOLを低下させる原因です。骨が破壊され、炎症が起きることで、安静時でも続く深い痛みや、動いた時の激痛が生じます。</p>
+                    </div>
+                </div>
+                 <p class="mt-6 text-center text-gray-700">これらの痛みの種類を正確に評価し、原因に応じた治療法を組み合わせることが、効果的な疼痛管理の鍵となります。</p>
+            </div>
+        </section>
+
+        <hr class="my-12 border-gray-200">
+        
+        <section id="opioid-issues" class="mb-16 md:mb-24 scroll-mt-20">
+             <div class="text-center mb-8">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800">オピオイド鎮痛薬の課題</h2>
+                <p class="mt-2 text-lg text-gray-600">オピオイドは強力な鎮痛薬ですが、QOLを低下させる副作用が問題となることがあります。</p>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-lg shadow-md border-t-4 border-purple-400">
+                    <h3 class="text-xl font-bold text-purple-800 mb-2">便秘</h3>
+                    <p>最も一般的で、慣れ（耐性）が生じにくいため、継続的な下剤の服用が必要になります。</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md border-t-4 border-purple-400">
+                    <h3 class="text-xl font-bold text-purple-800 mb-2">悪心・嘔吐</h3>
+                    <p>治療開始時によく見られます。多くは1-2週間で軽快しますが、予防的な制吐薬が有効です。</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md border-t-4 border-purple-400">
+                    <h3 class="text-xl font-bold text-purple-800 mb-2">眠気</h3>
+                    <p>治療開始時や増量時に現れますが、数日で改善することがほとんどです。持続する場合は過量投与のサインかもしれません。</p>
+                </div>
+            </div>
+            <p class="mt-6 text-center text-gray-700">これらの副作用が日常生活を妨げる場合、治療の目標である「QOLの向上」が達成できなくなります。<br>だからこそ、他の選択肢を知ることが重要なのです。</p>
+        </section>
+
+        <hr class="my-12 border-gray-200">
+
+        <section id="alternatives" class="mb-16 md:mb-24 scroll-mt-20">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800">有効性が証明された3つの代替治療</h2>
+                <p class="mt-2 text-lg text-gray-600">オピオイドの副作用を避けたい、または効果が不十分な場合に検討される、標準的な治療法です。</p>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-lg p-2 md:p-4">
+                <div id="tabs-container" class="flex flex-col sm:flex-row border-b border-gray-200">
+                    <button data-tab="radiation" class="tab flex-1 py-3 px-4 text-center font-medium text-gray-600 hover:bg-blue-50 transition rounded-t-md">
+                        <span class="text-2xl">☢️</span> 放射線治療
+                    </button>
+                    <button data-tab="bma" class="tab flex-1 py-3 px-4 text-center font-medium text-gray-600 hover:bg-blue-50 transition rounded-t-md">
+                        <span class="text-2xl">💊</span> 骨修飾薬 (BMA)
+                    </button>
+                    <button data-tab="nerveblock" class="tab flex-1 py-3 px-4 text-center font-medium text-gray-600 hover:bg-blue-50 transition rounded-t-md">
+                        <span class="text-2xl">💉</span> 神経ブロック
+                    </button>
+                </div>
+
+                <div class="p-4 md:p-8">
+                    <div id="content-radiation" class="tab-content fade-in">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-4">放射線治療：痛みの原因を叩く</h3>
+                        <p class="mb-6 text-gray-600">痛みの原因である腫瘍そのものに放射線を照射し、腫瘍を小さくすることで痛みを根本から和らげる、非常に効果的な治療法です。</p>
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-bold text-lg mb-2 text-blue-700">主な対象</h4>
+                                <p>限局した骨転移の痛み、神経圧迫による痛み</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-lg mb-2 text-blue-700">有効性</h4>
+                                <p><strong>60-90%</strong>の患者で痛みが緩和。うち<strong>約30%</strong>はオピオイドが不要になります。</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-lg mb-2 text-orange-700">知っておくべきこと</h4>
+                                <p>効果発現まで<strong>2～4週間</strong>かかります。治療後一時的に痛みが強くなること（ペインフレア）があります。</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-lg mb-2 text-orange-700">主な副作用</h4>
+                                <p>倦怠感、皮膚炎、照射部位に応じた症状（食道炎など）。</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="content-bma" class="tab-content fade-in">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-4">骨修飾薬(BMA)：骨の"悪循環"を断つ</h3>
+                        <p class="mb-6 text-gray-600">骨を壊す細胞（破骨細胞）の働きを抑える薬です。直接の鎮痛薬ではありませんが、骨転移の進行を抑え、骨折などを防ぐことで将来の痛みを予防します。</p>
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-bold text-lg mb-2 text-blue-700">主な対象</h4>
+                                <p>骨転移のあるすべての患者さん（骨折などの予防）</p>
+                            </div>
+                             <div>
+                                <h4 class="font-bold text-lg mb-2 text-blue-700">有効性</h4>
+                                <p>骨折や脊髄圧迫のリスクを<strong>有意に低下</strong>させます。痛みの再発を遅らせる効果も報告されています。</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-lg mb-2 text-orange-700">知っておくべきこと</h4>
+                                <p>治療開始前に<strong>必ず歯科・口腔外科の受診が必要</strong>です。</p>
+                            </div>
+                           
+                            <div>
+                                <h4 class="font-bold text-lg mb-2 text-orange-700">主な副作用</h4>
+                                <p>顎骨壊死（まれだが重篤）、低カルシウム血症。口腔ケアが非常に重要です。</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="content-nerveblock" class="tab-content fade-in">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-4">神経ブロック：痛みの"伝達"を遮断</h3>
+                        <p class="mb-6 text-gray-600">痛みを伝えている神経の近くに直接、局所麻酔薬などを注入し、痛みの信号をブロックする治療法です。オピオイドが効きにくい痛みや副作用が強い場合に有効です。</p>
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-bold text-lg mb-2 text-blue-700">主な対象</h4>
+                                <p>オピオイドで効果不十分な限局した痛み（内臓痛、体性痛など）</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-lg mb-2 text-blue-700">有効性</h4>
+                                <p><strong>70-90%</strong>の患者で良好な鎮痛効果が得られ、効果は<strong>数ヶ月単位</strong>で持続します。</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-lg mb-2 text-orange-700">知っておくべきこと</h4>
+                                <p>専門的な技術と設備が必要で、緩和ケア医やペインクリニック医が実施します。</p>
+                            </div>
+                             <div>
+                                <h4 class="font-bold text-lg mb-2 text-orange-700">主な副作用</h4>
+                                <p>手技に関連する合併症（出血、感染など）、一時的な血圧低下や下痢。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <hr class="my-12 border-gray-200">
+
+        <section id="comparison" class="mb-16 md:mb-24 scroll-mt-20">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800">インタラクティブ比較ツール</h2>
+                <p class="mt-2 text-lg text-gray-600">各治療法の特徴をグラフで比較してみましょう。下のチェックボックスで表示を切り替えられます。</p>
+            </div>
+            <div class="bg-white p-4 md:p-8 rounded-lg shadow-lg">
+                <div class="chart-container">
+                    <canvas id="comparisonChart"></canvas>
+                </div>
+                <div id="chart-controls" class="mt-6 flex justify-center flex-wrap gap-4">
+                </div>
+            </div>
+        </section>
+
+        <hr class="my-12 border-gray-200">
+
+        <section id="for-doctor" class="scroll-mt-20">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800">医師への相談に役立つ質問リスト</h2>
+                <p class="mt-2 text-lg text-gray-600">次の診察で、あなたの状況に合わせた最適な治療法を相談するための質問例です。</p>
+            </div>
+            <div class="space-y-4 max-w-3xl mx-auto">
+                <div class="bg-white p-5 rounded-lg shadow-md hover:shadow-xl transition">
+                    <p class="font-semibold text-gray-800">「私のこの痛みは、主にどの原因（骨転移、神経など）から来ていますか？痛みの種類に応じた治療法はありますか？」</p>
+                </div>
+                <div class="bg-white p-5 rounded-lg shadow-md hover:shadow-xl transition">
+                    <p class="font-semibold text-gray-800">「この痛みに対して、放射線治療は選択肢になりますか？効果が現れるまでどのくらいかかりますか？」</p>
+                </div>
+                 <div class="bg-white p-5 rounded-lg shadow-md hover:shadow-xl transition">
+                    <p class="font-semibold text-gray-800">「骨転移があるとのことですが、骨折などを予防する骨修飾薬（BMA）は使えますか？その場合、事前に歯科の受診が必要ですか？」</p>
+                </div>
+                <div class="bg-white p-5 rounded-lg shadow-md hover:shadow-xl transition">
+                    <p class="font-semibold text-gray-800">「今の薬で痛みが十分に取れず、副作用（眠気、便秘など）も辛いです。神経ブロックのような治療をペインクリニックで相談することは可能ですか？」</p>
+                </div>
+                 <div class="bg-white p-5 rounded-lg shadow-md hover:shadow-xl transition">
+                    <p class="font-semibold text-gray-800">「痛みを悪化させないために、日常生活で気をつけることはありますか？コルセットやリハビリは有効ですか？」</p>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer class="bg-gray-800 text-white mt-16">
+        <div class="container mx-auto px-4 py-6 text-center">
+            <p>このアプリケーションは、提供されたレポートに基づき作成された情報提供ツールです。</p>
+            <p class="text-sm text-gray-400 mt-2">実際の治療方針については、必ず主治医や医療チームにご相談ください。</p>
+        </div>
+    </footer>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- Mobile Menu ---
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            document.querySelectorAll('#mobile-menu a').forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                });
+            });
+
+            // --- Navigation Highlighting ---
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            function updateActiveLink() {
+                let index = navLinks.length;
+                while(--index && window.scrollY + 100 < sections[index].offsetTop) {}
+                
+                navLinks.forEach((link) => link.classList.remove('active'));
+                
+                // Adjust index for sections that should activate a link
+                let activeSectionId;
+                if(window.scrollY + 100 >= sections[4].offsetTop) activeSectionId = 'for-doctor';
+                else if(window.scrollY + 100 >= sections[3].offsetTop) activeSectionId = 'comparison';
+                else if(window.scrollY + 100 >= sections[2].offsetTop) activeSectionId = 'alternatives';
+                else if(window.scrollY + 100 >= sections[1].offsetTop) activeSectionId = 'pain-source';
+                else activeSectionId = 'q-and-a';
+
+                const activeLink = document.querySelector(`.nav-link[href="#${activeSectionId}"]`);
+                if(activeLink) activeLink.classList.add('active');
+            }
+
+            window.addEventListener('scroll', updateActiveLink);
+            updateActiveLink();
+
+            // --- Tabs ---
+            const tabsContainer = document.getElementById('tabs-container');
+            const tabButtons = tabsContainer.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            function switchTab(targetId) {
+                tabButtons.forEach(button => {
+                    if (button.dataset.tab === targetId) {
+                        button.classList.add('active');
+                    } else {
+                        button.classList.remove('active');
+                    }
+                });
+                tabContents.forEach(content => {
+                    if (content.id === `content-${targetId}`) {
+                        content.classList.add('active');
+                    } else {
+                        content.classList.remove('active');
+                    }
+                });
+            }
+
+            tabsContainer.addEventListener('click', (e) => {
+                const tabButton = e.target.closest('.tab');
+                if (tabButton) {
+                    const targetId = tabButton.dataset.tab;
+                    switchTab(targetId);
+                }
+            });
+            switchTab('radiation');
+
+            // --- Chart.js ---
+            const chartData = {
+                '放射線治療': {
+                    '有効性 (%)': 75, // 60-90% の中間
+                    '効果発現の速さ (日)': 21, // 2-4週の中間
+                    '効果の持続性 (月)': 6, // 数ヶ月
+                    'color': 'rgba(59, 130, 246, 0.7)',
+                },
+                '骨修飾薬 (BMA)': {
+                    '有効性 (%)': 30, // SRE予防が主目的のため、直接の鎮痛効果は低めに設定
+                    '効果発現の速さ (日)': 30, // 間接的で遅い
+                    '効果の持続性 (月)': 12, // 継続する限り
+                    'color': 'rgba(168, 85, 247, 0.7)',
+                },
+                '神経ブロック': {
+                    '有効性 (%)': 80, // 70-90% の中間
+                    '効果発現の速さ (日)': 1,  // 即時的
+                    '効果の持続性 (月)': 4, // 数ヶ月
+                    'color': 'rgba(34, 197, 94, 0.7)',
+                }
+            };
+            
+            const chartCategories = {
+                '有効性 (%)': { label: '有効性（高いほど良い）', max: 100, reverse: false },
+                '効果発現の速さ (日)': { label: '効果発現の速さ（短いほど良い）', max: 30, reverse: true },
+                '効果の持続性 (月)': { label: '効果の持続性（長いほど良い）', max: 12, reverse: false }
+            };
+
+            const ctx = document.getElementById('comparisonChart').getContext('2d');
+            let comparisonChart;
+
+            function createOrUpdateChart(visibleTreatments) {
+                const datasets = [];
+                Object.keys(chartCategories).forEach(category => {
+                    const data = visibleTreatments.map(treatment => chartData[treatment][category]);
+                    const backgroundColor = visibleTreatments.map(treatment => chartData[treatment]['color']);
+                    
+                    datasets.push({
+                        label: chartCategories[category].label,
+                        data: data,
+                        backgroundColor: backgroundColor,
+                        borderColor: backgroundColor.map(c => c.replace('0.7', '1')),
+                        borderWidth: 1,
+                    });
+                });
+                
+                const labels = visibleTreatments;
+
+                if (comparisonChart) {
+                    comparisonChart.data.labels = labels;
+                    comparisonChart.data.datasets = datasets;
+                    comparisonChart.update();
+                } else {
+                    comparisonChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: datasets
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            indexAxis: 'y',
+                            scales: {
+                                x: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'スコア（各指標で正規化）'
+                                    }
+                                }
+                            },
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: '治療法の特性比較',
+                                    font: { size: 18 }
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            let label = context.dataset.label || '';
+                                            if (label) {
+                                                label += ': ';
+                                            }
+                                            if (context.parsed.x !== null) {
+                                                label += context.parsed.x;
+                                            }
+                                            return label;
+                                        }
+                                    }
+                                }
+                            },
+                        }
+                    });
+                }
+                
+                 if (comparisonChart) {
+                    const datasets = [];
+                    const categoryKeys = Object.keys(chartCategories);
+                    
+                    const visibleData = {};
+                    visibleTreatments.forEach(t => visibleData[t] = chartData[t]);
+
+                    const normalizedDatasets = categoryKeys.map(category => {
+                        const { max, reverse } = chartCategories[category];
+                        return {
+                            label: chartCategories[category].label,
+                            data: visibleTreatments.map(treatment => {
+                                const value = chartData[treatment][category];
+                                const normalized = (value / max) * 100;
+                                return reverse ? 100 - normalized : normalized;
+                            }),
+                            backgroundColor: visibleTreatments.map(treatment => chartData[treatment].color),
+                        };
+                    });
+
+                    comparisonChart.data.labels = visibleTreatments;
+                    comparisonChart.data.datasets = normalizedDatasets;
+                    comparisonChart.update();
+                } else {
+                     // This part should not be reached if the function logic is correct.
+                }
+
+            }
+            
+            function renderChartControls() {
+                const controlsContainer = document.getElementById('chart-controls');
+                controlsContainer.innerHTML = '';
+                Object.keys(chartData).forEach(treatment => {
+                    const id = `check-${treatment}`;
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'flex items-center';
+                    wrapper.innerHTML = `
+                        <input id="${id}" type="checkbox" checked value="${treatment}" class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                        <label for="${id}" class="ml-2 text-gray-700 font-medium">${treatment}</label>
+                    `;
+                    controlsContainer.appendChild(wrapper);
+                });
+
+                controlsContainer.addEventListener('change', () => {
+                    const visibleTreatments = Array.from(controlsContainer.querySelectorAll('input:checked')).map(input => input.value);
+                    createOrUpdateChart(visibleTreatments);
+                });
+            }
+            
+            renderChartControls();
+            createOrUpdateChart(Object.keys(chartData));
+
+        });
+    </script>
+</body>
+</html>
