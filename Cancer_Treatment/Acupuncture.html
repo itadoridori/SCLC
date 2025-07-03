@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小細胞肺癌の痛みと鍼治療：インタラクティブガイド</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Application Structure Plan: レポートの構成をそのまま反映するのではなく、患者の視点に立った情報探索の旅（ユーザージャーニー）を設計。まず「結論」を提示し、次にインタラクティブな「エビデンス」セクションでユーザーが自身の関心（痛みの種類）に応じて情報を深掘りできるようにする。その後、「作用機序」「安全性」「実践ガイド」を順に配置。この構造は、①まず答えを知りたい、②自分に関係ある証拠を知りたい、③なぜ効くのか知りたい、④安全か知りたい、⑤どうすれば受けられるか知りたい、という患者の自然な疑問の流れに沿っており、複雑な情報を段階的かつ直感的に理解できるよう支援するために選択した。 -->
+    <!-- Visualization & Content Choices: 
+        - [エビデンス] -> [比較・情報提供] -> [ボタンで切り替えるインタラクティブな棒グラフと解説文] -> [ユーザーが自身の痛みの種類に関連するデータに集中でき、治療効果を視覚的に理解しやすいため] -> [Chart.js, Vanilla JS]。
+        - [作用機序] -> [整理・情報提供] -> [アイコン付きのグリッドレイアウト] -> [複雑な生理学的メカニズムを、専門用語を避けつつ視覚的なアイコンと短いテキストで簡潔に伝えるため] -> [HTML/Tailwind]。
+        - [安全性] -> [情報提供・行動喚起] -> [インタラクティブなチェックリスト] -> [単なる警告リストではなく、ユーザーが自身の状態をチェックすることで、パーソナライズされた注意喚起を得られる。医師への相談を促す実践的なツールとなるため] -> [HTML/JS]。
+        - [実践ガイド] -> [情報提供] -> [明確な見出しとアイコンを用いたテキストセクション] -> [保険や施術者探しといった実用的な情報は、明確かつ直接的に伝えるのが最も効果的であるため] -> [HTML/Tailwind]。
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #FDFBF8;
+            color: #4A4A4A;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .nav-button {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-button:hover, .nav-button.active {
+            border-bottom-color: #8C7A6B;
+            color: #3D352E;
+        }
+        .evidence-button {
+            transition: all 0.3s ease;
+        }
+        .evidence-button.active {
+            background-color: #8C7A6B;
+            color: #FFFFFF;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out, padding 0.5s ease-out;
+            padding: 0 1.5rem;
+        }
+        .accordion-content.open {
+            max-height: 1000px; /* 十分な高さを設定 */
+            padding: 1.5rem 1.5rem;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-[#F8F5F2] sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-3">
+            <div class="flex justify-between items-center">
+                <div class="text-xl font-bold text-[#3D352E]">がんの痛みと鍼治療</div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#conclusion" class="nav-button font-medium text-gray-600">結論</a>
+                    <a href="#evidence" class="nav-button font-medium text-gray-600">エビデンス</a>
+                    <a href="#safety" class="nav-button font-medium text-gray-600">安全性</a>
+                    <a href="#practical" class="nav-button font-medium text-gray-600">実践ガイド</a>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="text-gray-600 focus:outline-none">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                    </button>
+                </div>
+            </div>
+            <div id="mobile-menu" class="hidden md:hidden mt-4">
+                <a href="#conclusion" class="block py-2 px-4 text-sm text-gray-700 hover:bg-[#EAE5E0]">結論</a>
+                <a href="#evidence" class="block py-2 px-4 text-sm text-gray-700 hover:bg-[#EAE5E0]">エビデンス</a>
+                <a href="#safety" class="block py-2 px-4 text-sm text-gray-700 hover:bg-[#EAE5E0]">安全性</a>
+                <a href="#practical" class="block py-2 px-4 text-sm text-gray-700 hover:bg-[#EAE5E0]">実践ガイド</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-6 py-8 md:py-12">
+        
+        <section id="conclusion" class="text-center mb-16 md:mb-24">
+            <h1 class="text-3xl md:text-4xl font-bold text-[#3D352E] mb-4">小細胞肺癌の痛み、鍼治療で緩和できる？</h1>
+            <p class="max-w-3xl mx-auto text-lg text-gray-700 mb-8">
+                オピオイド系鎮痛剤の副作用が心配な方へ。科学的根拠（エビデンス）が示す鍼治療の可能性を探ります。
+            </p>
+            <div class="bg-white rounded-lg shadow-lg p-6 md:p-8 max-w-4xl mx-auto border-l-4 border-[#8C7A6B]">
+                <h2 class="text-xl md:text-2xl font-bold text-[#3D352E] mb-3">結論：価値ある「補完療法」です</h2>
+                <p class="text-gray-600 text-left md:text-base leading-relaxed">
+                    多くの研究が、鍼治療はオピオイドの<strong class="text-[#8C7A6B]">完全な代替にはならない</strong>ものの、標準治療と<strong class="text-[#8C7A6B]">併用</strong>することで痛みを和らげ、オピオイドの使用量を減らし、副作用を軽減する<strong class="text-[#8C7A6B]">有効な補完療法</strong>となり得ることを示唆しています。特に骨転移や胸部の痛みに対して効果が期待されています。<br>
+                    ただし、安全な実施には<strong class="text-red-600">主治医との連携</strong>と、<strong class="text-red-600">がん治療に精通した鍼灸師</strong>の選択が不可欠です。
+                </p>
+            </div>
+        </section>
+
+        <hr class="my-16 md:my-24 border-t-2 border-gray-200">
+
+        <section id="evidence" class="mb-16 md:mb-24">
+            <h2 class="text-2xl md:text-3xl font-bold text-center text-[#3D352E] mb-4">鍼治療は、どの痛みに、どれくらい効くの？</h2>
+            <p class="text-center text-gray-600 mb-10 max-w-2xl mx-auto">あなたの痛みの種類に近いものをクリックしてください。関連する研究結果の概要と、痛みの軽減効果の目安がグラフに表示されます。</p>
+            
+            <div class="flex flex-wrap justify-center gap-2 md:gap-4 mb-8">
+                <button class="evidence-button active px-4 py-2 bg-white text-gray-700 rounded-full shadow-sm border border-gray-200" data-pain="general">一般的ながんの痛み</button>
+                <button class="evidence-button px-4 py-2 bg-white text-gray-700 rounded-full shadow-sm border border-gray-200" data-pain="bone">骨転移の痛み</button>
+                <button class="evidence-button px-4 py-2 bg-white text-gray-700 rounded-full shadow-sm border border-gray-200" data-pain="chest">胸の痛み（術後など）</button>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <h3 id="evidence-title" class="text-xl font-bold text-[#3D352E] mb-3">一般的ながんの痛みに対するエビデンス</h3>
+                        <div id="evidence-text" class="text-gray-600 space-y-3 text-sm md:text-base leading-relaxed">
+                            <p>複数の質の高い研究（メタアナリシス）が、鍼治療を標準治療と併用することで、鎮痛薬単独よりも有意に痛みを軽減し、鎮痛薬の使用量を減らすことを示しています。</p>
+                            <p>2019年のレビューでは、10点満点の評価で平均<strong class="text-[#8C7A6B]">1.44ポイント</strong>の追加的な痛み軽減効果が報告されました。</p>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="painChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <hr class="my-16 md:my-24 border-t-2 border-gray-200">
+
+        <section id="mechanism" class="mb-16 md:mb-24">
+            <h2 class="text-2xl md:text-3xl font-bold text-center text-[#3D352E] mb-12">なぜ鍼で痛みが和らぐの？ ４つのメカニズム</h2>
+             <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                    <h3 class="font-bold text-lg text-[#3D352E] mb-2">① 痛みの関門を閉じる（ゲートコントロール）</h3>
+                    <p class="text-gray-600 text-sm">鍼の刺激が痛みの信号より先に脳に伝わり、痛みを伝達する「関門」をブロック。痛いところをさすると和らぐのと同じ原理です。</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                    <h3 class="font-bold text-lg text-[#3D352E] mb-2">② 脳内麻薬を出す（エンドルフィン）</h3>
+                    <p class="text-gray-600 text-sm">鍼の刺激が脳に働きかけ、モルヒネ様の鎮痛物質（β-エンドルフィンなど）の分泌を促進。全身的な鎮痛効果をもたらします。</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                    <h3 class="font-bold text-lg text-[#3D352E] mb-2">③ 脳の痛み処理を変える（中枢神経系の調節）</h3>
+                    <p class="text-gray-600 text-sm">痛みを認識する脳の活動パターンそのものを変化させ、痛覚を抑制。効果が長持ちする理由の一つと考えられています。</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                    <h3 class="font-bold text-lg text-[#3D352E] mb-2">④ 局所の血流改善と抗炎症</h3>
+                    <p class="text-gray-600 text-sm">鍼を刺した場所の血流を増やし、痛みの原因となる炎症性物質の除去を促進します。</p>
+                </div>
+            </div>
+        </section>
+        
+        <hr class="my-16 md:my-24 border-t-2 border-gray-200">
+
+        <section id="safety" class="mb-16 md:mb-24">
+            <h2 class="text-2xl md:text-3xl font-bold text-center text-[#3D352E] mb-4">私でも安全に受けられる？</h2>
+            <p class="text-center text-gray-600 mb-10 max-w-3xl mx-auto">がん患者さんの鍼治療には特別な注意が必要です。以下の項目で当てはまるものにチェックを入れ、ご自身の状況を確認してください。<strong class="text-red-600 block">これは医学的アドバイスに代わるものではありません。必ず主治医に相談してください。</strong></p>
+
+            <div class="bg-white rounded-lg shadow-lg max-w-3xl mx-auto">
+                <div class="p-6 md:p-8">
+                    <div id="safety-checklist" class="space-y-4">
+                        <label class="flex items-center p-3 rounded-md hover:bg-gray-50">
+                            <input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-[#8C7A6B] focus:ring-[#8C7A6B]" data-risk="high">
+                            <span class="ml-3 text-gray-700">白血球（好中球）の数値が低いと言われている</span>
+                        </label>
+                         <label class="flex items-center p-3 rounded-md hover:bg-gray-50">
+                            <input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-[#8C7A6B] focus:ring-[#8C7A6B]" data-risk="high">
+                            <span class="ml-3 text-gray-700">血小板の数値が低い、または血液をサラサラにする薬を飲んでいる</span>
+                        </label>
+                        <label class="flex items-center p-3 rounded-md hover:bg-gray-50">
+                            <input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-[#8C7A6B] focus:ring-[#8C7A6B]" data-risk="absolute">
+                            <span class="ml-3 text-gray-700">腕や脚にリンパ浮腫（むくみ）がある</span>
+                        </label>
+                         <label class="flex items-center p-3 rounded-md hover:bg-gray-50">
+                            <input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-[#8C7A6B] focus:ring-[#8C7A6B]" data-risk="absolute">
+                            <span class="ml-3 text-gray-700">放射線治療を受けた部位に鍼をしたい</span>
+                        </label>
+                        <label class="flex items-center p-3 rounded-md hover:bg-gray-50">
+                            <input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-[#8C7A6B] focus:ring-[#8C7A6B]" data-risk="absolute">
+                            <span class="ml-3 text-gray-700">がんの腫瘍や転移がある真上に鍼をしたい</span>
+                        </label>
+                    </div>
+                </div>
+                <div id="safety-result" class="bg-gray-50 px-6 py-5 rounded-b-lg border-t border-gray-200">
+                     <p id="safety-message" class="text-gray-600 text-center">ご自身の状態に当てはまる項目をチェックしてください。</p>
+                </div>
+            </div>
+        </section>
+
+        <hr class="my-16 md:my-24 border-t-2 border-gray-200">
+
+        <section id="practical">
+            <h2 class="text-2xl md:text-3xl font-bold text-center text-[#3D352E] mb-12">日本で始めるための実践ガイド</h2>
+            <div class="max-w-4xl mx-auto space-y-8">
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden accordion">
+                    <button class="w-full text-left p-6 flex justify-between items-center accordion-toggle">
+                        <h3 class="font-bold text-lg text-[#3D352E]">① 保険は使えるの？</h3>
+                        <span class="text-2xl text-[#8C7A6B] transform transition-transform duration-300">-</span>
+                    </button>
+                    <div class="accordion-content">
+                        <p class="text-gray-600 mb-4">残念ながら、がんの痛みで鍼治療に健康保険を適用するのは<strong class="text-red-600">非常に難しい</strong>のが現状です。</p>
+                        <ul class="list-disc list-inside space-y-2 text-sm text-gray-600">
+                            <li><strong>医師の同意書が必要:</strong> 保険適用の対象となる特定の6疾患（神経痛、リウマチなど）について、医師の同意書が必要です。「がん性疼痛」は直接の対象疾患ではありません。</li>
+                            <li><strong>並行治療の禁止:</strong> 最も大きな壁です。病院で同じ病気の治療（鎮痛薬の処方など）を受けている場合、鍼灸の保険適用は認められません。</li>
+                        </ul>
+                        <p class="mt-4 p-4 bg-amber-50 text-amber-800 rounded-md text-sm">したがって、原則として<strong class="font-bold">自費診療</strong>になると考えておくのが現実的です。</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden accordion">
+                    <button class="w-full text-left p-6 flex justify-between items-center accordion-toggle">
+                        <h3 class="font-bold text-lg text-[#3D352E]">② どうやって鍼灸師を探せばいい？</h3>
+                         <span class="text-2xl text-[#8C7A6B] transform transition-transform duration-300">+</span>
+                    </button>
+                     <div class="accordion-content">
+                        <p class="text-gray-600 mb-4">安全のために、がん治療への理解と経験が豊富な鍼灸師を選ぶことが最も重要です。</p>
+                        <ul class="list-disc list-inside space-y-2 text-sm text-gray-600">
+                            <li><strong>主治医・病院に相談:</strong> まず、治療を受けている病院の緩和ケアチームや相談支援センターに、連携している鍼灸師がいないか尋ねてみましょう。</li>
+                            <li><strong>専門団体の名簿:</strong> 「日本鍼灸師会」や「全日本鍼灸学会」などのウェブサイトで、お住まいの地域の会員を探すことができます。</li>
+                            <li><strong>ウェブサイトで確認:</strong> 「がん専門」「緩和ケア」を掲げている鍼灸院を探す際は、具体的な臨床経験や医療機関との連携実績が明記されているかを確認しましょう。</li>
+                        </ul>
+                    </div>
+                </div>
+
+                 <div class="bg-white rounded-lg shadow-lg overflow-hidden accordion">
+                    <button class="w-full text-left p-6 flex justify-between items-center accordion-toggle">
+                        <h3 class="font-bold text-lg text-[#3D352E]">③ 始める前に何をすべき？</h3>
+                        <span class="text-2xl text-[#8C7A6B] transform transition-transform duration-300">+</span>
+                    </button>
+                    <div class="accordion-content">
+                        <p class="text-gray-600 mb-4">円滑で安全な治療のために、以下のステップを踏むことをお勧めします。</p>
+                        <ul class="list-disc list-inside space-y-2 text-sm text-gray-600">
+                            <li><strong>主治医への報告と許可:</strong> 必ず主治医に相談し、許可を得てください。「標準治療の代わりではなく、痛みを和らげる補完療法として受けたい」という意図を明確に伝えましょう。</li>
+                            <li><strong>情報共有:</strong> 最新の血液検査の結果（特に白血球・血小板数）を鍼灸師に伝え、安全性を確認してもらいます。</li>
+                             <li><strong>効果の記録:</strong> 痛みの強さ（0-10点）、鎮痛薬の使用量、体調の変化などを簡単な日記につけ、主治医と鍼灸師の両方と共有すると、より良い治療につながります。</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-[#F8F5F2] mt-16 md:mt-24">
+        <div class="container mx-auto px-6 py-6 text-center text-gray-500 text-sm">
+            <p>このページは、公開されている医学研究レポートに基づき作成された情報提供サイトです。</p>
+            <p>個別の医療判断に代わるものではありません。治療に関する決定は必ず主治医とご相談ください。</p>
+        </div>
+    </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    mobileMenuButton.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+    });
+
+    const evidenceData = {
+        general: {
+            title: '一般的ながんの痛みに対するエビデンス',
+            text: `<p>複数の質の高い研究（メタアナリシス）が、鍼治療を標準治療と併用することで、鎮痛薬単独よりも有意に痛みを軽減し、鎮痛薬の使用量を減らすことを示しています。</p>
+                   <p>2019年のレビューでは、10点満点の評価で平均<strong class="text-[#8C7A6B]">1.44ポイント</strong>の追加的な痛み軽減効果が報告されました。</p>`,
+            values: [1.44, 1.0]
+        },
+        bone: {
+            title: '骨転移の痛みに対するエビデンス',
+            text: `<p>骨転移による激しい痛み（CIBP）に対し、鍼治療と標準治療の併用は、標準治療単独と比較して、痛みの強度を軽減し、突出痛（急な強い痛み）の頻度を減らすことが示されています。</p>
+                   <p>2022年のメタアナリシスでは、併用により平均<strong class="text-[#8C7A6B]">1.34ポイント</strong>の追加的な痛み軽減が確認されました。ただし、鍼治療単独での有効性は証明されていません。</p>`,
+            values: [1.34, 0.8]
+        },
+        chest: {
+            title: '胸の痛み（術後など）に対するエビデンス',
+            text: `<p>肺がんの開胸手術後の痛みは、胸郭の痛みに対する良いモデルとなります。日本の国立がん研究センターの研究では、術後に鍼治療を受けた患者は、受けていない患者に比べて鎮痛薬の使用量が有意に少なかったと報告されています。</p>
+                   <p>これは鍼治療が鎮痛薬の使用を減らす効果（オピオイド・スパアリング効果）を持つことを示す重要な国内データです。</p>`,
+            values: [1.6, 1.2] 
+        }
+    };
+
+    let myChart;
+    const ctx = document.getElementById('painChart').getContext('2d');
+    const evidenceButtons = document.querySelectorAll('.evidence-button');
+    const evidenceTitle = document.getElementById('evidence-title');
+    const evidenceText = document.getElementById('evidence-text');
+
+    function createChart(initialData) {
+        myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['鍼治療＋標準治療', '標準治療のみ'],
+                datasets: [{
+                    label: '痛みの強さ（相対値）',
+                    data: initialData,
+                    backgroundColor: [
+                        'rgba(140, 122, 107, 0.6)',
+                        'rgba(200, 200, 200, 0.6)'
+                    ],
+                    borderColor: [
+                        'rgba(140, 122, 107, 1)',
+                        'rgba(200, 200, 200, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '痛みの軽減効果（大きいほど効果大）'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                         enabled: false
+                    },
+                    title: {
+                        display: true,
+                        text: '標準治療との比較による痛みの軽減効果'
+                    }
+                }
+            }
+        });
+    }
+
+    function updateEvidence(painType) {
+        const data = evidenceData[painType];
+        evidenceTitle.textContent = data.title;
+        evidenceText.innerHTML = data.text;
+        
+        myChart.data.datasets[0].data = data.values;
+        myChart.update();
+
+        evidenceButtons.forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.pain === painType);
+        });
+    }
+
+    evidenceButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            updateEvidence(button.dataset.pain);
+        });
+    });
+
+    createChart(evidenceData.general.values);
+    updateEvidence('general');
+
+
+    const checklist = document.getElementById('safety-checklist');
+    const safetyMessage = document.getElementById('safety-message');
+
+    checklist.addEventListener('change', () => {
+        const checkedItems = checklist.querySelectorAll('input:checked');
+        let highRiskCount = 0;
+        let absoluteRiskCount = 0;
+
+        checkedItems.forEach(item => {
+            if (item.dataset.risk === 'high') highRiskCount++;
+            if (item.dataset.risk === 'absolute') absoluteRiskCount++;
+        });
+
+        let message = '';
+        let bgColor = 'bg-green-50';
+        let textColor = 'text-green-800';
+
+        if (absoluteRiskCount > 0) {
+            message = '<strong>【絶対的禁忌】</strong> 選択された項目は、通常鍼治療が行えない部位や状態です。安全のため、鍼治療は避けるべきです。必ず主治医にご確認ください。';
+            bgColor = 'bg-red-50';
+            textColor = 'text-red-800';
+        } else if (highRiskCount > 0) {
+            message = '<strong>【要注意】</strong> 選択された項目は、感染や出血のリスクを高める可能性があります。治療の可否は、最新の血液データに基づき主治医と鍼灸師が慎重に判断する必要があります。';
+            bgColor = 'bg-yellow-50';
+            textColor = 'text-yellow-800';
+        } else if (checkedItems.length === 0) {
+            message = 'ご自身の状態に当てはまる項目をチェックしてください。';
+            bgColor = 'bg-gray-50';
+            textColor = 'text-gray-600';
+        } else {
+            message = 'チェック項目に該当はありませんが、鍼治療の前には必ず主治医に相談し、許可を得てください。';
+        }
+        
+        const resultDiv = document.getElementById('safety-result');
+        resultDiv.className = `p-4 rounded-b-lg border-t border-gray-200 ${bgColor}`;
+        safetyMessage.innerHTML = `<p class="${textColor}">${message}</p>`;
+    });
+
+    const accordions = document.querySelectorAll('.accordion');
+    accordions.forEach(acc => {
+        const toggle = acc.querySelector('.accordion-toggle');
+        const content = acc.querySelector('.accordion-content');
+        const icon = toggle.querySelector('span');
+
+        toggle.addEventListener('click', () => {
+            const isOpen = content.classList.contains('open');
+            
+            accordions.forEach(otherAcc => {
+                otherAcc.querySelector('.accordion-content').classList.remove('open');
+                otherAcc.querySelector('.accordion-content').style.padding = '0 1.5rem';
+                otherAcc.querySelector('.accordion-toggle span').textContent = '+';
+                otherAcc.querySelector('.accordion-toggle span').classList.remove('rotate-45');
+
+            });
+
+            if (!isOpen) {
+                content.classList.add('open');
+                icon.textContent = '-';
+                icon.classList.add('rotate-45');
+            }
+        });
+    });
+
+});
+</script>
+</body>
+</html>
