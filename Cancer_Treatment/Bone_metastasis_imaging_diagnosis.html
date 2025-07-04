@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>骨転移画像診断インタラクティブガイド</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Soothing Clinical -->
+    <!-- Application Structure Plan: このSPAは、ユーザーが最も知りたいであろう中心的な問い「造影剤は必須か？」に直接答えるランディングセクションから始まります。次に、ユーザーの具体的な状況に合わせて最適な検査を提示する「状況別・検査選択ツール」、主要な検査法の性能を視覚的に比較する「検査法を比べる」、患者の懸念に寄り添う「造影剤の安全性」、そして診断の背景知識を補う「転移のタイプを知る」という5つのテーマ別セクションに情報を再構築しました。この非線形な構造は、レポートの章立てをなぞるのではなく、ユーザーの関心やタスク（知る・選ぶ・比べる・安心する）に基づいて設計されており、複雑な医療情報へのアクセス性と理解度を最大化することを目的としています。 -->
+    <!-- Visualization & Content Choices: 
+        - 状況別選択ツール (Goal: Guide): HTMLのドロップダウンと動的テキスト表示。ユーザーの状況に応じた最適な検査法を提示し、能動的な学習を促す。
+        - 性能比較チャート (Goal: Compare): Chart.jsによるインタラクティブな横棒グラフ。レポートの表2のデータを視覚化し、各検査の感度・特異度の比較を容易にする。
+        - 転移タイプ図解 (Goal: Organize): HTML/Tailwind CSSによる構造化された図。骨の断面図を模したdiv要素で溶骨型・造骨型などを表現し、視覚的な理解を助ける。
+        - 安全性リスク表示 (Goal: Inform): UnicodeアイコンとHTML/CSSによるレイアウト。CTとMRIのリスクを並べて比較し、重要な注意点を明確化。
+        Justification: これらの選択は、SVGやMermaidを使用せず、標準的なWeb技術で情報を明快かつ対話的に伝えるためのものです。Chart.jsはデータ可視化に、シンプルなHTML/CSS図解は概念の平易化に最適であり、設計されたアプリケーション構造を効果的にサポートします。
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            border-bottom: 4px solid transparent;
+        }
+        .nav-link.active {
+            border-bottom-color: #0ea5e9; /* sky-500 */
+            color: #0c4a6e; /* sky-900 */
+        }
+        .section-content {
+            display: none;
+        }
+        .section-content.active {
+            display: block;
+        }
+        .chart-container {
+            position: relative;
+            margin: auto;
+            height: 450px;
+            width: 100%;
+            max-width: 800px;
+        }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <h1 class="text-2xl sm:text-3xl font-bold text-sky-800 text-center">骨転移画像診断インタラクティブガイド</h1>
+            <p class="text-center text-slate-500 mt-1">CT・MRIと造影剤の役割を理解する</p>
+        </div>
+        <nav class="bg-slate-100">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-center flex-wrap">
+                    <a href="#main-question" data-section="main-question" class="nav-link active font-semibold text-slate-600 hover:bg-slate-200 py-3 px-2 sm:px-4 text-sm sm:text-base text-center">1. 造影剤は必須？</a>
+                    <a href="#scenarios" data-section="scenarios" class="nav-link font-semibold text-slate-600 hover:bg-slate-200 py-3 px-2 sm:px-4 text-sm sm:text-base text-center">2. 状況から選ぶ</a>
+                    <a href="#comparison" data-section="comparison" class="nav-link font-semibold text-slate-600 hover:bg-slate-200 py-3 px-2 sm:px-4 text-sm sm:text-base text-center">3. 検査法を比べる</a>
+                    <a href="#safety" data-section="safety" class="nav-link font-semibold text-slate-600 hover:bg-slate-200 py-3 px-2 sm:px-4 text-sm sm:text-base text-center">4. 安全性を知る</a>
+                    <a href="#types" data-section="types" class="nav-link font-semibold text-slate-600 hover:bg-slate-200 py-3 px-2 sm:px-4 text-sm sm:text-base text-center">5. 転移のタイプ</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+
+        <!-- Section 1: Main Question -->
+        <section id="main-question" class="section-content active">
+            <div class="bg-white p-6 rounded-lg shadow-lg animate-fade-in">
+                <h2 class="text-2xl font-bold text-sky-700 mb-4">Q. 骨転移の特定に、CT・MRIでの造影剤は必須ですか？</h2>
+                <div class="space-y-4 text-lg">
+                    <p class="leading-relaxed">
+                        <span class="font-bold text-2xl text-rose-600">A.</span> 結論から言うと、<span class="font-bold bg-yellow-200 px-1 rounded">常に必須ではありません。</span>しかし、特定の重要な問いに答えるためには<span class="font-bold text-sky-600">不可欠な役割</span>を果たします。
+                    </p>
+                    <p class="leading-relaxed">
+                        造影剤を使うかどうかは、「検査で何を知りたいのか」という目的によって決まります。これは、得られる診断上のメリットと、患者さんが負うわずかなリスクを天秤にかける、専門的な判断です。
+                    </p>
+                    <div class="p-4 bg-sky-50 rounded-lg border-l-4 border-sky-500">
+                        <h3 class="font-bold text-xl text-sky-800 mb-2 flex items-center">
+                            <span class="text-2xl mr-2">💡</span>
+                            目的別の使い分け
+                        </h3>
+                        <ul class="list-disc list-inside space-y-2 text-slate-700">
+                            <li><strong class="text-rose-600">原則不要なケース：</strong> 症状のない方の初期スクリーニングや、骨の形だけの変化を追う場合。</li>
+                            <li><strong class="text-sky-600">原則必須となるケース：</strong> 手術や放射線治療の<strong class="font-bold">精密な計画</strong>を立てる時、<strong class="font-bold">脊髄圧迫</strong>や<strong class="font-bold">脳転移</strong>といった緊急性の高い状態を評価する時。</li>
+                        </ul>
+                    </div>
+                     <p class="leading-relaxed">
+                        このアプリケーションは、あなたが骨転移の画像診断について深く理解し、医療チームとの対話をより良いものにするためのお手伝いをします。上のタブから、興味のある項目を選んでみてください。
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Scenarios -->
+        <section id="scenarios" class="section-content">
+             <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-bold text-sky-700 mb-2">状況別・検査選択ツール</h2>
+                <p class="text-slate-600 mb-6">あなたの状況に最も近いものを選択してください。一般的な検査の選択肢と、その理由が表示されます。これはあくまで一般的な情報提供であり、最終的な判断は主治医と相談してください。</p>
+                
+                <div class="mb-6">
+                    <label for="scenario-select" class="block text-lg font-medium text-slate-700 mb-2">あなたの状況を選択してください：</label>
+                    <select id="scenario-select" class="block w-full p-3 border border-slate-300 rounded-md shadow-sm focus:ring-sky-500 focus:border-sky-500 text-lg">
+                        <option value="none" selected>--- ここから選択 ---</option>
+                        <option value="initial">初めて骨転移の有無を詳しく調べる</option>
+                        <option value="symptom">足のしびれや麻痺など、新たな神経症状が出てきた</option>
+                        <option value="treatment_plan">手術や精密な放射線治療（SBRTなど）を計画している</option>
+                        <option value="brain">頭痛やめまいなど、脳転移が心配な症状がある</option>
+                        <option value="follow_up">治療後の効果を確認したい</option>
+                        <option value="risk">腎臓の機能が悪かったり、アレルギー体質で造影剤が心配</option>
+                    </select>
+                </div>
+
+                <div id="scenario-result" class="mt-6 p-6 bg-slate-50 rounded-lg min-h-[200px] border border-slate-200 transition-all duration-500">
+                    <p class="text-slate-500 text-center text-lg">上のメニューから状況を選択してください。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Comparison -->
+        <section id="comparison" class="section-content">
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-bold text-sky-700 mb-2">主要な画像検査を比べる</h2>
+                <p class="text-slate-600 mb-6">骨転移の診断に使われる主な検査には、それぞれ得意なことと不得意なことがあります。下のグラフは、各検査が転移を見つける能力（感度）と、転移でないものを正しく判断する能力（特異度）を比較したものです。</p>
+                <div class="chart-container">
+                    <canvas id="comparisonChart"></canvas>
+                </div>
+                 <div class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="p-4 bg-slate-50 rounded-lg border">
+                        <h3 class="font-bold text-lg text-sky-800">単純CT</h3>
+                        <p>骨の形（破壊や硬化）を鮮明に見るのが得意。骨折リスク評価の基本。</p>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-lg border">
+                        <h3 class="font-bold text-lg text-sky-800">造影CT</h3>
+                        <p>腫瘍の勢いや、骨の外への広がり（軟部組織への浸潤）を見るのに不可欠。</p>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-lg border">
+                        <h3 class="font-bold text-lg text-sky-800">単純MRI (DWIBS含)</h3>
+                        <p>骨の中（骨髄）の異常を捉える名人。被曝なく全身を調べられるDWIBSが強力。</p>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-lg border">
+                        <h3 class="font-bold text-lg text-sky-800">造影MRI</h3>
+                        <p>脊髄圧迫や脳転移の評価、治療後の再発か傷跡かの鑑別に絶大な威力。</p>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-lg border">
+                        <h3 class="font-bold text-lg text-sky-800">PET/CT</h3>
+                        <p>癌細胞の「活動性（代謝）」を色で示す。全身の転移を一度に評価できる。</p>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-lg border">
+                        <h3 class="font-bold text-lg text-sky-800">骨シンチグラフィー</h3>
+                        <p>古くからの全身スクリーニング検査。骨が作られる変化に敏感だが、転移以外でも光る。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Safety -->
+        <section id="safety" class="section-content">
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-bold text-sky-700 mb-2">造影剤の安全性について</h2>
+                <p class="text-slate-600 mb-6">造影剤は診断に非常に役立ちますが、わずかながらリスクも伴います。CTとMRIで使われる造影剤は種類が異なり、注意点も違います。事前にリスクを理解し、不安な点は医師に相談することが大切です。</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="p-6 bg-blue-50 border-l-4 border-blue-400 rounded-r-lg">
+                        <h3 class="text-xl font-bold text-blue-800 mb-4">CT用ヨード造影剤</h3>
+                        <ul class="space-y-3">
+                            <li class="flex items-start"><span class="text-xl mr-3">🤢</span><div><strong>主な副作用：</strong>吐き気、かゆみ、じんましんなど。多くは一時的です。</div></li>
+                            <li class="flex items-start"><span class="text-xl mr-3">⚠️</span><div><strong>特に注意が必要な方：</strong><strong class="text-red-600">気管支喘息</strong>の既往、腎機能障害、重いアレルギー歴のある方。</div></li>
+                            <li class="flex items-start"><span class="text-xl mr-3">💊</span><div><strong>注意する薬：</strong>一部の糖尿病治療薬（メトホルミンなど）は、検査前後に一時的な休薬が必要です。</div></li>
+                        </ul>
+                    </div>
+                    <div class="p-6 bg-green-50 border-l-4 border-green-500 rounded-r-lg">
+                        <h3 class="text-xl font-bold text-green-800 mb-4">MRI用ガドリニウム造影剤</h3>
+                        <ul class="space-y-3">
+                            <li class="flex items-start"><span class="text-xl mr-3">😌</span><div><strong>副作用の頻度：</strong>ヨード造影剤より低いとされていますが、同様の副作用が起こる可能性はあります。</div></li>
+                             <li class="flex items-start"><span class="text-xl mr-3">⚠️</span><div><strong>特に注意が必要な方：</strong><strong class="text-red-600">重篤な腎機能障害</strong>のある方は、特殊な副作用のリスクから原則使用できません。</div></li>
+                            <li class="flex items-start"><span class="text-xl mr-3">🔬</span><div><strong>体内残留について：</strong>より安全性が高いとされる<strong class="text-green-700">「マクロサイクリック型」</strong>の使用が推奨されています。</div></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: Types -->
+        <section id="types" class="section-content">
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-bold text-sky-700 mb-2">骨転移のタイプを知る</h2>
+                <p class="text-slate-600 mb-6">骨転移は、骨に与える影響によっていくつかのタイプに分けられます。どのタイプかによって、画像検査での見え方や、発見のしやすさが異なります。</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Lytic -->
+                    <div class="p-4 border rounded-lg">
+                        <h3 class="text-xl font-bold text-amber-700 mb-2">溶骨型 (骨が溶ける)</h3>
+                        <p class="mb-4">破骨細胞が活発になり、骨が破壊されるタイプ。CTでは黒い穴のように写ります。</p>
+                        <div class="flex items-center space-x-4">
+                            <div class="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center border-4 border-gray-400">
+                                <div class="w-10 h-10 bg-black rounded-md"></div>
+                            </div>
+                            <div class="text-sm">
+                                <p><strong>CTでの見え方:</strong> 骨に穴が開く</p>
+                                <p><strong>主な癌:</strong> 肺癌、腎細胞癌など</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Blastic -->
+                    <div class="p-4 border rounded-lg">
+                        <h3 class="text-xl font-bold text-indigo-700 mb-2">造骨型 (骨が硬くなる)</h3>
+                        <p class="mb-4">骨芽細胞が活発になり、異常な骨が作られるタイプ。CTでは白く硬く写ります。</p>
+                         <div class="flex items-center space-x-4">
+                            <div class="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center border-4 border-gray-400">
+                                <div class="w-10 h-10 bg-white rounded-md border-2 border-gray-500"></div>
+                            </div>
+                            <div class="text-sm">
+                                <p><strong>CTでの見え方:</strong> 骨が白く硬化</p>
+                                <p><strong>主な癌:</strong> 前立腺癌など</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Mixed -->
+                    <div class="p-4 border rounded-lg">
+                        <h3 class="text-xl font-bold text-teal-700 mb-2">混合型</h3>
+                        <p class="mb-4">溶骨型と造骨型の両方の特徴が混在するタイプです。</p>
+                         <div class="flex items-center space-x-4">
+                            <div class="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center border-4 border-gray-400 relative">
+                                <div class="w-8 h-8 bg-black rounded-md absolute top-4 left-4"></div>
+                                <div class="w-8 h-8 bg-white rounded-md border-2 border-gray-500 absolute bottom-4 right-4"></div>
+                            </div>
+                            <div class="text-sm">
+                                <p><strong>CTでの見え方:</strong> 白と黒が混在</p>
+                                <p><strong>主な癌:</strong> 乳癌など</p>
+                            </div>
+                        </div>
+                    </div>
+                     <!-- Intramedullary -->
+                    <div class="p-4 border rounded-lg bg-rose-50 border-rose-200">
+                        <h3 class="text-xl font-bold text-rose-700 mb-2">骨梁間型 (ステルス型)</h3>
+                        <p class="mb-4">骨の構造を壊さず、骨髄の中に癌が広がるタイプ。CTでは見つけにくく、MRIが非常に得意です。</p>
+                         <div class="flex items-center space-x-4">
+                            <div class="w-24 h-24 bg-yellow-100 rounded-full flex items-center justify-center border-4 border-gray-400">
+                                <span class="text-3xl text-rose-500">?</span>
+                            </div>
+                            <div class="text-sm">
+                                <p><strong>CTでの見え方:</strong> 変化が見えにくい</p>
+                                <p><strong>MRIの得意分野</strong></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-slate-800 text-white mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center">
+            <p class="text-sm text-slate-400">このウェブサイトは、癌の骨転移に関する医学的情報の理解を助けるための教育的な資料です。個別の医療判断に代わるものではありません。治療方針については、必ず主治医や医療チームとご相談ください。</p>
+        </div>
+    </footer>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('.section-content');
+
+            function updateActiveSection() {
+                const hash = window.location.hash || '#main-question';
+                
+                navLinks.forEach(link => {
+                    link.classList.toggle('active', link.getAttribute('href') === hash);
+                });
+
+                sections.forEach(section => {
+                    section.classList.toggle('active', section.id === hash.substring(1));
+                });
+                
+                if (hash === '#comparison') {
+                    renderComparisonChart();
+                }
+            }
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    history.pushState(null, null, this.getAttribute('href'));
+                    updateActiveSection();
+                    window.scrollTo(0, 0);
+                });
+            });
+
+            window.addEventListener('popstate', updateActiveSection);
+            
+            updateActiveSection();
+
+            const scenarioSelect = document.getElementById('scenario-select');
+            const scenarioResult = document.getElementById('scenario-result');
+
+            const scenarioData = {
+                none: `<p class="text-slate-500 text-center text-lg">上のメニューから状況を選択してください。</p>`,
+                initial: `
+                    <h3 class="font-bold text-xl text-sky-800 mb-2">初めての精密検査</h3>
+                    <p class="mb-2"><strong>主な選択肢：</strong> 全身MRI（特にDWIBS法）、PET/CT</p>
+                    <p><strong>理由：</strong> これらの検査は放射線被曝や造影剤のリスクなしに（あるいはPET薬剤のみで）、全身の転移巣を高い感度でスクリーニングできます。特にMRIは、CTでは見つけにくい「骨梁間型」の転移を発見するのに非常に優れています。造影剤は、これらの検査で疑わしい所見が見つかった後の精密検査で検討されます。</p>
+                `,
+                symptom: `
+                    <h3 class="font-bold text-xl text-rose-700 mb-2">緊急性の高い神経症状</h3>
+                    <p class="mb-2"><strong>主な選択肢：</strong> <strong class="bg-rose-200 px-1 rounded">造影MRI</strong></p>
+                    <p><strong>理由：</strong> 脊髄圧迫という緊急事態の可能性があり、一刻も早く診断を下す必要があります。造影MRIは、腫瘍が脊髄や神経をどの程度圧迫しているかを最も正確に評価できるゴールドスタンダードです。この情報は、緊急手術や放射線治療の要否を判断するために<strong class="font-bold">不可欠</strong>です。</p>
+                `,
+                treatment_plan: `
+                    <h3 class="font-bold text-xl text-sky-800 mb-2">手術・精密な放射線治療の計画</h3>
+                    <p class="mb-2"><strong>主な選択肢：</strong> <strong class="bg-sky-200 px-1 rounded">造影CT</strong> または <strong class="bg-sky-200 px-1 rounded">造影MRI</strong></p>
+                    <p><strong>理由：</strong> 治療を成功させるには、標的となる腫瘍の正確な範囲をミリ単位で特定する必要があります。造影剤を使うことで、骨からはみ出した腫瘍の輪郭がくっきりと浮かび上がり、周囲の正常な組織を避けながら、腫瘍全体を過不足なく治療範囲に含めることができます。これは治療の<strong class="font-bold">絶対条件</strong>です。</p>
+                `,
+                brain: `
+                    <h3 class="font-bold text-xl text-rose-700 mb-2">脳転移の疑い</h3>
+                    <p class="mb-2"><strong>主な選択肢：</strong> <strong class="bg-rose-200 px-1 rounded">造影MRI</strong></p>
+                    <p><strong>理由：</strong> 造影MRIは、脳内のごく小さな転移巣を発見する感度が最も高い検査です。造影剤を使わないと見逃される可能性のある病変も、造影によって明瞭に捉えることができるため、脳転移が疑われる場合の第一選択となります。</p>
+                `,
+                follow_up: `
+                    <h3 class="font-bold text-xl text-sky-800 mb-2">治療効果の判定</h3>
+                    <p class="mb-2"><strong>主な選択肢：</strong> 症例により様々（単純CT, 造影MRI, PET/CT, 全身MRIなど）</p>
+                    <p><strong>理由：</strong> 治療効果の判定は複雑です。骨の修復には時間がかかり、一時的に所見が悪化したように見える「フレア現象」も起こりえます。治療によって活動を失った組織（瘢痕）と、再発した腫瘍を区別するために<strong class="font-bold">造影MRI</strong>が有用な場合があります。また、腫瘍の代謝活性を見る<strong class="font-bold">PET/CT</strong>や、細胞の密度を見る<strong class="font-bold">MRI（DWI）</strong>も重要な役割を果たします。</p>
+                `,
+                risk: `
+                    <h3 class="font-bold text-xl text-amber-700 mb-2">造影剤使用のリスクが高い場合</h3>
+                    <p class="mb-2"><strong>主な選択肢：</strong> <strong class="bg-amber-100 px-1 rounded">単純MRI（DWIBS法を含む）</strong>, 単純CT, PET/CT</p>
+                    <p><strong>理由：</strong> 造影剤のリスクが利益を上回る可能性があるため、造影剤を使わない検査が優先されます。幸い、現代のMRIはT1, T2, DWIといった多彩な撮像法を駆使することで、造影剤なしでも非常に多くの情報を得られます。特に全身MRI（DWIBS）は、被曝も造影剤もなく全身を評価できるため、極めて有用な選択肢です。</p>
+                `
+            };
+            
+            scenarioSelect.addEventListener('change', function() {
+                const selectedValue = this.value;
+                scenarioResult.innerHTML = scenarioData[selectedValue];
+            });
+
+
+            let comparisonChart = null;
+            function renderComparisonChart() {
+                if (comparisonChart) {
+                    return;
+                }
+                const ctx = document.getElementById('comparisonChart').getContext('2d');
+                const chartData = {
+                    labels: ['単純MRI (DWIBS)', '造影MRI', 'PSMA-PET/CT (前立腺癌)', 'FDG-PET/CT', '単純CT', '骨シンチ'],
+                    datasets: [
+                        {
+                            label: '感度 (見つける力)',
+                            data: [95, 98, 99, 93, 75, 80],
+                            backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: '特異度 (見分ける力)',
+                            data: [95, 96, 99, 90, 92, 70],
+                            backgroundColor: 'rgba(16, 185, 129, 0.7)',
+                            borderColor: 'rgba(16, 185, 129, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                };
+
+                comparisonChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: chartData,
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: '画像検査の性能比較 (一般的な参考値)',
+                                font: {
+                                    size: 18
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.x !== null) {
+                                            label += context.parsed.x + '%';
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                max: 100,
+                                title: {
+                                    display: true,
+                                    text: 'スコア (%)'
+                                }
+                            },
+                            y: {
+                                ticks: {
+                                    font: {
+                                        size: 14
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
