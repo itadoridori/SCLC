@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小細胞肺癌 骨転移の痛み 治療ガイド</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony Neutrals -->
+    <!-- Application Structure Plan: The SPA is designed as "A Patient's Journey Through Treatment Options," guiding users from understanding the 'why' of their pain to exploring a multi-faceted treatment approach. The structure prioritizes user empathy and learning over a direct report-to-webpage conversion. It starts with the fundamental cause of pain, provides a high-level "map" of the four treatment pillars (Systemic, Local, Pharmacotherapy, Palliative), and then allows deep dives into each. This non-linear, thematic structure empowers users to explore based on their immediate questions, fostering better understanding and facilitating more informed discussions with healthcare providers. Key interactions include clickable diagrams for complex processes (e.g., the "Vicious Cycle"), an interactive WHO ladder, and a visual representation of the palliative care team, all designed to make complex information digestible and engaging. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: 'Vicious Cycle' of bone destruction -> Goal: Explain the mechanism -> Viz: Clickable HTML/CSS diagram -> Interaction: Reveal text on click -> Justification: Simplifies a complex biological process, making it more memorable than text alone -> Method: HTML/CSS.
+        - Report Info: Four-pillar treatment strategy -> Goal: Provide a clear mental map -> Viz: Central HTML/CSS diagram of the 4 pillars -> Interaction: Click to scroll to section -> Justification: Gives users a high-level overview and navigation tool -> Method: HTML/CSS.
+        - Report Info: Radiation therapy efficacy (60-90%) -> Goal: Quantify a key treatment benefit -> Viz: Chart.js bar chart -> Interaction: Static chart with clear labeling -> Justification: Provides a quick, data-driven understanding of effectiveness -> Library: Chart.js.
+        - Report Info: WHO 3-Step Analgesic Ladder -> Goal: Explain the standard pain management protocol -> Viz: Interactive vertical HTML/CSS graphic -> Interaction: Click each step to reveal details -> Justification: Turns a clinical guideline into an interactive, step-by-step learning tool -> Method: HTML/CSS.
+        - Report Info: Multidisciplinary palliative care team -> Goal: Illustrate the patient's support network -> Viz: HTML/CSS mind-map diagram -> Interaction: Click on team member nodes to see their roles -> Justification: Visually reinforces the concept of patient-centered, team-based care -> Method: HTML/CSS.
+        All choices are made to enhance understanding and engagement without using SVG or Mermaid JS, adhering to all constraints.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Noto Sans JP', sans-serif; background-color: #F8F7F4; color: #4A4A4A; }
+        .bg-warm-neutral { background-color: #F8F7F4; }
+        .bg-accent-teal { background-color: #4db6ac; }
+        .text-accent-teal { color: #4db6ac; }
+        .border-accent-teal { border-color: #4db6ac; }
+        .bg-highlight-peach { background-color: #f2d5b6; }
+        .border-highlight-peach { border-color: #f2d5b6; }
+        .section-icon { width: 50px; height: 50px; }
+        .transition-all { transition: all 0.3s ease-in-out; }
+        .tab-button.active { background-color: #4db6ac; color: white; }
+        .tab-button { background-color: #e0e0e0; color: #4A4A4A; }
+        .diagram-line {
+            position: absolute;
+            background-color: #cbd5e1;
+            transform-origin: top left;
+        }
+        .vicious-cycle-card {
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        .vicious-cycle-card.active {
+            border-color: #4db6ac;
+            transform: scale(1.05);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body class="bg-warm-neutral">
+
+    <!-- Header & Navigation -->
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <span class="font-bold text-xl text-accent-teal">治療ガイド</span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#section-why" class="text-gray-700 hover:bg-accent-teal hover:text-white px-3 py-2 rounded-md text-sm font-medium">なぜ痛むの？</a>
+                        <a href="#section-overview" class="text-gray-700 hover:bg-accent-teal hover:text-white px-3 py-2 rounded-md text-sm font-medium">治療の全体像</a>
+                        <a href="#section-pillars" class="text-gray-700 hover:bg-accent-teal hover:text-white px-3 py-2 rounded-md text-sm font-medium">治療法を探す</a>
+                        <a href="#section-team" class="text-gray-700 hover:bg-accent-teal hover:text-white px-3 py-2 rounded-md text-sm font-medium">チームで支える</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="max-w-5xl mx-auto p-4 sm:p-6 lg:p-8">
+        <!-- Hero Section -->
+        <section class="text-center my-12">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">小細胞肺癌の骨転移による痛みを和らげるために</h1>
+            <p class="text-lg text-gray-600">利用可能な治療選択肢を理解するためのインタラクティブガイド</p>
+            <p class="mt-6 max-w-3xl mx-auto text-left text-base text-gray-700">
+                骨転移の痛みは、身体だけでなく心にも大きな負担となります。このガイドは、患者様とご家族がご自身の状況を理解し、利用可能な治療法について知り、医療チームとより良い対話を持つための一助となることを目指しています。ご一緒に、一歩ずつ見ていきましょう。
+            </p>
+        </section>
+
+        <!-- Section 1: Why does it hurt? -->
+        <section id="section-why" class="my-16 scroll-mt-20">
+            <h2 class="text-2xl font-bold text-center mb-2 text-accent-teal">なぜ痛むの？</h2>
+            <p class="text-center text-gray-600 mb-12">骨転移の痛みが起こる「仕組み」を理解することから始めましょう。</p>
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                 <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">骨破壊の「悪循環」</h3>
+                 <p class="text-center text-gray-600 mb-6">がん細胞は骨の正常な新陳代謝を乗っ取り、痛みを引き起こす破壊的なサイクルを生み出します。下のカードをクリックして、各ステップの役割を確認してください。</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                    <div id="vicious-cycle-diagram" class="relative">
+                        <div class="grid grid-cols-2 gap-4">
+                           <div id="cycle-card-1" class="vicious-cycle-card bg-teal-50 p-4 rounded-lg shadow-sm transition-all text-center">
+                               <p class="font-bold">① がん細胞</p><p class="text-sm">物質を放出</p>
+                           </div>
+                           <div id="cycle-card-2" class="vicious-cycle-card bg-teal-50 p-4 rounded-lg shadow-sm transition-all text-center">
+                               <p class="font-bold">② 破骨細胞</p><p class="text-sm">過剰に活性化</p>
+                           </div>
+                           <div id="cycle-card-4" class="vicious-cycle-card bg-teal-50 p-4 rounded-lg shadow-sm transition-all text-center">
+                               <p class="font-bold">④ がん細胞</p><p class="text-sm">さらに増殖</p>
+                           </div>
+                           <div id="cycle-card-3" class="vicious-cycle-card bg-teal-50 p-4 rounded-lg shadow-sm transition-all text-center">
+                               <p class="font-bold">③ 骨の溶解</p><p class="text-sm">増殖因子が放出</p>
+                           </div>
+                        </div>
+                    </div>
+                    <div id="cycle-explanation" class="p-4 bg-gray-50 rounded-lg min-h-[150px] flex items-center justify-center">
+                        <p class="text-gray-700">カードを選択してください。</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-12">
+                <h3 class="text-xl font-bold text-gray-800 mb-6 text-center">痛みの多様な原因とリスク</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h4 class="font-bold text-lg mb-3">痛みの直接的な原因</h4>
+                        <ul class="space-y-3 text-gray-700">
+                           <li class="flex items-start"><span class="text-accent-teal mr-2 mt-1">●</span>骨の構造的なダメージ、骨膜への圧迫、炎症反応、神経への圧迫など、複数の要因が複雑に絡み合って痛みが生じます。</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-highlight-peach">
+                        <h4 class="font-bold text-lg mb-3">注意すべき合併症 (SREs)</h4>
+                        <ul class="space-y-3 text-gray-700">
+                           <li class="flex items-start"><span class="text-amber-600 mr-2 mt-1">●</span>病的骨折、脊髄圧迫、高カルシウム血症など、QOLを著しく低下させる重篤な合併症を予防することが治療の重要な目標です。</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Overall Treatment Picture -->
+        <section id="section-overview" class="my-24 scroll-mt-20">
+            <h2 class="text-2xl font-bold text-center mb-2 text-accent-teal">治療の全体像</h2>
+            <p class="text-center text-gray-600 mb-12">痛みの緩和は、一つの治療法ではなく、複数の戦略を組み合わせた「チーム戦」で臨みます。</p>
+            <div class="bg-white p-8 rounded-xl shadow-lg">
+                <p class="text-center mb-8">治療は、患者様を中心に据え、以下の４つの柱を組み合わせて、一人ひとりに最適な計画を立てます。各項目をクリックすると、詳細な説明に移動します。</p>
+                <div class="relative flex justify-center items-center h-80">
+                    <div class="absolute w-40 h-40 bg-accent-teal text-white flex items-center justify-center rounded-full font-bold text-xl shadow-2xl">患者様</div>
+                    <a href="#pillar-systemic" class="absolute top-0 left-1/2 -translate-x-1/2 -mt-4 bg-white p-4 rounded-lg shadow-md hover:shadow-xl transition-shadow w-40 text-center"><strong>全身療法</strong><br><span class="text-sm">がん自体を叩く</span></a>
+                    <a href="#pillar-local" class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 bg-white p-4 rounded-lg shadow-md hover:shadow-xl transition-shadow w-40 text-center"><strong>局所療法</strong><br><span class="text-sm">痛む場所を狙う</span></a>
+                    <a href="#pillar-pharma" class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-4 bg-white p-4 rounded-lg shadow-md hover:shadow-xl transition-shadow w-40 text-center"><strong>薬物療法</strong><br><span class="text-sm">痛みと骨を守る</span></a>
+                    <a href="#pillar-palliative" class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 bg-white p-4 rounded-lg shadow-md hover:shadow-xl transition-shadow w-40 text-center"><strong>緩和ケア</strong><br><span class="text-sm">心と体を支える</span></a>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Section 3: The 4 Pillars of Treatment -->
+        <section id="section-pillars" class="my-16 scroll-mt-20">
+            <h2 class="text-2xl font-bold text-center mb-12 text-accent-teal">治療法を探す：４つの柱</h2>
+            
+            <!-- Pillar 1: Systemic Therapy -->
+            <div id="pillar-systemic" class="mb-16 scroll-mt-20">
+                <h3 class="text-xl font-bold mb-4">① 全身療法：がんそのものを制御する</h3>
+                <p class="mb-6">全身に広がったがん細胞を攻撃し、腫瘍を縮小させることで、痛みの根本原因にアプローチします。化学療法と免疫療法が治療の主軸となります。</p>
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="p-4 bg-teal-50 rounded-lg">
+                            <h4 class="font-bold">化学療法 (抗がん剤)</h4>
+                            <p class="text-sm mt-2">複数の薬剤を組み合わせ、がん細胞の増殖を抑えます。PE療法やPI療法などが標準治療として用いられます。</p>
+                        </div>
+                        <div class="p-4 bg-teal-50 rounded-lg">
+                            <h4 class="font-bold">免疫療法</h4>
+                            <p class="text-sm mt-2">自身の免疫力を高めてがんを攻撃させる治療法。化学療法との併用が現在の標準治療です。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pillar 2: Local Therapy -->
+            <div id="pillar-local" class="mb-16 scroll-mt-20">
+                <h3 class="text-xl font-bold mb-4">② 局所療法：痛む部位を直接狙う</h3>
+                <p class="mb-6">特に痛みが強い部位や、骨折・麻痺のリスクが高い部位に直接アプローチし、迅速な痛みの緩和を目指します。</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h4 class="font-bold text-center mb-4">放射線治療の効果</h4>
+                        <p class="text-sm text-center mb-4">治療を受けた多くの患者様で痛みの軽減が認められています。</p>
+                        <div class="chart-container relative h-64 w-full max-w-sm mx-auto"><canvas id="radiationChart"></canvas></div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h4 class="font-bold text-center mb-4">放射線治療のタイムライン</h4>
+                        <div class="relative mt-8 px-4">
+                            <div class="absolute left-4 top-2 bottom-2 w-0.5 bg-accent-teal"></div>
+                            <div class="relative pl-8 mb-8">
+                                <div class="absolute left-0 top-1/2 -translate-y-1/2 w-4 h-4 bg-white border-2 border-accent-teal rounded-full"></div>
+                                <p class="font-semibold">1〜2週間後</p><p class="text-sm">痛みが和らぎ始める</p>
+                            </div>
+                            <div class="relative pl-8 mb-8">
+                                <div class="absolute left-0 top-1/2 -translate-y-1/2 w-4 h-4 bg-white border-2 border-accent-teal rounded-full"></div>
+                                <p class="font-semibold">4〜8週間後</p><p class="text-sm">効果が最大に</p>
+                            </div>
+                            <div class="relative pl-8">
+                               <div class="absolute left-0 top-1/2 -translate-y-1/2 w-4 h-4 bg-white border-2 border-accent-teal rounded-full"></div>
+                                <p class="font-semibold">数ヶ月後</p><p class="text-sm">骨の強度が回復</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                 <div class="mt-8 bg-white p-6 rounded-xl shadow-lg">
+                     <h4 class="font-bold text-lg mb-3">外科的治療</h4>
+                     <p>病的骨折や脊髄圧迫など、緊急性の高い「機械的な問題」を解決し、QOLを改善するために行われます。金属で骨を固定する内固定術などが代表的です。</p>
+                </div>
+                 <div class="mt-8 bg-amber-100 border-l-4 border-amber-500 text-amber-800 p-4 rounded-r-lg">
+                    <p class="font-bold">重要な注意</p>
+                    <p>ラジウム-223（ゾーフィゴ）は有効な骨転移治療薬ですが、適応は前立腺癌に限られており、肺癌の骨転移には使用できません。</p>
+                </div>
+            </div>
+
+            <!-- Pillar 3: Pharmacotherapy -->
+            <div id="pillar-pharma" class="mb-16 scroll-mt-20">
+                <h3 class="text-xl font-bold mb-4">③ 薬物療法：痛みと骨を守る</h3>
+                <p class="mb-6">痛みという症状そのものをコントロールし、骨をさらなる破壊から守るための薬物療法も、QOL維持に不可欠です。</p>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h4 class="font-bold text-center mb-6">WHO三段階除痛ラダー</h4>
+                        <div id="who-ladder" class="relative flex flex-col items-center space-y-2">
+                           <div data-step="3" class="w-full p-4 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-accent-teal transition-colors text-center">
+                               <span class="font-bold">第３段階：</span>中等度〜重度の痛み<br><span class="text-sm">(強オピオイド鎮痛薬)</span>
+                           </div>
+                           <div class="text-2xl">▲</div>
+                           <div data-step="2" class="w-full p-4 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-accent-teal transition-colors text-center">
+                               <span class="font-bold">第２段階：</span>軽度〜中等度の痛み<br><span class="text-sm">(弱オピオイド鎮痛薬)</span>
+                           </div>
+                           <div class="text-2xl">▲</div>
+                           <div data-step="1" class="w-full p-4 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-accent-teal transition-colors text-center">
+                               <span class="font-bold">第１段階：</span>軽い痛み<br><span class="text-sm">(非オピオイド鎮痛薬)</span>
+                           </div>
+                        </div>
+                        <div id="ladder-info" class="mt-4 p-4 bg-gray-50 rounded-lg min-h-[80px] flex items-center justify-center">
+                            <p class="text-gray-700">ラダーの各段階をクリックして詳細を確認</p>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h4 class="font-bold text-center mb-6">骨を守るための必須治療</h4>
+                        <div class="p-4 bg-teal-50 rounded-lg mb-4">
+                            <h5 class="font-bold">骨修飾薬 (BMA)</h5>
+                            <p class="text-sm mt-2">骨破壊の「悪循環」を断ち切り、骨折などのリスクを低減させます。デノスマブ（ランマーク）やゾレドロン酸（ゾメタ）が用いられます。</p>
+                        </div>
+                        <div class="p-4 bg-red-100 border-l-4 border-red-500 rounded-r-lg">
+                            <h5 class="font-bold text-red-800">極めて重要な注意点！</h5>
+                            <p class="text-sm mt-2 text-red-700">骨修飾薬の開始前には、必ず歯科を受診し、必要な治療を済ませておくことが不可欠です。また、治療中はカルシウムとビタミンDのサプリメント服用が必須です。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pillar 4: Palliative Care -->
+            <div id="pillar-palliative" class="scroll-mt-20">
+                 <h3 class="text-xl font-bold mb-4">④ 緩和ケア：心と体をチームで支える</h3>
+                 <p class="mb-6">緩和ケアは、終末期のためだけのものではありません。がんと診断された時から、QOLを高めるために積極的な治療と並行して行われる、もう一つの重要な柱です。</p>
+                 <div class="bg-white p-6 rounded-xl shadow-lg">
+                     <h4 class="font-bold text-center mb-6">あなたを支える緩和ケアチーム</h4>
+                     <p class="text-center text-sm text-gray-600 mb-6">様々な専門家がチームを組み、あなたの身体的・精神的・社会的な苦痛を総合的に支えます。アイコンをクリックして役割を見てみましょう。</p>
+                     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 text-center" id="team-grid">
+                         <!-- Team members will be injected by JS -->
+                     </div>
+                     <div id="team-role" class="mt-6 p-4 bg-gray-50 rounded-lg min-h-[80px] flex items-center justify-center">
+                        <p class="text-gray-700">アイコンを選択してください。</p>
+                     </div>
+                 </div>
+            </div>
+
+        </section>
+
+        <!-- Conclusion -->
+        <section class="my-16 text-center">
+             <h2 class="text-2xl font-bold text-center mb-4 text-accent-teal">最後に</h2>
+             <div class="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow-lg">
+                 <p class="text-gray-700">小細胞肺癌の骨転移による痛みの緩和は、多くの専門家が関わるチーム医療によって達成されます。唯一絶対の「最善の治療法」はなく、あなた自身の価値観や生活の目標に合わせた、個別化された治療計画が最も重要です。</p>
+                 <p class="mt-4 text-gray-700 font-semibold">このガイドが、あなたの治療の旅路において、信頼できる情報源となり、医療チームとの前向きな対話のきっかけとなることを心から願っています。</p>
+             </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-gray-800 text-white mt-16">
+        <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 text-center text-sm">
+            <p>このウェブサイトは情報提供を目的としており、医学的アドバイスに代わるものではありません。治療に関する決定は、必ず主治医と相談の上で行ってください。</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            
+            const viciousCycleData = {
+                1: { title: "① がん細胞", text: "骨に定着したがん細胞が、破骨細胞を活性化させる物質（RANKLなど）の産生を促します。" },
+                2: { title: "② 破骨細胞の活性化", text: "破骨細胞が過剰に活性化し、骨を作るペースをはるかに上回る速さで骨を破壊・溶解します。" },
+                3: { title: "③ 骨の溶解", text: "骨が溶かされる過程で、内部に蓄えられていた成長因子が放出されます。" },
+                4: { title: "④ がん細胞の増殖", text: "放出された成長因子が、がん細胞自身の増殖をさらに促し、サイクルが強化されます。" }
+            };
+            const viciousCycleCards = document.querySelectorAll('.vicious-cycle-card');
+            const explanationDiv = document.getElementById('cycle-explanation');
+
+            viciousCycleCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    const id = card.id.split('-')[2];
+                    explanationDiv.innerHTML = `<p class="font-bold mb-2">${viciousCycleData[id].title}</p><p class="text-sm">${viciousCycleData[id].text}</p>`;
+                    
+                    viciousCycleCards.forEach(c => c.classList.remove('active'));
+                    card.classList.add('active');
+                });
+            });
+
+            const radiationCtx = document.getElementById('radiationChart').getContext('2d');
+            new Chart(radiationCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['痛みの軽減を実感した患者の割合'],
+                    datasets: [{
+                        label: '有効率 (%)',
+                        data: [75],
+                        backgroundColor: ['rgba(77, 182, 172, 0.6)'],
+                        borderColor: ['rgba(77, 182, 172, 1)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: { beginAtZero: true, max: 100, ticks: { callback: value => value + "%" } },
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: { label: context => `${context.dataset.label}: ${context.raw}% (文献により60-90%)` }
+                        }
+                    }
+                }
+            });
+
+            const whoLadderSteps = document.querySelectorAll('#who-ladder div[data-step]');
+            const ladderInfoDiv = document.getElementById('ladder-info');
+            const ladderData = {
+                1: "アセトアミノフェンや非ステロイド性抗炎症薬（NSAIDs）など、一般的な鎮痛薬を使用します。",
+                2: "第1段階で効果が不十分な場合、コデインやトラマドールなどの弱オピオイド鎮痛薬を追加・変更します。",
+                3: "強い痛みに対し、モルヒネ、オキシコドン、フェンタニルなどの強オピオイド鎮痛薬を使用します。痛みを予防するため「時間を決めて」服用することが重要です。"
+            };
+
+            whoLadderSteps.forEach(step => {
+                step.addEventListener('click', () => {
+                    const stepNum = step.dataset.step;
+                    ladderInfoDiv.innerHTML = `<p>${ladderData[stepNum]}</p>`;
+                    whoLadderSteps.forEach(s => s.classList.remove('border-accent-teal', 'bg-teal-50'));
+                    step.classList.add('border-accent-teal', 'bg-teal-50');
+                });
+            });
+
+            const teamData = [
+                { name: '緩和ケア医・看護師', icon: '🩺', role: '痛み、吐き気、倦怠感など、複雑な身体症状の管理を専門的に行います。' },
+                { name: '薬剤師', icon: '💊', role: '薬の飲み合わせをチェックし、副作用対策を提案、正しい使い方を指導します。' },
+                { name: 'ソーシャルワーカー', icon: '🤝', role: '医療費や生活、介護保険などの社会資源の活用を支援します。' },
+                { name: '心理士', icon: '🧠', role: '不安、恐怖、抑うつといった心のつらさに対し、カウンセリングを行います。' },
+                { name: '理学療法士', icon: '🚶', role: '安全な体の動かし方や体力の維持、コルセットの調整などを行います。' },
+                { name: '作業療法士', icon: '💪', role: '日常生活の動作を工夫し、患者様の自立した生活を支援します。' },
+                { name: '管理栄養士', icon: '🍎', role: '食欲不振に対し、栄養状態を改善するための食事の工夫などを提案します。' },
+                { name: '主治医', icon: '🧑‍⚕️', role: '治療全体の責任者として、あなたとチームの橋渡しをします。' }
+            ];
+            const teamGrid = document.getElementById('team-grid');
+            const teamRoleDiv = document.getElementById('team-role');
+
+            teamData.forEach(member => {
+                const memberDiv = document.createElement('div');
+                memberDiv.className = 'p-4 bg-gray-100 rounded-lg cursor-pointer hover:bg-teal-100 transition-colors';
+                memberDiv.innerHTML = `<div class="text-4xl">${member.icon}</div><p class="mt-2 text-sm font-semibold">${member.name}</p>`;
+                memberDiv.addEventListener('click', () => {
+                    teamRoleDiv.innerHTML = `<p>${member.role}</p>`;
+                     teamGrid.querySelectorAll('div[class*="bg-gray-100"]').forEach(d => d.classList.replace('bg-teal-100', 'bg-gray-100'));
+                     memberDiv.classList.replace('bg-gray-100', 'bg-teal-100');
+                });
+                teamGrid.appendChild(memberDiv);
+            });
+        });
+    </script>
+</body>
+</html>
