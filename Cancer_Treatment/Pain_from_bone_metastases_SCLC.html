@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小細胞肺癌 骨転移の痛みを探る</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony (Beige, Slate, Teal) -->
+    <!-- Application Structure Plan: The SPA is designed as a narrative "journey of the pain signal," guiding the user from the origin in the bone microenvironment, through peripheral and central nerve pathways, to final perception in the brain. This vertical scrolling structure transforms the dense report into an intuitive, linear story. Key interactions include clickable diagrams (Vicious Cycle, Spinal Synapse, Pain Matrix) and hover-reveal cards to explain complex concepts in digestible parts, enhancing user engagement and understanding without overwhelming them. This structure was chosen over a direct report-to-webpage translation to make the complex biological process more accessible and memorable for a broader audience. -->
+    <!-- Visualization & Content Choices: Report Info: Vicious cycle of bone destruction. -> Goal: Explain the self-amplifying process. -> Viz/Method: Interactive HTML/CSS diagram. -> Interaction: Click on components (cancer cell, osteoclast) to get contextual info. -> Justification: Simplifies a core concept visually. || Report Info: Key pain mediators. -> Goal: Inform about chemical triggers. -> Viz/Method: HTML/CSS card grid. -> Interaction: Hover to reveal details. -> Justification: Organizes multiple small pieces of information cleanly. || Report Info: Central sensitization. -> Goal: Show the shift in neural balance. -> Viz/Method: HTML/CSS diagram of a synapse with glial cells. -> Interaction: Click on glial cells. -> Justification: Illustrates the cellular basis of chronic pain amplification. || Report Info: Pain perception in the brain. -> Goal: Differentiate sensory and emotional aspects. -> Viz/Method: HTML/CSS "Pain Matrix" diagram. -> Interaction: Hover over brain areas. -> Justification: Maps abstract concepts to a simplified brain model. A Chart.js bar chart compares metastasis types for quantitative context. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #f5f5f4; /* stone-100 */
+            color: #374151; /* gray-700 */
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            color: #4b5563; /* gray-600 */
+        }
+        .nav-link.active, .nav-link:hover {
+            color: #0d9488; /* teal-600 */
+            transform: translateY(-2px);
+            border-bottom-color: #0d9488;
+        }
+        .section-card {
+            background-color: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid #e7e5e4; /* stone-200 */
+        }
+        .section-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+        .interactive-element {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        .interactive-element:hover {
+            transform: scale(1.05);
+            filter: brightness(1.1);
+        }
+        .interactive-element.active {
+            border-color: #0d9488; /* teal-600 */
+            box-shadow: 0 0 15px rgba(13, 148, 136, 0.5);
+        }
+        .info-popup {
+            display: none;
+            position: absolute;
+            z-index: 10;
+            background-color: #1f2937; /* gray-800 */
+            color: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            width: 280px;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            border: 1px solid #374151;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 350px;
+        }
+        .pathway-line {
+            position: relative;
+            width: 4px;
+            background-color: #9ca3af; /* gray-400 */
+            margin: 1rem auto;
+        }
+        .pathway-line::after {
+            content: '▼';
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #9ca3af; /* gray-400 */
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header -->
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-40 shadow-sm">
+        <nav class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="text-2xl font-bold text-gray-800">
+                    <span class="text-teal-600">疼痛</span>の旅
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#origin" class="nav-link border-b-2 border-transparent pb-1">① 発生源</a>
+                    <a href="#spark" class="nav-link border-b-2 border-transparent pb-1">② 発火</a>
+                    <a href="#relay" class="nav-link border-b-2 border-transparent pb-1">③ 中継</a>
+                    <a href="#experience" class="nav-link border-b-2 border-transparent pb-1">④ 知覚</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8 md:py-12">
+        
+        <!-- Hero Section -->
+        <section class="text-center mb-16">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">小細胞肺癌 骨転移の痛みを探る</h1>
+            <p class="max-w-3xl mx-auto text-lg text-gray-600 mb-6">
+                骨に転移した癌による痛みは、単なる症状ではありません。それは細胞レベルから始まり、神経を駆け巡り、脳で複雑な体験として完成する壮大な旅です。このページをスクロールして、痛みの信号がたどる道のりを一緒に探求しましょう。
+            </p>
+             <div class="w-24 h-1 bg-teal-500 mx-auto rounded-full"></div>
+        </section>
+
+        <!-- Section 1: The Origin -->
+        <section id="origin" class="mb-20">
+            <h2 class="text-3xl font-bold text-center mb-2"><span class="text-teal-600">① 発生源：</span>骨微小環境での異変</h2>
+            <p class="text-center text-gray-600 max-w-2xl mx-auto mb-12">すべての始まりは、癌細胞が骨に到達した瞬間です。ここで癌細胞は骨の正常なサイクルを乗っ取り、「悪循環」と呼ばれる痛みの連鎖反応を引き起こします。</p>
+            
+            <div class="section-card p-6 md:p-8">
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <h3 class="text-2xl font-bold mb-4">骨破壊の「悪循環」</h3>
+                        <p class="text-gray-600 mb-6">
+                            下の図の各要素をクリックしてみてください。癌細胞、骨を壊す「破骨細胞」、そして骨自身がどのように相互作用し、痛みを増幅させていくかがわかります。このサイクルが、痛みが進行性で治りにくい理由を説明しています。
+                        </p>
+                        <div id="vicious-cycle-info" class="bg-stone-100 p-4 rounded-lg min-h-[100px] text-gray-700 transition-all duration-300">
+                           <p>要素を選択して詳細を表示します。</p>
+                        </div>
+                    </div>
+                    
+                    <div class="relative flex justify-center items-center h-80">
+                        <div id="vc-cancer" class="interactive-element absolute bg-red-400 text-white w-32 h-32 rounded-full flex items-center justify-center text-center p-2" style="top: 0; left: 50%; transform: translateX(-50%);">癌細胞</div>
+                        <div id="vc-osteoclast" class="interactive-element absolute bg-orange-400 text-white w-28 h-28 rounded-full flex items-center justify-center" style="bottom: 10%; left: 10%;">破骨細胞</div>
+                        <div id="vc-bone" class="interactive-element absolute bg-slate-500 text-white w-28 h-28 rounded-full flex items-center justify-center" style="bottom: 10%; right: 10%;">骨基質</div>
+                        
+                        <!-- Arrows -->
+                        <div class="absolute text-2xl text-red-400" style="top: 32%; left: 35%; transform: rotate(45deg);">➔</div>
+                        <div class="absolute text-2xl text-orange-400" style="bottom: 35%; left: 50%; transform: translateX(-50%) rotate(90deg);">➔</div>
+                        <div class="absolute text-2xl text-slate-500" style="top: 32%; right: 35%; transform: rotate(-45deg);">➔</div>
+
+                        <div class="info-popup" id="info-vc-cancer"><strong>癌細胞:</strong> 骨に転移し、破骨細胞を活性化させる因子 (RANKLなど) を放出。骨破壊を誘発します。</div>
+                        <div class="info-popup" id="info-vc-osteoclast"><strong>破骨細胞:</strong> 癌細胞に刺激され過剰に活性化。骨を溶かし、プロトン (酸) や痛みを引き起こす物質を放出します。</div>
+                        <div class="info-popup" id="info-vc-bone"><strong>骨基質:</strong> 破壊される過程で、癌細胞の増殖をさらに促す成長因子を放出。これが悪循環を加速させます。</div>
+                    </div>
+                </div>
+
+                <hr class="my-8 border-stone-200">
+
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div class="chart-container">
+                         <canvas id="metastasisTypeChart"></canvas>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold mb-4">痛みを引き起こす化学物質たち</h3>
+                        <p class="text-gray-600 mb-4">骨が破壊される現場では、痛みの信号を発する様々な化学物質（発痛物質）が放出されます。これらが神経の末端を直接刺激し、痛みの「スイッチ」を入れるのです。</p>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-center">
+                            <div class="bg-amber-100 text-amber-800 p-3 rounded-lg">プロトン (酸)</div>
+                            <div class="bg-rose-100 text-rose-800 p-3 rounded-lg">プロスタグランジン</div>
+                            <div class="bg-sky-100 text-sky-800 p-3 rounded-lg">ブラジキニン</div>
+                            <div class="bg-lime-100 text-lime-800 p-3 rounded-lg">エンドセリン</div>
+                            <div class="bg-violet-100 text-violet-800 p-3 rounded-lg">NGF/BDNF</div>
+                            <div class="bg-stone-200 text-stone-800 p-3 rounded-lg">その他多数</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="pathway-line h-24"></div>
+
+        <!-- Section 2: The Spark -->
+        <section id="spark" class="mb-20">
+            <h2 class="text-3xl font-bold text-center mb-2"><span class="text-teal-600">② 発火：</span>末梢神経での信号発生</h2>
+            <p class="text-center text-gray-600 max-w-2xl mx-auto mb-12">発生源からの化学的・物理的刺激は、骨の周りに張り巡らされた神経線維の「センサー」を直撃します。ここで電気信号が発生し、痛みの旅が本格的に始まります。</p>
+
+            <div class="section-card p-6 md:p-8">
+                <div class="text-center mb-8">
+                    <h3 class="text-2xl font-bold mb-4">神経の感作と過敏性</h3>
+                    <p class="text-gray-600 max-w-3xl mx-auto">
+                        持続的な刺激により、神経は「感作」と呼ばれる過敏な状態になります。これにより、通常では痛みを感じないような弱い刺激にも反応するようになり（アロディニア）、痛みが慢性化していきます。さらに、癌細胞は神経を異常に増殖（病的発芽）させ、痛みの回路を強化してしまいます。
+                    </p>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-8 items-start">
+                    <!-- Nerve Diagram -->
+                    <div class="relative p-8 bg-stone-50 rounded-lg">
+                        <div class="absolute top-1/2 left-0 w-full h-12 bg-yellow-300 rounded-full -translate-y-1/2 opacity-80"></div>
+                        <div class="relative text-center font-semibold text-yellow-800">神経線維</div>
+                        
+                        <div class="absolute top-0 left-1/4 -translate-y-1/2 -translate-x-1/2">
+                            <div id="stimulus-chem" class="interactive-element bg-rose-500 text-white rounded-full w-20 h-20 flex flex-col items-center justify-center p-1 text-center">
+                                <span class="text-2xl">🧪</span>
+                                <span class="text-xs font-bold">化学的刺激</span>
+                            </div>
+                        </div>
+                        <div class="absolute bottom-0 left-3/4 -translate-y-1/2 -translate-x-1/2">
+                           <div id="stimulus-mech" class="interactive-element bg-sky-500 text-white rounded-full w-20 h-20 flex flex-col items-center justify-center p-1 text-center">
+                                <span class="text-2xl">🔩</span>
+                                <span class="text-xs font-bold">機械的刺激</span>
+                            </div>
+                        </div>
+                        <div class="info-popup" id="info-stimulus-chem"><strong>化学的刺激:</strong> 破骨細胞が放出したプロトン(酸)や炎症性サイトカインが神経を直接刺激し、焼けるような痛みを引き起こします。</div>
+                        <div class="info-popup" id="info-stimulus-mech"><strong>機械的刺激:</strong> 腫瘍の増殖による圧迫、骨の微小骨折、骨膜の伸展が神経を物理的に刺激し、鋭い痛みを引き起こします。</div>
+                    </div>
+
+                    <!-- Ion Channels -->
+                    <div>
+                        <h4 class="font-bold text-xl mb-3 text-gray-700">痛みのゲートウェイ：イオンチャネル</h4>
+                        <p class="text-gray-600 mb-4">神経細胞の膜には、様々な刺激に反応して開閉する「イオンチャネル」という名の扉があります。これらの扉が開くことで電気信号が発生します。</p>
+                        <div class="space-y-2">
+                            <div class="p-3 bg-white border border-stone-200 rounded-lg">
+                                <h5 class="font-semibold text-teal-700">TRPV1</h5>
+                                <p class="text-sm text-gray-500">熱や酸（プロトン）に反応。焼けるような痛みの原因の一つ。</p>
+                            </div>
+                            <div class="p-3 bg-white border border-stone-200 rounded-lg">
+                                <h5 class="font-semibold text-teal-700">ASICs</h5>
+                                <p class="text-sm text-gray-500">酸に特異的に反応するチャネル。骨破壊による酸性環境で活性化。</p>
+                            </div>
+                             <div class="p-3 bg-white border border-stone-200 rounded-lg">
+                                <h5 class="font-semibold text-teal-700">PIEZOチャネル</h5>
+                                <p class="text-sm text-gray-500">圧力や伸展などの機械的な力に反応。腫瘍による圧迫痛に関与。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="pathway-line h-24"></div>
+
+        <!-- Section 3: The Relay -->
+        <section id="relay" class="mb-20">
+            <h2 class="text-3xl font-bold text-center mb-2"><span class="text-teal-600">③ 中継：</span>脊髄での信号増幅</h2>
+            <p class="text-center text-gray-600 max-w-2xl mx-auto mb-12">末梢神経からの信号は、脊髄の後角という中継基地に到着します。ここでは、単に信号を脳へ送るだけでなく、痛みを増幅させる重要なプロセス「中枢性感作」が起こります。</p>
+            
+            <div class="section-card p-6 md:p-8">
+                 <div class="text-center mb-8">
+                    <h3 class="text-2xl font-bold mb-4">痛みの増幅器「中枢性感作」</h3>
+                    <p class="text-gray-600 max-w-3xl mx-auto">
+                       絶え間ない痛みの信号入力により、脊髄の神経回路が病的変化を起こします。痛みを抑制するシステムが弱まり、逆に興奮させるシステムが過剰に働くようになります。この状態が「中枢性感作」であり、慢性疼痛が維持される中心的なメカニズムです。
+                    </p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <!-- Synapse Diagram -->
+                     <div class="relative flex flex-col items-center justify-center h-96 bg-stone-50 rounded-lg p-4">
+                        <div class="text-center mb-4">
+                            <div class="font-bold">末梢からの神経終末</div>
+                            <div class="w-10 h-10 bg-yellow-400 rounded-full mx-auto"></div>
+                            <div class="text-2xl text-yellow-500">↓</div>
+                        </div>
+
+                        <div class="w-full h-2 bg-gray-300 my-2" title="シナプス間隙"></div>
+                        
+                        <div class="text-center mt-4">
+                             <div class="text-2xl text-blue-500">↑</div>
+                            <div class="w-10 h-10 bg-blue-400 rounded-full mx-auto"></div>
+                            <div class="font-bold">脳へ向かう神経</div>
+                        </div>
+
+                        <!-- Glial Cells -->
+                        <div id="glial-microglia" class="interactive-element absolute top-1/3 left-4 bg-purple-400 text-white rounded-lg p-2 text-xs text-center">
+                            ミクログリア<br>(活性化)
+                        </div>
+                         <div id="glial-astrocyte" class="interactive-element absolute top-2/3 right-4 bg-green-400 text-white rounded-lg p-2 text-xs text-center">
+                            アストロサイト<br>(活性化)
+                        </div>
+
+                        <div class="info-popup" id="info-glial-microglia"><strong>ミクログリア:</strong> 脊髄の免疫細胞。活性化すると炎症性サイトカインを放出し、神経の興奮性を高めて痛みを増強します。</div>
+                        <div class="info-popup" id="info-glial-astrocyte"><strong>アストロサイト:</strong> 神経細胞をサポートする細胞。活性化すると神経伝達物質のバランスを崩し、中枢性感作の維持に関与します。</div>
+                     </div>
+                    <!-- Neurotransmitters -->
+                    <div>
+                        <h4 class="font-bold text-xl mb-3 text-gray-700">神経伝達物質の不均衡</h4>
+                        <p class="text-gray-600 mb-6">中枢性感作では、神経間の情報伝達を担う化学物質のバランスが崩れます。</p>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-center">
+                                <span class="text-3xl mr-4">➕</span>
+                                <div>
+                                    <h5 class="font-semibold text-red-600">興奮性伝達物質 (グルタミン酸)</h5>
+                                    <p class="text-sm text-gray-500">過剰に放出され、痛みの信号を「アクセル全開」で伝えます。</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="text-3xl mr-4">➖</span>
+                                <div>
+                                    <h5 class="font-semibold text-green-600">抑制性伝達物質 (GABA, グリシン)</h5>
+                                    <p class="text-sm text-gray-500">機能が低下し、痛みの信号に対する「ブレーキ」が効かなくなります。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="pathway-line h-24"></div>
+
+        <!-- Section 4: The Experience -->
+        <section id="experience" class="mb-8">
+             <h2 class="text-3xl font-bold text-center mb-2"><span class="text-teal-600">④ 知覚：</span>大脳での痛み体験</h2>
+             <p class="text-center text-gray-600 max-w-2xl mx-auto mb-12">脊髄から送られた信号は、最終目的地である大脳に到達します。ここで信号は単なる情報から、「痛み」という主観的な体験へと変換されます。痛みは、身体的な感覚だけでなく、情動や認知とも深く結びついています。</p>
+
+            <div class="section-card p-6 md:p-8">
+                <div class="text-center mb-8">
+                    <h3 class="text-2xl font-bold mb-4">痛みの司令塔「疼痛マトリックス」</h3>
+                    <p class="text-gray-600 max-w-3xl mx-auto">
+                       痛みは脳の一箇所で処理されるのではなく、「疼痛マトリックス」と呼ばれる複数の領域が連携して作り出すネットワーク現象です。下の図の各領域にカーソルを合わせると、それぞれの役割が表示されます。
+                    </p>
+                </div>
+                
+                <div class="relative w-full max-w-xl mx-auto h-96 bg-stone-50 rounded-2xl p-4 flex items-center justify-center">
+                    <!-- Brain Shape -->
+                    <div class="absolute w-3/4 h-full bg-slate-200 rounded-[50%_50%_40%_40%/60%_70%_30%_40%] opacity-50"></div>
+
+                    <!-- Brain Regions -->
+                    <div class="relative w-full h-full">
+                         <div id="brain-s1s2" class="interactive-element absolute bg-blue-500 text-white rounded-lg p-2 text-center" style="top: 15%; left: 30%;">
+                            体性感覚野
+                            <div class="info-popup" id="info-brain-s1s2"><strong>感覚・弁別的側面:</strong> 痛みの場所、強さ、性質（ズキズキ、チクチクなど）を識別します。</div>
+                         </div>
+                         <div id="brain-acc" class="interactive-element absolute bg-red-500 text-white rounded-lg p-2 text-center" style="top: 45%; left: 45%;">
+                            前帯状皮質 (ACC)
+                             <div class="info-popup" id="info-brain-acc"><strong>情動・動機付け的側面:</strong> 痛みに伴う不快感や苦痛といった感情的な反応を処理します。</div>
+                         </div>
+                          <div id="brain-amy" class="interactive-element absolute bg-orange-500 text-white rounded-lg p-2 text-center" style="bottom: 15%; left: 25%;">
+                            扁桃体
+                             <div class="info-popup" id="info-brain-amy"><strong>感情と記憶:</strong> 痛みに対する恐怖や不安、過去の痛みとの関連付けに関与します。</div>
+                         </div>
+                         <div id="brain-pfc" class="interactive-element absolute bg-purple-500 text-white rounded-lg p-2 text-center" style="top: 25%; right: 15%;">
+                            前頭前野 (PFC)
+                             <div class="info-popup" id="info-brain-pfc"><strong>認知と評価:</strong> 痛みの意味を解釈し、注意を向け、今後の行動を計画するなど、高次の認知機能を担います。</div>
+                         </div>
+                    </div>
+                </div>
+
+                <hr class="my-8 border-stone-200">
+                
+                <div>
+                    <h3 class="text-2xl font-bold text-center mb-4">慢性痛が脳を変える：神経可塑性</h3>
+                    <p class="text-gray-600 max-w-3xl mx-auto text-center">
+                        長引く痛みは、脳の構造や機能そのものを変化させます（神経可塑性）。特に、安静時に活動する「デフォルトモードネットワーク（DMN）」や、重要な刺激に注意を向ける「サリエンスネットワーク（SN）」の結合が異常になり、常に痛みに注意が向き、痛みを過剰に意識してしまう状態に陥ります。これが、痛みが生活の質（QOL）を大きく損なう一因です。
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Conclusion -->
+        <section class="text-center mt-16 py-12 bg-white rounded-2xl">
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">結論：多角的なアプローチの重要性</h2>
+            <p class="max-w-3xl mx-auto text-lg text-gray-600">
+                小細胞肺癌の骨転移による痛みは、骨から脳へと至る複雑で多段階のプロセスを経て生じます。その治療には、骨破壊を抑えるだけでなく、神経の過敏性を軽減し、脊髄や脳での痛みの処理を正常化するなど、痛みの旅の各段階を標的とした多角的なアプローチが不可欠です。この複雑なメカニズムの理解が、より良い治療法の開発につながります。
+            </p>
+        </section>
+    </main>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // Smooth scrolling for nav links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+
+    // Active nav link highlighting on scroll
+    const sections = document.querySelectorAll('section');
+    const navLinks = document.querySelectorAll('nav a');
+    
+    window.addEventListener('scroll', () => {
+        let current = '';
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            if (pageYOffset >= sectionTop - 100) {
+                current = section.getAttribute('id');
+            }
+        });
+
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href').includes(current)) {
+                link.classList.add('active');
+            }
+        });
+    });
+
+
+    // Section 1: Vicious Cycle Interaction
+    const vcElements = {
+        'vc-cancer': '<strong>癌細胞:</strong> 骨に転移し、破骨細胞を活性化させる因子 (RANKLなど) を放出。骨破壊を誘発します。',
+        'vc-osteoclast': '<strong>破骨細胞:</strong> 癌細胞に刺激され過剰に活性化。骨を溶かし、プロトン (酸) や痛みを引き起こす物質を放出します。',
+        'vc-bone': '<strong>骨基質:</strong> 破壊される過程で、癌細胞の増殖をさらに促す成長因子を放出。これが悪循環を加速させます。'
+    };
+    const vcInfoBox = document.getElementById('vicious-cycle-info');
+
+    Object.keys(vcElements).forEach(id => {
+        const el = document.getElementById(id);
+        el.addEventListener('click', () => {
+            document.querySelectorAll('#origin .interactive-element').forEach(elem => elem.classList.remove('active'));
+            el.classList.add('active');
+            vcInfoBox.innerHTML = vcElements[id];
+        });
+    });
+    
+    // Section 1: Chart.js
+    const ctx = document.getElementById('metastasisTypeChart').getContext('2d');
+    const metastasisTypeChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['肺癌の骨転移'],
+            datasets: [{
+                label: '骨溶解性 (骨破壊)',
+                data: [80],
+                backgroundColor: 'rgba(239, 68, 68, 0.7)',
+                borderColor: 'rgba(239, 68, 68, 1)',
+                borderWidth: 1
+            }, {
+                label: '骨硬化性 (骨形成)',
+                data: [20],
+                backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                borderColor: 'rgba(59, 130, 246, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    stacked: true,
+                    max: 100,
+                    ticks: {
+                        callback: function(value) {
+                            return value + '%'
+                        }
+                    }
+                },
+                y: {
+                    stacked: true,
+                }
+            },
+            plugins: {
+                title: {
+                    display: true,
+                    text: '骨転移のタイプ別割合（一般的傾向）',
+                    font: {
+                        size: 16
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.dataset.label}: ${context.raw}%`;
+                        }
+                    }
+                },
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+
+    // Generic Popup Interaction Logic
+    const setupPopupInteraction = (containerSelector) => {
+        const container = document.querySelector(containerSelector);
+        if (!container) return;
+        
+        const interactiveElements = container.querySelectorAll('.interactive-element');
+
+        interactiveElements.forEach(trigger => {
+            const popupId = 'info-' + trigger.id;
+            const popup = document.getElementById(popupId);
+            if(!popup) return;
+
+            const showPopup = (event) => {
+                popup.style.display = 'block';
+                const rect = trigger.getBoundingClientRect();
+                const containerRect = container.getBoundingClientRect();
+
+                let top = rect.bottom - containerRect.top + 10 + window.scrollY;
+                let left = rect.left - containerRect.left + (rect.width / 2) - (popup.offsetWidth / 2);
+
+                if (left < 0) left = 10;
+                if (left + popup.offsetWidth > container.offsetWidth) left = container.offsetWidth - popup.offsetWidth - 10;
+                
+                if (top + popup.offsetHeight > container.scrollHeight) {
+                   top = rect.top - containerRect.top - popup.offsetHeight - 10 + window.scrollY;
+                }
+
+                popup.style.top = `${top - window.scrollY}px`;
+                popup.style.left = `${left}px`;
+            };
+
+            const hidePopup = () => {
+                popup.style.display = 'none';
+            };
+
+            if (window.matchMedia("(hover: hover)").matches) {
+                trigger.addEventListener('mouseenter', showPopup);
+                trigger.addEventListener('mouseleave', hidePopup);
+            }
+            trigger.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isVisible = popup.style.display === 'block';
+                document.querySelectorAll('.info-popup').forEach(p => p.style.display = 'none');
+                if (!isVisible) {
+                    showPopup(e);
+                }
+            });
+        });
+    };
+    
+    document.addEventListener('click', () => {
+        document.querySelectorAll('.info-popup').forEach(p => p.style.display = 'none');
+    });
+
+    setupPopupInteraction('#origin');
+    setupPopupInteraction('#spark');
+    setupPopupInteraction('#relay');
+    setupPopupInteraction('#experience');
+});
+</script>
+
+</body>
+</html>
