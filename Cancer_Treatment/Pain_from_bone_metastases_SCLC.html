@@ -321,7 +321,7 @@
                     </p>
                 </div>
                 
-                <div class="relative w-full max-w-xl mx-auto h-96 bg-stone-50 rounded-2xl p-4 flex items-center justify-center">
+                <div id="brain-diagram-area" class="relative w-full max-w-xl mx-auto h-96 bg-stone-50 rounded-2xl p-4 flex items-center justify-center">
                     <!-- Brain Shape -->
                     <div class="absolute w-3/4 h-full bg-slate-200 rounded-[50%_50%_40%_40%/60%_70%_30%_40%] opacity-50"></div>
 
@@ -329,21 +329,22 @@
                     <div class="relative w-full h-full">
                          <div id="brain-s1s2" class="interactive-element absolute bg-blue-500 text-white rounded-lg p-2 text-center" style="top: 15%; left: 30%;">
                             体性感覚野
-                            <div class="info-popup" id="info-brain-s1s2"><strong>感覚・弁別的側面:</strong> 痛みの場所、強さ、性質（ズキズキ、チクチクなど）を識別します。</div>
                          </div>
                          <div id="brain-acc" class="interactive-element absolute bg-red-500 text-white rounded-lg p-2 text-center" style="top: 45%; left: 45%;">
                             前帯状皮質 (ACC)
-                             <div class="info-popup" id="info-brain-acc"><strong>情動・動機付け的側面:</strong> 痛みに伴う不快感や苦痛といった感情的な反応を処理します。</div>
                          </div>
                           <div id="brain-amy" class="interactive-element absolute bg-orange-500 text-white rounded-lg p-2 text-center" style="bottom: 15%; left: 25%;">
                             扁桃体
-                             <div class="info-popup" id="info-brain-amy"><strong>感情と記憶:</strong> 痛みに対する恐怖や不安、過去の痛みとの関連付けに関与します。</div>
                          </div>
                          <div id="brain-pfc" class="interactive-element absolute bg-purple-500 text-white rounded-lg p-2 text-center" style="top: 25%; right: 15%;">
                             前頭前野 (PFC)
-                             <div class="info-popup" id="info-brain-pfc"><strong>認知と評価:</strong> 痛みの意味を解釈し、注意を向け、今後の行動を計画するなど、高次の認知機能を担います。</div>
                          </div>
                     </div>
+                    <!-- Info Popups (moved outside interactive elements) -->
+                    <div class="info-popup" id="info-brain-s1s2"><strong>感覚・弁別的側面:</strong> 痛みの場所、強さ、性質（ズキズキ、チクチクなど）を識別します。</div>
+                    <div class="info-popup" id="info-brain-acc"><strong>情動・動機付け的側面:</strong> 痛みに伴う不快感や苦痛といった感情的な反応を処理します。</div>
+                    <div class="info-popup" id="info-brain-amy"><strong>感情と記憶:</strong> 痛みに対する恐怖や不安、過去の痛みとの関連付けに関与します。</div>
+                    <div class="info-popup" id="info-brain-pfc"><strong>認知と評価:</strong> 痛みの意味を解釈し、注意を向け、今後の行動を計画するなど、高次の認知機能を担います。</div>
                 </div>
 
                 <hr class="my-8 border-stone-200">
@@ -535,7 +536,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setupPopupInteraction('#origin');
     setupPopupInteraction('#spark');
     setupPopupInteraction('#relay');
-    setupPopupInteraction('#experience');
+    setupPopupInteraction('#brain-diagram-area'); /* Modified to target the specific brain diagram container */
 });
 </script>
 
