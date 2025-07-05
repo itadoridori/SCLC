@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ナルサス・ナルラピド インタラクティブ服用ガイド</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony (Warm neutrals with soft blue and teal accents) -->
+    <!-- Application Structure Plan: A task-oriented, tab-based Single Page Application. The structure prioritizes immediate user needs (e.g., 'How to use my medicine?', 'What is this side effect?') over the linear, chapter-based format of the source report. This non-linear design allows patients to quickly find actionable information relevant to their current situation, reducing cognitive load and anxiety. Key sections include a visual Home overview, detailed 'How to Use' guides for each drug, an interactive 'Side Effect Management' tool, a critical 'Safety' alert section, and a reassuring 'Fears & Misconceptions' Q&A. -->
+    <!-- Visualization & Content Choices: 
+    - Report Info: Core treatment strategy (Narsus for persistent pain, Narurapid for breakthrough pain) -> Goal: Inform instantly -> Viz: HTML/CSS diagram with icons (clock/lightning bolt) -> Interaction: Clicks navigate to detail sections -> Justification: Provides a simple mental model for the user immediately upon opening the app. Library: HTML/CSS.
+    - Report Info: Side effect management -> Goal: Compare/Inform -> Viz: Interactive buttons for each symptom revealing management cards -> Interaction: Click-to-reveal details -> Justification: Converts a long text section into an on-demand, less overwhelming tool. Library: Vanilla JS.
+    - Report Info: Nausea/Drowsiness timeline -> Goal: Show change over time -> Viz: Bar Chart -> Interaction: Static display -> Justification: Visually reinforces the reassuring message that these side effects often subside, reducing patient anxiety. Library: Chart.js (Canvas).
+    - Report Info: Fears about addiction/end-of-life -> Goal: Organize/Inform -> Viz: Accordion Q&A -> Interaction: Click-to-expand -> Justification: Breaks down sensitive topics into manageable questions, making the information more approachable. Library: Vanilla JS.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #FDFBF8;
+        }
+        .nav-button {
+            transition: all 0.3s ease;
+        }
+        .nav-button.active {
+            background-color: #0d9488;
+            color: white;
+            font-weight: 700;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <div class="container mx-auto max-w-5xl p-4 sm:p-6 lg:p-8">
+        
+        <header class="text-center mb-8">
+            <h1 class="text-3xl sm:text-4xl font-bold text-teal-800 mb-2">ナルサス®・ナルラピド® 服用ガイド</h1>
+            <p class="text-slate-600">小細胞肺癌の骨転移による痛みを、一緒に管理していきましょう。</p>
+        </header>
+
+        <nav class="flex flex-wrap justify-center gap-2 sm:gap-3 mb-8">
+            <button data-target="home" class="nav-button active py-2 px-4 bg-teal-50 hover:bg-teal-100 text-teal-800 rounded-full text-sm sm:text-base">ホーム</button>
+            <button data-target="how-to-use" class="nav-button py-2 px-4 bg-teal-50 hover:bg-teal-100 text-teal-800 rounded-full text-sm sm:text-base">お薬の使い方</button>
+            <button data-target="side-effects" class="nav-button py-2 px-4 bg-teal-50 hover:bg-teal-100 text-teal-800 rounded-full text-sm sm:text-base">副作用の管理</button>
+            <button data-target="safety" class="nav-button py-2 px-4 bg-teal-50 hover:bg-teal-100 text-teal-800 rounded-full text-sm sm:text-base">安全のために</button>
+            <button data-target="faq" class="nav-button py-2 px-4 bg-teal-50 hover:bg-teal-100 text-teal-800 rounded-full text-sm sm:text-base">不安と誤解</button>
+            <button data-target="support" class="nav-button py-2 px-4 bg-teal-50 hover:bg-teal-100 text-teal-800 rounded-full text-sm sm:text-base">サポート</button>
+        </nav>
+
+        <main>
+            <!-- ホーム -->
+            <section id="home" class="content-section active">
+                 <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+                    <h2 class="text-2xl font-bold text-teal-700 mb-4">痛みをコントロールする2つの柱</h2>
+                    <p class="text-slate-600 mb-6">がんの痛みには、一日中続く「持続痛」と、急に強くなる「突出痛」の2種類があります。処方された2つのお薬は、それぞれの痛みに対応し、一日を通して快適な生活を送るための「二段構え」の治療戦略です。</p>
+                    <div class="grid md:grid-cols-2 gap-6 text-center">
+                        <div class="bg-blue-50 p-6 rounded-lg border border-blue-200">
+                            <div class="text-5xl mb-3">🕒</div>
+                            <h3 class="text-xl font-bold text-blue-800">持続痛（ベースの痛み）</h3>
+                            <p class="text-blue-700 mt-2">一日中続く、背景にある痛みを抑えます。</p>
+                            <div class="mt-4 font-bold text-2xl text-blue-900">ナルサス®錠</div>
+                            <p class="text-sm text-blue-700">(ゆっくり効く徐放性製剤)</p>
+                        </div>
+                        <div class="bg-orange-50 p-6 rounded-lg border border-orange-200">
+                            <div class="text-5xl mb-3">⚡️</div>
+                            <h3 class="text-xl font-bold text-orange-800">突出痛（急な痛み）</h3>
+                            <p class="text-orange-700 mt-2">突発的に起こる、強い痛みをすばやく和らげます。</p>
+                            <div class="mt-4 font-bold text-2xl text-orange-900">ナルラピド®錠</div>
+                            <p class="text-sm text-orange-700">(速く効く速放性製剤)</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- お薬の使い方 -->
+            <section id="how-to-use" class="content-section">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-2xl font-bold text-teal-700 mb-4">お薬の正しい使い方</h2>
+                    <p class="text-slate-600 mb-6">それぞれのお薬の役割を理解し、正しく使うことが治療の第一歩です。ここでは、ナルサス錠とナルラピド錠の具体的な使い方を解説します。</p>
+                    
+                    <div class="space-y-6">
+                        <!-- ナルサス -->
+                        <div class="bg-blue-50 p-6 rounded-lg border border-blue-200">
+                            <h3 class="text-xl font-bold text-blue-800 mb-3">🕒 ナルサス®錠：毎日の痛みを抑える基礎薬</h3>
+                            <div class="space-y-4 text-blue-900">
+                                <div class="p-4 bg-white rounded-md">
+                                    <p class="font-semibold">いつ飲む？</p>
+                                    <p>1日1回、毎日決まった時間に服用します。時間を守ることが安定した効果につながります。</p>
+                                </div>
+                                <div class="p-4 bg-red-100 border-l-4 border-red-500 rounded-md">
+                                    <p class="font-bold text-red-700">【最重要】絶対に割ったり、砕いたり、噛まないで！</p>
+                                    <p class="text-red-600">錠剤を壊すと、薬の全量が一度に放出され、命に関わる危険な副作用（呼吸抑制）を引き起こす可能性があります。必ず錠剤のまま飲んでください。</p>
+                                </div>
+                                <div class="p-4 bg-white rounded-md">
+                                    <p class="font-semibold">飲み忘れたら？</p>
+                                    <p>気づいた時点ですぐに1回分を飲んでください。ただし、次の服用時間が近い場合は、忘れた分は飲まず、次の時間に1回分だけを服用します。絶対に2回分を一度に飲まないでください。</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ナルラピド -->
+                        <div class="bg-orange-50 p-6 rounded-lg border border-orange-200">
+                            <h3 class="text-xl font-bold text-orange-800 mb-3">⚡️ ナルラピド®錠：急な痛みの救助薬（レスキュー）</h3>
+                             <div class="space-y-4 text-orange-900">
+                                <div class="p-4 bg-white rounded-md">
+                                    <p class="font-semibold">いつ飲む？（レスキュー投与）</p>
+                                    <p>突出痛を感じたら、我慢せずにすぐに1回分を服用します。</p>
+                                </div>
+                                 <div class="p-4 bg-white rounded-md">
+                                    <p class="font-semibold">痛くなる前に飲む（予防投与）</p>
+                                    <p>着替えや入浴など、痛みの原因となる動作の30分～60分前にあらかじめ服用することで、痛みを予防できます。活動の幅を広げるための積極的な使い方です。</p>
+                                </div>
+                                <div class="p-4 bg-white rounded-md">
+                                    <p class="font-semibold">服用間隔と回数の記録</p>
+                                    <p>1回で痛みが収まらない場合、医師の指示があれば1時間以上あけて追加できます。レスキューの使用回数を記録し医師に伝えることは、ベース薬（ナルサス錠）の量を調整するための重要な情報になります。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- 副作用の管理 -->
+            <section id="side-effects" class="content-section">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-2xl font-bold text-teal-700 mb-4">副作用の上手な管理方法</h2>
+                    <p class="text-slate-600 mb-6">副作用は予測でき、多くは対処可能です。恐れずに、上手に付き合っていく方法を知りましょう。気になる症状をクリックしてください。</p>
+                    <div id="side-effect-buttons" class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+                        <button class="side-effect-btn p-4 bg-amber-100 hover:bg-amber-200 rounded-lg text-amber-800 font-semibold transition" data-side-effect="constipation">便秘</button>
+                        <button class="side-effect-btn p-4 bg-lime-100 hover:bg-lime-200 rounded-lg text-lime-800 font-semibold transition" data-side-effect="nausea">吐き気・嘔吐</button>
+                        <button class="side-effect-btn p-4 bg-sky-100 hover:bg-sky-200 rounded-lg text-sky-800 font-semibold transition" data-side-effect="drowsiness">眠気・めまい</button>
+                    </div>
+
+                    <div id="side-effect-details" class="space-y-4">
+                        <div id="constipation" class="side-effect-content hidden p-4 bg-amber-50 rounded-lg border border-amber-200">
+                            <h3 class="font-bold text-amber-900 mb-2">便秘の対処法</h3>
+                            <p class="text-sm text-amber-800 mb-4">最も多く、薬を飲んでいる間は対策が必要です。</p>
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div class="bg-white p-3 rounded">
+                                    <h4 class="font-semibold">医療的管理</h4>
+                                    <p>治療開始と同時に処方される緩下剤（下剤）を、指示通りにきちんと服用しましょう。</p>
+                                </div>
+                                <div class="bg-white p-3 rounded">
+                                    <h4 class="font-semibold">セルフケア</h4>
+                                    <p>水分を多めに摂る、無理のない範囲で体を動かす、お腹のマッサージなどが有効です。</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="nausea" class="side-effect-content hidden p-4 bg-lime-50 rounded-lg border border-lime-200">
+                            <h3 class="font-bold text-lime-900 mb-2">吐き気・嘔吐の対処法</h3>
+                            <p class="text-sm text-lime-800 mb-4">飲み始めや増量時に多く、1週間ほどで慣れることがほとんどです。</p>
+                             <div class="grid md:grid-cols-2 gap-4">
+                                <div class="bg-white p-3 rounded">
+                                    <h4 class="font-semibold">医療的管理</h4>
+                                    <p>処方された吐き気止めを服用します。最初は定期的に、慣れてきたら症状がある時だけでもかまいません。</p>
+                                </div>
+                                <div class="bg-white p-3 rounded">
+                                    <h4 class="font-semibold">セルフケア</h4>
+                                    <p>消化の良いものを少量ずつ食べる、強い匂いを避けるなどの工夫をしましょう。</p>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <h4 class="font-semibold text-center text-lime-900 mb-2">副作用の一般的な経過（吐き気・眠気）</h4>
+                                <div class="chart-container">
+                                    <canvas id="sideEffectChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="drowsiness" class="side-effect-content hidden p-4 bg-sky-50 rounded-lg border border-sky-200">
+                            <h3 class="font-bold text-sky-900 mb-2">眠気・めまいの対処法</h3>
+                            <p class="text-sm text-sky-800 mb-4">これも飲み始めによく見られますが、数日で慣れていきます。</p>
+                             <div class="grid md:grid-cols-2 gap-4">
+                                <div class="bg-white p-3 rounded">
+                                    <h4 class="font-semibold">安全確保</h4>
+                                    <p class="font-bold text-red-600">眠気がある間は、自動車の運転や危険な機械の操作は絶対に避けてください。</p>
+                                    <p>立ち上がる際はゆっくりと。転倒に注意しましょう。</p>
+                                </div>
+                                <div class="bg-white p-3 rounded">
+                                    <h4 class="font-semibold">医師への報告</h4>
+                                    <p>呼びかけても起きないような強い眠気が続く場合は、薬が多すぎるサインかもしれません。すぐに医師に連絡してください。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- 安全のために -->
+            <section id="safety" class="content-section">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-2xl font-bold text-red-700 mb-4">安全のための最重要事項</h2>
+                    <p class="text-slate-600 mb-6">お薬を安全に使うために、必ず守ってほしいルールと、緊急時のサインについて説明します。</p>
+                    <div class="space-y-6">
+                        <div class="bg-red-100 border-l-4 border-red-600 p-6 rounded-lg">
+                            <h3 class="text-xl font-bold text-red-800 mb-3">【絶対禁止】アルコールとの併用</h3>
+                            <p class="text-red-700">お薬とアルコールを一緒に飲むと、互いの作用を極端に強め、命に関わる呼吸抑制を引き起こします。治療中の飲酒は絶対にやめてください。</p>
+                        </div>
+
+                        <div class="bg-yellow-100 border-l-4 border-yellow-500 p-6 rounded-lg">
+                            <h3 class="text-xl font-bold text-yellow-800 mb-3">救急車を呼ぶべき危険なサイン</h3>
+                            <p class="text-yellow-700 mb-4">以下の症状は、過量投与や重い副作用の可能性があります。ためらわずに、直ちに医療機関に連絡するか救急車を呼んでください。</p>
+                            <ul class="list-disc list-inside space-y-2 text-yellow-900">
+                                <li>呼吸が異常に遅い・浅い（1分間に10回未満など）</li>
+                                <li>呼びかけても反応しない、意識がもうろうとしている</li>
+                                <li>唇や爪が青紫色になっている</li>
+                                <li>激しい腹痛、お腹がパンパンに張り、便もガスも全く出ない</li>
+                            </ul>
+                        </div>
+                        
+                         <div class="bg-slate-100 border-l-4 border-slate-400 p-6 rounded-lg">
+                            <h3 class="text-xl font-bold text-slate-800 mb-3">他の薬との飲み合わせ</h3>
+                            <p class="text-slate-700">睡眠薬や安定剤など、他のお薬を飲んでいる場合は必ず医師・薬剤師に伝えてください。副作用が強く出ることがあります。</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- 不安と誤解 -->
+            <section id="faq" class="content-section">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-2xl font-bold text-teal-700 mb-4">医療用麻薬への不安と誤解</h2>
+                    <p class="text-slate-600 mb-6">「依存症になるのでは？」「もう終わりなの？」といった不安は、多くの誤解に基づいています。正しい知識で、安心して治療を受けましょう。</p>
+                    <div class="space-y-4">
+                        <div class="accordion-item border-b border-slate-200">
+                            <button class="accordion-header w-full text-left py-4 flex justify-between items-center">
+                                <span class="font-semibold text-lg text-teal-800">Q. 依存症（中毒）になってしまいませんか？</span>
+                                <span class="text-teal-600 text-2xl transform transition-transform duration-300">＋</span>
+                            </button>
+                            <div class="accordion-content">
+                                <p class="p-4 bg-gray-50 rounded-md text-slate-700">A. がんの痛みの治療のために、医師の指示通りにお薬を使う場合、いわゆる「依存症」になることは極めてまれです。痛みを抑えるために薬が使われ、「快感」を求める脳の働きとは異なるためです。痛みを我慢する方が心身にとって大きな負担となります。</p>
+                            </div>
+                        </div>
+                        <div class="accordion-item border-b border-slate-200">
+                            <button class="accordion-header w-full text-left py-4 flex justify-between items-center">
+                                <span class="font-semibold text-lg text-teal-800">Q. この薬を使うのは、もう末期だということですか？</span>
+                                <span class="text-teal-600 text-2xl transform transition-transform duration-300">＋</span>
+                            </button>
+                            <div class="accordion-content">
+                                <p class="p-4 bg-gray-50 rounded-md text-slate-700">A. いいえ、全く違います。痛みのコントロールは、がん治療のどの段階においても生活の質を高めるための重要な治療です。痛みが和らぐことで体力が保たれ、食事もでき、本来のがん治療（抗がん剤や放射線など）をより楽に続けることにも繋がります。より良く生きるための「支えとなる薬」です。</p>
+                            </div>
+                        </div>
+                        <div class="accordion-item border-b border-slate-200">
+                            <button class="accordion-header w-full text-left py-4 flex justify-between items-center">
+                                <span class="font-semibold text-lg text-teal-800">Q. 薬をやめる時はどうすればいいですか？</span>
+                                <span class="text-teal-600 text-2xl transform transition-transform duration-300">＋</span>
+                            </button>
+                            <div class="accordion-content">
+                                <p class="p-4 bg-gray-50 rounded-md text-slate-700">A. 自己判断で急にやめてはいけません。体が薬に慣れているため、不快な離脱症状が出ることがあります。治療によって痛みが和らいだ場合は、医師が安全にやめられるように、時間をかけて少しずつ量を減らしていきます。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- サポート -->
+            <section id="support" class="content-section">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-2xl font-bold text-teal-700 mb-4">あなたを支えるサポート体制</h2>
+                    <p class="text-slate-600 mb-6">痛みの治療は一人で抱え込むものではありません。あなたとご家族を支える様々な専門家や仕組みがあります。</p>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <h3 class="font-bold text-green-800">治療チーム</h3>
+                            <p class="text-sm text-green-700">医師、看護師、薬剤師はあなたの最も身近な味方です。痛みや副作用について、何でも率直に話しましょう。</p>
+                        </div>
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <h3 class="font-bold text-green-800">緩和ケアチーム</h3>
+                            <p class="text-sm text-green-700">痛みだけでなく、心や体の様々なつらさを和らげる専門家チームです。がん治療と並行して、いつでも相談できます。</p>
+                        </div>
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <h3 class="font-bold text-green-800">がん相談支援センター</h3>
+                            <p class="text-sm text-green-700">全国のがん診療連携拠点病院にあり、誰でも無料で相談できます。治療や生活、お金のことなど、頼れる案内役です。</p>
+                        </div>
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <h3 class="font-bold text-green-800">患者会・ピアサポート</h3>
+                            <p class="text-sm text-green-700">同じ経験をした仲間と話すことで、気持ちが楽になったり、有益な情報を得られたりします。</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 text-sm text-slate-500">
+            <p>このアプリケーションは、医師の指示に代わるものではありません。</p>
+            <p>必ず担当の医師や薬剤師の指導に従ってください。</p>
+        </footer>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const navButtons = document.querySelectorAll('.nav-button');
+            const contentSections = document.querySelectorAll('.content-section');
+            const sideEffectButtons = document.querySelectorAll('.side-effect-btn');
+            const sideEffectDetails = document.querySelectorAll('.side-effect-content');
+            const accordionItems = document.querySelectorAll('.accordion-item');
+            let sideEffectChart = null;
+
+            function showSection(targetId) {
+                contentSections.forEach(section => {
+                    section.classList.toggle('active', section.id === targetId);
+                });
+                navButtons.forEach(button => {
+                    button.classList.toggle('active', button.dataset.target === targetId);
+                });
+                window.scrollTo(0, 0);
+            }
+
+            navButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    showSection(button.dataset.target);
+                });
+            });
+
+            sideEffectButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetId = button.dataset.sideEffect;
+                    
+                    sideEffectDetails.forEach(detail => {
+                        if (detail.id === targetId) {
+                            detail.classList.toggle('hidden');
+                        } else {
+                            detail.classList.add('hidden');
+                        }
+                    });
+
+                    if (targetId === 'nausea' && !button.classList.contains('chart-rendered')) {
+                        renderSideEffectChart();
+                        button.classList.add('chart-rendered');
+                    }
+                });
+            });
+
+            accordionItems.forEach(item => {
+                const header = item.querySelector('.accordion-header');
+                const content = item.querySelector('.accordion-content');
+                const icon = header.querySelector('span:last-child');
+
+                header.addEventListener('click', () => {
+                    const isOpened = content.style.maxHeight !== '0px';
+                    
+                    document.querySelectorAll('.accordion-content').forEach(c => c.style.maxHeight = '0px');
+                    document.querySelectorAll('.accordion-header span:last-child').forEach(i => {
+                        i.textContent = '＋';
+                        i.classList.remove('rotate-45');
+                    });
+                    
+                    if (!isOpened) {
+                        content.style.maxHeight = content.scrollHeight + 'px';
+                        icon.textContent = '＋';
+                        icon.classList.add('rotate-45');
+                    } else {
+                         icon.textContent = '＋';
+                         icon.classList.remove('rotate-45');
+                    }
+                });
+            });
+
+            function renderSideEffectChart() {
+                const ctx = document.getElementById('sideEffectChart').getContext('2d');
+                if (sideEffectChart) {
+                    sideEffectChart.destroy();
+                }
+                sideEffectChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['開始時〜1週目', '2週目頃', '3週目以降'],
+                        datasets: [{
+                            label: '症状の強さ（イメージ）',
+                            data: [10, 5, 2],
+                            backgroundColor: 'rgba(132, 204, 22, 0.6)',
+                            borderColor: 'rgba(101, 163, 13, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: '症状の強さ'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.y !== null) {
+                                            if(context.parsed.y > 7) label += '強い';
+                                            else if(context.parsed.y > 3) label += '中程度';
+                                            else label += '軽快';
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            showSection('home');
+        });
+    </script>
+</body>
+</html>
