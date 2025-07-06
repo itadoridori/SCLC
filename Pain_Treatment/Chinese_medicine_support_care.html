@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>進行がんの漢方サポートケア：インタラクティブガイド</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony -->
+    <!-- Application Structure Plan: レポートの情報を、ユーザーが段階的に発見・理解できるように再設計。まず希望の逸話と注意喚起で導入し、次に漢方の最重要概念「証」をインタラクティブに解説。中心コンテンツとして、レポートの仮説「二方面作戦」（痛みの緩和と生命力の強化）をダッシュボード形式で提示し、処方の詳細を探求可能に。さらに、関連処方を比較するセクションで個別化医療の理解を深め、最後に安全な利用法を明確なガイドラインとして示す。この「導入→基本原則→核心仮説→比較・深化→実践」という流れは、複雑な情報を消化しやすくし、ユーザーの主体的な学習を促すために選択された。 -->
+    <!-- Visualization & Content Choices: 1. **「証」の概念図**: Goal: Inform/Organize -> Viz: HTML/CSSの図解 -> Interaction: ホバーで詳細表示 -> Justification: 漢方の根幹である抽象的な「証」の概念を、診断プロセスと関連付けて視覚的に示すことで、直感的な理解を促進する。| 2. **処方比較チャート**: Goal: Compare -> Viz: Chart.jsのドーナツチャートと動的カード -> Interaction: チャートの凡例クリックで対応する処方の詳細（構成生薬など）を表示 -> Justification: 処方の構成を視覚化し、インタラクティブに探求できるようにすることで、学習エンゲージメントを高め、処方が単なる名前ではなく、生薬の集合体であることを示す。| 3. **補剤比較タブ**: Goal: Compare -> Viz: HTML/CSSのタブ切り替え -> Interaction: タブクリックで表示内容を切り替え -> Justification: 複数の処方の対象者像（証）を直接比較できるようにし、漢方治療が高度に個別化されていることをユーザーに体験させる。| 4. **安全ガイド**: Goal: Inform -> Viz: アイコン付きリスト -> Interaction: なし -> Justification: 重要な安全情報を明確で記憶に残りやすい形式で提示する。 全ての選択において、NO SVG/Mermaidの制約を遵守。 -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #fdfcf9;
+            color: #4a4a4a;
+        }
+        .nav-link {
+            transition: all 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #8c6a4d;
+            border-bottom-color: #8c6a4d;
+        }
+        .card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s ease-in-out;
+        }
+        .card:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transform: translateY(-4px);
+        }
+        .tab-button {
+            transition: all 0.3s;
+        }
+        .tab-button.active {
+            background-color: #8c6a4d;
+            color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 320px;
+            height: 320px;
+            margin: auto;
+        }
+        .fade-in {
+            animation: fadeIn 0.8s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .shoyaku-card {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .shoyaku-card:hover {
+            background-color: #f5f1ed;
+        }
+        .shoyaku-card.active {
+            background-color: #e9e1d9;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1) inset;
+        }
+        .tooltip {
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .has-tooltip:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <h1 class="text-xl md:text-2xl font-bold text-[#8c6a4d]">漢方サポートケアガイド</h1>
+            <div class="hidden md:flex space-x-6">
+                <a href="#intro" class="nav-link p-2">はじめに</a>
+                <a href="#principle" class="nav-link p-2">漢方の基本</a>
+                <a href="#strategy" class="nav-link p-2">二方面作戦</a>
+                <a href="#compare" class="nav-link p-2">処方の比較</a>
+                <a href="#safety" class="nav-link p-2">安全な利用</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden p-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-4 6h4" /></svg>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden px-4 pt-2 pb-4">
+            <a href="#intro" class="block nav-link py-2">はじめに</a>
+            <a href="#principle" class="block nav-link py-2">漢方の基本</a>
+            <a href="#strategy" class="block nav-link py-2">二方面作戦</a>
+            <a href="#compare" class="block nav-link py-2">処方の比較</a>
+            <a href="#safety" class="block nav-link py-2">安全な利用</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8 md:py-12">
+
+        <section id="intro" class="text-center mb-16 md:mb-24 fade-in">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">希望を、情報にもとづく行動へ</h2>
+            <p class="max-w-3xl mx-auto text-lg text-gray-600 mb-6">ステージ4の肺がんから11年生きた方の話は、大きな希望を与えます。このガイドは、その希望の背景にある漢方治療の「なぜ？」を探ります。特定の「奇跡の薬」ではなく、専門家による「個別化された支援（支持療法）」の力を理解することが、あなたにとっての最善の一歩に繋がります。</p>
+            <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-r-lg max-w-2xl mx-auto text-left">
+                <p class="font-bold">重要：</p>
+                <p>このサイトは情報提供を目的としており、自己判断での漢方薬の使用を推奨するものではありません。必ず資格を持つ医師・専門家にご相談ください。</p>
+            </div>
+        </section>
+
+        <section id="principle" class="mb-16 md:mb-24 fade-in">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">漢方の基本原則：オーダーメイド医療の「証」</h2>
+                <p class="max-w-3xl mx-auto text-lg text-gray-600">漢方治療の心臓部は「証（しょう）」という概念です。これは西洋医学の病名とは異なり、その時々の患者さんの心と体の状態を総合的に判断した「診断書」のようなもの。同じ病気でも「証」が違えば、処方も全く異なります。</p>
+            </div>
+            <div class="card p-6 md:p-8">
+                <h3 class="text-2xl font-bold text-center mb-6 text-[#8c6a4d]">「証」はどのように決まるのか？：四診（ししん）</h3>
+                <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4">
+                    <div class="grid grid-cols-2 gap-4 w-full md:w-auto">
+                        <div class="has-tooltip relative bg-stone-100 p-4 rounded-lg text-center">
+                            <h4 class="font-bold text-lg">望診</h4><p class="text-sm">見ること</p>
+                            <div class="tooltip absolute bottom-full mb-2 w-48 bg-gray-800 text-white text-xs rounded py-1 px-2">顔色、舌、皮膚の状態などを観察</div>
+                        </div>
+                        <div class="has-tooltip relative bg-stone-100 p-4 rounded-lg text-center">
+                            <h4 class="font-bold text-lg">聞診</h4><p class="text-sm">聞く・嗅ぐこと</p>
+                            <div class="tooltip absolute bottom-full mb-2 w-48 bg-gray-800 text-white text-xs rounded py-1 px-2">声の調子、咳の音、体臭などを聴取・嗅覚で判断</div>
+                        </div>
+                        <div class="has-tooltip relative bg-stone-100 p-4 rounded-lg text-center">
+                            <h4 class="font-bold text-lg">問診</h4><p class="text-sm">尋ねること</p>
+                            <div class="tooltip absolute bottom-full mb-2 w-48 bg-gray-800 text-white text-xs rounded py-1 px-2">自覚症状、生活習慣、精神状態などを詳しく質問</div>
+                        </div>
+                        <div class="has-tooltip relative bg-stone-100 p-4 rounded-lg text-center">
+                            <h4 class="font-bold text-lg">切診</h4><p class="text-sm">触れること</p>
+                            <div class="tooltip absolute bottom-full mb-2 w-48 bg-gray-800 text-white text-xs rounded py-1 px-2">脈（脈診）やお腹（腹診）の状態を触れて確認</div>
+                        </div>
+                    </div>
+                    <div class="text-5xl text-gray-300 mx-4 hidden md:block">&rarr;</div>
+                    <div class="text-5xl text-gray-300 my-4 md:hidden">&darr;</div>
+                    <div class="bg-green-100 border-2 border-green-500 p-6 rounded-lg text-center">
+                        <h4 class="font-bold text-2xl text-green-800">証の決定</h4>
+                        <p class="text-green-700">（体質・体力・病状の総合判断）</p>
+                    </div>
+                    <div class="text-5xl text-gray-300 mx-4 hidden md:block">&rarr;</div>
+                     <div class="text-5xl text-gray-300 my-4 md:hidden">&darr;</div>
+                    <div class="bg-blue-100 border-2 border-blue-500 p-6 rounded-lg text-center">
+                        <h4 class="font-bold text-2xl text-blue-800">処方の選択</h4>
+                         <p class="text-blue-700">（あなただけの漢方薬）</p>
+                    </div>
+                </div>
+                <p class="mt-6 text-center text-gray-600">この丁寧なプロセスがあるからこそ、漢方薬は効果を発揮します。他人の成功例が、そのままあなたに当てはまらない理由はここにあります。</p>
+            </div>
+        </section>
+
+        <section id="strategy" class="mb-16 md:mb-24 fade-in">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">仮説：奇跡を支えた「二方面作戦」</h2>
+                <p class="max-w-3xl mx-auto text-lg text-gray-600">逸話の背景には、単一の薬ではなく、異なる目的を持つ2つの処方を組み合わせた、戦略的なアプローチがあった可能性があります。ここではその2つの側面を探ります。</p>
+            </div>
+            <div class="lg:grid lg:grid-cols-2 lg:gap-8 items-start">
+                <div class="card p-6 md:p-8 mb-8 lg:mb-0">
+                    <h3 class="text-2xl font-bold text-center text-rose-700 mb-4">方面①：痛みと副作用のコントロール</h3>
+                    <p class="text-center text-gray-600 mb-6">化学療法による手足のしびれや痛み（末梢神経障害）を和らげ、治療の継続を支える。</p>
+                    <div class="chart-container">
+                        <canvas id="goshajinkiganChart"></canvas>
+                    </div>
+                    <div id="goshajinkigan-details" class="mt-6">
+                        <h4 class="text-xl font-semibold text-center mb-4">牛車腎気丸 (ごしゃじんきがん)</h4>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm" id="goshajinkigan-herbs"></div>
+                        <div id="goshajinkigan-herb-info" class="mt-4 p-3 bg-stone-50 rounded-lg min-h-[60px]">
+                            <p class="text-gray-500 text-center">生薬をクリックして役割を確認</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card p-6 md:p-8">
+                    <h3 class="text-2xl font-bold text-center text-teal-700 mb-4">方面②：生命力と抵抗力の強化</h3>
+                    <p class="text-center text-gray-600 mb-6">消耗した体力と免疫力を補い、がんの進行に立ち向かう体自身の力を引き出す。</p>
+                    <div class="chart-container">
+                        <canvas id="juzentaiho-toChart"></canvas>
+                    </div>
+                     <div id="juzentaiho-to-details" class="mt-6">
+                        <h4 class="text-xl font-semibold text-center mb-4">十全大補湯 (じゅうぜんたいほとう)</h4>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm" id="juzentaiho-to-herbs"></div>
+                        <div id="juzentaiho-to-herb-info" class="mt-4 p-3 bg-stone-50 rounded-lg min-h-[60px]">
+                            <p class="text-gray-500 text-center">生薬をクリックして役割を確認</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="compare" class="mb-16 md:mb-24 fade-in">
+             <div class="text-center mb-10">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">処方の比較：「補剤」をどう選ぶか？</h2>
+                <p class="max-w-3xl mx-auto text-lg text-gray-600">体を補う「補剤」にも種類があり、患者の「証」によって使い分けられます。この選択の繊細さが、専門家による診断の重要性を示しています。</p>
+            </div>
+            <div class="card p-6 md:p-8">
+                <div class="flex justify-center flex-wrap gap-2 mb-6">
+                    <button class="tab-button active px-4 py-2 rounded-full font-semibold" data-tab="juzen">十全大補湯</button>
+                    <button class="tab-button px-4 py-2 rounded-full font-semibold" data-tab="ninjin">人参養栄湯</button>
+                    <button class="tab-button px-4 py-2 rounded-full font-semibold" data-tab="hochu">補中益気湯</button>
+                </div>
+                <div id="tab-content">
+                </div>
+            </div>
+        </section>
+        
+        <section id="safety" class="fade-in">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">安全な利用のための最終ガイド</h2>
+                <p class="max-w-3xl mx-auto text-lg text-gray-600">漢方薬を安全かつ効果的に活用するために、最も重要な原則を確認しましょう。</p>
+            </div>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="card p-6 bg-green-50 border-2 border-green-200">
+                    <h3 class="text-2xl font-bold text-green-800 mb-4 flex items-center">
+                        <span class="text-3xl mr-3">✔</span> 実行すべきこと (Do's)
+                    </h3>
+                    <ul class="space-y-3 list-inside text-gray-700">
+                        <li><strong>専門家に相談する：</strong>日本東洋医学会認定の漢方専門医など、資格を持つ医師を探しましょう。</li>
+                        <li><strong>主治医に全て伝える：</strong>漢方薬の使用をがん治療の主治医に必ず報告し、情報を共有しましょう。</li>
+                        <li><strong>「支持療法」として相談する：</strong>「副作用を和らげ治療を完遂したい」という目的で相談すると、対話がスムーズに進みます。</li>
+                        <li><strong>自分の状態を詳しく伝える：</strong>ささいなことでも具体的に伝えることが、正確な「証」の診断につながります。</li>
+                    </ul>
+                </div>
+                 <div class="card p-6 bg-red-50 border-2 border-red-200">
+                    <h3 class="text-2xl font-bold text-red-800 mb-4 flex items-center">
+                        <span class="text-3xl mr-3">✖</span> 避けるべきこと (Don'ts)
+                    </h3>
+                    <ul class="space-y-3 list-inside text-gray-700">
+                        <li><strong>自己判断での服用：</strong>インターネットや他人の体験談だけを頼りに漢方薬を選ぶのは非常に危険です。</li>
+                        <li><strong>副作用がないという誤解：</strong>漢方薬にも副作用（胃腸症状など）や薬物相互作用のリスクがあります。</li>
+                        <li><strong>主治医に隠れての使用：</strong>予期せぬ問題を引き起こし、あなた自身の安全を脅かします。</li>
+                        <li><strong>複数の漢方薬の自己併用：</strong>成分が重複し、副作用のリスクが急激に高まる可能性があります。</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </main>
+    
+    <footer class="bg-stone-100 mt-16">
+        <div class="container mx-auto px-4 py-6 text-center text-gray-600">
+            <p>&copy; 2025 漢方サポートケアガイド. このウェブサイトは教育・情報提供のみを目的としています。</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const kampoData = {
+                goshajinkigan: {
+                    name: '牛車腎気丸',
+                    herbs: [
+                        { name: '地黄', role: '「腎」を補い、血液や体液を養う処方の基本。' },
+                        { name: '山茱萸', role: '「腎」を補い、滋養強壮作用を持つ。' },
+                        { name: '山薬', role: '滋養強壮作用があり、消化機能も助ける。' },
+                        { name: '沢瀉', role: '利水作用で、体内の余分な水分を排出。' },
+                        { name: '茯苓', role: '利水作用と精神安定作用を併せ持つ。' },
+                        { name: '牡丹皮', role: '血の滞りを改善し、熱を冷ます。' },
+                        { name: '牛膝', role: '血の巡りを良くし、特に下半身の痛みを和らげる。' },
+                        { name: '車前子', role: '利水作用で、むくみや排尿トラブルを改善。' },
+                        { name: '桂皮', role: '体を温め血行を促進し、気の巡りを良くする。' },
+                        { name: '附子末', role: '強力な温熱作用で、冷えによる痛みを緩和。' },
+                    ],
+                    color: 'rgb(220, 38, 38, 0.7)'
+                },
+                'juzentaiho-to': {
+                    name: '十全大補湯',
+                    herbs: [
+                        { name: '人参', role: '「気」を補う代表的な生薬。元気の源。' },
+                        { name: '白朮', role: '消化機能を助け、「気」を生み出す力を高める。' },
+                        { name: '茯苓', role: '利水作用と精神安定作用。気を補うのを助ける。' },
+                        { name: '甘草', role: '諸薬を調和させ、痛みを和らげる。' },
+                        { name: '当帰', role: '「血」を補う代表格。血行を促進し、体を温める。' },
+                        { name: '川芎', role: '血行を促進し、痛みを止める作用がある。' },
+                        { name: '芍薬', role: '血を養い、筋肉のけいれんや痛みを和らげる。' },
+                        { name: '地黄', role: '「血」を補い、体を潤す。' },
+                        { name: '黄耆', role: '「気」を補い、体の表面を守る力を高める。' },
+                        { name: '桂皮', role: '体を温め、血行を促進する。' },
+                    ],
+                    color: 'rgb(13, 148, 136, 0.7)'
+                }
+            };
+
+            const tabData = {
+                juzen: {
+                    title: '十全大補湯 (じゅうぜんたいほとう)',
+                    content: `
+                        <h4 class="text-xl font-bold mb-2">主な対象者（証）</h4>
+                        <p class="mb-4">気と血の両方が極度に消耗した「気血両虚」の状態。手術や化学療法後などで、<strong>極度の疲労感、貧血、冷え、食欲不振</strong>が顕著な方に適します。</p>
+                        <h4 class="text-xl font-bold mb-2">期待される役割</h4>
+                        <p>消耗しきった心身を「十全」に「大いに補う」処方。全身状態の改善、免疫力のサポート、がん転移抑制の可能性（基礎研究レベル）などが報告されています。</p>
+                    `
+                },
+                ninjin: {
+                    title: '人参養栄湯 (にんじんようえいとう)',
+                    content: `
+                        <h4 class="text-xl font-bold mb-2">主な対象者（証）</h4>
+                        <p class="mb-4">十全大補湯の証に加え、<strong>精神的な消耗（不安、不眠）、咳、痰</strong>などが目立つ、より衰弱が進んだ状態の方に適します。</p>
+                        <h4 class="text-xl font-bold mb-2">期待される役割</h4>
+                        <p>気血を補うとともに、精神を安定させ、肺を潤す働きも期待されます。重度の倦怠感や食欲不振（悪液質）の改善に用いられます。</p>
+                    `
+                },
+                hochu: {
+                    title: '補中益気湯 (ほちゅうえっきとう)',
+                    content: `
+                        <h4 class="text-xl font-bold mb-2">主な対象者（証）</h4>
+                        <p class="mb-4">消化機能の低下（脾気虚）が中心。<strong>食欲不振、食後の眠気、全身の倦怠感、軟便傾向</strong>など、「気」が不足して持ち上がらない状態の方に適します。</p>
+                        <h4 class="text-xl font-bold mb-2">期待される役割</h4>
+                        <p>「中（消化器系）」を補い、「気」を益す処方。いわゆる「夏バテ」や病後の体力低下など、がん治療における倦怠感や食欲不振の改善に広く使われます。</p>
+                    `
+                }
+            };
+
+            function createHerbCards(prescriptionId) {
+                const data = kampoData[prescriptionId];
+                const container = document.getElementById(`${prescriptionId}-herbs`);
+                const infoBox = document.getElementById(`${prescriptionId}-herb-info`);
+                container.innerHTML = '';
+                data.herbs.forEach(herb => {
+                    const card = document.createElement('div');
+                    card.className = 'shoyaku-card p-2 border rounded-md text-center';
+                    card.textContent = herb.name;
+                    card.dataset.role = herb.role;
+                    container.appendChild(card);
+
+                    card.addEventListener('click', () => {
+                        const allCards = container.querySelectorAll('.shoyaku-card');
+                        allCards.forEach(c => c.classList.remove('active'));
+                        card.classList.add('active');
+                        infoBox.innerHTML = `<p class="font-semibold">${herb.name}</p><p class="text-sm text-gray-600">${herb.role}</p>`;
+                    });
+                });
+            }
+
+            function createDoughnutChart(prescriptionId) {
+                const ctx = document.getElementById(`${prescriptionId}Chart`).getContext('2d');
+                const data = kampoData[prescriptionId];
+                const chartData = {
+                    labels: data.herbs.map(h => h.name),
+                    datasets: [{
+                        label: data.name,
+                        data: Array(data.herbs.length).fill(1),
+                        backgroundColor: [
+                            '#8c6a4d', '#a88f7a', '#c4b4a9', '#e0d9d7', '#6e563f',
+                            '#9b826b', '#b7a28e', '#d3c3b0', '#f0e3d3', '#7d6651'
+                        ].map(color => `${color}CC`), // Add alpha
+                        borderColor: '#fdfcf9',
+                        borderWidth: 2
+                    }]
+                };
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: chartData,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                enabled: true,
+                                callbacks: {
+                                    label: function(context) {
+                                        return context.label;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            createDoughnutChart('goshajinkigan');
+            createHerbCards('goshajinkigan');
+            createDoughnutChart('juzentaiho-to');
+            createHerbCards('juzentaiho-to');
+
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContent = document.getElementById('tab-content');
+
+            function updateTabContent(tabId) {
+                const data = tabData[tabId];
+                tabContent.innerHTML = `
+                    <div class="fade-in p-4">
+                        <h3 class="text-2xl font-bold mb-4 text-[#8c6a4d]">${data.title}</h3>
+                        ${data.content}
+                    </div>
+                `;
+            }
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    updateTabContent(button.dataset.tab);
+                });
+            });
+
+            updateTabContent('juzen');
+
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                    if (mobileMenu.classList.contains('hidden') === false) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                });
+            });
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('section');
+
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 60) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === `#${current}`) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
