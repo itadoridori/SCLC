@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>富山・石川 がん治療と漢方ナビ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony -->
+    <!-- Application Structure Plan: The SPA is structured around the user's primary task: finding a specialist based on their location. It starts with a crucial conceptual clarification (Doctor vs. Pharmacist), moves to an interactive area selector (Toyama/Ishikawa), displays detailed information on demand via expandable cards, offers a visual comparison with a radar chart, and concludes with a practical checklist for the first visit. This task-oriented flow is more intuitive and less overwhelming than the linear report structure, guiding users from understanding to action. -->
+    <!-- Visualization & Content Choices: Key concepts are presented interactively (toggle for Doctor/Pharmacist). The core 'Find a Specialist' feature uses dynamic content filtering (JS show/hide) based on user's location choice (Goal: Organize). Detailed institution data is presented in structured cards (Goal: Inform). A radar chart (Chart.js/Canvas) is used for a multi-dimensional comparison of top institutions (Goal: Compare). A step-by-step diagram (HTML/CSS) and checklist guide users for their first visit (Goal: Organize). This approach uses interactive elements to make complex information digestible and actionable. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #FDFDFB;
+            color: #4A4A4A;
+        }
+        .bg-primary { background-color: #F0EBE3; }
+        .bg-secondary { background-color: #E4DCCF; }
+        .bg-accent { background-color: #7D9D9C; }
+        .text-accent { color: #576F72; }
+        .btn-primary {
+            background-color: #7D9D9C;
+            color: white;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .btn-primary:hover {
+            background-color: #576F72;
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background-color: #F0EBE3;
+            color: #576F72;
+            border: 1px solid #E4DCCF;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .btn-secondary:hover {
+            background-color: #E4DCCF;
+            transform: translateY(-2px);
+        }
+        .tab-active {
+            border-bottom-color: #7D9D9C;
+            color: #576F72;
+            font-weight: 700;
+        }
+        .details-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.7s ease-in-out;
+        }
+        .details-content.open {
+            max-height: 1500px;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-primary shadow-md sticky top-0 z-20">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-xl md:text-2xl font-bold text-accent">富山・石川 がん治療と漢方ナビ</h1>
+            <nav class="hidden md:block">
+                <a href="#section-1" class="text-gray-600 hover:text-accent px-3 py-2">基本知識</a>
+                <a href="#section-2" class="text-gray-600 hover:text-accent px-3 py-2">専門家を探す</a>
+                <a href="#section-3" class="text-gray-600 hover:text-accent px-3 py-2">受診の準備</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8 md:py-12">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-bold text-accent mb-4">あなたに寄り添う、もう一つの選択肢</h2>
+            <p class="text-lg text-gray-700 max-w-3xl mx-auto">標準治療と歩調を合わせ、副作用の軽減や生活の質の向上を目指す「支持療法」としての漢方。このナビは、富山県・石川県で信頼できる漢方専門医を見つけるためのお手伝いをします。</p>
+        </div>
+
+        <section id="section-1" class="mb-16 scroll-mt-20">
+            <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg border border-gray-100">
+                <h3 class="text-2xl font-bold text-accent mb-6 text-center">はじめに知っておきたい大切なこと</h3>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="bg-primary/50 p-6 rounded-lg">
+                        <h4 class="font-bold text-xl mb-3 text-center">役割：支持療法としての漢方</h4>
+                        <p class="text-gray-700">漢方治療は、がんを直接攻撃するのではなく、手術・抗がん剤・放射線治療などの標準治療に伴う様々な苦痛（倦怠感、食欲不振、しびれ等）を和らげ、治療を乗り切るための体力や気力を支える「縁の下の力持ち」です。主治医の治療を補完し、その効果を最大限に引き出すことを目的とします。</p>
+                    </div>
+                    <div class="bg-primary/50 p-6 rounded-lg">
+                        <h4 class="font-bold text-xl mb-3 text-center">資格：「漢方専門医」という指標</h4>
+                        <p class="text-gray-700">「日本東洋医学会認定 漢方専門医」は、高度な知識と経験を持つ医師の証です。がん治療に漢方を取り入れる際は、西洋医学と東洋医学の両方に精通した、この資格を持つ医師に相談することが最も安全で質の高い医療への近道です。特に「指導医」は、その分野のリーダー的存在です。</p>
+                    </div>
+                </div>
+                <div class="mt-8 border-t-2 border-dashed border-gray-300 pt-8">
+                     <h4 class="font-bold text-xl mb-4 text-center">相談先はどこ？ 「医師」と「薬剤師」の違い</h4>
+                     <p class="text-center text-gray-600 mb-6">がん治療においては、相談先の役割を正しく理解することが極めて重要です。</p>
+                     <div class="flex justify-center space-x-4 mb-6">
+                        <button id="tab-doctor" class="px-6 py-2 rounded-t-lg border-b-4 tab-active">👨‍⚕️ 医師 (漢方専門医)</button>
+                        <button id="tab-pharmacist" class="px-6 py-2 rounded-t-lg border-b-4 border-transparent text-gray-500">👩‍🔬 漢方薬剤師</button>
+                    </div>
+                    <div id="content-doctor" class="bg-green-50 p-6 rounded-lg border-l-4 border-green-500">
+                        <p class="font-bold text-lg mb-2">役割：診断と治療</p>
+                        <p>病気を診断し、西洋薬と漢方薬を処方します。がん治療全体を理解した上で、最も安全で効果的な漢方治療を計画します。</p>
+                        <p class="font-bold text-lg mt-4 mb-2">医療制度：保険適用</p>
+                        <p>診察と処方は公的医療保険の対象です。</p>
+                        <p class="mt-4 font-semibold text-green-800">がん治療の相談は、まずはこちらへ。</p>
+                    </div>
+                     <div id="content-pharmacist" class="bg-yellow-50 p-6 rounded-lg border-l-4 border-yellow-500 hidden">
+                        <p class="font-bold text-lg mb-2">役割：カウンセリングと商品販売</p>
+                        <p>健康相談に応じ、医師の処方箋なしで購入できる一般用漢方薬や健康食品を販売します。診断や治療は行えません。</p>
+                        <p class="font-bold text-lg mt-4 mb-2">医療制度：保険適用外</p>
+                        <p>相談や商品は全額自己負担です。</p>
+                        <p class="mt-4 font-semibold text-yellow-800">主治医や漢方専門医と相談した上で、補完的に活用しましょう。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="section-2" class="mb-16 scroll-mt-20">
+            <div class="text-center mb-10">
+                <h3 class="text-2xl md:text-3xl font-bold text-accent mb-2">専門家を探す</h3>
+                <p class="text-lg text-gray-700">お住まいのエリアを選択してください。</p>
+            </div>
+            <div class="flex justify-center space-x-4 md:space-x-8 mb-8">
+                <button id="btn-toyama" class="text-xl md:text-2xl font-bold py-4 px-10 rounded-full shadow-lg btn-primary">富山県</button>
+                <button id="btn-ishikawa" class="text-xl md:text-2xl font-bold py-4 px-10 rounded-full shadow-lg btn-primary">石川県</button>
+            </div>
+            
+            <div id="results" class="mt-8">
+            </div>
+        </section>
+
+        <section class="mb-16">
+            <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg border border-gray-100">
+                <h3 class="text-2xl font-bold text-accent mb-6 text-center">主要な医療機関の比較</h3>
+                 <p class="text-center text-gray-600 mb-6">各医療機関の特徴を視覚的に比較してみましょう。専門性、アプローチ、個別対応力などの観点から評価しています。</p>
+                <div class="chart-container">
+                    <canvas id="comparisonChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-3" class="scroll-mt-20">
+            <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg border border-gray-100">
+                <h3 class="text-2xl md:text-3xl font-bold text-accent mb-8 text-center">初めての漢方相談 ― 準備と心構え</h3>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="text-xl font-bold mb-4">✅ 準備することリスト</h4>
+                        <ul class="space-y-3">
+                            <li class="flex items-start"><span class="bg-accent text-white rounded-full w-6 h-6 text-center mr-3 flex-shrink-0">1</span><span><strong>医療情報の整理：</strong>診断名、治療経過、検査結果、お薬手帳など。</span></li>
+                            <li class="flex items-start"><span class="bg-accent text-white rounded-full w-6 h-6 text-center mr-3 flex-shrink-0">2</span><span><strong>症状の記録：</strong>最も困っている症状、強くなる/楽になる条件、体質（冷え、汗、便通など）をメモ。</span></li>
+                            <li class="flex items-start"><span class="bg-accent text-white rounded-full w-6 h-6 text-center mr-3 flex-shrink-0">3</span><span><strong>質問リストの作成：</strong>聞きたいこと（安全性、期待できる効果、費用など）を事前にまとめる。</span></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-xl font-bold mb-4">🤝 主治医との連携プロセス</h4>
+                        <div class="space-y-4">
+                           <div class="flex items-center"><div class="bg-secondary rounded-full w-10 h-10 flex items-center justify-center font-bold text-accent mr-4">1</div><p>主治医に「漢方治療を試したい」と正直に相談する。</p></div>
+                           <div class="text-center text-accent">▼</div>
+                           <div class="flex items-center"><div class="bg-secondary rounded-full w-10 h-10 flex items-center justify-center font-bold text-accent mr-4">2</div><p>紹介状（診療情報提供書）や検査データを用意してもらう。</p></div>
+                           <div class="text-center text-accent">▼</div>
+                           <div class="flex items-center"><div class="bg-secondary rounded-full w-10 h-10 flex items-center justify-center font-bold text-accent mr-4">3</div><p>希望の漢方専門医を受診。処方内容は必ず主治医に報告する。</p></div>
+                        </div>
+                    </div>
+                </div>
+                 <div class="mt-8 border-t-2 border-dashed border-gray-300 pt-8 text-center">
+                    <h4 class="font-bold text-xl mb-3 text-accent">最も大切なこと</h4>
+                    <p class="text-gray-700 max-w-2xl mx-auto">漢方治療は、必ず主治医との情報共有のもとで行ってください。主治医と漢方専門医が協力し、あなたにとって最善の治療を共に考える「チーム医療」の一員となる意識が、安全で効果的な治療につながります。</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-primary mt-12">
+        <div class="container mx-auto px-4 py-6 text-center text-gray-600">
+            <p>&copy; 2025 がん治療と漢方ナビ. この情報は医療機関選定の一助となるものであり、医学的アドバイスに代わるものではありません。治療に関する最終的な判断は、必ず医療専門家にご相談ください。</p>
+        </div>
+    </footer>
+
+    <script>
+        const data = {
+            toyama: [
+                {
+                    name: "富山大学附属病院",
+                    tags: ["大学病院", "指導医多数", "専門センター"],
+                    short_desc: "「がん和漢薬治療センター」を設置し、副作用軽減の支持療法を専門的に実施する県内の中核拠点。",
+                    doctors: "貝沼 茂三郎 医師 (指導医), 藤本 誠 医師 (指導医) 他、漢方専門医多数",
+                    features: "化学療法・放射線治療の副作用軽減、術前後の体力管理、再発予防まで包括的に対応。煎じ薬も保険適用で処方可能。",
+                    access: "初診は原則として他の医療機関からの紹介状が必要。有料のセカンドオピニオン外来（要予約）も利用可能。",
+                    address: "富山県富山市杉谷2630",
+                    tel: "076-434-2281 (代表)"
+                },
+                {
+                    name: "真生会富山病院",
+                    tags: ["化学療法連携", "予約制"],
+                    short_desc: "漢方外来の担当医が外来化学療法室長を兼任。抗がん剤治療との密な連携が強み。",
+                    doctors: "平名 浩史 医師",
+                    features: "抗がん剤治療と漢方治療の連携が院内で非常にスムーズに行われる体制。統合医療を提供。",
+                    access: "漢方外来は原則予約制。事前に問い合わせを推奨。",
+                    address: "富山県射水市下条520",
+                    tel: "0766-52-2156 (代表)"
+                },
+                {
+                    name: "谷川醫院",
+                    tags: ["統合医療", "予約制"],
+                    short_desc: "富山大学の和漢診療部出身の院長が、西洋と東洋医学を組み合わせた治療を提供。",
+                    doctors: "谷川 聖明 医師",
+                    features: "難治性の症状に幅広く対応。がんの支持療法についても豊富な経験に基づいた相談が可能。保険適用。",
+                    access: "初診は予約制（木曜午前、土曜午後）。",
+                    address: "富山県富山市堀川小泉町2区126-7",
+                    tel: "076-424-2288"
+                },
+                {
+                    name: "わたなべ医院",
+                    tags: ["煎じ薬対応", "権威に師事"],
+                    short_desc: "和漢診療学の創始者に師事した院長が、オーダーメイドの煎じ薬も用いた統合医療を実践。",
+                    doctors: "渡辺 実千雄 医師 (医学博士)",
+                    features: "保険診療内で刻み生薬を用いた本格的な漢方治療が受けられる。西洋医学を基本としつつ、漢方や鍼治療を組み合わせる。",
+                    access: "詳細は直接お問い合わせください。",
+                    address: "富山県富山市有沢198-1",
+                    tel: "076-491-8220"
+                },
+                {
+                    name: "富山県立中央病院",
+                    tags: ["指導医在籍", "総合病院"],
+                    short_desc: "漢方・リウマチ膠原病内科に指導医が在籍。総合病院としてのがん治療との連携が期待できる。",
+                    doctors: "藤永 洋 医師 (指導医)",
+                    features: "地域の基幹病院として、他診療科と連携した包括的な医療を提供。",
+                    access: "詳細は直接お問い合わせください。",
+                    address: "富山県富山市西長江2-2-78",
+                    tel: "076-424-1531 (代表)"
+                }
+            ],
+            ishikawa: [
+                {
+                    name: "福井県済生会病院 (がん治療サポート外来)",
+                    tags: ["国内トップクラス", "二刀流専門医", "要予約"],
+                    short_desc: "【最重要】石川県在住者にとっての最有力候補。漢方と抗がん剤治療、両方の指導医資格を持つ国内屈指の専門家。",
+                    doctors: "元雄 良治 医師 (漢方指導医 兼 がん薬物療法指導医)",
+                    features: "科学的エビデンスに基づいた、極めて専門性の高いがん支持療法を提供。他院で治療中の方も受け入れ可能。",
+                    access: "勤務地は福井県福井市。毎週水・木曜午後の予約制。県境を越えて相談する価値が非常に高い。",
+                    address: "福井県福井市和田中町舟橋7-1",
+                    tel: "0776-23-1111 (代表)"
+                },
+                {
+                    name: "恵寿総合病院",
+                    tags: ["能登地域", "煎じ薬対応", "漢方専門医"],
+                    short_desc: "能登地方における漢方治療の中核拠点。オーダーメイドの煎じ薬処方が可能。",
+                    doctors: "小竹 源紀 医師 (漢方専門医)",
+                    features: "治療中の副作用や治療後の症状緩和に注力。リハビリテーション科医も兼任しており、幅広い視点からのケアが期待できる。",
+                    access: "毎週金曜日の午後に診療。電話での予約、または予約なしでの当日受付も可能。",
+                    address: "石川県七尾市富岡町94",
+                    tel: "0767-52-3211 (代表)"
+                },
+                {
+                    name: "いのちのくすりヴィータ / いずみ薬局 (漢方薬局)",
+                    tags: ["薬局", "カウンセリング", "保険適用外"],
+                    short_desc: "【注意】これらは医療機関ではありません。治療ではなく、生活習慣の相談や関連商品の販売が主目的です。",
+                    doctors: "薬剤師が対応",
+                    features: "食事や生活習慣に関するアドバイスを得られる。利用する際は、必ず主治医や担当の漢方専門医に報告し、許可を得てください。",
+                    access: "自由診療（全額自己負担）。ヴィータは完全予約制。",
+                    address: "金沢市内",
+                    tel: "各店舗へお問い合わせください"
+                }
+            ]
+        };
+
+        const resultsContainer = document.getElementById('results');
+        const btnToyama = document.getElementById('btn-toyama');
+        const btnIshikawa = document.getElementById('btn-ishikawa');
+
+        function createCard(item, index) {
+            return `
+                <div class="bg-white rounded-xl shadow-lg border border-gray-100 mb-6 overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex flex-wrap items-start justify-between mb-4">
+                            <h4 class="text-2xl font-bold text-accent mb-2">${item.name}</h4>
+                            <div class="flex flex-wrap gap-2">${item.tags.map(tag => `<span class="bg-secondary text-accent text-xs font-semibold px-2 py-1 rounded-full">${tag}</span>`).join('')}</div>
+                        </div>
+                        <p class="text-gray-700 mb-4">${item.short_desc}</p>
+                        <button class="font-bold text-accent hover:underline details-btn" data-index="${index}">詳細を見る ▼</button>
+                    </div>
+                    <div class="details-content bg-gray-50 border-t border-gray-200">
+                        <div class="p-6">
+                            <p class="font-bold mb-1">主な担当医:</p>
+                            <p class="mb-4">${item.doctors}</p>
+                            <p class="font-bold mb-1">特徴:</p>
+                            <p class="mb-4">${item.features}</p>
+                            <p class="font-bold mb-1">受診方法:</p>
+                            <p class="mb-4">${item.access}</p>
+                            <p class="font-bold mb-1">所在地:</p>
+                            <p class="mb-4">${item.address}</p>
+                            <p class="font-bold mb-1">電話番号:</p>
+                            <p>${item.tel}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function displayResults(area) {
+            resultsContainer.innerHTML = data[area].map((item, index) => createCard(item, index)).join('');
+            document.querySelectorAll('.details-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const content = e.target.parentElement.nextElementSibling;
+                    content.classList.toggle('open');
+                    e.target.textContent = content.classList.contains('open') ? '詳細を閉じる ▲' : '詳細を見る ▼';
+                });
+            });
+        }
+
+        btnToyama.addEventListener('click', () => {
+            displayResults('toyama');
+            btnToyama.classList.add('btn-secondary');
+            btnToyama.classList.remove('btn-primary');
+            btnIshikawa.classList.add('btn-primary');
+            btnIshikawa.classList.remove('btn-secondary');
+        });
+        btnIshikawa.addEventListener('click', () => {
+            displayResults('ishikawa');
+            btnIshikawa.classList.add('btn-secondary');
+            btnIshikawa.classList.remove('btn-primary');
+            btnToyama.classList.add('btn-primary');
+            btnToyama.classList.remove('btn-secondary');
+        });
+
+        const tabDoctor = document.getElementById('tab-doctor');
+        const tabPharmacist = document.getElementById('tab-pharmacist');
+        const contentDoctor = document.getElementById('content-doctor');
+        const contentPharmacist = document.getElementById('content-pharmacist');
+
+        tabDoctor.addEventListener('click', () => {
+            contentDoctor.classList.remove('hidden');
+            contentPharmacist.classList.add('hidden');
+            tabDoctor.classList.add('tab-active');
+            tabPharmacist.classList.remove('tab-active');
+        });
+
+        tabPharmacist.addEventListener('click', () => {
+            contentPharmacist.classList.remove('hidden');
+            contentDoctor.classList.add('hidden');
+            tabPharmacist.classList.add('tab-active');
+            tabDoctor.classList.remove('tab-active');
+        });
+        
+        const ctx = document.getElementById('comparisonChart').getContext('2d');
+        const chartData = {
+            labels: ['専門性 (指導医など)', '化学療法連携', '個別対応力 (煎じ薬)', 'アクセス (紹介状)', '先進性 (専門センター)'],
+            datasets: [
+                {
+                    label: '富山大学附属病院',
+                    data: [5, 4, 5, 2, 5],
+                    backgroundColor: 'rgba(125, 157, 156, 0.2)',
+                    borderColor: 'rgba(125, 157, 156, 1)',
+                    pointBackgroundColor: 'rgba(125, 157, 156, 1)',
+                    borderWidth: 2
+                },
+                {
+                    label: '福井県済生会病院 (元雄医師)',
+                    data: [5, 5, 4, 3, 4],
+                    backgroundColor: 'rgba(228, 220, 207, 0.4)',
+                    borderColor: 'rgba(87, 111, 114, 1)',
+                    pointBackgroundColor: 'rgba(87, 111, 114, 1)',
+                    borderWidth: 2
+                },
+                 {
+                    label: '恵寿総合病院',
+                    data: [4, 3, 5, 4, 3],
+                    backgroundColor: 'rgba(240, 235, 227, 0.6)',
+                    borderColor: 'rgba(162, 123, 92, 1)',
+                    pointBackgroundColor: 'rgba(162, 123, 92, 1)',
+                    borderWidth: 2
+                }
+            ]
+        };
+        const comparisonChart = new Chart(ctx, {
+            type: 'radar',
+            data: chartData,
+            options: {
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        angleLines: { color: '#E4DCCF' },
+                        grid: { color: '#E4DCCF' },
+                        pointLabels: {
+                            font: { size: 12, family: "'Noto Sans JP', sans-serif" },
+                             color: '#4A4A4A'
+                        },
+                        ticks: {
+                            backdropColor: 'rgba(253, 253, 251, 0.8)',
+                            color: '#576F72',
+                            stepSize: 1,
+                            max: 5,
+                            min: 0
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                             font: { size: 12, family: "'Noto Sans JP', sans-serif" },
+                             color: '#4A4A4A'
+                        }
+                    },
+                    tooltip: {
+                        bodyFont: { family: "'Noto Sans JP', sans-serif" },
+                        titleFont: { family: "'Noto Sans JP', sans-serif" }
+                    }
+                }
+            }
+        });
+        
+        window.onload = () => {
+             btnToyama.click();
+        };
+
+    </script>
+
+</body>
+</html>
