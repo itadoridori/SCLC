@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インタラクティブ水素吸入器ガイド 2025年版</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals & Calming Teal -->
+    <!-- Application Structure Plan: A user-journey-oriented SPA designed to guide users from their high-level goals to a specific, data-driven product choice. The flow is: 1. Hero section to establish context. 2. A "Find Your Match" guided filter to immediately engage the user based on their primary purpose (Casual, Daily, Pro). 3. An interactive comparison dashboard with filters (Category, Ownership) and a primary performance chart (Generation Rate), linked to detailed product cards. This allows for both broad comparison and deep dives. 4. A "Purchase vs. Rental" interactive cost simulator to clarify the financial trade-offs. 5. A "Buyer's Guide" section with accordions for technical/safety information to provide context without overwhelming the user. This non-linear, task-oriented structure is chosen over a simple report layout to empower users to actively explore based on their specific needs, making the complex data more accessible and decision-making more intuitive. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Product performance comparison -> Goal: Compare -> Viz: Interactive Bar Chart (Chart.js) -> Interaction: Click bars/filters to update chart and product cards -> Justification: The bar chart is the most effective way to visually compare the key performance metric (generation rate) across different products. Interaction allows users to narrow down the vast options to their specific interest.
+        - Report Info: Purchase vs. Rental cost analysis (Lita Air) -> Goal: Analyze Change over Time -> Viz: Interactive Line Chart (Chart.js) with a slider -> Interaction: User adjusts a slider for "years of use" to see the cumulative cost dynamically update -> Justification: This transforms a static table into an engaging tool that clearly demonstrates the long-term financial implications and the break-even point.
+        - Report Info: Product details (specs, TCO, features) -> Goal: Inform -> Viz: Modal pop-up window -> Interaction: Click a "Details" button on a product card -> Justification: Keeps the main interface clean while providing comprehensive information on demand.
+        - Report Info: Technical/Safety concepts (PEM, PSE Mark etc.) -> Goal: Organize & Inform -> Viz: Accordion-style expandable sections -> Interaction: Click to expand/collapse -> Justification: Hides supplementary information by default to reduce cognitive load, allowing users to explore these topics only if they are interested.
+        - Library/Method: Chart.js for all visualizations on <canvas>, Vanilla JS for all interactions and state management, Tailwind CSS for layout. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Inter', 'Noto Sans JP', sans-serif; background-color: #FDFBF8; }
+        .chart-container { position: relative; width: 100%; max-width: 800px; margin-left: auto; margin-right: auto; height: 350px; max-height: 50vh; }
+        @media (min-width: 768px) { .chart-container { height: 450px; } }
+        .tab-active { border-color: #0d9488; color: #0d9488; background-color: #f0fdfa; }
+        .tab-inactive { border-color: transparent; color: #52525b; }
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
+        .btn-primary { background-color: #0d9488; color: white; transition: background-color 0.3s; }
+        .btn-primary:hover { background-color: #0f766e; }
+        .section-title { font-size: 1.875rem; font-weight: 700; color: #334155; border-bottom: 2px solid #0d9488; padding-bottom: 0.5rem; margin-bottom: 1.5rem; }
+    </style>
+</head>
+<body class="text-slate-700 antialiased">
+
+    <div id="app" class="container mx-auto p-4 md:p-8 max-w-7xl">
+        
+        <header class="text-center py-8 md:py-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-slate-800 mb-4">インタラクティブ水素吸入器ガイド</h1>
+            <p class="text-lg md:text-xl text-slate-600 max-w-3xl mx-auto">2025年版 日本市場レポートを基に、あなたの目的と予算に最適な一台を見つけましょう。</p>
+        </header>
+
+        <main>
+            <section id="finder" class="mb-16 p-6 md:p-8 bg-white rounded-2xl shadow-lg">
+                <h2 class="section-title text-center">🧭 あなたに合う一台を見つけよう</h2>
+                <p class="text-center text-slate-600 mb-8 max-w-2xl mx-auto">最初のステップとして、あなたの主な利用目的を教えてください。目的に応じて最適な製品グループをご案内します。</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 max-w-4xl mx-auto">
+                    <button data-filter-purpose="portable" class="purpose-btn text-lg p-6 rounded-xl border-2 border-slate-200 hover:border-teal-600 hover:bg-teal-50 transition-all duration-300 transform hover:-translate-y-1">
+                        <span class="text-3xl block mb-2">✈️</span>
+                        <span class="font-bold block text-slate-800">手軽さ・携帯性重視</span>
+                        <span class="text-sm text-slate-500">外出先での利用や、まず試したい方に</span>
+                    </button>
+                    <button data-filter-purpose="home" class="purpose-btn text-lg p-6 rounded-xl border-2 border-slate-200 hover:border-teal-600 hover:bg-teal-50 transition-all duration-300 transform hover:-translate-y-1">
+                        <span class="text-3xl block mb-2">🏡</span>
+                        <span class="font-bold block text-slate-800">家庭での日常利用</span>
+                        <span class="text-sm text-slate-500">家族での健康習慣やサロンでの利用に</span>
+                    </button>
+                    <button data-filter-purpose="pro" class="purpose-btn text-lg p-6 rounded-xl border-2 border-slate-200 hover:border-teal-600 hover:bg-teal-50 transition-all duration-300 transform hover:-translate-y-1">
+                        <span class="text-3xl block mb-2">🚀</span>
+                        <span class="font-bold block text-slate-800">最高の性能を追求</span>
+                        <span class="text-sm text-slate-500">高濃度・集中的な利用を目指す方に</span>
+                    </button>
+                </div>
+            </section>
+
+            <section id="comparison" class="mb-16">
+                <h2 class="section-title">📊 全製品 性能・価格比較</h2>
+                <p class="text-slate-600 mb-8 max-w-3xl">市場で販売・レンタルされている主要な水素吸入器を比較します。下のフィルターを使って絞り込んだり、グラフのバーをクリックして詳細を確認できます。</p>
+                <div class="flex flex-wrap gap-4 items-center mb-6 p-4 bg-white rounded-lg shadow-sm">
+                    <div class="font-bold text-slate-600">絞り込み:</div>
+                    <div>
+                        <span class="text-sm font-semibold mr-2">カテゴリ</span>
+                        <select id="category-filter" class="filter-control rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500">
+                            <option value="all">すべて</option>
+                            <option value="portable">ポータブル</option>
+                            <option value="home">家庭・サロン用</option>
+                            <option value="pro">業務用</option>
+                        </select>
+                    </div>
+                    <div>
+                        <span class="text-sm font-semibold mr-2">所有形態</span>
+                        <select id="ownership-filter" class="filter-control rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500">
+                            <option value="all">すべて</option>
+                            <option value="purchase">購入のみ</option>
+                            <option value="rental">レンタル可</option>
+                        </select>
+                    </div>
+                    <button id="reset-filters" class="ml-auto text-sm text-teal-700 hover:text-teal-900">リセット</button>
+                </div>
+                
+                <div class="bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-lg">
+                    <h3 class="font-bold text-xl mb-1 text-center text-slate-800">水素ガス発生量 (ml/分) 比較</h3>
+                    <p class="text-sm text-center text-slate-500 mb-4">数値が高いほど、短時間で多くの水素を吸入できます。</p>
+                    <div class="chart-container">
+                        <canvas id="performanceChart"></canvas>
+                    </div>
+                </div>
+
+                <div id="product-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+                </div>
+            </section>
+
+            <section id="cost-simulator" class="mb-16">
+                <h2 class="section-title">⚖️ 購入 vs レンタル コストシミュレーター</h2>
+                <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg flex flex-col lg:flex-row gap-8">
+                    <div class="lg:w-1/2">
+                        <h3 class="font-bold text-xl text-slate-800 mb-2">どちらがお得？ 長期コストを検証</h3>
+                        <p class="text-slate-600 mb-4">水素吸入器の導入で悩むのが「購入」と「レンタル」の選択です。代表的なレンタル可能モデル「リタエアー」を例に、長期的な総コストがどう変化するかをシミュレーションしてみましょう。</p>
+                        <p class="text-slate-600 mb-6">下のスライダーを動かして、使用年数を変更してみてください。購入とレンタルのコストが逆転する「損益分岐点」がわかります。</p>
+                        <div class="mb-4">
+                            <label for="years-slider" class="block font-medium text-slate-700">使用年数: <span id="years-label" class="font-bold text-teal-600 text-lg">4</span> 年</label>
+                            <input id="years-slider" type="range" min="1" max="7" value="4" step="0.5" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                        </div>
+                         <div id="cost-summary" class="p-4 bg-slate-50 rounded-lg">
+                         </div>
+                    </div>
+                    <div class="lg:w-1/2">
+                        <div class="chart-container" style="height: 300px; max-height: 40vh;">
+                            <canvas id="costChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="buyers-guide" class="mb-16">
+                 <h2 class="section-title">📚 購入前に知っておきたいこと</h2>
+                 <p class="text-slate-600 mb-8 max-w-3xl">製品スペック以外にも、知っておくべき重要なポイントがあります。後悔しない選択のために、各項目を確認しましょう。</p>
+                 <div class="space-y-4">
+                    <div class="accordion-item bg-white rounded-lg shadow-sm">
+                        <button class="accordion-header w-full flex justify-between items-center text-left p-4 font-semibold text-lg text-slate-800">
+                            <span>💡 技術仕様のキホン</span>
+                            <span class="accordion-icon transform transition-transform duration-300">▼</span>
+                        </button>
+                        <div class="accordion-content px-4 pb-4 text-slate-600">
+                            <p><strong>水素ガス発生量 (ml/分):</strong> 最も重要な性能指標。1分間に生成される水素ガスの量を示します。これが高いほど、水素の「投与量」が多くなります。</p>
+                            <p class="mt-2"><strong>水素純度 (%):</strong> 装置が生成するガスに含まれる水素の割合。多くの製品が99.9%以上を謳っていますが、これは吸入時の濃度とは異なります。</p>
+                            <p class="mt-2"><strong>吸入時濃度 (%):</strong> 実際に吸入する空気中の水素濃度。安全性のため、燃焼下限界濃度(約4%)未満に調整されています。「高純度」が必ずしも「高濃度吸入」を意味しない点に注意が必要です。</p>
+                            <p class="mt-2"><strong>生成方式 (PEM/SPE):</strong> 現在の主流技術。精製水のみで高純度の水素を安全に生成できます。</p>
+                        </div>
+                    </div>
+                    <div class="accordion-item bg-white rounded-lg shadow-sm">
+                        <button class="accordion-header w-full flex justify-between items-center text-left p-4 font-semibold text-lg text-slate-800">
+                            <span>🛡️ 安全性と法的位置づけ</span>
+                            <span class="accordion-icon transform transition-transform duration-300">▼</span>
+                        </button>
+                        <div class="accordion-content px-4 pb-4 text-slate-600">
+                            <p><strong>「医療機器」ではありません:</strong> 日本国内で市販されている水素吸入器は、法的に「雑貨」や「美容・健康機器」に分類されます。病気の治療や予防を目的とした製品ではないため、メーカーは医療的な効果を謳えません。</p>
+                            <p class="mt-2"><strong>「先進医療B」という事実:</strong> 2016年、心停止後症候群の患者を対象とした「水素ガス吸入療法」が先進医療Bとして承認されました。これは水素吸入という「概念」の可能性が公的に研究された事例であり、多くのメーカーが製品の信頼性の根拠として引用していますが、市販品がその臨床試験で使われたわけではありません。</p>
+                            <p class="mt-2"><strong>PSEマーク:</strong> 電気用品安全法に基づき、日本の安全基準を満たしていることを示すマーク。この表示があることは必須条件です。</p>
+                        </div>
+                    </div>
+                     <div class="accordion-item bg-white rounded-lg shadow-sm">
+                        <button class="accordion-header w-full flex justify-between items-center text-left p-4 font-semibold text-lg text-slate-800">
+                            <span>🤔 「体感」の個人差について</span>
+                            <span class="accordion-icon transform transition-transform duration-300">▼</span>
+                        </button>
+                        <div class="accordion-content px-4 pb-4 text-slate-600">
+                            <p>レビューでは「睡眠の質が向上した」「疲れがとれた」といった声が多い一方で、「特に変化を感じない」という意見も存在します。効果の体感には個人差が大きいのが実情です。</p>
+                            <p class="mt-2">この「効果の不確実性」こそ、レンタルが有効な選択肢となる理由です。高額な製品をいきなり購入する前に、レンタルで数ヶ月間試し、自分にとって価値があるかを判断するのが賢明なアプローチと言えます。これを「自分自身を対象としたn=1の臨床試験」と捉えることができます。</p>
+                        </div>
+                    </div>
+                 </div>
+            </section>
+        </main>
+        
+        <footer class="text-center text-xs text-slate-400 py-6 border-t mt-12">
+            <p>このアプリケーションは「2025年版 日本水素吸入器市場レポート」のデータを基に作成されました。</p>
+            <p>価格や仕様は変更される可能性があります。最終的な情報は各メーカー・販売代理店の公式サイトでご確認ください。</p>
+        </footer>
+    </div>
+    
+    <div id="product-modal" class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center p-4 z-50">
+        <div id="modal-content" class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto relative">
+             <button id="close-modal" class="absolute top-4 right-4 text-slate-500 hover:text-slate-800 text-2xl font-bold">&times;</button>
+             <div id="modal-body" class="p-6 md:p-8"></div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const productData = [
+            { id: 1, name: 'KENCOS4', manufacturer: 'アクアバンク', category: 'portable', generationRate: 8, purity: null, purchasePrice: 43450, rental: false, monthlyRental: null, features: 'ポケットサイズの携帯性。フレーバーカートリッジでアロマも楽しめる。ライフスタイルガジェットとしての側面も。', tco: '初期費用は低いが、専用電解液・フレーバー・電極槽などの消耗品コストが継続的に発生。ヘビーユースの場合、月4,000円以上のランニングコストがかかる可能性も。' },
+            { id: 2, name: 'ラブリエエラン2', manufacturer: 'イズミズ', category: 'portable', generationRate: 30, purity: '99%以上', purchasePrice: 239800, rental: false, monthlyRental: null, features: 'USB-PD対応のモバイルバッテリーで駆動可能。軽量570gで本格的な性能を持つ。スマホアプリ連携機能あり。', tco: '消耗品は精製水のみでランニングコストは低い。購入価格は高めだが、性能と携帯性のバランスが良い。' },
+            { id: 3, name: 'ラブリエリュクス', manufacturer: 'イズミズ', category: 'home', generationRate: 60, purity: '99%以上', purchasePrice: 275000, rental: true, monthlyRental: '一部あり', features: '水素吸入に加え、飲み物に水素を吹き込み水素水を生成する「バブリング機能」が最大の特徴。家庭用ウェルネスハブ。', tco: '消耗品は精製水のみ。吸入と水素水の両方を楽しみたいユーザー向けの多機能モデル。' },
+            { id: 4, name: 'リタエアー', manufacturer: 'リタハート', category: 'home', generationRate: 100, purity: '99.99%', purchasePrice: 299200, rental: true, monthlyRental: 5500, features: 'レンタル市場での圧倒的な人気モデル。家庭用として十分な性能。メンテナンスは専用精製水の補充のみで容易。', tco: 'レンタルなら月額5,500円で始められる。購入とレンタルの損益分岐点は約4年。長期利用なら購入がお得。' },
+            { id: 5, name: 'FRESCA H2F150', manufacturer: 'FRESCA', category: 'home', generationRate: 150, purity: '99.99%', purchasePrice: 217800, rental: false, monthlyRental: null, features: '家庭用クラスで高い発生量を誇りながら、価格が比較的抑えられているコストパフォーマンスモデル。', tco: '消耗品は精製水のみ。高い発生量を求めるが、プロ仕様機ほどの予算はないユーザーに適している。' },
+            { id: 6, name: 'ハイセルベーターPF72', manufacturer: 'ヘリックスジャパン', category: 'pro', generationRate: 850, purity: '99.99%', purchasePrice: 1760000, rental: true, monthlyRental: 60000, features: '業界トップクラスの発生量。医療機関への導入実績多数。長時間連続運転可能な業務用モデル。3年間の長期保証。', tco: '購入・レンタルともに高額。個人の趣味を超えた、本格的な健康投資や事業用としての位置づけ。' },
+            { id: 7, name: 'ハイセルベーターET100', manufacturer: 'ヘリックスジャパン', category: 'pro', generationRate: 1200, purity: '99.99%', purchasePrice: null, rental: true, monthlyRental: 70000, features: 'PF72を上回る圧倒的な発生量。主にプロフェッショナル市場向けのレンタルモデル。最高の性能を求めるユーザーに。', tco: '市場最高レベルの性能を持つが、コストも最高レベル。クリニックや大規模サロン向け。' }
+        ];
+
+        let performanceChart;
+        let costChart;
+        
+        const categoryFilter = document.getElementById('category-filter');
+        const ownershipFilter = document.getElementById('ownership-filter');
+        const purposeBtns = document.querySelectorAll('.purpose-btn');
+        const productGrid = document.getElementById('product-grid');
+        const yearsSlider = document.getElementById('years-slider');
+        const modal = document.getElementById('product-modal');
+        const closeModalBtn = document.getElementById('close-modal');
+        const modalBody = document.getElementById('modal-body');
+
+        function formatCurrency(num) {
+            if (num === null || num === undefined) return 'N/A';
+            return `¥${num.toLocaleString()}`;
+        }
+        
+        function renderProducts(products) {
+            productGrid.innerHTML = '';
+            if (products.length === 0) {
+                productGrid.innerHTML = `<div class="col-span-1 md:col-span-2 lg:col-span-3 text-center text-slate-500 py-10">
+                    <p class="text-xl">😢</p>
+                    <p>該当する製品が見つかりませんでした。</p>
+                    <p class="text-sm mt-2">フィルター条件を変更してみてください。</p>
+                </div>`;
+                return;
+            }
+            products.forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'product-card bg-white rounded-xl shadow-lg overflow-hidden flex flex-col transition-all duration-300 hover:shadow-xl hover:-translate-y-1';
+                card.innerHTML = `
+                    <div class="p-5 flex-grow">
+                        <div class="flex justify-between items-start mb-2">
+                             <h3 class="font-bold text-xl text-slate-800">${p.name}</h3>
+                             <span class="text-xs font-semibold px-2 py-1 rounded-full ${p.category === 'portable' ? 'bg-blue-100 text-blue-800' : p.category === 'home' ? 'bg-green-100 text-green-800' : 'bg-purple-100 text-purple-800'}">${p.category === 'portable' ? 'ポータブル' : p.category === 'home' ? '家庭用' : '業務用'}</span>
+                        </div>
+                        <p class="text-sm text-slate-500 mb-4">${p.manufacturer}</p>
+                        
+                        <div class="space-y-3 text-sm mb-4">
+                            <div class="flex justify-between">
+                                <span class="font-semibold text-slate-600">水素発生量:</span>
+                                <span class="font-bold text-lg text-teal-600">${p.generationRate} ml/min</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="font-semibold text-slate-600">購入価格:</span>
+                                <span class="font-semibold">${formatCurrency(p.purchasePrice)}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="font-semibold text-slate-600">レンタル:</span>
+                                <span>${p.rental ? `可 (${formatCurrency(p.monthlyRental)}/月)` : '不可'}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4 bg-slate-50">
+                       <button data-id="${p.id}" class="details-btn w-full btn-primary font-bold py-2 px-4 rounded-lg">詳細を見る</button>
+                    </div>
+                `;
+                productGrid.appendChild(card);
+            });
+
+            document.querySelectorAll('.details-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const productId = parseInt(e.currentTarget.dataset.id);
+                    const product = productData.find(p => p.id === productId);
+                    showModal(product);
+                });
+            });
+        }
+
+        function updatePerformanceChart(products) {
+            if (performanceChart) {
+                performanceChart.destroy();
+            }
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            const sortedProducts = [...products].sort((a, b) => b.generationRate - a.generationRate);
+
+            performanceChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: sortedProducts.map(p => p.name),
+                    datasets: [{
+                        label: '水素ガス発生量 (ml/分)',
+                        data: sortedProducts.map(p => p.generationRate),
+                        backgroundColor: sortedProducts.map(p => p.category === 'portable' ? 'rgba(59, 130, 246, 0.7)' : p.category === 'home' ? 'rgba(16, 185, 129, 0.7)' : 'rgba(168, 85, 247, 0.7)'),
+                        borderColor: sortedProducts.map(p => p.category === 'portable' ? 'rgb(59, 130, 246)' : p.category === 'home' ? 'rgb(16, 185, 129)' : 'rgb(168, 85, 247)'),
+                        borderWidth: 2,
+                        borderRadius: 5,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                             grid: {
+                                color: '#e5e7eb',
+                             },
+                             title: {
+                                display: true,
+                                text: '水素ガス発生量 (ml/分)',
+                                font: { size: 14 }
+                             }
+                        },
+                        y: {
+                             grid: {
+                                display: false
+                             }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.raw} ml/min`;
+                                }
+                            }
+                        }
+                    },
+                    onClick: (e, elements) => {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            const product = sortedProducts[index];
+                            showModal(product);
+                        }
+                    }
+                }
+            });
+        }
+        
+        function filterAndRender() {
+            const category = categoryFilter.value;
+            const ownership = ownershipFilter.value;
+
+            let filtered = productData;
+
+            if (category !== 'all') {
+                filtered = filtered.filter(p => p.category === category);
+            }
+            if (ownership === 'purchase') {
+                filtered = filtered.filter(p => p.purchasePrice !== null);
+            } else if (ownership === 'rental') {
+                filtered = filtered.filter(p => p.rental);
+            }
+            
+            renderProducts(filtered);
+            updatePerformanceChart(filtered);
+        }
+
+        function updateCostSimulator() {
+            const years = parseFloat(yearsSlider.value);
+            document.getElementById('years-label').textContent = `${years} `;
+
+            const litaAir = productData.find(p => p.name === 'リタエアー');
+            const purchaseCost = litaAir.purchasePrice;
+            const rentalInitialCost = 27500;
+            const rentalMonthlyCost = litaAir.monthlyRental;
+            const rentalTotalCost = rentalInitialCost + (rentalMonthlyCost * 12 * years);
+
+            document.getElementById('cost-summary').innerHTML = `
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center">
+                        <span class="font-semibold text-slate-800">購入の総コスト:</span>
+                        <span class="font-bold text-lg text-blue-600">${formatCurrency(purchaseCost)}</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="font-semibold text-slate-800">レンタルの総コスト:</span>
+                        <span class="font-bold text-lg text-green-600">${formatCurrency(Math.round(rentalTotalCost))}</span>
+                    </div>
+                </div>
+                <div class="mt-4 pt-2 border-t text-center text-sm font-semibold ${purchaseCost < rentalTotalCost ? 'text-blue-700' : 'text-green-700'}">
+                    ${years}年後には<br class="sm:hidden"/>「${purchaseCost < rentalTotalCost ? '購入' : 'レンタル'}」の方がお得です。
+                </div>
+            `;
+            
+            updateCostChart(years);
+        }
+        
+        function updateCostChart(currentYear) {
+            if (costChart) {
+                costChart.destroy();
+            }
+            const litaAir = productData.find(p => p.name === 'リタエアー');
+            const purchaseCost = litaAir.purchasePrice;
+            const rentalInitialCost = 27500;
+            const rentalMonthlyCost = litaAir.monthlyRental;
+            
+            const labels = [];
+            const purchaseData = [];
+            const rentalData = [];
+            for (let i = 0; i <= 7; i++) {
+                labels.push(`${i}年`);
+                purchaseData.push(purchaseCost);
+                rentalData.push(rentalInitialCost + (rentalMonthlyCost * 12 * i));
+            }
+            
+            const ctx = document.getElementById('costChart').getContext('2d');
+            costChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: '購入の総コスト',
+                            data: purchaseData,
+                            borderColor: 'rgb(37, 99, 235)',
+                            backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                            fill: false,
+                            tension: 0.1,
+                            pointRadius: 5,
+                            pointHoverRadius: 7,
+                        },
+                        {
+                            label: 'レンタルの総コスト',
+                            data: rentalData,
+                            borderColor: 'rgb(22, 163, 74)',
+                            backgroundColor: 'rgba(22, 163, 74, 0.1)',
+                            fill: false,
+                            tension: 0.1,
+                            pointRadius: 5,
+                            pointHoverRadius: 7,
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) { return value / 10000 + '万円' }
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${formatCurrency(context.raw)}`;
+                                }
+                            }
+                        },
+                        annotation: {
+                            annotations: {
+                                line1: {
+                                    type: 'line',
+                                    xMin: currentYear,
+                                    xMax: currentYear,
+                                    borderColor: 'rgb(255, 99, 132)',
+                                    borderWidth: 2,
+                                    borderDash: [6, 6],
+                                    label: {
+                                        content: `${currentYear}年`,
+                                        enabled: true,
+                                        position: 'start'
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function showModal(product) {
+            modalBody.innerHTML = `
+                <h2 class="text-3xl font-bold text-slate-800 mb-2">${product.name}</h2>
+                <p class="text-md text-slate-500 mb-6">${product.manufacturer}</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                    <div class="p-4 bg-slate-50 rounded-lg">
+                        <p class="text-sm text-slate-600">水素発生量</p>
+                        <p class="text-2xl font-bold text-teal-600">${product.generationRate} ml/min</p>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-lg">
+                        <p class="text-sm text-slate-600">水素純度</p>
+                        <p class="text-2xl font-bold text-teal-600">${product.purity || 'N/A'}</p>
+                    </div>
+                </div>
+
+                <div class="space-y-4 mb-6">
+                    <div class="flex justify-between p-3 bg-white border rounded-lg">
+                        <span class="font-semibold text-slate-600">購入価格:</span>
+                        <span class="font-bold">${formatCurrency(product.purchasePrice)}</span>
+                    </div>
+                    <div class="flex justify-between p-3 bg-white border rounded-lg">
+                        <span class="font-semibold text-slate-600">レンタル:</span>
+                        <span class="font-bold">${product.rental ? `可 (${formatCurrency(product.monthlyRental)}/月)` : '不可'}</span>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="font-bold text-lg text-slate-700 mb-2 border-b pb-1">特徴</h4>
+                        <p class="text-slate-600">${product.features}</p>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-lg text-slate-700 mb-2 border-b pb-1">長期コスト分析 (TCO)</h4>
+                        <p class="text-slate-600">${product.tco}</p>
+                    </div>
+                </div>
+            `;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function hideModal() {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+        
+        document.querySelectorAll('.filter-control').forEach(el => el.addEventListener('change', filterAndRender));
+        document.getElementById('reset-filters').addEventListener('click', () => {
+            categoryFilter.value = 'all';
+            ownershipFilter.value = 'all';
+            purposeBtns.forEach(btn => btn.classList.remove('bg-teal-100', 'border-teal-600'));
+            filterAndRender();
+        });
+
+        purposeBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const purpose = e.currentTarget.dataset.filterPurpose;
+                categoryFilter.value = purpose;
+                filterAndRender();
+
+                purposeBtns.forEach(b => b.classList.remove('bg-teal-100', 'border-teal-600'));
+                e.currentTarget.classList.add('bg-teal-100', 'border-teal-600');
+                
+                const comparisonSection = document.getElementById('comparison');
+                comparisonSection.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+
+        yearsSlider.addEventListener('input', updateCostSimulator);
+        
+        closeModalBtn.addEventListener('click', hideModal);
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                hideModal();
+            }
+        });
+
+        document.querySelectorAll('.accordion-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const content = header.nextElementSibling;
+                const icon = header.querySelector('.accordion-icon');
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                    icon.style.transform = 'rotate(0deg)';
+                } else {
+                    document.querySelectorAll('.accordion-content').forEach(c => c.style.maxHeight = null);
+                    document.querySelectorAll('.accordion-icon').forEach(i => i.style.transform = 'rotate(0deg)');
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                    icon.style.transform = 'rotate(180deg)';
+                }
+            });
+        });
+
+        filterAndRender();
+        updateCostSimulator();
+    });
+    </script>
+</body>
+</html>
