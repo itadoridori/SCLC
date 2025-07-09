@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>漢方薬とがん支持療法インタラクティブガイド</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chosen Palette: Calm Harmony -->
+    <!-- Application Structure Plan: The application uses a tabbed navigation structure (Intro, Drug Comparison, Health Food, Summary) to guide users from foundational knowledge to specific product analysis and a final conclusion. The core is the interactive side-by-side comparison of the two approved drugs, allowing users to toggle between different facets of information (basics, cancer support, evidence, safety) and view key data visualized in charts. This non-linear, task-oriented design was chosen over a simple report layout to empower users to directly compare the most relevant options and understand complex data (like the GENIUS trial) visually, enhancing usability and retention. -->
+    <!-- Visualization & Content Choices: Report Info: GENIUS trial results -> Goal: Compare/Explain Paradox -> Viz: Bar Chart -> Interaction: Static view with clear labels -> Justification: Directly visualizes the counterintuitive results (higher side effects but also higher chemo dose), making a complex finding easy to grasp. Library: Chart.js. Report Info: Ninjin'yoeito's multiple effects -> Goal: Inform/Summarize -> Viz: Radar Chart -> Interaction: Static view -> Justification: Shows the holistic, multi-symptom benefits of the drug at a glance. Library: Chart.js. Report Info: Kanmeisui -> Goal: Warn/Educate -> Viz: Structured text with warning icons -> Interaction: N/A -> Justification: Emphasizes the lack of evidence and guides critical thinking, rather than presenting it as a comparable option. Library: HTML/CSS/Unicode. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
+        }
+        .tab-button.active {
+            border-color: #3b82f6;
+            color: #3b82f6;
+            font-weight: 600;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .drug-tab.active {
+            background-color: #e0e7ff;
+            color: #3730a3;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900">漢方薬とがん支持療法</h1>
+            <p class="mt-2 text-lg text-gray-600">エビデンスに基づくインタラクティブガイド</p>
+        </header>
+
+        <nav class="flex justify-center border-b-2 border-gray-200 mb-8 space-x-2 md:space-x-4">
+            <button data-tab="intro" class="tab-button text-sm md:text-base py-3 px-2 md:px-4 border-b-2 border-transparent transition-colors duration-300">はじめに</button>
+            <button data-tab="comparison" class="tab-button text-sm md:text-base py-3 px-2 md:px-4 border-b-2 border-transparent transition-colors duration-300">医薬品の比較</button>
+            <button data-tab="health-food" class="tab-button text-sm md:text-base py-3 px-2 md:px-4 border-b-2 border-transparent transition-colors duration-300">健康食品の評価</button>
+            <button data-tab="summary" class="tab-button text-sm md:text-base py-3 px-2 md:px-4 border-b-2 border-transparent transition-colors duration-300">まとめ</button>
+        </nav>
+
+        <main>
+            <section id="intro" class="content-section p-4 md:p-6 bg-white rounded-lg shadow-sm">
+                <h2 class="text-2xl font-bold mb-4 text-gray-800">始める前に：知っておくべきこと</h2>
+                <p class="mb-6 text-gray-700">このガイドは、がん治療における支持療法（副作用や症状を和らげるケア）として検討されることがある漢方薬と健康食品について、科学的根拠（エビデンス）に基づいて情報を整理したものです。ご自身の治療について判断される前に、必ず主治医にご相談ください。</p>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="p-6 bg-blue-50 rounded-lg border border-blue-200">
+                        <h3 class="font-bold text-xl mb-2 text-blue-800 flex items-center">💊 医薬品（漢方薬）</h3>
+                        <p class="text-blue-900">国（PMDA）が有効性と安全性を審査し、承認した薬です。「病気の治療」や「症状の改善」といった効能・効果を明示できます。医師が処方する医療用医薬品と、薬局で買える一般用医薬品があります。本ガイドでは「牛車腎気丸」と「人参養栄湯」がこれにあたります。</p>
+                    </div>
+                    <div class="p-6 bg-green-50 rounded-lg border border-green-200">
+                        <h3 class="font-bold text-xl mb-2 text-green-800 flex items-center">🌿 健康食品</h3>
+                        <p class="text-green-900">あくまで食品であり、「病気の治療」を目的としたものではありません。有効性の証明は義務付けられておらず、安全性のみが管理されています。「健康維持のため」といった一般的な表現で販売されます。本ガイドの「漢命水」はこれに分類されます。</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="comparison" class="content-section">
+                <div class="text-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">医薬品の比較：牛車腎気丸 vs 人参養栄湯</h2>
+                    <p class="mt-2 text-gray-600">2つの承認された漢方薬を、目的や特徴に応じて比較します。</p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8">
+                    
+                    <article id="goshajinkigan-card" class="p-6 bg-white rounded-lg shadow-lg">
+                        <h3 class="text-2xl font-bold text-center mb-4 text-indigo-800">牛車腎気丸 (ごしゃじんきがん)</h3>
+                        <div class="flex justify-center mb-4 rounded-md shadow-sm" role="group">
+                            <button data-drug="goshajinkigan" data-subtab="info" class="drug-tab px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-l-lg hover:bg-gray-100 focus:z-10 focus:ring-2 focus:ring-blue-700">基本情報</button>
+                            <button data-drug="goshajinkigan" data-subtab="support" class="drug-tab px-4 py-2 text-sm font-medium text-gray-900 bg-white border-t border-b border-gray-200 hover:bg-gray-100 focus:z-10 focus:ring-2 focus:ring-blue-700">がん支持療法</button>
+                            <button data-drug="goshajinkigan" data-subtab="safety" class="drug-tab px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-r-md hover:bg-gray-100 focus:z-10 focus:ring-2 focus:ring-blue-700">安全性</button>
+                        </div>
+                        <div class="drug-content-container mt-4">
+                            <div id="goshajinkigan-info" class="drug-content">
+                                <h4 class="font-bold text-lg mb-2">主な目的</h4>
+                                <p class="text-sm text-gray-700">体を温め、水分代謝と血行を改善。特に下半身の症状に用いられます。</p>
+                                <h4 class="font-bold text-lg mt-4 mb-2">承認された効能・効果</h4>
+                                <p class="text-sm text-gray-600 bg-gray-100 p-2 rounded">体力中等度以下で、疲れやすく、四肢が冷えやすく尿量減少または多尿で時に口渇があるものの次の諸症：下肢痛、腰痛、しびれ、高齢者のかすみ目、かゆみ、排尿困難、頻尿、むくみ。</p>
+                            </div>
+                            <div id="goshajinkigan-support" class="drug-content hidden">
+                                <h4 class="font-bold text-lg mb-2">化学療法誘発性末梢神経障害 (CIPN)</h4>
+                                <p class="text-sm text-gray-700 mb-4">抗がん剤（特にオキサリプラチン等）による手足の「しびれ」に対する支持療法として注目されています。目的は、しびれをゼロにすることではなく、副作用に耐えながら治療を継続しやすくすることです。</p>
+                                <div class="chart-container">
+                                    <canvas id="genius-trial-chart"></canvas>
+                                </div>
+                                <div class="text-xs text-center text-gray-500 mt-2">GENIUS試験の主な結果</div>
+                                <div class="mt-4 p-3 bg-indigo-50 rounded-lg text-sm">
+                                    <p class="font-semibold text-indigo-900">グラフの解説：</p>
+                                    <p class="text-indigo-800">大規模臨床試験(GENIUS試験)では、牛車腎気丸は重い神経障害(G2以上)の発症を<span class="font-bold">予防できませんでした</span>(むしろ増加)。しかし、抗がん剤の投与量は<span class="font-bold">高く維持できました</span>。これは、軽い症状を和らげることで、患者が治療を継続しやすくなった可能性を示唆します。</p>
+                                </div>
+                            </div>
+                            <div id="goshajinkigan-safety" class="drug-content hidden">
+                                <h4 class="font-bold text-lg mb-2">主な副作用</h4>
+                                <p class="text-sm text-gray-700 mb-2">使用前に必ず医師・薬剤師にご相談ください。</p>
+                                <ul class="list-disc list-inside text-sm space-y-1 text-gray-700">
+                                    <li>消化器症状（食欲不振、胃部不快感、吐き気など）</li>
+                                    <li>皮膚症状（発疹、かゆみなど）</li>
+                                </ul>
+                                <h4 class="font-bold text-lg mt-4 mb-2 text-red-700">特に注意すべき重篤な副作用</h4>
+                                <ul class="list-disc list-inside text-sm space-y-1 text-red-600">
+                                    <li>間質性肺炎（息切れ、空咳、発熱など）</li>
+                                    <li>肝機能障害、黄疸</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article id="ninjinyoeito-card" class="p-6 bg-white rounded-lg shadow-lg">
+                        <h3 class="text-2xl font-bold text-center mb-4 text-emerald-800">人参養栄湯 (にんじんようえいとう)</h3>
+                        <div class="flex justify-center mb-4 rounded-md shadow-sm" role="group">
+                             <button data-drug="ninjinyoeito" data-subtab="info" class="drug-tab px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-l-lg hover:bg-gray-100 focus:z-10 focus:ring-2 focus:ring-blue-700">基本情報</button>
+                            <button data-drug="ninjinyoeito" data-subtab="support" class="drug-tab px-4 py-2 text-sm font-medium text-gray-900 bg-white border-t border-b border-gray-200 hover:bg-gray-100 focus:z-10 focus:ring-2 focus:ring-blue-700">がん支持療法</button>
+                            <button data-drug="ninjinyoeito" data-subtab="safety" class="drug-tab px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-r-md hover:bg-gray-100 focus:z-10 focus:ring-2 focus:ring-blue-700">安全性</button>
+                        </div>
+                        <div class="drug-content-container mt-4">
+                            <div id="ninjinyoeito-info" class="drug-content">
+                                <h4 class="font-bold text-lg mb-2">主な目的</h4>
+                                <p class="text-sm text-gray-700">エネルギー(気)と栄養(血)の両方を補い、心身の消耗状態を回復させます。</p>
+                                <h4 class="font-bold text-lg mt-4 mb-2">承認された効能・効果</h4>
+                                <p class="text-sm text-gray-600 bg-gray-100 p-2 rounded">体力虚弱なものの次の諸症：病後・術後などの体力低下、疲労倦怠、食欲不振、ねあせ、手足の冷え、貧血。</p>
+                            </div>
+                             <div id="ninjinyoeito-support" class="drug-content hidden">
+                                <h4 class="font-bold text-lg mb-2">包括的なQOLの改善</h4>
+                                <p class="text-sm text-gray-700 mb-4">がん患者特有の倦怠感、食欲不振、体重減少（がん悪液質）など、複数の問題を包括的にケアし、生活の質（QOL）を全体的に引き上げることを目指します。</p>
+                                <div class="chart-container">
+                                    <canvas id="qol-improvement-chart"></canvas>
+                                </div>
+                                 <div class="text-xs text-center text-gray-500 mt-2">人参養栄湯の多角的な役割（イメージ）</div>
+                                <div class="mt-4 p-3 bg-emerald-50 rounded-lg text-sm">
+                                    <p class="font-semibold text-emerald-900">グラフの解説：</p>
+                                    <p class="text-emerald-800">人参養栄湯は、特定の症状だけでなく、<span class="font-bold">倦怠感の軽減</span>、<span class="font-bold">食欲の改善</span>、<span class="font-bold">精神的な安定</span>、<span class="font-bold">免疫への働きかけ</span>など、消耗した心身を多角的にサポートする可能性が多くの研究で示唆されています。</p>
+                                </div>
+                            </div>
+                            <div id="ninjinyoeito-safety" class="drug-content hidden">
+                                <h4 class="font-bold text-lg mb-2">主な副作用</h4>
+                                <p class="text-sm text-gray-700 mb-2">使用前に必ず医師・薬剤師にご相談ください。</p>
+                                <ul class="list-disc list-inside text-sm space-y-1 text-gray-700">
+                                    <li>消化器症状（食欲不振、胃部不快感など）</li>
+                                    <li>皮膚症状（発疹、かゆみなど）</li>
+                                </ul>
+                                <h4 class="font-bold text-lg mt-4 mb-2 text-red-700">特に注意すべき重篤な副作用</h4>
+                                <ul class="list-disc list-inside text-sm space-y-1 text-red-600">
+                                    <li>偽アルドステロン症、ミオパチー（むくみ、体重増加、脱力感、血圧上昇など）</li>
+                                    <li>肝機能障害、黄疸</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </section>
+            
+            <section id="health-food" class="content-section p-6 bg-white rounded-lg shadow-sm">
+                <div class="p-6 bg-amber-50 border-l-4 border-amber-500">
+                    <h2 class="text-2xl font-bold mb-4 text-amber-900 flex items-center">
+                        <span class="text-3xl mr-3">⚠️</span>健康食品の評価：漢命水
+                    </h2>
+                    <p class="mb-4 text-amber-800">漢命水は「健康食品」であり、医薬品ではありません。その効果や安全性を評価する際には、医薬品とは全く異なる視点が必要です。</p>
+                    <div class="space-y-4">
+                        <div>
+                            <h3 class="font-bold text-lg text-gray-800">科学的エビデンスの欠如</h3>
+                            <p class="text-gray-700">「漢命水」という製品自体を用いて、がん患者への有効性や安全性を調べた、信頼できる学術論文や臨床試験は<span class="font-bold">存在しません</span>。個々の成分（霊芝、冬虫夏草など）に関する研究はあっても、それが製品の効果を保証するものではありません。</p>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg text-gray-800">考慮すべき３つのポイント</h3>
+                             <ol class="list-decimal list-inside mt-2 space-y-2 text-gray-700">
+                                <li><span class="font-semibold">用量・濃度の不明確さ：</span>有効成分が研究で使われた量と同じだけ含まれている保証はありません。</li>
+                                <li><span class="font-semibold">品質・抽出法の違い：</span>原料の質や製造方法によって、効果は大きく変わります。</li>
+                                <li><span class="font-semibold">相互作用のリスク：</span>標準治療で使っている薬との間に、予期せぬ相互作用（効果を弱めたり、副作用を強めたりする）が起こる可能性があります。</li>
+                            </ol>
+                        </div>
+                        <div class="mt-6 p-4 bg-red-100 border border-red-200 rounded-lg">
+                            <h4 class="font-bold text-red-800">最も重要な注意点：機会損失</h4>
+                            <p class="text-red-700">科学的根拠のある標準治療や支持療法を受ける機会を逃し、効果が不確かな健康食品に頼ることは、最も避けるべき事態です。利用を検討する場合は、<span class="font-bold">必ず事前に主治医や薬剤師に相談してください。</span></p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="summary" class="content-section p-4 md:p-6 bg-white rounded-lg shadow-sm">
+                <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">最終まとめ：選択肢の比較</h2>
+                <p class="text-center text-gray-600 mb-8">各製品の分類、エビデンスレベル、主な目的、安全性の懸念を一覧で比較します。</p>
+                <div class="overflow-x-auto">
+                    <table class="w-full min-w-max text-sm text-left text-gray-500">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+                            <tr>
+                                <th scope="col" class="px-6 py-3">項目</th>
+                                <th scope="col" class="px-6 py-3">牛車腎気丸</th>
+                                <th scope="col" class="px-6 py-3">人参養栄湯</th>
+                                <th scope="col" class="px-6 py-3 text-red-600">漢命水</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="bg-white border-b">
+                                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">製品分類</th>
+                                <td class="px-6 py-4">医薬品</td>
+                                <td class="px-6 py-4">医薬品</td>
+                                <td class="px-6 py-4 font-bold text-red-600">健康食品</td>
+                            </tr>
+                            <tr class="bg-gray-50 border-b">
+                                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">主な研究対象</th>
+                                <td class="px-6 py-4">化学療法の副作用（しびれ）軽減、治療の忍容性向上</td>
+                                <td class="px-6 py-4">倦怠感、食欲不振、悪液質など包括的なQOL改善</td>
+                                <td class="px-6 py-4">（証明されたものなし）</td>
+                            </tr>
+                            <tr class="bg-white border-b">
+                                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">エビデンスレベル</th>
+                                <td class="px-6 py-4">中〜高 (RCTあり)</td>
+                                <td class="px-6 py-4">中〜高 (臨床試験多数)</td>
+                                <td class="px-6 py-4 font-bold text-red-600">なし</td>
+                            </tr>
+                             <tr class="bg-gray-50 border-b">
+                                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">安全性の懸念</th>
+                                <td class="px-6 py-4">間質性肺炎、肝機能障害</td>
+                                <td class="px-6 py-4">偽アルドステロン症、肝機能障害</td>
+                                <td class="px-6 py-4 font-bold text-red-600">不明（未検証）</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                 <div class="mt-8 p-6 bg-blue-50 border-t-4 border-blue-500 rounded-b-lg">
+                    <h3 class="text-xl font-bold text-blue-800 mb-3">次にとるべき行動</h3>
+                    <p class="text-blue-900">このガイドで得た情報を基に、ご自身の状況に最も適したケアについて、担当の医師、薬剤師、緩和ケアチームなどの専門家と相談することが最も重要です。このページを印刷、またはスマートフォンで見せながら、以下の点について話し合ってみましょう。</p>
+                    <ul class="list-disc list-inside mt-4 space-y-2 text-blue-900">
+                        <li>自分の病状や治療計画に、牛車腎気丸や人参養栄湯の導入は適しているか？</li>
+                        <li>考えられるメリットと、副作用のリスクをどう考えるか？</li>
+                        <li>現在使っている薬との飲み合わせに問題はないか？</li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const tabs = document.querySelectorAll('.tab-button');
+    const contents = document.querySelectorAll('.content-section');
+    const drugTabs = document.querySelectorAll('.drug-tab');
+
+    function showTab(tabId) {
+        contents.forEach(content => {
+            if (content.id === tabId) {
+                content.classList.add('active');
+            } else {
+                content.classList.remove('active');
+            }
+        });
+        tabs.forEach(tab => {
+            if (tab.dataset.tab === tabId) {
+                tab.classList.add('active');
+            } else {
+                tab.classList.remove('active');
+            }
+        });
+    }
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            showTab(tab.dataset.tab);
+        });
+    });
+
+    drugTabs.forEach(tab => {
+        tab.addEventListener('click', (e) => {
+            const drug = e.target.dataset.drug;
+            const subtab = e.target.dataset.subtab;
+            
+            const parentCard = document.getElementById(`${drug}-card`);
+            
+            parentCard.querySelectorAll('.drug-tab').forEach(t => t.classList.remove('active'));
+            e.target.classList.add('active');
+            
+            parentCard.querySelectorAll('.drug-content').forEach(content => {
+                if (content.id === `${drug}-${subtab}`) {
+                    content.classList.remove('hidden');
+                } else {
+                    content.classList.add('hidden');
+                }
+            });
+        });
+    });
+
+    showTab('intro');
+    document.querySelector('[data-drug="goshajinkigan"][data-subtab="info"]').click();
+    document.querySelector('[data-drug="ninjinyoeito"][data-subtab="info"]').click();
+
+
+    const geniusTrialCtx = document.getElementById('genius-trial-chart').getContext('2d');
+    new Chart(geniusTrialCtx, {
+        type: 'bar',
+        data: {
+            labels: ['重い神経障害の発症率 (G2以上)', '抗がん剤の投与量 (RDI)'],
+            datasets: [{
+                label: 'プラセボ群 (偽薬)',
+                data: [31.2, 78.99],
+                backgroundColor: 'rgba(107, 114, 128, 0.6)',
+                borderColor: 'rgba(107, 114, 128, 1)',
+                borderWidth: 1
+            }, {
+                label: '牛車腎気丸群',
+                data: [50.6, 83.41],
+                backgroundColor: 'rgba(99, 102, 241, 0.6)',
+                borderColor: 'rgba(99, 102, 241, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: '牛車腎気丸 vs プラセボ (GENIUS試験)'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.parsed.y !== null) {
+                                label += context.parsed.y + '%';
+                            }
+                            return label;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: '割合 (%)'
+                    }
+                }
+            }
+        }
+    });
+
+    const qolImprovementCtx = document.getElementById('qol-improvement-chart').getContext('2d');
+    new Chart(qolImprovementCtx, {
+        type: 'radar',
+        data: {
+            labels: ['倦怠感の軽減', '食欲の改善', 'QOL向上', '精神安定', '免疫調整'],
+            datasets: [{
+                label: '人参養栄湯の期待される役割',
+                data: [8, 9, 8, 7, 6],
+                fill: true,
+                backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                borderColor: 'rgb(16, 185, 129)',
+                pointBackgroundColor: 'rgb(16, 185, 129)',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: 'rgb(16, 185, 129)'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: '人参養栄湯の多角的サポート'
+                },
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                r: {
+                    angleLines: {
+                        display: true
+                    },
+                    suggestedMin: 0,
+                    suggestedMax: 10,
+                    pointLabels: {
+                        font: {
+                            size: 12
+                        }
+                    },
+                    ticks: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+
+</body>
+</html>

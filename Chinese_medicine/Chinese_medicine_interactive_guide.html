@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>漢方インタラクティブガイド：牛車腎気丸・人参養栄湯・漢命水</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Harmony Neutrals -->
+    <!-- Application Structure Plan: タブベースのSPA構造を採用。最初に医薬品と健康食品の重要な違いを提示。各製品（牛車腎気丸, 人参養栄湯, 漢命水）をタブで切り替え、詳細情報（適応体質、成分、効能、安全性）を表示。これにより、利用者は関心のある製品に直接アクセスし、混乱なく情報を比較できます。ページ下部には、3製品の主要な違いを一覧できる比較表を配置し、理解を深めます。この構造は、報告書の複雑な情報を整理し、利用者が能動的に学べるようにするために選択されました。 -->
+    <!-- Visualization & Content Choices: 
+        - 比較: 3製品の比較表 (HTML/Tailwind) -> Goal: 比較。3者の位置づけを明確化。
+        - 成分: 牛車腎気丸・人参養栄湯の成分量 (Chart.js Bar Chart) -> Goal: 比較/情報提供。医薬品の構成を視覚的に示す。漢命水はリスト表示で、その非定型性を強調。
+        - 安全性: 注意喚起セクション (色分けされたHTML/Tailwind + JSアコーディオン) -> Goal: 情報提供/警告。最も重要な副作用情報を目立たせ、かつ詳細を段階的に開示することで利用者の負担を軽減。
+        - 効能: アイコン付きリスト (HTML/Tailwind + Unicode) -> Goal: 情報提供。テキスト情報を視覚的にスキャンしやすくする。
+        - 全てにおいて、インタラクティブな要素を用いて利用者の関与を促し、情報の吸収を助ける。
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Noto Sans JP', sans-serif; background-color: #fdfcf9; color: #3d3d3d; }
+        .tab-btn { transition: all 0.3s ease; }
+        .tab-btn.active { background-color: #8a7d6c; color: #ffffff; }
+        .tab-btn:not(.active):hover { background-color: #e9e7e2; }
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+        .chart-container { position: relative; width: 100%; max-width: 700px; margin-left: auto; margin-right: auto; height: 400px; max-height: 50vh; }
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
+        .alert-bg { background-color: #fff9e6; }
+        .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 9999px; font-weight: 600; font-size: 0.8rem; }
+        .badge-medicine { background-color: #d1e7dd; color: #0a3622; }
+        .badge-food { background-color: #cce5ff; color: #004085; }
+        .card { background-color: #ffffff; border: 1px solid #e9e7e2; border-radius: 0.75rem; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05); }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-5xl">
+        
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-[#5a5249] mb-4">漢方インタラクティブガイド</h1>
+            <p class="text-lg text-gray-600">牛車腎気丸・人参養栄湯・漢命水</p>
+        </header>
+
+        <div class="card mb-8">
+            <h2 class="text-2xl font-bold text-[#8a7d6c] mb-3 flex items-center">
+                <span class="mr-2 text-3xl">💡</span>はじめに：最も重要なこと
+            </h2>
+            <p class="text-base text-gray-700 leading-relaxed">
+                このガイドで紹介する3つの製品は、その目的と法的な位置づけが根本的に異なります。
+                <strong class="text-[#5a5249]">牛車腎気丸</strong>と<strong class="text-[#5a5249]">人参養栄湯</strong>は、特定の症状や体質（証）の治療を目的として国に承認された<span class="badge badge-medicine">医薬品</span>です。
+                一方、<strong class="text-[#5a5249]">漢命水</strong>は日々の健康維持をサポートする<span class="badge badge-food">清涼飲料水（健康食品）</span>であり、医薬品ではありません。この違いを理解することが、製品を正しく安全に利用するための第一歩です。
+            </p>
+        </div>
+
+        <div class="mb-8">
+            <div class="flex flex-wrap justify-center border-b-2 border-gray-200">
+                <button id="btn-goshajinkigan" class="tab-btn active text-lg font-semibold py-3 px-6 rounded-t-lg">牛車腎気丸</button>
+                <button id="btn-ninjinyoeito" class="tab-btn text-lg font-semibold py-3 px-6 rounded-t-lg">人参養栄湯</button>
+                <button id="btn-kanmeisui" class="tab-btn text-lg font-semibold py-3 px-6 rounded-t-lg">漢命水</button>
+            </div>
+        </div>
+
+        <main>
+            <!-- 牛車腎気丸 Section -->
+            <section id="content-goshajinkigan" class="content-section active">
+                 <div class="text-center mb-6">
+                    <h2 class="text-3xl font-bold text-[#8a7d6c] mb-2">牛車腎気丸 <span class="badge badge-medicine">医薬品</span></h2>
+                    <p class="text-gray-600">加齢に伴う衰えと下半身のトラブルに対応</p>
+                </div>
+                 <div class="space-y-6">
+                    <div class="card">
+                        <h3 class="text-xl font-bold mb-3 text-[#5a5249]">適応体質（証）：こんな方に</h3>
+                         <p class="text-gray-700 mb-4">このセクションでは、加齢に伴う衰えや下半身の症状に用いられる医薬品「牛車腎気丸」を詳しく解説します。どのような体質の人に向いているのか、どのような成分で構成されているのか、そして安全に利用するための注意点について、インタラクティブな要素を交えて探っていきましょう。</p>
+                        <ul class="list-none space-y-2">
+                            <li class="flex items-center"><span class="mr-3 text-xl">📉</span>体力が中等度以下で、疲れやすい</li>
+                            <li class="flex items-center"><span class="mr-3 text-xl">❄️</span>手足など四肢が冷えやすい（特に下半身）</li>
+                            <li class="flex items-center"><span class="mr-3 text-xl">💧</span>尿の量が減ったり、逆に回数が多くなる</li>
+                            <li class="flex items-center"><span class="mr-3 text-xl">🦵</span>腰や足に痛みやしびれがある</li>
+                        </ul>
+                    </div>
+                     <div class="card">
+                        <h3 class="text-xl font-bold mb-3 text-[#5a5249]">承認された効能・効果</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="flex items-start"><span class="mr-3 text-2xl mt-1">🤕</span><div><strong class="font-semibold">痛み・しびれ：</strong>下肢痛、腰痛、しびれ</div></div>
+                            <div class="flex items-start"><span class="mr-3 text-2xl mt-1">🚻</span><div><strong class="font-semibold">泌尿器系：</strong>排尿困難、頻尿、むくみ</div></div>
+                            <div class="flex items-start"><span class="mr-3 text-2xl mt-1">👀</span><div><strong class="font-semibold">その他：</strong>高齢者のかすみ目、かゆみ、高血圧に伴う症状（肩こり、頭重など）</div></div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3 class="text-xl font-bold mb-3 text-[#5a5249]">構成生薬（10種）</h3>
+                        <p class="text-gray-700 mb-4">牛車腎気丸は10種類の生薬から構成されています。下のグラフは、標準的な1日量に含まれる各生薬の割合を示しています。体を温め、水分代謝を促し、痛みを取り除く生薬がバランス良く配合されています。</p>
+                        <div class="chart-container">
+                            <canvas id="goshajinkiganChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card alert-bg">
+                        <h3 class="text-xl font-bold mb-3 text-orange-800 flex items-center"><span class="mr-2 text-2xl">⚠️</span>安全性と注意点</h3>
+                        <p class="text-orange-900 mb-4">牛車腎気丸は体を温める作用が特徴です。体力が充実している方や、のぼせやすい方が服用すると、動悸やのぼせなどの副作用が出やすくなります。必ず専門家に相談の上、ご自身の体質に合っているか確認してください。</p>
+                        <div class="space-y-2">
+                            <div class="accordion-item border border-orange-200 rounded-lg">
+                                <button class="accordion-header w-full text-left p-4 font-semibold text-orange-800 flex justify-between items-center">
+                                    <span>比較的頻度の高い副作用</span>
+                                    <span class="transform transition-transform duration-300">▼</span>
+                                </button>
+                                <div class="accordion-content px-4 pb-4">
+                                    <ul class="list-disc list-inside text-orange-900 space-y-1">
+                                        <li><strong>消化器：</strong>食欲不振、胃部不快感、腹痛、下痢</li>
+                                        <li><strong>その他：</strong>動悸、のぼせ、発疹・かゆみ、口唇・舌のしびれ</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="accordion-item border border-red-300 bg-red-50 rounded-lg">
+                                <button class="accordion-header w-full text-left p-4 font-bold text-red-800 flex justify-between items-center">
+                                    <span>重篤な副作用（まれ）</span>
+                                     <span class="transform transition-transform duration-300">▼</span>
+                                </button>
+                                <div class="accordion-content px-4 pb-4">
+                                    <p class="text-red-900 mb-2">以下の初期症状に気づいた場合は、<strong>直ちに服用を中止し、医師に相談してください。</strong></p>
+                                    <ul class="list-disc list-inside text-red-900 space-y-1">
+                                        <li><strong>間質性肺炎：</strong>息切れ、空咳、発熱</li>
+                                        <li><strong>肝機能障害：</strong>だるさ、皮膚や白目の黄変、褐色尿</li>
+                                    </ul>
+                                </div>
+                            </div>
+                             <div class="pt-2">
+                                <strong class="text-orange-800">特に注意が必要な方：</strong>
+                                <ul class="list-disc list-inside text-orange-900 mt-1">
+                                    <li>妊婦または妊娠の可能性がある方（服用は推奨されません）</li>
+                                    <li>胃腸が弱い方</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 人参養栄湯 Section -->
+            <section id="content-ninjinyoeito" class="content-section">
+                <div class="text-center mb-6">
+                    <h2 class="text-3xl font-bold text-[#8a7d6c] mb-2">人参養栄湯 <span class="badge badge-medicine">医薬品</span></h2>
+                    <p class="text-gray-600">深刻な疲労と全身の消耗状態を回復</p>
+                </div>
+                <div class="space-y-6">
+                    <div class="card">
+                         <h3 class="text-xl font-bold mb-3 text-[#5a5249]">適応体質（証）：こんな方に</h3>
+                         <p class="text-gray-700 mb-4">このセクションでは、病後や術後などの深刻な体力低下に対して用いられる医薬品「人参養栄湯」を掘り下げます。エネルギー（気）と栄養（血）の両方が消耗した状態をどのように改善するのか、その成分構成と、特に注意すべき副作用について学びます。</p>
+                        <ul class="list-none space-y-2">
+                            <li class="flex items-center"><span class="mr-3 text-xl">😩</span>病後・術後などで体力が著しく低下している</li>
+                            <li class="flex items-center"><span class="mr-3 text-xl">🍔</span>食欲がなく、食べられない</li>
+                            <li class="flex items-center"><span class="mr-3 text-xl">🥶</span>手足が冷え、貧血気味である</li>
+                             <li class="flex items-center"><span class="mr-3 text-xl">😴</span>寝汗をかき、ぐっすり眠れない</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3 class="text-xl font-bold mb-3 text-[#5a5249]">承認された効能・効果</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="flex items-start"><span class="mr-3 text-2xl mt-1">🔋</span><div><strong class="font-semibold">体力低下：</strong>病後・術後の体力低下、疲労倦怠</div></div>
+                            <div class="flex items-start"><span class="mr-3 text-2xl mt-1">🍽️</span><div><strong class="font-semibold">食欲不振：</strong>食べられない、味がしない</div></div>
+                            <div class="flex items-start"><span class="mr-3 text-2xl mt-1">🌡️</span><div><strong class="font-semibold">その他：</strong>ねあせ、手足の冷え、貧血</div></div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3 class="text-xl font-bold mb-3 text-[#5a5249]">構成生薬（12種）</h3>
+                        <p class="text-gray-700 mb-4">人参養栄湯は12種類の生薬で構成され、エネルギー（気）と栄養（血）を同時に補う「気血双補」の代表的な処方です。グラフは、全身を養い、精神を安定させるための複雑な構成を示しています。</p>
+                        <div class="chart-container">
+                            <canvas id="ninjinyoeitoChart"></canvas>
+                        </div>
+                    </div>
+                     <div class="card alert-bg">
+                        <h3 class="text-xl font-bold mb-3 text-orange-800 flex items-center"><span class="mr-2 text-2xl">⚠️</span>安全性と注意点</h3>
+                        <p class="text-orange-900 mb-4">人参養栄湯には<strong class="font-bold">甘草（カンゾウ）</strong>が含まれており、長期服用や高齢者では「偽アルドステロン症」という副作用のリスクがあります。これは、むくみや血圧上昇を引き起こす可能性があるため、定期的なモニタリングが重要です。</p>
+                        <div class="space-y-2">
+                            <div class="accordion-item border border-orange-200 rounded-lg">
+                                <button class="accordion-header w-full text-left p-4 font-semibold text-orange-800 flex justify-between items-center">
+                                    <span>比較的頻度の高い副作用</span>
+                                    <span class="transform transition-transform duration-300">▼</span>
+                                </button>
+                                <div class="accordion-content px-4 pb-4">
+                                    <ul class="list-disc list-inside text-orange-900 space-y-1">
+                                        <li><strong>消化器：</strong>胃部不快感、食欲不振、吐き気、下痢</li>
+                                        <li><strong>皮膚：</strong>発疹、赤み、かゆみ</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="accordion-item border border-red-300 bg-red-50 rounded-lg">
+                                <button class="accordion-header w-full text-left p-4 font-bold text-red-800 flex justify-between items-center">
+                                    <span>重篤な副作用（まれ）</span>
+                                     <span class="transform transition-transform duration-300">▼</span>
+                                </button>
+                                <div class="accordion-content px-4 pb-4">
+                                    <p class="text-red-900 mb-2">以下の初期症状に気づいた場合は、<strong>直ちに服用を中止し、医師に相談してください。</strong></p>
+                                    <ul class="list-disc list-inside text-red-900 space-y-1">
+                                        <li><strong>偽アルドステロン症：</strong>むくみ、体重増加、血圧上昇</li>
+                                        <li><strong>ミオパチー：</strong>手足のだるさ、しびれ、力が入らない（低カリウム血症の結果）</li>
+                                        <li><strong>肝機能障害：</strong>だるさ、皮膚や白目の黄変、褐色尿</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- 漢命水 Section -->
+            <section id="content-kanmeisui" class="content-section">
+                 <div class="text-center mb-6">
+                    <h2 class="text-3xl font-bold text-[#8a7d6c] mb-2">漢命水 <span class="badge badge-food">清涼飲料水</span></h2>
+                    <p class="text-gray-600">日々の健康維持をサポートする健康食品</p>
+                </div>
+                 <div class="space-y-6">
+                     <div class="card">
+                        <h3 class="text-xl font-bold mb-3 text-[#5a5249]">製品の概要と位置づけ</h3>
+                        <p class="text-gray-700 mb-4">このセクションでは、健康食品である「漢命水」について解説します。これは病気の治療を目的とした医薬品ではなく、日々の健康をサポートするための飲料です。どのような成分が含まれているのか、そして利用する上での一般的な注意点を確認しましょう。</p>
+                        <p class="text-gray-700 leading-relaxed">
+                            漢命水は、医薬品医療機器総合機構（PMDA）による承認を受けた医薬品ではありません。そのため、特定の病気に対する治療効果を謳うことは法律で禁じられています。製品の有効性や安全性に関する公的なデータはなく、情報は製造元の説明や利用者の体験談に限られます。
+                        </p>
+                    </div>
+                    <div class="card">
+                        <h3 class="text-xl font-bold mb-3 text-[#5a5249]">主な配合成分</h3>
+                        <p class="text-gray-700 mb-4">伝統的に健康維持のために用いられてきた、活力や巡りをサポートする植物成分が中心です。</p>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                            <div><div class="text-4xl mb-2">🍄</div><strong class="font-semibold">霊芝 (レイシ)</strong></div>
+                            <div><div class="text-4xl mb-2">🐛</div><strong class="font-semibold">冬虫夏草</strong></div>
+                            <div><div class="text-4xl mb-2">🌿</div><strong class="font-semibold">田七人参</strong></div>
+                            <div><div class="text-4xl mb-2">🍒</div><strong class="font-semibold">枸杞 (クコ)</strong></div>
+                        </div>
+                    </div>
+                    <div class="card alert-bg">
+                        <h3 class="text-xl font-bold mb-3 text-orange-800 flex items-center"><span class="mr-2 text-2xl">⚠️</span>安全性と注意点</h3>
+                        <p class="text-orange-900 mb-4">健康食品であっても、体質に合わないことや、他の薬との相互作用の可能性があります。利用する際は以下の点に注意してください。</p>
+                        <ul class="list-disc list-inside text-orange-900 space-y-1">
+                            <li>成分（特にキノコ類）にアレルギーがある方は避けてください。</li>
+                            <li>妊婦、授乳婦、治療中の病気がある方、医薬品を服用中の方は、事前に医師や薬剤師に相談してください。</li>
+                            <li>「効果があった」という体験談は個人の感想であり、全ての人に当てはまるわけではありません。</li>
+                            <li>これは治療薬ではありません。体の不調が続く場合は、医療機関を受診してください。</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <section id="comparison" class="mt-12">
+            <div class="card">
+                 <h2 class="text-2xl font-bold text-center text-[#8a7d6c] mb-6">主な違いの比較</h2>
+                 <p class="text-gray-700 text-center mb-6 max-w-2xl mx-auto">この比較表は、3つの製品の最も重要な違いをまとめたものです。製品を選ぶ際の参考にしてください。重要なのは、自身の目的（治療か、健康維持か）に応じて、適切なカテゴリーの製品を選ぶことです。</p>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-[#f8f7f4]">
+                                <th class="p-3 font-bold uppercase text-gray-600 border border-gray-300">項目</th>
+                                <th class="p-3 font-bold uppercase text-gray-600 border border-gray-300">牛車腎気丸</th>
+                                <th class="p-3 font-bold uppercase text-gray-600 border border-gray-300">人参養栄湯</th>
+                                <th class="p-3 font-bold uppercase text-gray-600 border border-gray-300">漢命水</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="hover:bg-gray-100">
+                                <td class="p-3 font-semibold border border-gray-200">分類</td>
+                                <td class="p-3 border border-gray-200"><span class="badge badge-medicine">医薬品</span></td>
+                                <td class="p-3 border border-gray-200"><span class="badge badge-medicine">医薬品</span></td>
+                                <td class="p-3 border border-gray-200"><span class="badge badge-food">健康食品</span></td>
+                            </tr>
+                            <tr class="hover:bg-gray-100">
+                                <td class="p-3 font-semibold border border-gray-200">目的</td>
+                                <td class="p-3 border border-gray-200"><strong>治療</strong></td>
+                                <td class="p-3 border border-gray-200"><strong>治療</strong></td>
+                                <td class="p-3 border border-gray-200">健康維持</td>
+                            </tr>
+                             <tr class="hover:bg-gray-100">
+                                <td class="p-3 font-semibold border border-gray-200">主な対象</td>
+                                <td class="p-3 border border-gray-200">加齢による衰え、下半身の冷え・痛み・しびれ</td>
+                                <td class="p-3 border border-gray-200">病後などの深刻な体力低下、食欲不振、全身の消耗</td>
+                                <td class="p-3 border border-gray-200">日々の健康が気になる方</td>
+                            </tr>
+                            <tr class="hover:bg-gray-100">
+                                <td class="p-3 font-semibold border border-gray-200">主な効能</td>
+                                <td class="p-3 border border-gray-200">腰痛、しびれ、頻尿、むくみ等</td>
+                                <td class="p-3 border border-gray-200">疲労倦怠、食欲不振、貧血等</td>
+                                <td class="p-3 border border-gray-200">（効能は謳えない）</td>
+                            </tr>
+                            <tr class="hover:bg-gray-100">
+                                <td class="p-3 font-semibold border border-gray-200">重大な注意点</td>
+                                <td class="p-3 border border-gray-200">不適切な体質への投与、間質性肺炎、肝機能障害</td>
+                                <td class="p-3 border border-gray-200">偽アルドステロン症（甘草による）、ミオパチー、肝機能障害</td>
+                                <td class="p-3 border border-gray-200">アレルギー、医薬品との相互作用</td>
+                            </tr>
+                             <tr class="hover:bg-gray-100">
+                                <td class="p-3 font-semibold border border-gray-200">専門家の判断</td>
+                                <td class="p-3 border border-gray-200"><strong>必須</strong></td>
+                                <td class="p-3 border border-gray-200"><strong>必須</strong></td>
+                                <td class="p-3 border border-gray-200">相談を推奨</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+        
+        <footer class="mt-12 pt-8 border-t border-gray-200">
+            <h3 class="text-xl font-bold text-center text-[#5a5249] mb-4">最終的な推奨事項</h3>
+             <div class="card bg-emerald-50 border-emerald-200">
+                <ul class="space-y-3 text-emerald-900">
+                    <li class="flex items-start"><strong class="mr-3 text-2xl">①</strong><div><strong>専門家に相談する：</strong>漢方薬の選択は、自己判断ではなく、必ず医師や薬剤師などの専門家による診断（証の見立て）に基づいて行ってください。</div></li>
+                    <li class="flex items-start"><strong class="mr-3 text-2xl">②</strong><div><strong>情報を開示する：</strong>服用中の全ての医薬品やサプリメントを専門家に伝え、相互作用のリスクを避けてください。</div></li>
+                    <li class="flex items-start"><strong class="mr-3 text-2xl">③</strong><div><strong>副作用を学ぶ：</strong>重篤な副作用の初期症状を理解し、異変を感じたら直ちに服用を中止し、医療機関を受診してください。</div></li>
+                </ul>
+            </div>
+        </footer>
+
+    </div>
+
+    <script>
+        const kampoData = {
+            goshajinkigan: {
+                labels: ['地黄', '山茱萸', '山薬', '沢瀉', '茯苓', '牡丹皮', '桂皮', '附子末', '牛膝', '車前子'],
+                data: [5.0, 3.0, 3.0, 3.0, 3.0, 3.0, 1.0, 1.0, 3.0, 3.0],
+                backgroundColor: 'rgba(138, 125, 108, 0.6)',
+                borderColor: 'rgba(138, 125, 108, 1)',
+            },
+            ninjinyoeito: {
+                labels: ['人参', '地黄', '当帰', '白朮', '茯苓', '芍薬', '桂皮', '黄耆', '陳皮', '遠志', '五味子', '甘草'],
+                data: [3.0, 4.0, 4.0, 4.0, 4.0, 2.0, 2.5, 1.5, 2.0, 2.0, 1.0, 1.0],
+                backgroundColor: 'rgba(181, 153, 123, 0.6)',
+                borderColor: 'rgba(181, 153, 123, 1)',
+            }
+        };
+
+        function createChart(ctx, { labels, data, backgroundColor, borderColor }) {
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '1日あたりの標準的な配合量 (g)',
+                        data: data,
+                        backgroundColor: backgroundColor,
+                        borderColor: borderColor,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.raw}g`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { beginAtZero: true, title: { display: true, text: 'グラム (g)' } },
+                        y: { 
+                            ticks: {
+                                autoSkip: false,
+                                callback: function(value, index, values) {
+                                    const label = this.getLabelForValue(value);
+                                    return label.length > 16 ? label.substring(0, 15) + '...' : label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const tabs = [
+                { btn: document.getElementById('btn-goshajinkigan'), content: document.getElementById('content-goshajinkigan') },
+                { btn: document.getElementById('btn-ninjinyoeito'), content: document.getElementById('content-ninjinyoeito') },
+                { btn: document.getElementById('btn-kanmeisui'), content: document.getElementById('content-kanmeisui') }
+            ];
+
+            tabs.forEach(tab => {
+                tab.btn.addEventListener('click', () => {
+                    tabs.forEach(t => {
+                        t.btn.classList.remove('active');
+                        t.content.classList.remove('active');
+                    });
+                    tab.btn.classList.add('active');
+                    tab.content.classList.add('active');
+                });
+            });
+
+            const goshajinkiganCtx = document.getElementById('goshajinkiganChart').getContext('2d');
+            createChart(goshajinkiganCtx, kampoData.goshajinkigan);
+            
+            const ninjinyoeitoCtx = document.getElementById('ninjinyoeitoChart').getContext('2d');
+            createChart(ninjinyoeitoCtx, kampoData.ninjinyoeito);
+
+            document.querySelectorAll('.accordion-header').forEach(button => {
+                button.addEventListener('click', () => {
+                    const content = button.nextElementSibling;
+                    const arrow = button.querySelector('span:last-child');
+                    button.parentElement.classList.toggle('open');
+                    
+                    if (content.style.maxHeight) {
+                        content.style.maxHeight = null;
+                        arrow.style.transform = 'rotate(0deg)';
+                    } else {
+                        content.style.maxHeight = content.scrollHeight + "px";
+                        arrow.style.transform = 'rotate(180deg)';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
