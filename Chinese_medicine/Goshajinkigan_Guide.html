@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>牛車腎気丸 インタラクティブガイド</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals & Sage -->
+    <!-- Application Structure Plan: A thematic, single-page application with a sticky navigation bar for easy access to key sections: 1. Overview (with an interactive self-check for suitability), 2. Constituent Herbs (an interactive diagram), 3. Efficacy (using cards and a chart for modern applications), 4. Safety (a color-coded, risk-based layout), and 5. Dosage Form Comparison (an interactive chart showing trade-offs). This structure breaks down complex information into digestible, user-centric modules, promoting exploration over linear reading, making it more engaging and usable than mirroring the report's structure. -->
+    <!-- Visualization & Content Choices: 1. Constituent Herbs: Info -> Organize/Inform. Viz -> Interactive HTML diagram. Interaction -> Click to reveal details. Justification -> Visually decomposes the formula, superior to a static table. 2. Modern Efficacy: Info -> Inform/Compare. Viz -> Bar Chart (Chart.js/Canvas). Interaction -> Static. Justification -> Shows multi-target action more clearly than text. 3. Dosage Forms: Info -> Compare. Viz -> Bar Chart (Chart.js/Canvas). Interaction -> Hover to update info panel. Justification -> Makes the trade-offs between forms instantly clear and interactive. All textual content is rewritten for clarity and presented in expandable cards to avoid overwhelming the user. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #FDFBF5;
+            color: #4A4A4A;
+        }
+        .bg-base { background-color: #FDFBF5; }
+        .bg-surface { background-color: #FFFFFF; }
+        .bg-primary { background-color: #6A8A82; }
+        .text-primary { color: #6A8A82; }
+        .text-accent { color: #D97706; }
+        .border-primary { border-color: #6A8A82; }
+        .border-accent { border-color: #D97706; }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #D97706;
+            border-bottom-color: #D97706;
+        }
+        .herb-item {
+            transition: all 0.3s ease-in-out;
+            cursor: pointer;
+        }
+        .herb-item:hover, .herb-item.selected {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        section {
+            scroll-margin-top: 80px;
+        }
+    </style>
+</head>
+<body class="bg-base">
+
+    <header class="bg-surface/80 backdrop-blur-sm shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <h1 class="text-xl md:text-2xl font-bold text-primary">牛車腎気丸ガイド</h1>
+                <div class="hidden md:flex space-x-6">
+                    <a href="#overview" class="nav-link text-lg font-medium border-b-2 border-transparent pb-1">概要</a>
+                    <a href="#herbs" class="nav-link text-lg font-medium border-b-2 border-transparent pb-1">構成生薬</a>
+                    <a href="#efficacy" class="nav-link text-lg font-medium border-b-2 border-transparent pb-1">効能と応用</a>
+                    <a href="#safety" class="nav-link text-lg font-medium border-b-2 border-transparent pb-1">安全性</a>
+                    <a href="#forms" class="nav-link text-lg font-medium border-b-2 border-transparent pb-1">剤形比較</a>
+                </div>
+                <div class="md:hidden">
+                    <select id="mobile-nav" class="bg-white border border-gray-300 rounded-md py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-primary">
+                        <option value="#overview">概要</option>
+                        <option value="#herbs">構成生薬</option>
+                        <option value="#efficacy">効能と応用</option>
+                        <option value="#safety">安全性</option>
+                        <option value="#forms">剤形比較</option>
+                    </select>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-4 py-8 md:py-12">
+        
+        <section id="overview" class="mb-16">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl md:text-4xl font-bold text-primary mb-4">牛車腎気丸とは？</h2>
+                <p class="max-w-3xl mx-auto text-lg leading-relaxed">
+                    牛車腎気丸は、13世紀から伝わる歴史ある漢方処方です。加齢や疲労に伴う「腎虚（じんきょ）」という状態を改善するために作られました。「腎虚」とは、生命エネルギーの源である「腎」の機能が低下した状態で、足腰の痛みや冷え、しびれ、排尿トラブルなどを引き起こします。このアプリケーションでは、牛車腎気丸の全体像を対話的に探求できます。
+                </p>
+            </div>
+
+            <div class="bg-surface rounded-xl shadow-lg p-6 md:p-8 max-w-4xl mx-auto">
+                <h3 class="text-2xl font-bold text-center mb-6 text-accent">どんな人に適している？ (セルフチェック)</h3>
+                <p class="text-center mb-6">牛車腎気丸は特定の体質（証）の方に最も効果を発揮します。以下の項目で当てはまるものをチェックしてみましょう。</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-lg">
+                    <label class="flex items-center space-x-3 p-3 bg-base rounded-lg cursor-pointer hover:bg-green-50">
+                        <input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary">
+                        <span>体力が中等度以下だ</span>
+                    </label>
+                    <label class="flex items-center space-x-3 p-3 bg-base rounded-lg cursor-pointer hover:bg-green-50">
+                        <input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary">
+                        <span>疲れやすい</span>
+                    </label>
+                    <label class="flex items-center space-x-3 p-3 bg-base rounded-lg cursor-pointer hover:bg-green-50">
+                        <input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary">
+                        <span>手足が冷えやすい</span>
+                    </label>
+                    <label class="flex items-center space-x-3 p-3 bg-base rounded-lg cursor-pointer hover:bg-green-50">
+                        <input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary">
+                        <span>尿の量が少ない、または多い</span>
+                    </label>
+                    <label class="flex items-center space-x-3 p-3 bg-base rounded-lg cursor-pointer hover:bg-green-50">
+                        <input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary">
+                        <span>腰や足に痛みやしびれがある</span>
+                    </label>
+                     <label class="flex items-center space-x-3 p-3 bg-base rounded-lg cursor-pointer hover:bg-green-50">
+                        <input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary">
+                        <span>むくみやすい</span>
+                    </label>
+                </div>
+                <p class="text-center mt-6 text-sm text-gray-500">※これは医学的な診断ではありません。あくまで目安としてご活用ください。服用については必ず医師や薬剤師にご相談ください。</p>
+            </div>
+        </section>
+
+        <section id="herbs" class="mb-16">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl md:text-4xl font-bold text-primary mb-4">10種の構成生薬を探る</h2>
+                 <p class="max-w-3xl mx-auto text-lg leading-relaxed">
+                    牛車腎気丸は、10種類の生薬が精緻に組み合わさってできています。各生薬が持つ役割は、体を滋養する、温める、水分を排出する、血行を促すという4つのグループに大別されます。下の図から生薬を選んで、その働きを詳しく見てみましょう。
+                </p>
+            </div>
+            
+            <div class="flex flex-col lg:flex-row gap-8">
+                <div class="lg:w-3/5">
+                    <div id="herb-diagram" class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    </div>
+                </div>
+                <div class="lg:w-2/5">
+                    <div id="herb-info" class="bg-surface rounded-xl shadow-lg p-6 sticky top-24 min-h-[300px]">
+                        <h3 id="herb-info-title" class="text-2xl font-bold text-accent mb-4">生薬を選んでください</h3>
+                        <div id="herb-info-content">
+                            <p class="text-gray-600">左の図から興味のある生薬をクリックすると、ここに詳細な情報が表示されます。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="efficacy" class="mb-16">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl md:text-4xl font-bold text-primary mb-4">効能と現代的な応用</h2>
+                <p class="max-w-3xl mx-auto text-lg leading-relaxed">
+                    牛車腎気丸は、伝統的に腰痛や排尿障害などに用いられてきましたが、近年の研究により新たな可能性が明らかになっています。特に、現代医学でも治療が難しいとされる神経の痛みに対する効果が注目されています。
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-surface rounded-xl shadow-lg p-6">
+                    <h3 class="text-2xl font-bold text-accent mb-4">伝統的な効能・効果</h3>
+                    <ul class="space-y-3 text-lg">
+                        <li class="flex items-start"><span class="text-primary mr-2">●</span><strong>運動器症状:</strong> 下肢痛、腰痛、しびれ</li>
+                        <li class="flex items-start"><span class="text-primary mr-2">●</span><strong>泌尿器症状:</strong> 排尿困難、頻尿、むくみ</li>
+                        <li class="flex items-start"><span class="text-primary mr-2">●</span><strong>老年期症状:</strong> 老人のかすみ目、かゆみ</li>
+                        <li class="flex items-start"><span class="text-primary mr-2">●</span><strong>その他:</strong> 高血圧に伴う症状（肩こり、頭重、耳鳴り）</li>
+                    </ul>
+                </div>
+
+                <div class="bg-surface rounded-xl shadow-lg p-6">
+                    <h3 class="text-2xl font-bold text-accent mb-4">新たなエビデンス：神経障害性疼痛</h3>
+                    <p class="mb-4 text-lg">糖尿病や抗がん剤治療によって引き起こされる、ジンジン・ピリピリとした「神経障害性疼痛」の緩和に有効であることが示されています。</p>
+                    <div class="chart-container h-48 md:h-56">
+                        <canvas id="efficacyChart"></canvas>
+                    </div>
+                    <p class="text-sm text-center mt-2 text-gray-500">神経保護、血流改善、鎮痛という多角的なアプローチで作用します。</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="safety" class="mb-16">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl md:text-4xl font-bold text-primary mb-4">安全に服用するために</h2>
+                <p class="max-w-3xl mx-auto text-lg leading-relaxed">
+                    牛車腎気丸は効果的な薬ですが、全ての人に適しているわけではありません。体質に合わない場合の副作用や、服用を避けるべきケースがあります。安全に利用するための重要なポイントを理解しておきましょう。
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="bg-red-50 border-l-4 border-red-500 p-6 rounded-r-lg">
+                    <h3 class="text-xl font-bold text-red-800 mb-3">使用禁忌（服用してはいけない方）</h3>
+                    <ul class="space-y-2 list-disc list-inside text-red-700">
+                        <li>体力が充実している</li>
+                        <li>暑がりで、のぼせが強い</li>
+                        <li>顔が赤ら顔である</li>
+                    </ul>
+                     <p class="text-sm mt-3 text-red-600">※ 体を温める作用があるため、熱証の方には適しません。</p>
+                </div>
+                <div class="bg-yellow-50 border-l-4 border-yellow-500 p-6 rounded-r-lg">
+                    <h3 class="text-xl font-bold text-yellow-800 mb-3">慎重投与（相談が必要な方）</h3>
+                    <ul class="space-y-2 list-disc list-inside text-yellow-700">
+                        <li>胃腸が著しく虚弱</li>
+                        <li>食欲不振、吐き気がある</li>
+                        <li>妊婦・授乳婦</li>
+                        <li>小児、高齢者</li>
+                    </ul>
+                    <p class="text-sm mt-3 text-yellow-600">※ 既存の症状が悪化したり、副作用が出やすくなる可能性があります。</p>
+                </div>
+                 <div class="bg-green-50 border-l-4 border-green-500 p-6 rounded-r-lg">
+                    <h3 class="text-xl font-bold text-green-800 mb-3">一般的な副作用</h3>
+                    <ul class="space-y-2 list-disc list-inside text-green-700">
+                        <li><strong>消化器:</strong> 食欲不振、胃の不快感、下痢</li>
+                        <li><strong>皮膚:</strong> 発疹、かゆみ</li>
+                        <li><strong>その他:</strong> 動悸、のぼせ、舌のしびれ</li>
+                    </ul>
+                     <p class="text-sm mt-3 text-green-600">※ 何か異変を感じたら、すぐに服用を中止し専門家にご相談ください。</p>
+                </div>
+            </div>
+             <div class="mt-6 bg-gray-100 p-4 rounded-lg text-center">
+                <p class="font-bold text-gray-800">まれに重篤な副作用（間質性肺炎、肝機能障害など）も報告されています。息切れ、空咳、発熱、黄疸などの初期症状に注意してください。</p>
+            </div>
+        </section>
+
+        <section id="forms" class="mb-16">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl md:text-4xl font-bold text-primary mb-4">剤形の比較と選び方</h2>
+                <p class="max-w-3xl mx-auto text-lg leading-relaxed">
+                   牛車腎気丸には、伝統的な「煎じ薬」、一般的な「粉末・顆粒」、手軽な「錠剤」の3つの剤形があります。効果の強さと利便性はトレードオフの関係にあります。下のグラフにカーソルを合わせると、各剤形の特徴が表示されます。
+                </p>
+            </div>
+            
+            <div class="flex flex-col lg:flex-row items-center gap-8">
+                <div class="w-full lg:w-2/3">
+                    <div class="chart-container">
+                        <canvas id="formComparisonChart"></canvas>
+                    </div>
+                </div>
+                <div class="w-full lg:w-1/3">
+                    <div id="form-info" class="bg-surface rounded-xl shadow-lg p-6 min-h-[250px] transition-all duration-300">
+                        <h3 id="form-info-title" class="text-2xl font-bold text-accent mb-4">剤形を選んでください</h3>
+                        <div id="form-info-content">
+                            <p class="text-gray-600">上のグラフの項目にカーソルを合わせると、ここに各剤形の詳しい説明が表示されます。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+    </main>
+
+    <footer class="bg-primary text-white mt-12">
+        <div class="container mx-auto px-4 py-6 text-center">
+            <p>&copy; 2025 牛車腎気丸インタラクティブガイド. All rights reserved.</p>
+            <p class="text-sm mt-2">このアプリケーションは提供されたレポートに基づいて作成されたものであり、医学的助言に代わるものではありません。</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            
+            const herbsData = [
+                { name: '地黄 (ジオウ)', group: '滋養', description: '生命活動の根源となる「腎」の精と血を補う処方の主薬。滋養強壮作用がある。', role: '君薬' },
+                { name: '山茱萸 (サンシュユ)', group: '滋養', description: '「肝」と「腎」を補い、精気が漏れ出るのを防ぐ。地黄の働きを助ける。', role: '臣薬' },
+                { name: '山薬 (サンヤク)', group: '滋養', description: '消化器系である「脾」と「腎」を補い、全身の栄養状態を改善する。', role: '臣薬' },
+                { name: '桂皮 (ケイヒ)', group: '温熱', description: '体を温めて血行を促進し、冷えからくる痛みを和らげる。', role: '佐薬' },
+                { name: '附子 (ブシ)', group: '温熱', description: '最も体を温める作用が強く、新陳代謝を活発にし、頑固な痛みや冷えを改善する。', role: '佐薬' },
+                { name: '沢瀉 (タクシャ)', group: '利水', description: '体内の余分な水分を排出し、むくみや排尿障害を改善する。', role: '佐薬' },
+                { name: '茯苓 (ブクリョウ)', group: '利水', description: '穏やかに利水し、消化機能を助け、精神を安定させる作用も持つ。', role: '佐薬' },
+                { name: '牡丹皮 (ボタンピ)', group: '血行', description: '血中の熱を冷まし、血の滞りを改善して痛みを緩和する。', role: '佐薬' },
+                { name: '牛膝 (ゴシツ)', group: '血行', description: '血行を促し、処方の作用を下半身に導き、腰や脚の痛みを改善する。', role: '使薬' },
+                { name: '車前子 (シャゼンシ)', group: '利水', description: '強力な利尿作用でむくみや排尿障害を改善する。かすみ目にも効果的。', role: '使薬' }
+            ];
+
+            const groupColors = {
+                '滋養': 'bg-blue-100 border-blue-500',
+                '温熱': 'bg-red-100 border-red-500',
+                '利水': 'bg-green-100 border-green-500',
+                '血行': 'bg-purple-100 border-purple-500',
+            };
+
+            const herbDiagram = document.getElementById('herb-diagram');
+            const herbInfoTitle = document.getElementById('herb-info-title');
+            const herbInfoContent = document.getElementById('herb-info-content');
+
+            herbsData.forEach(herb => {
+                const herbEl = document.createElement('div');
+                herbEl.className = `herb-item p-4 rounded-lg text-center border-b-4 ${groupColors[herb.group]}`;
+                herbEl.innerHTML = `<h4 class="font-bold">${herb.name}</h4><p class="text-sm">${herb.group}</p>`;
+                herbEl.addEventListener('click', () => {
+                    herbInfoTitle.textContent = herb.name;
+                    herbInfoContent.innerHTML = `
+                        <p class="text-lg mb-2">${herb.description}</p>
+                        <p><span class="font-bold">役割:</span> ${herb.role}</p>
+                        <p><span class="font-bold">グループ:</span> <span class="px-2 py-1 rounded-full text-sm ${groupColors[herb.group]}">${herb.group}</span></p>
+                    `;
+                    document.querySelectorAll('.herb-item').forEach(el => el.classList.remove('selected', 'ring-2', 'ring-accent'));
+                    herbEl.classList.add('selected', 'ring-2', 'ring-accent');
+                });
+                herbDiagram.appendChild(herbEl);
+            });
+
+            const efficacyCtx = document.getElementById('efficacyChart').getContext('2d');
+            new Chart(efficacyCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['神経保護作用', '血流改善作用', '鎮痛作用'],
+                    datasets: [{
+                        label: '作用強度',
+                        data: [75, 85, 90],
+                        backgroundColor: ['#6A8A82', '#7E9E96', '#93B2AA'],
+                        borderColor: '#FFFFFF',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: false }
+                    },
+                    scales: {
+                        x: { display: false, max: 100 },
+                        y: { ticks: { font: { size: 14, weight: 'bold' } } }
+                    }
+                }
+            });
+
+            const formsData = {
+                labels: ['煎じ薬', '粉末・顆粒', '錠剤'],
+                datasets: [
+                    { label: '効果の強さ', data: [9, 7, 5], backgroundColor: '#6A8A82' },
+                    { label: '即効性', data: [9, 6, 4], backgroundColor: '#7E9E96' },
+                    { label: '利便性', data: [2, 7, 9], backgroundColor: '#93B2AA' },
+                    { label: '飲みやすさ', data: [1, 5, 9], backgroundColor: '#A8C6BE' }
+                ],
+                info: [
+                    { title: '煎じ薬', content: '<strong>長所:</strong> 最も効果が高く、即効性も期待できる。体質に合わせた微調整が可能。<br><strong>短所:</strong> 毎日煎じる手間がかかり、味や匂いが独特。携帯に不便。', scene: '急性・重篤な症状や、オーダーメイド治療に。' },
+                    { title: '粉末・顆粒', content: '<strong>長所:</strong> 利便性が高く、品質が安定している。効果と手間のバランスが良い。<br><strong>短所:</strong> 煎じ薬より効果は穏やか。芳香成分が失われがち。', scene: '慢性疾患の長期管理や、多忙な方に。' },
+                    { title: '錠剤', content: '<strong>長所:</strong> 味や匂いがなく、携帯性が最も高い。服用が非常に手軽。<br><strong>短所:</strong> 効果の発現が最も穏やか。1回の服用錠数が多くなりがち。', scene: '味や匂いが苦手な方、手軽さを最優先したい方に。' }
+                ]
+            };
+            const formInfoTitle = document.getElementById('form-info-title');
+            const formInfoContent = document.getElementById('form-info-content');
+            const formCtx = document.getElementById('formComparisonChart').getContext('2d');
+            const formChart = new Chart(formCtx, {
+                type: 'bar',
+                data: formsData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true, max: 10, title: { display: true, text: '評価 (10段階)' } }, x: { ticks: { font: { size: 14, weight: 'bold' } } } },
+                    plugins: { legend: { position: 'bottom' } },
+                    onHover: (event, chartElement) => {
+                        if (chartElement.length) {
+                            const index = chartElement[0].index;
+                            const info = formsData.info[index];
+                            formInfoTitle.textContent = info.title;
+                            formInfoContent.innerHTML = `<p class="mb-2">${info.content}</p><p class="font-bold text-accent">適したシーン: ${info.scene}</p>`;
+                        }
+                    }
+                }
+            });
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('section');
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 100) {
+                        current = section.getAttribute('id');
+                    }
+                });
+                navLinks.forEach(link => {
+                    link.classList.remove('active', 'text-accent', 'border-accent');
+                    if (link.getAttribute('href').slice(1) === current) {
+                        link.classList.add('active', 'text-accent', 'border-accent');
+                    }
+                });
+            });
+
+            document.getElementById('mobile-nav').addEventListener('change', function(e) {
+                window.location.hash = e.target.value;
+            });
+        });
+    </script>
+</body>
+</html>
