@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>人参養栄湯 インタラクティブガイド</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals with Herbal Accents -->
+    <!-- Application Structure Plan: A tab-based navigation SPA (Single Page Application) structure is chosen to break down the dense report into manageable, thematic sections: '概要' (Overview), '構成生薬' (Constituents), '処方比較' (Formula Comparison), '臨床応用' (Clinical Use), '安全性' (Safety), and '服用ガイド' (Administration). This non-linear approach allows users to directly access information of interest, enhancing usability. Interactive elements like a clickable herb grid, a dynamic comparison chart, and toggleable content cards are used to encourage exploration and prevent information overload, making complex medical information more accessible than a linear document. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: 12 constituent herbs -> Goal: Inform/Explore -> Viz: Interactive card grid. Interaction: Click to reveal details. Justification: More engaging than a static list, facilitates focused learning. Method: HTML/CSS/JS.
+        - Report Info: Comparison with Juzentaihoto/Hochuekkito -> Goal: Compare -> Viz: Radar Chart. Interaction: Hover tooltips. Justification: Provides immediate visual differentiation of formula characteristics. Library: Chart.js (Canvas).
+        - Report Info: Clinical applications -> Goal: Organize/Inform -> Viz: Accordion-style cards. Interaction: Click to expand. Justification: Manages content density, allows user-driven drill-down. Method: HTML/CSS/JS.
+        - Report Info: Safety/Side effects -> Goal: Inform/Warn -> Viz: Themed content boxes with icons. Interaction: Toggles for details. Justification: Clearly separates common vs. serious risks, improving clarity and risk awareness. Method: HTML/CSS/JS.
+        - Report Info: Administration forms -> Goal: Guide/Compare -> Viz: Tab-like button interface. Interaction: Click to switch content. Justification: Simplifies comparison for user decision-making. Method: HTML/CSS/JS.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Noto Sans JP', sans-serif; background-color: #FDFBF8; }
+        .nav-button { transition: all 0.3s ease; }
+        .nav-button.active { background-color: #3C5242; color: #FDFBF8; }
+        .nav-button:not(.active):hover { background-color: #EAE5D9; }
+        .content-section { display: none; }
+        .content-section.active { display: block; animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .herb-card { transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; }
+        .herb-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        .chart-container { position: relative; width: 100%; max-width: 600px; margin-left: auto; margin-right: auto; height: 350px; max-height: 400px; }
+        @media (min-width: 768px) { .chart-container { height: 400px; } }
+    </style>
+</head>
+<body class="text-stone-800">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
+
+        <header class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-bold text-[#3C5242]">人参養栄湯</h1>
+            <p class="text-lg text-stone-600 mt-2">インタラクティブガイド</p>
+        </header>
+
+        <nav class="flex flex-wrap justify-center gap-2 md:gap-4 mb-8 sticky top-2 bg-[#FDFBF8]/80 backdrop-blur-sm py-3 z-10 rounded-lg">
+            <button data-target="overview" class="nav-button active px-4 py-2 rounded-md font-semibold text-stone-700">概要</button>
+            <button data-target="constituents" class="nav-button px-4 py-2 rounded-md font-semibold text-stone-700">構成生薬</button>
+            <button data-target="comparison" class="nav-button px-4 py-2 rounded-md font-semibold text-stone-700">処方比較</button>
+            <button data-target="applications" class="nav-button px-4 py-2 rounded-md font-semibold text-stone-700">臨床応用</button>
+            <button data-target="safety" class="nav-button px-4 py-2 rounded-md font-semibold text-stone-700">安全性</button>
+            <button data-target="administration" class="nav-button px-4 py-2 rounded-md font-semibold text-stone-700">服用ガイド</button>
+        </nav>
+
+        <main id="app-content">
+
+            <section id="overview" class="content-section active">
+                <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-stone-200">
+                    <h2 class="text-2xl font-bold text-[#3C5242] mb-4">人参養栄湯とは？</h2>
+                    <div class="space-y-4 text-stone-700">
+                        <p>人参養栄湯は、漢方医学における代表的な「補剤（ほざい）」の一つです。その歴史は古く、中国・宋時代の古典医書『和剤局方』にまで遡ります。伝統的に、生命活動のエネルギー源である「気（き）」と、身体に栄養を与える「血（けつ）」の両方が著しく不足した<strong class="text-[#8B4513]">「気血両虚（きけつりょうきょ）」</strong>という状態を治療するために用いられてきました。</p>
+                        <p>この「気血両虚」の状態は、現代の言葉で言えば、極度の疲労倦怠感、食欲不振、貧血、手足の冷えといった多岐にわたる症状として現れます。近年では、高齢者の虚弱（フレイル）や、がん治療に伴う副作用の軽減、術後の体力回復など、現代医療が直面する複雑な病態に対する<strong class="text-[#3C5242]">支持療法</strong>としての有効性が科学的にも注目されています。</p>
+                        <p>このガイドは、人参養栄湯の複雑な情報を分かりやすく整理し、その本質を理解するための一助となることを目的としています。各セクションを自由に探索し、知識を深めてください。</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="constituents" class="content-section">
+                 <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-stone-200">
+                    <h2 class="text-2xl font-bold text-[#3C5242] mb-2">12の構成生薬</h2>
+                    <p class="text-stone-600 mb-6">人参養栄湯は、12種類の生薬が精緻なバランスで配合されています。各カードをクリックして、それぞれの役割と効能を確認してください。</p>
+                    <div id="herb-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    </div>
+                    <div id="herb-details" class="mt-6 p-6 bg-amber-50 rounded-lg border border-amber-200 hidden"></div>
+                </div>
+            </section>
+
+            <section id="comparison" class="content-section">
+                 <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-stone-200">
+                    <h2 class="text-2xl font-bold text-[#3C5242] mb-2">代表的な補剤との比較</h2>
+                    <p class="text-stone-600 mb-6">人参養栄湯は、しばしば「十全大補湯」や「補中益気湯」といった他の補剤と比較されます。以下のレーダーチャートは、それぞれの処方の特徴を視覚的に示したものです。各処方がどのような症状や状態に適しているかを理解するのに役立ちます。</p>
+                    <div class="chart-container">
+                        <canvas id="comparisonChart"></canvas>
+                    </div>
+                    <div class="mt-8">
+                        <h3 class="text-xl font-bold text-[#3C5242] mb-4">鑑別のポイント</h3>
+                        <div class="grid md:grid-cols-3 gap-4 text-sm">
+                            <div class="p-4 bg-stone-50 rounded-lg border">
+                                <h4 class="font-bold text-[#8B4513] mb-2">人参養栄湯</h4>
+                                <p>気血両虚に加え、<strong class="text-red-600">不安・不眠・物忘れ</strong>などの精神症状や、慢性の咳など消耗性の症状を伴う場合に特に適しています。「養い、安定させる」ことに重点が置かれています。</p>
+                            </div>
+                            <div class="p-4 bg-stone-50 rounded-lg border">
+                                <h4 class="font-bold text-sky-700 mb-2">十全大補湯</h4>
+                                <p>気血両虚の基本的な処方。身体的な消耗が主体で、特に精神症状を伴わない、より全般的な体力増強を目指す場合に用いられます。「パワフルに補う」イメージです。</p>
+                            </div>
+                             <div class="p-4 bg-stone-50 rounded-lg border">
+                                <h4 class="font-bold text-teal-700 mb-2">補中益気湯</h4>
+                                <p>「気」の虚、特に<strong class="text-red-600">消化器系の機能低下（脾気虚）</strong>が中心の場合に適します。「気力がない、だるい、食欲がない」といった症状が顕著な場合に選ばれます。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="applications" class="content-section">
+                <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-stone-200">
+                    <h2 class="text-2xl font-bold text-[#3C5242] mb-2">現代医療における臨床応用</h2>
+                    <p class="text-stone-600 mb-6">伝統的な効能に加え、人参養栄湯は現代医療の様々な分野でその価値が再評価されています。ここでは、科学的エビデンスと共に報告されている主要な応用例を紹介します。</p>
+                    <div id="applications-container" class="space-y-4"></div>
+                </div>
+            </section>
+
+            <section id="safety" class="content-section">
+                 <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-stone-200">
+                    <h2 class="text-2xl font-bold text-[#3C5242] mb-2">安全性と副作用</h2>
+                    <p class="text-stone-600 mb-6">人参養栄湯は有用な薬ですが、他の医薬品と同様に副作用のリスクも存在します。正しい知識を持つことが、安全な使用への第一歩です。気になる症状があれば、必ず医師・薬剤師に相談してください。</p>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="p-6 bg-stone-50 rounded-lg border border-stone-200">
+                            <h3 class="text-lg font-bold text-stone-700 mb-3">一般的な副作用</h3>
+                            <ul class="space-y-2 list-disc list-inside text-stone-600">
+                                <li><strong>消化器系:</strong> 胃の不快感、食欲不振、吐き気、下痢など</li>
+                                <li><strong>皮膚系:</strong> 発疹、発赤、かゆみなど</li>
+                            </ul>
+                            <p class="mt-3 text-sm text-stone-500">これらの症状は比較的軽度で、多くは服用を中止すると回復します。</p>
+                        </div>
+                        <div class="p-6 bg-red-50 rounded-lg border border-red-200">
+                             <h3 class="text-lg font-bold text-red-800 mb-3 flex items-center gap-2">
+                                <span class="text-xl">⚠️</span> 重篤な副作用（稀）
+                            </h3>
+                            <p class="text-sm text-red-700 mb-3">頻度は非常に稀ですが、注意すべき重篤な副作用があります。以下の初期症状に注意してください。</p>
+                            <ul id="serious-side-effects" class="space-y-3"></ul>
+                        </div>
+                    </div>
+                     <div class="mt-6 p-6 bg-amber-50 rounded-lg border border-amber-300">
+                        <h3 class="text-lg font-bold text-amber-900 mb-2">臨床上のパラドックス：注意すべき点</h3>
+                        <p class="text-amber-800">人参養栄湯の最も良い適応となる「虚弱な高齢者や消耗した患者」は、同時に重篤な副作用である<strong class="font-semibold">「偽アルドステロン症」のハイリスク群と重なる</strong>という重要な事実があります。これは、人参養栄湯が単なる健康食品ではなく、専門的な管理を必要とする強力な治療薬であることを示しています。自己判断での服用は避け、必ず医師の監督下で使用することが不可欠です。</p>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="administration" class="content-section">
+                <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-stone-200">
+                    <h2 class="text-2xl font-bold text-[#3C5242] mb-2">剤形と服用ガイド</h2>
+                    <p class="text-stone-600 mb-6">人参養栄湯には、主に「煎じ薬」「エキス剤（粉薬）」「錠剤」の3つの剤形があります。それぞれの特徴を理解し、ご自身のライフスタイルや治療目標に合ったものを選ぶことが大切です。下のボタンで剤形を切り替えて比較してください。</p>
+                    
+                    <div id="formulation-nav" class="flex justify-center gap-2 mb-6 border-b border-stone-200">
+                         <button data-form="decoction" class="formulation-button flex-1 py-3 px-2 text-center font-semibold border-b-4 border-transparent text-stone-500 hover:bg-stone-100">煎じ薬</button>
+                         <button data-form="extract" class="formulation-button flex-1 py-3 px-2 text-center font-semibold border-b-4 border-transparent text-stone-500 hover:bg-stone-100">エキス剤 (粉)</button>
+                         <button data-form="tablet" class="formulation-button flex-1 py-3 px-2 text-center font-semibold border-b-4 border-transparent text-stone-500 hover:bg-stone-100">錠剤</button>
+                    </div>
+                    
+                    <div id="formulation-content" class="min-h-[250px]"></div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            const herbData = {
+                '人参': { group: '気', desc: '処方の中心。消化器系の機能を高め、生命エネルギーを補い、精神を安定させる。' },
+                '黄耆': { group: '気', desc: '人参を助け、体の表面のエネルギーを固め、免疫力を高める。' },
+                '白朮': { group: '気', desc: '消化器系を補い、体内の余分な水分を取り除き、食欲を改善する。' },
+                '茯苓': { group: '気', desc: '白朮と共に働き、水分の代謝を正常化し、精神を安定させる。' },
+                '当帰': { group: '血', desc: '代表的な補血薬。血を養い、その巡りを促進する。貧血や冷えに不可欠。' },
+                '芍薬': { group: '血', desc: '血と潤いを養い、痛みを和らげ、当帰と共に血のバランスを整える。' },
+                '地黄': { group: '血', desc: '身体の根本的な潤いと血を深く補い、消耗した身体を養う。' },
+                '桂皮': { group: '調', desc: '身体を内側から温め、手足の末端への血行を促進する。' },
+                '陳皮': { group: '調', desc: '消化器系の気の流れを整え、食欲を改善し、他の生薬の消化を助ける。' },
+                '遠志': { group: '調', desc: '精神を安定させる作用があり、不安、不眠、物忘れといった症状に対応する。' },
+                '五味子': { group: '調', desc: 'エネルギーが漏れ出るのを防ぐ。慢性の咳や寝汗を改善する。' },
+                '甘草': { group: '気', desc: '全ての生薬の作用を調和させ、消化器系を補う。副作用の原因にもなりうる。' }
+            };
+
+            const applicationsData = [
+                {
+                    title: 'がん領域における支持療法',
+                    content: 'がん治療（化学療法など）に伴う、疲労倦怠感や食欲不振といった消耗性の副作用を軽減する目的で広く用いられます。患者のQOL（生活の質）を維持・向上させる効果が期待されています。'
+                },
+                {
+                    title: '高齢者医療：フレイル対策',
+                    content: '加齢に伴う心身の虚弱状態「フレイル」は、人参養栄湯の重要な治療対象です。食欲を増進させ、筋力や活動量の低下を防ぐことで、健康寿命の延伸に貢献する可能性が研究されています。'
+                },
+                {
+                    title: '神経学・認知機能への応用',
+                    content: '物忘れや精神的な疲労に対する伝統的な応用が、現代の認知症領域でも注目されています。特にアパシー（無気力）や食欲不振を伴う認知症患者の症状改善に用いられることがあります。'
+                }
+            ];
+            
+            const seriousSideEffectsData = [
+                {
+                    name: '偽アルドステロン症',
+                    symptoms: '手足の脱力感、しびれ、こわばり、むくみ、血圧上昇。甘草の成分が原因で起こります。'
+                },
+                {
+                    name: 'ミオパチー',
+                    symptoms: '著しい筋力低下、筋肉痛、けいれん。多くは低カリウム血症に続いて起こります。'
+                },
+                {
+                    name: '肝機能障害',
+                    symptoms: '全身倦怠感、発熱、かゆみ、黄疸（皮膚や白目が黄色くなる）、褐色尿。'
+                }
+            ];
+
+            const formulationData = {
+                decoction: {
+                    title: '煎じ薬：伝統とオーダーメイド',
+                    idealScene: '複雑な病状で微調整が必要な場合や、伝統的な治療法を重視する場合。',
+                    pros: ['潜在的に最も効果が高いとされる', '患者ごとに生薬の量を調整可能'],
+                    cons: ['毎日30分以上煮出す手間がかかる', '持ち運びが困難', '味が強く飲みにくい場合がある']
+                },
+                extract: {
+                    title: 'エキス剤 (粉)：利便性と標準治療のバランス',
+                    idealScene: '多忙な現代人の標準的な治療法として。長期使用や旅行時にも最適。',
+                    pros: ['携帯や保管が容易', 'お湯に溶かすだけですぐ飲める', '品質が安定している', '保険適用でアクセスしやすい'],
+                    cons: ['処方の微調整は不可', '独特の味や香りがある']
+                },
+                tablet: {
+                    title: '錠剤：味や匂いが苦手な方へ',
+                    idealScene: '粉薬の味がどうしても苦手な方や、お子様。服薬の継続性を最優先したい場合。',
+                    pros: ['味や匂いをほとんど感じない', '最も携帯しやすい'],
+                    cons: ['処方の種類が限られる', '1回に飲む錠数が多くなることがある', '効果発現がやや遅い可能性']
+                }
+            };
+
+            const herbGrid = document.getElementById('herb-grid');
+            const herbDetails = document.getElementById('herb-details');
+            const herbColorMapping = { '気': 'bg-sky-100 text-sky-800', '血': 'bg-rose-100 text-rose-800', '調': 'bg-emerald-100 text-emerald-800' };
+
+            Object.entries(herbData).forEach(([name, data]) => {
+                const card = document.createElement('div');
+                card.className = `herb-card p-4 rounded-lg text-center cursor-pointer border ${herbColorMapping[data.group].replace('bg-', 'border-')} ${herbColorMapping[data.group].replace('text-', 'bg-').replace('800', '100')/50}`;
+                card.innerHTML = `<h3 class="font-bold text-lg ${herbColorMapping[data.group].replace('bg-', 'text-')}">${name}</h3>`;
+                card.addEventListener('click', () => {
+                    herbDetails.innerHTML = `<h4 class="font-bold text-xl mb-2 ${herbColorMapping[data.group].replace('bg-', 'text-')}">${name}</h4><p class="text-stone-700">${data.desc}</p>`;
+                    herbDetails.classList.remove('hidden');
+                    document.querySelectorAll('.herb-card').forEach(c => c.style.opacity = '0.6');
+                    card.style.opacity = '1';
+                });
+                herbGrid.appendChild(card);
+            });
+
+            const applicationsContainer = document.getElementById('applications-container');
+            applicationsData.forEach(app => {
+                const item = document.createElement('div');
+                item.className = 'border border-stone-200 rounded-lg overflow-hidden';
+                item.innerHTML = `
+                    <button class="w-full text-left p-4 bg-stone-50 hover:bg-stone-100 font-bold text-[#3C5242] text-lg flex justify-between items-center transition">
+                        <span>${app.title}</span>
+                        <span class="transform transition-transform text-2xl font-light text-stone-400">+</span>
+                    </button>
+                    <div class="p-4 bg-white text-stone-600 hidden">
+                        ${app.content}
+                    </div>
+                `;
+                const button = item.querySelector('button');
+                const content = item.querySelector('div');
+                const icon = item.querySelector('span:last-child');
+                button.addEventListener('click', () => {
+                    const isVisible = !content.classList.contains('hidden');
+                    content.classList.toggle('hidden');
+                    icon.textContent = isVisible ? '+' : '−';
+                    icon.classList.toggle('rotate-45', !isVisible);
+                });
+                applicationsContainer.appendChild(item);
+            });
+
+            const seriousSideEffectsContainer = document.getElementById('serious-side-effects');
+            seriousSideEffectsData.forEach(effect => {
+                const li = document.createElement('li');
+                li.innerHTML = `<strong class="text-red-800">${effect.name}:</strong> <span class="text-red-700">${effect.symptoms}</span>`;
+                seriousSideEffectsContainer.appendChild(li);
+            });
+            
+            const formulationNav = document.getElementById('formulation-nav');
+            const formulationContent = document.getElementById('formulation-content');
+            
+            function updateFormulationContent(formKey) {
+                const data = formulationData[formKey];
+                formulationContent.innerHTML = `
+                    <div class="p-4">
+                        <h3 class="font-bold text-xl text-[#3C5242] mb-3">${data.title}</h3>
+                        <p class="text-stone-600 mb-4 text-sm"><strong><span class="text-amber-700">■</span> こんなシーンに最適:</strong> ${data.idealScene}</p>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <h4 class="font-semibold text-emerald-700 mb-2">メリット (👍)</h4>
+                                <ul class="list-disc list-inside space-y-1 text-sm text-stone-600">${data.pros.map(p => `<li>${p}</li>`).join('')}</ul>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-rose-700 mb-2">デメリット (👎)</h4>
+                                <ul class="list-disc list-inside space-y-1 text-sm text-stone-600">${data.cons.map(c => `<li>${c}</li>`).join('')}</ul>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                formulationContent.classList.add('active');
+            }
+
+            formulationNav.addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON') {
+                    const formKey = e.target.dataset.form;
+                    formulationNav.querySelectorAll('button').forEach(btn => {
+                        btn.classList.remove('border-[#3C5242]', 'text-[#3C5242]');
+                        btn.classList.add('border-transparent', 'text-stone-500');
+                    });
+                    e.target.classList.add('border-[#3C5242]', 'text-[#3C5242]');
+                    e.target.classList.remove('border-transparent', 'text-stone-500');
+                    formulationContent.classList.remove('active');
+                    setTimeout(() => updateFormulationContent(formKey), 50); 
+                }
+            });
+
+            formulationNav.querySelector('[data-form="extract"]').click();
+
+
+            const navButtons = document.querySelectorAll('.nav-button');
+            const contentSections = document.querySelectorAll('.content-section');
+            navButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetId = button.dataset.target;
+                    navButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    contentSections.forEach(section => {
+                        if (section.id === targetId) {
+                            section.classList.add('active');
+                        } else {
+                            section.classList.remove('active');
+                        }
+                    });
+                });
+            });
+
+            const ctx = document.getElementById('comparisonChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['気力回復', '栄養補給(血)', '精神安定', '血行促進', '消化器サポート', 'エネルギー保持'],
+                    datasets: [
+                        {
+                            label: '人参養栄湯',
+                            data: [4, 4, 5, 3, 4, 5],
+                            backgroundColor: 'rgba(139, 69, 19, 0.2)',
+                            borderColor: 'rgba(139, 69, 19, 1)',
+                            pointBackgroundColor: 'rgba(139, 69, 19, 1)',
+                        },
+                        {
+                            label: '十全大補湯',
+                            data: [5, 5, 2, 5, 2, 2],
+                            backgroundColor: 'rgba(0, 123, 255, 0.2)',
+                            borderColor: 'rgba(0, 123, 255, 1)',
+                            pointBackgroundColor: 'rgba(0, 123, 255, 1)',
+                        },
+                         {
+                            label: '補中益気湯',
+                            data: [5, 2, 3, 2, 5, 3],
+                            backgroundColor: 'rgba(20, 160, 133, 0.2)',
+                            borderColor: 'rgba(20, 160, 133, 1)',
+                            pointBackgroundColor: 'rgba(20, 160, 133, 1)',
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(0, 0, 0, 0.1)' },
+                            grid: { color: 'rgba(0, 0, 0, 0.1)' },
+                            pointLabels: { font: { size: 12 } },
+                            suggestedMin: 0,
+                            suggestedMax: 5,
+                             ticks: {
+                                stepSize: 1,
+                                backdropColor: 'rgba(255, 255, 255, 0.75)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { position: 'top' }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
