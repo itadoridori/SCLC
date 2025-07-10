@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>漢命水｜和漢の力で生命力を呼び覚ます</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .bg-gradient-herbal {
+            background: linear-gradient(135deg, #F5F5F5 0%, #E8E8E8 100%);
+        }
+        .card-hover {
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        .card-hover:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="bg-gradient-herbal text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-6xl">
+
+        <!-- ヘッダー -->
+        <header class="text-center mb-12 fade-in">
+            <h1 class="text-4xl md:text-5xl font-bold text-emerald-900 mb-2">漢命水</h1>
+            <p class="text-lg md:text-xl text-gray-600">和漢の力で、生命力を呼び覚ます</p>
+            <div class="mt-4 text-sm bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-md inline-block">
+                <strong>【重要】</strong>本製品は医薬品ではなく「清涼飲料水」です。疾病の治療や予防を目的とするものではありません。
+            </div>
+        </header>
+
+        <!-- イントロダクション -->
+        <section class="mb-16 fade-in">
+            <div class="bg-white rounded-xl shadow-lg p-8 text-center">
+                <h2 class="text-2xl font-bold text-emerald-800 mb-4">「漢命水」とは？</h2>
+                <p class="text-gray-700 leading-relaxed max-w-3xl mx-auto">
+                    古来より伝わる4つの和漢植物「霊芝」「冬虫夏草」「田七人参」「枸杞」を独自のバランスで配合した液体タイプの健康製品です。単一の目的に対するのではなく、身体が本来持つバランスを整え、全体的な健康をサポートすることを目指しています。
+                </p>
+            </div>
+        </section>
+
+        <!-- 主要成分セクション -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-bold text-center mb-10 text-emerald-900 fade-in">四つの主要成分</h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- 霊芝カード -->
+                <div class="bg-white rounded-2xl shadow-lg p-6 flex flex-col card-hover fade-in">
+                    <div class="flex items-center mb-4">
+                        <div class="p-3 rounded-full bg-red-100 mr-4">
+                            <svg class="w-8 h-8 text-red-800" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                        </div>
+                        <h3 class="text-2xl font-bold text-red-800">霊芝</h3>
+                    </div>
+                    <p class="text-sm text-gray-500 mb-4">生命を養う「上薬」。心と体の守りを固める。</p>
+                    <div class="space-y-3 text-sm flex-grow">
+                        <p><strong><span class="text-red-700">期待される効能:</span></strong> 免疫調整、抗炎症、心血管サポート、精神安定、抗アレルギー</p>
+                        <p><strong><span class="text-red-700">伝統的な役割:</span></strong> 免疫力を高め、精神を安定させる「安神」の目的で使用。</p>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-red-100">
+                        <h4 class="font-bold text-xs text-red-900 flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 3.011-1.742 3.011H4.42c-1.53 0-2.493-1.677-1.743-3.011l5.58-9.92zM10 13a1 1 0 110-2 1 1 0 010 2zm-1-8a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd"></path></svg>
+                            注意点
+                        </h4>
+                        <p class="text-xs text-gray-600 mt-1">消化器症状、発疹等。抗凝固薬との併用に注意。妊娠・授乳中は要相談。</p>
+                    </div>
+                </div>
+
+                <!-- 冬虫夏草カード -->
+                <div class="bg-white rounded-2xl shadow-lg p-6 flex flex-col card-hover fade-in" style="transition-delay: 100ms;">
+                    <div class="flex items-center mb-4">
+                        <div class="p-3 rounded-full bg-yellow-100 mr-4">
+                            <svg class="w-8 h-8 text-yellow-800" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        </div>
+                        <h3 class="text-2xl font-bold text-yellow-800">冬虫夏草</h3>
+                    </div>
+                    <p class="text-sm text-gray-500 mb-4">活力の源泉。滋養強壮の王様。</p>
+                    <div class="space-y-3 text-sm flex-grow">
+                        <p><strong><span class="text-yellow-700">期待される効能:</span></strong> 抗疲労、エネルギー産生、呼吸機能サポート、腎機能保護、免疫調整</p>
+                        <p><strong><span class="text-yellow-700">伝統的な役割:</span></strong> 「肺」と「腎」を補い、老化に伴う活力低下や疲労に使用。</p>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-yellow-100">
+                        <h4 class="font-bold text-xs text-yellow-900 flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 3.011-1.742 3.011H4.42c-1.53 0-2.493-1.677-1.743-3.011l5.58-9.92zM10 13a1 1 0 110-2 1 1 0 010 2zm-1-8a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd"></path></svg>
+                            注意点
+                        </h4>
+                        <p class="text-xs text-gray-600 mt-1">軽度の消化器症状。抗凝固薬、糖尿病治療薬との併用に注意。</p>
+                    </div>
+                </div>
+
+                <!-- 田七人参カード -->
+                <div class="bg-white rounded-2xl shadow-lg p-6 flex flex-col card-hover fade-in" style="transition-delay: 200ms;">
+                    <div class="flex items-center mb-4">
+                        <div class="p-3 rounded-full bg-green-100 mr-4">
+                            <svg class="w-8 h-8 text-green-800" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                        </div>
+                        <h3 class="text-2xl font-bold text-green-800">田七人参</h3>
+                    </div>
+                    <p class="text-sm text-gray-500 mb-4">金不換。巡りを整え、流れを清める。</p>
+                    <div class="space-y-3 text-sm flex-grow">
+                        <p><strong><span class="text-green-700">期待される効能:</span></strong> 血流改善、止血、心血管サポート、肝機能保護、鎮痛</p>
+                        <p><strong><span class="text-green-700">伝統的な役割:</span></strong> 出血を止めつつ血の滞り(瘀血)を解消する「化瘀止血」が特徴。</p>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-green-100">
+                        <h4 class="font-bold text-xs text-green-900 flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 3.011-1.742 3.011H4.42c-1.53 0-2.493-1.677-1.743-3.011l5.58-9.92zM10 13a1 1 0 110-2 1 1 0 010 2zm-1-8a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd"></path></svg>
+                            注意点
+                        </h4>
+                        <p class="text-xs text-gray-600 mt-1">口の渇き、動悸等。抗凝固薬との併用は特に危険。妊娠中は禁忌。</p>
+                    </div>
+                </div>
+
+                <!-- 枸杞カード -->
+                <div class="bg-white rounded-2xl shadow-lg p-6 flex flex-col card-hover fade-in" style="transition-delay: 300ms;">
+                    <div class="flex items-center mb-4">
+                        <div class="p-3 rounded-full bg-rose-100 mr-4">
+                            <svg class="w-8 h-8 text-rose-800" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                        </div>
+                        <h3 class="text-2xl font-bold text-rose-800">枸杞</h3>
+                    </div>
+                    <p class="text-sm text-gray-500 mb-4">潤いの果実。内側から輝きを育む。</p>
+                    <div class="space-y-3 text-sm flex-grow">
+                        <p><strong><span class="text-rose-700">期待される効能:</span></strong> 眼の健康、抗酸化、免疫サポート、代謝サポート、美肌</p>
+                        <p><strong><span class="text-rose-700">伝統的な役割:</span></strong> 「肝」と「腎」を滋養し、眼を明らかにする「明目」の目的で使用。</p>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-rose-100">
+                        <h4 class="font-bold text-xs text-rose-900 flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 3.011-1.742 3.011H4.42c-1.53 0-2.493-1.677-1.743-3.011l5.58-9.92zM10 13a1 1 0 110-2 1 1 0 010 2zm-1-8a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd"></path></svg>
+                            注意点
+                        </h4>
+                        <p class="text-xs text-gray-600 mt-1">過剰摂取で消化器症状。ワルファリン、糖尿病・降圧薬と相互作用の可能性。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 相乗効果セクション -->
+        <section class="mb-16 fade-in">
+            <div class="bg-white rounded-xl shadow-lg p-8">
+                <h2 class="text-3xl font-bold text-center mb-8 text-emerald-900">配合による相乗効果</h2>
+                <div class="flex flex-col md:flex-row items-center justify-center gap-8">
+                    <div class="w-full md:w-1/2 text-center">
+                        <p class="text-lg font-bold text-emerald-800 mb-4">漢方の基本原則「扶正祛邪」</p>
+                        <p class="text-gray-700 leading-relaxed mb-6">
+                            「正気（身体の抵抗力）」を支え、「邪気（病因）」を取り除くという考え方。漢命水の配合は、この原則に基づいています。
+                        </p>
+                        <div class="relative p-4">
+                            <div class="flex justify-center items-center space-x-2">
+                                <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">気・精を補う</span>
+                                <span class="text-gray-500">+</span>
+                                <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">巡りを保証</span>
+                            </div>
+                            <div class="text-3xl my-3">👇</div>
+                            <div class="bg-emerald-100 text-emerald-900 px-4 py-2 rounded-full text-lg font-bold inline-block">
+                                全身のバランス調整
+                            </div>
+                        </div>
+                    </div>
+                    <div class="w-full md:w-1/2">
+                        <ul class="space-y-4">
+                            <li class="flex items-start">
+                                <span class="text-red-500 font-bold mr-3">霊芝 & 冬虫夏草:</span>
+                                <p class="text-gray-700">生命力の根源である「腎」と免疫を司る「肺」を補い、エネルギーの土台を築きます。</p>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-green-500 font-bold mr-3">田七人参:</span>
+                                <p class="text-gray-700">滞った「血」の流れを改善し、補われたエネルギーが全身をスムーズに巡るよう促します。</p>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-rose-500 font-bold mr-3">枸杞:</span>
+                                <p class="text-gray-700">エネルギーの源となる「肝」「腎」を滋養し、処方全体の働きを安定させ、支えます。</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 体験談セクション -->
+        <section class="mb-16 fade-in">
+            <h2 class="text-3xl font-bold text-center mb-10 text-emerald-900">期待される体感</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow">
+                    <p class="text-gray-700">「睡眠の質が上がり、朝スッキリ起きられるようになった」</p>
+                    <p class="text-right text-sm text-emerald-700 font-semibold mt-2">- 活力の増加</p>
+                </div>
+                <div class="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow">
+                    <p class="text-gray-700">「手足の先までポカポカする感じがする」</p>
+                    <p class="text-right text-sm text-emerald-700 font-semibold mt-2">- 血行の改善</p>
+                </div>
+                <div class="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow">
+                    <p class="text-gray-700">「季節の変わり目に体調を崩しにくくなった気がする」</p>
+                    <p class="text-right text-sm text-emerald-700 font-semibold mt-2">- 抵抗力の向上</p>
+                </div>
+                <div class="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow">
+                    <p class="text-gray-700">「なんとなく不調だったのが、全体的に調子が良くなった」</p>
+                    <p class="text-right text-sm text-emerald-700 font-semibold mt-2">- 全般的な健康感</p>
+                </div>
+            </div>
+             <p class="text-center text-xs text-gray-500 mt-4">※これらは個人の感想であり、効能を保証するものではありません。</p>
+        </section>
+
+
+        <!-- 最終注意喚起 -->
+        <footer class="bg-red-800 text-white rounded-xl shadow-2xl p-8 text-center fade-in">
+            <h2 class="text-2xl font-bold mb-4">摂取を始める前に必ずご確認ください</h2>
+            <div class="max-w-3xl mx-auto text-red-100 space-y-4">
+                <p>
+                    「漢命水」は医薬品ではなく、あくまで健康をサポートするための<strong>「清涼飲料水」</strong>です。
+                </p>
+                <p>
+                    特定の疾患をお持ちの方、医薬品（特に血液をサラサラにする薬など）を服用中の方、妊娠・授乳中の方、アレルギー体質の方は、摂取前に必ずかかりつけの<strong>医師、薬剤師、または漢方の専門家にご相談ください。</strong>
+                </p>
+                <p>
+                    消費者ご自身で情報を確認し、リスクを理解した上でご判断いただくことが重要です。
+                </p>
+            </div>
+        </footer>
+
+    </div>
+
+    <script>
+        // スクロールに応じたフェードインアニメーション
+        const faders = document.querySelectorAll('.fade-in');
+        const appearOptions = {
+            threshold: 0.2,
+            rootMargin: "0px 0px -50px 0px"
+        };
+
+        const appearOnScroll = new IntersectionObserver(function(entries, appearOnScroll) {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) {
+                    return;
+                } else {
+                    entry.target.classList.add('visible');
+                    appearOnScroll.unobserve(entry.target);
+                }
+            });
+        }, appearOptions);
+
+        faders.forEach(fader => {
+            appearOnScroll.observe(fader);
+        });
+    </script>
+
+</body>
+</html>
