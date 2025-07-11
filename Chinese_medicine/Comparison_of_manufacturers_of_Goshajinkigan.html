@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>牛車腎気丸 比較・選択ガイド</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Earthy Harmony -->
+    <!-- Application Structure Plan: The application is designed as a user-centric "selection guide" rather than a linear report. The structure consists of three main parts: 1) An interactive "Needs-Based Selector" at the top, which guides users to the best product based on their stated priorities (e.g., convenience, tradition, potency). This is the primary user interaction point. 2) A "Dynamic Comparison Dashboard" that visually displays product data through cards and charts. This section reacts to the user's choices in the selector, highlighting the recommended product(s). 3) A "Detailed Information" accordion at the bottom for users who want to explore the base knowledge from the report. This task-oriented flow—from broad needs to specific product comparison to deep-dive details—was chosen to make complex information accessible and actionable for a general audience, rather than requiring them to read and synthesize a dense report. -->
+    <!-- Visualization & Content Choices: 1. (Goal: Guide/Organize) Needs-Based Selector: Uses interactive buttons (HTML/CSS/JS) to capture user intent. This is more engaging than a simple dropdown. 2. (Goal: Compare) Product Cards: A responsive grid (HTML/Tailwind) displays key specs for each product, allowing for quick side-by-side evaluation. 3. (Goal: Compare) Additive Count Chart: A Bar Chart (Chart.js) visualizes the number of additives. This immediately communicates the difference between "simple/traditional" and "complex/modern" formulations, a key theme in the report. 4. (Goal: Compare) Potency (Bushi) Chart: A Bar Chart (Chart.js) compares the relative amount of the key ingredient 'Bushi'. This highlights a subtle but important difference between OTC products (Kotaro vs. Kracie). 5. (Goal: Inform) Accordion Section: Uses HTML/JS to hide detailed text, keeping the main interface clean. All visualizations are built on Canvas or standard HTML, fulfilling the NO SVG/Mermaid requirement and supporting the interactive, comparison-focused application structure. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Noto Sans JP', sans-serif; background-color: #FBFBF8; }
+        .chart-container { position: relative; width: 100%; max-width: 600px; margin-left: auto; margin-right: auto; height: 350px; max-height: 400px; }
+        @media (min-width: 768px) { .chart-container { height: 400px; } }
+        .selection-btn { transition: all 0.3s ease; }
+        .selected-btn { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .product-card { transition: all 0.3s ease; border-width: 2px; }
+        .highlight-card { border-color: #c084fc; transform: scale(1.03); box-shadow: 0 8px 25px -5px rgba(192, 132, 252, 0.3), 0 10px 10px -5px rgba(192, 132, 252, 0.1); }
+        .unhighlight-card { opacity: 0.5; filter: grayscale(50%); }
+    </style>
+</head>
+<body class="text-stone-800">
+
+    <div class="container mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">
+
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-teal-800 mb-2">牛車腎気丸 比較・選択ガイド</h1>
+            <p class="text-lg text-stone-600">あなたのニーズに最適な一品を見つけましょう</p>
+        </header>
+
+        <section id="interactive-selector" class="mb-16 p-8 bg-white rounded-2xl shadow-lg">
+            <h2 class="text-2xl font-bold text-center mb-2 text-teal-700">Step 1: あなたの優先事項は？</h2>
+            <p class="text-center text-stone-600 mb-8">最も重視する項目を一つ選んでください。あなたに合った製品をハイライトします。</p>
+            <div id="selector-buttons" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <button data-target="all" class="selection-btn p-6 bg-stone-100 hover:bg-stone-200 rounded-xl text-center">
+                    <span class="text-4xl mb-2 block">🔍</span>
+                    <span class="font-bold text-lg text-stone-700">すべて表示</span>
+                    <span class="text-sm text-stone-500 block">全製品の比較を見る</span>
+                </button>
+                <button data-target="convenience" class="selection-btn p-6 bg-stone-100 hover:bg-stone-200 rounded-xl text-center">
+                    <span class="text-4xl mb-2 block">💊</span>
+                    <span class="font-bold text-lg text-stone-700">飲みやすさ・手軽さ</span>
+                    <span class="text-sm text-stone-500 block">漢方の味が苦手な方へ</span>
+                </button>
+                <button data-target="tradition" class="selection-btn p-6 bg-stone-100 hover:bg-stone-200 rounded-xl text-center">
+                    <span class="text-4xl mb-2 block">🌿</span>
+                    <span class="font-bold text-lg text-stone-700">伝統・無添加</span>
+                    <span class="text-sm text-stone-500 block">自然な製法を好む方へ</span>
+                </button>
+                 <button data-target="potency" class="selection-btn p-6 bg-stone-100 hover:bg-stone-200 rounded-xl text-center">
+                    <span class="text-4xl mb-2 block">🔥</span>
+                    <span class="font-bold text-lg text-stone-700">より強い実感</span>
+                    <span class="text-sm text-stone-500 block">温め・鎮痛効果を重視</span>
+                </button>
+            </div>
+            <div id="recommendation-text" class="mt-8 text-center bg-purple-50 text-purple-800 p-4 rounded-lg min-h-[80px] flex items-center justify-center transition-opacity duration-300 opacity-0">
+                <p></p>
+            </div>
+        </section>
+        
+        <section id="comparison-dashboard">
+            <h2 class="text-3xl font-bold text-center mb-10 text-teal-700">Step 2: 製品比較ダッシュボード</h2>
+            <div id="product-cards" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8 mb-16">
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <div class="bg-white p-6 rounded-2xl shadow-lg">
+                    <h3 class="text-xl font-bold text-center mb-4 text-teal-700">比較グラフ：添加物の数</h3>
+                    <p class="text-sm text-stone-600 text-center mb-4">製品の製剤思想が反映されます。数が少ないほど伝統的・シンプルな構成、多いほど服用しやすさ等を工夫した近代的な構成です。</p>
+                    <div class="chart-container">
+                        <canvas id="additivesChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-lg">
+                    <h3 class="text-xl font-bold text-center mb-4 text-teal-700">比較グラフ：重要生薬「附子」の量</h3>
+                     <p class="text-sm text-stone-600 text-center mb-4">体を温め痛みを和らげる重要生薬「附子（ブシ）」の1日あたりの配合量を比較。一般用医薬品の中でも違いがあります。（医療用を100%として換算）</p>
+                    <div class="chart-container">
+                        <canvas id="bushiChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="detailed-info" class="mt-16">
+             <h2 class="text-3xl font-bold text-center mb-10 text-teal-700">牛車腎気丸 詳細情報</h2>
+             <div class="space-y-4">
+                <div class="bg-white rounded-lg shadow-md">
+                    <button class="w-full flex justify-between items-center p-5 text-left font-semibold text-teal-800" onclick="toggleAccordion(this)">
+                        <span>牛車腎気丸とは？ - 基本情報</span>
+                        <span class="transform transition-transform duration-300">▼</span>
+                    </button>
+                    <div class="accordion-content max-h-0 overflow-hidden transition-all duration-500 ease-in-out">
+                        <div class="p-5 border-t border-stone-200 text-stone-700">
+                            <p>牛車腎気丸（ごしゃじんきがん）は、中国の古典医学書「済生方」に記された漢方処方です。10種類の生薬（地黄、牛膝、山茱萸、山薬、車前子、沢瀉、茯苓、牡丹皮、桂皮、附子）から構成されています。</p>
+                            <p class="mt-2">この処方は、より古い「八味地黄丸」に、血行を改善し痛みを和らげる「牛膝（ごしつ）」と、利尿作用のある「車前子（しゃぜんし）」を加えたものです。そのため、加齢による全般的な機能低下（腎虚）に加えて、特に下肢の痛みやしびれ、むくみが顕著な場合に適しています。</p>
+                            <p class="mt-2">対象となるのは「体力中等度以下で、疲れやすく、四肢が冷え、尿トラブルがある方」で、特に高齢者によく用いられます。</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md">
+                    <button class="w-full flex justify-between items-center p-5 text-left font-semibold text-teal-800" onclick="toggleAccordion(this)">
+                        <span>製剤思想の違い：エキス剤 vs 原末</span>
+                        <span class="transform transition-transform duration-300">▼</span>
+                    </button>
+                    <div class="accordion-content max-h-0 overflow-hidden transition-all duration-500 ease-in-out">
+                        <div class="p-5 border-t border-stone-200 text-stone-700">
+                           <p><strong>エキス剤（ツムラ、クラシエ、小太郎）:</strong> 近代的な製法。生薬を水などで加熱抽出し、有効成分を濃縮したもの。品質が均一で服用量が少なく済みますが、加熱工程で一部成分が失われる可能性も指摘されます。</p>
+                           <p class="mt-2"><strong>原末（ウチダ）:</strong> 伝統的な製法。生薬をそのまま粉砕して固めたもの。生薬の全成分を自然なバランスで摂取できますが、服用量が多くなりがちです。</p>
+                        </div>
+                    </div>
+                </div>
+             </div>
+        </section>
+
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    const productData = [
+        {
+            id: 'tsumura',
+            manufacturer: 'ツムラ',
+            productName: '医療用エキス顆粒',
+            category: '医療用',
+            form: '顆粒',
+            dose: '満量処方',
+            bushiAmount: 100,
+            additives: ['ステアリン酸Mg', '乳糖水和物', 'ショ糖脂肪酸エステル'],
+            features: [
+                { icon: '⚕️', text: '医師の処方箋が必要' },
+                { icon: '💪', text: '臨床試験でも使用される基準製品' },
+                { icon: '💧', text: '乳糖を含む' }
+            ],
+            recommendation: '医師の管理下で、最も標準的で高い効果を期待する場合に第一選択となります。臨床試験の多くはこの満量処方で行われています。'
+        },
+        {
+            id: 'kracie',
+            manufacturer: 'クラシエ',
+            productName: '漢方エキス錠',
+            category: '一般用(OTC)',
+            form: '錠剤',
+            dose: '1/2量',
+            bushiAmount: 25,
+            additives: ['二酸化ケイ素', 'セルロース', 'CMC-Ca', 'ステアリン酸Mg', 'ヒプロメロース', 'マクロゴール', '酸化チタン', 'カラメル', 'カルナウバロウ'],
+            features: [
+                { icon: '💊', text: 'フィルムコートで味・匂いなし' },
+                { icon: '👍', text: '漢方が苦手な方でも飲みやすい' },
+                { icon: '🔬', text: '添加物は多め' }
+            ],
+            recommendation: '漢方特有の味や香りが苦手な方、手軽さと飲みやすさを最優先する方に最適です。多くの添加物は服用コンプライアンス向上のための工夫です。'
+        },
+        {
+            id: 'kotaro',
+            manufacturer: '小太郎漢方製薬',
+            productName: 'エキス細粒G',
+            category: '一般用(OTC)',
+            form: '細粒',
+            dose: '1/2量',
+            bushiAmount: 50,
+            additives: ['含水二酸化ケイ素', '軽質無水ケイ酸', 'ステアリン酸Mg'],
+            features: [
+                { icon: '🔥', text: 'OTCの中で附子の量が多い' },
+                { icon: '🚫', text: '乳糖を含まない' },
+                { icon: '⚖️', text: '効果と手軽さのバランス型' }
+            ],
+            recommendation: '一般用医薬品の中でより強い温め・鎮痛効果を期待する方、または乳糖不耐症で顆粒タイプを希望する方に適しています。'
+        },
+        {
+            id: 'uchida',
+            manufacturer: 'ウチダ和漢薬',
+            productName: '原末・牛車腎気丸',
+            category: '一般用(OTC)',
+            form: '丸剤',
+            dose: '原末',
+            bushiAmount: 14,
+            additives: ['ハチミツ', '寒梅粉', 'バレイショデンプン'],
+            features: [
+                { icon: '🌿', text: '生薬をそのまま粉末化' },
+                { icon: '🍯', text: '添加物はハチミツなど伝統的なもののみ' },
+                { icon: '🌍', text: '化学合成添加物を避けたい方に' }
+            ],
+            recommendation: '近代的な抽出プロセスを避け、生薬そのものの力を信じる方、化学合成添加物を極力避けたい純粋派・伝統派の方に唯一の選択肢です。'
+        }
+    ];
+
+    const cardsContainer = document.getElementById('product-cards');
+    const selectorButtons = document.getElementById('selector-buttons');
+    const recommendationTextEl = document.getElementById('recommendation-text');
+    const recommendationP = recommendationTextEl.querySelector('p');
+
+    function renderCards() {
+        cardsContainer.innerHTML = '';
+        productData.forEach(p => {
+            const card = document.createElement('div');
+            card.className = 'product-card bg-white rounded-2xl shadow-md p-6 border-2 border-transparent flex flex-col';
+            card.id = `card-${p.id}`;
+
+            let featuresHtml = p.features.map(f => `
+                <li class="flex items-center">
+                    <span class="mr-3 text-xl">${f.icon}</span>
+                    <span>${f.text}</span>
+                </li>
+            `).join('');
+
+            card.innerHTML = `
+                <h3 class="text-2xl font-bold text-teal-700 mb-2">${p.manufacturer}</h3>
+                <p class="text-stone-600 font-semibold mb-4">${p.productName}</p>
+                <div class="grid grid-cols-2 gap-2 text-sm mb-4">
+                    <span class="bg-teal-50 text-teal-700 font-medium px-2 py-1 rounded-full text-center">${p.category}</span>
+                    <span class="bg-purple-50 text-purple-700 font-medium px-2 py-1 rounded-full text-center">${p.form}</span>
+                    <span class="bg-amber-50 text-amber-700 font-medium px-2 py-1 rounded-full text-center col-span-2">${p.dose}</span>
+                </div>
+                <ul class="space-y-2 text-stone-700 flex-grow mb-4">
+                    ${featuresHtml}
+                </ul>
+                <div class="mt-auto text-xs text-stone-500">
+                    添加物: ${p.additives.join(', ')}
+                </div>
+            `;
+            cardsContainer.appendChild(card);
+        });
+    }
+
+    let activeChart1, activeChart2;
+
+    function renderCharts() {
+        const additivesCtx = document.getElementById('additivesChart').getContext('2d');
+        if (activeChart1) activeChart1.destroy();
+        activeChart1 = new Chart(additivesCtx, {
+            type: 'bar',
+            data: {
+                labels: productData.map(p => p.manufacturer),
+                datasets: [{
+                    label: '添加物の数',
+                    data: productData.map(p => p.additives.length),
+                    backgroundColor: ['#14532d', '#0f766e', '#5b21b6', '#9a3412'],
+                    borderColor: ['#166534', '#115e59', '#6d28d9', '#a16207'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, ticks: { stepSize: 1 } }
+                }
+            }
+        });
+
+        const bushiCtx = document.getElementById('bushiChart').getContext('2d');
+        if (activeChart2) activeChart2.destroy();
+        activeChart2 = new Chart(bushiCtx, {
+            type: 'bar',
+            data: {
+                labels: productData.map(p => p.manufacturer),
+                datasets: [{
+                    label: '附子(ブシ)の相対量 (%)',
+                    data: productData.map(p => p.bushiAmount),
+                    backgroundColor: ['#14532d', '#0f766e', '#5b21b6', '#9a3412'],
+                    borderColor: ['#166534', '#115e59', '#6d28d9', '#a16207'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, title: { display: true, text: '医療用を100とした場合の相対量' } }
+                }
+            }
+        });
+    }
+
+    function updateView(targetId) {
+        const allCards = document.querySelectorAll('.product-card');
+        const allButtons = document.querySelectorAll('.selection-btn');
+
+        allButtons.forEach(btn => btn.classList.remove('selected-btn', 'bg-purple-200'));
+        const activeButton = document.querySelector(`[data-target="${targetId}"]`);
+        if (activeButton) activeButton.classList.add('selected-btn', 'bg-purple-200');
+
+
+        if (targetId === 'all') {
+            allCards.forEach(card => card.classList.remove('unhighlight-card', 'highlight-card'));
+            recommendationTextEl.classList.add('opacity-0');
+        } else {
+            let highlightedProduct;
+            if (targetId === 'convenience') highlightedProduct = productData.find(p => p.id === 'kracie');
+            if (targetId === 'tradition') highlightedProduct = productData.find(p => p.id === 'uchida');
+            if (targetId === 'potency') highlightedProduct = productData.find(p => p.id === 'kotaro');
+
+            allCards.forEach(card => {
+                card.classList.add('unhighlight-card');
+                card.classList.remove('highlight-card');
+            });
+
+            if (highlightedProduct) {
+                const targetCard = document.getElementById(`card-${highlightedProduct.id}`);
+                targetCard.classList.remove('unhighlight-card');
+                targetCard.classList.add('highlight-card');
+                recommendationP.innerText = highlightedProduct.recommendation;
+                recommendationTextEl.classList.remove('opacity-0');
+            }
+        }
+    }
+
+
+    selectorButtons.addEventListener('click', (e) => {
+        const button = e.target.closest('button');
+        if (!button) return;
+
+        const target = button.dataset.target;
+        if (target === 'potency') {
+            // A special case to highlight Kotaro, but also mention Tsumura as the highest potency option.
+            updateView(target);
+            const kotaroRec = productData.find(p => p.id === 'kotaro').recommendation;
+            const tsumuraRec = productData.find(p => p.id === 'tsumura').recommendation;
+            recommendationP.innerHTML = `<strong>OTCの中では:</strong> ${kotaroRec}<br><br><strong>最大限の効果を求めるなら:</strong> ${tsumuraRec}`;
+            const tsumuraCard = document.getElementById('card-tsumura');
+            tsumuraCard.classList.remove('unhighlight-card');
+            tsumuraCard.classList.add('highlight-card');
+
+        } else {
+            updateView(target);
+        }
+    });
+
+    renderCards();
+    renderCharts();
+    updateView('all'); // Initial state
+});
+
+function toggleAccordion(element) {
+    const content = element.nextElementSibling;
+    const icon = element.querySelector('span:last-child');
+    if (content.style.maxHeight) {
+        content.style.maxHeight = null;
+        icon.classList.remove('rotate-180');
+    } else {
+        document.querySelectorAll('.accordion-content').forEach(item => {
+            item.style.maxHeight = null;
+            item.previousElementSibling.querySelector('span:last-child').classList.remove('rotate-180');
+        });
+        content.style.maxHeight = content.scrollHeight + "px";
+        icon.classList.add('rotate-180');
+    }
+}
+</script>
+
+</body>
+</html>
