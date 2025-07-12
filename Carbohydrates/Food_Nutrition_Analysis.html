@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>食品栄養成分分析レポート（インタラクティブ版）</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Professional Blue and Slate -->
+    <!-- Application Structure Plan: A comprehensive, single-page report-style web application. The structure mirrors the source document with clear sections for Introduction, Parts 1, 2, 3, and Conclusion. Static tables are used within Parts 1 & 2 to preserve the original report's context. The key interactive element is in Part 3: a fully searchable and sortable master table of all food items, accompanied by a dynamic bar chart. This design allows users to both read the in-depth analysis and interactively explore the complete dataset, fulfilling the user's request to reflect all information without omission. -->
+    <!-- Visualization & Content Choices: 
+        - Goal: Present Report -> Structured Text & Static Tables (HTML/Tailwind). Justification: To faithfully reproduce the narrative and sectional data of the source document.
+        - Goal: Explore/Compare/Rank -> Interactive Master Table & Dynamic Bar Chart (JS/Chart.js). Justification: Placed in Part 3, this serves as the application's data exploration hub. Users can sort all foods by any nutrient (fulfilling the ranking request) and visually compare them in the chart, offering a powerful analytical tool that complements the report's text.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+            color: #334155; /* slate-700 */
+        }
+        h1, h2, h3 {
+            font-weight: 700;
+            color: #1e3a8a; /* blue-900 */
+        }
+        h2 {
+            border-bottom: 2px solid #3b82f6; /* blue-500 */
+            padding-bottom: 0.5rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1.5rem;
+        }
+        h3 {
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: #1d4ed8; /* blue-700 */
+        }
+        p, li {
+            line-height: 1.8;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+        th, td {
+            border: 1px solid #e2e8f0; /* slate-200 */
+            padding: 0.75rem;
+            text-align: left;
+        }
+        th {
+            background-color: #f1f5f9; /* slate-100 */
+            font-weight: 500;
+        }
+        tbody tr:nth-child(odd) {
+            background-color: #f8fafc; /* slate-50 */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 50vh;
+            max-height: 600px;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8 max-w-5xl">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-3xl sm:text-4xl font-bold mb-4">食品栄養成分分析レポート</h1>
+            <p class="text-lg text-slate-600">糖質と食物繊維に着目した包括的調査（インタラクティブ版）</p>
+        </header>
+
+        <main>
+            <section id="introduction">
+                <h2>序論：科学的精度で読み解く現代日本の食生活</h2>
+                <p>現代日本人の食生活は、伝統的な和食（washoku）の原則と、グローバル化に伴う多様な食文化が融合し、複雑かつダイナミックな栄養環境を形成している。特に近年、生活習慣病の予防・管理の観点から**糖質**（tōshitsu）への関心が高まっている。</p>
+                <p>本レポートは、日本人が日常的に摂取する食品について、文部科学省公表の**『日本食品標準成分表2020年版（八訂）』**を唯一の基準とし、網羅的な栄養成分分析を提供することを目的とする。特に、体内でエネルギー源となる**利用可能炭水化物（単糖当量）**を「糖質」と定義し、分析の精度を高める。</p>
+            </section>
+
+            <section id="part1">
+                <h2>第1部 日本の食生活の基盤：栄養学的フレームワークの拡張</h2>
+                <p>厚生労働省と農林水産省が策定した**「食事バランスガイド」**の分類を枠組みとし、その定性的な指針に、八訂成分表に基づく精密な定量的データを付与する。これにより、科学的根拠に基づいた専門的な栄養管理への橋渡しを行う。</p>
+
+                <div id="shushoku">
+                    <h3>1.1 主食（Shushoku）：エネルギー供給の核</h3>
+                    <p>主食はエネルギー供給の役割を担う。分析上、**調理状態（生か調理後か）による100gあたりの栄養成分値の劇的な変化**を理解することが不可欠である。</p>
+                    <div class="overflow-x-auto">
+                        <table>
+                            <thead><tr><th>食品名（調理状態）</th><th>カロリー (kcal)</th><th>たんぱく質 (g)</th><th>脂質 (g)</th><th>糖質 (g)</th><th>食物繊維 (g)</th></tr></thead>
+                            <tbody>
+                                <tr><td>精白米（生）</td><td>342</td><td>6.1</td><td>0.9</td><td>77.1</td><td>0.5</td></tr>
+                                <tr><td>ごはん（精白米・炊飯後）</td><td>152</td><td>2.5</td><td>0.3</td><td>35.6</td><td>1.5</td></tr>
+                                <tr><td>玄米ごはん（炊飯後）</td><td>165</td><td>2.8</td><td>1.0</td><td>34.2</td><td>1.4</td></tr>
+                                <tr><td>食パン（角形）</td><td>248</td><td>8.9</td><td>4.1</td><td>41.7</td><td>4.7</td></tr>
+                                <tr><td>うどん（ゆで）</td><td>95</td><td>2.6</td><td>0.4</td><td>19.5</td><td>0.8</td></tr>
+                                <tr><td>そば（ゆで）</td><td>132</td><td>4.8</td><td>1.0</td><td>24.0</td><td>2.0</td></tr>
+                                <tr><td>スパゲッティ（ゆで）</td><td>150</td><td>5.8</td><td>0.9</td><td>29.2</td><td>3.0</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div id="fukusai">
+                    <h3>1.2 副菜（Fukusai）：ビタミン・ミネラル・食物繊維の多様な供給源</h3>
+                    <p>副菜はビタミン、ミネラル、食物繊維の供給源である。しかし、副菜カテゴリー内には栄養学的に大きく異なるサブグループが存在する。特にさつまいもやカボチャなどは糖質量が多く、**「準主食」**としての側面を持つ。</p>
+                    <div class="overflow-x-auto">
+                        <table>
+                             <thead><tr><th>食品名（調理状態）</th><th>カロリー (kcal)</th><th>たんぱく質 (g)</th><th>脂質 (g)</th><th>糖質 (g)</th><th>食物繊維 (g)</th></tr></thead>
+                             <tbody>
+                                <tr><td>さつまいも（蒸し）</td><td>140</td><td>0.9</td><td>0.2</td><td>29.9</td><td>3.8</td></tr>
+                                <tr><td>じゃがいも（生）</td><td>51</td><td>1.8</td><td>0.1</td><td>6.1</td><td>9.8</td></tr>
+                                <tr><td>ごぼう（ゆで）</td><td>58</td><td>1.5</td><td>0.1</td><td>7.6</td><td>6.1</td></tr>
+                                <tr><td>カボチャ（西洋、ゆで）</td><td>93</td><td>1.6</td><td>0.3</td><td>15.1</td><td>4.1</td></tr>
+                                <tr><td>レタス（結球、生）</td><td>11</td><td>0.6</td><td>0.1</td><td>1.7</td><td>1.1</td></tr>
+                                <tr><td>マッシュルーム（生）</td><td>15</td><td>2.9</td><td>0.3</td><td>0.1</td><td>2.0</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="shusai">
+                    <h3>1.3 主菜（Shusai）：たんぱく質の供給源</h3>
+                    <p>主菜はたんぱく質を供給する。糖質はほぼゼロだが、**脂質の含有量と種類が食品によって大きく異なる**点が重要である。また、アサリのように**加工状態（生と水煮缶）が栄養密度に与える影響**も大きい。</p>
+                     <div class="overflow-x-auto">
+                        <table>
+                            <thead><tr><th>食品名（調理状態）</th><th>カロリー (kcal)</th><th>たんぱく質 (g)</th><th>脂質 (g)</th><th>糖質 (g)</th><th>食物繊維 (g)</th></tr></thead>
+                            <tbody>
+                                <tr><td>さんま（生）</td><td>287</td><td>18.1</td><td>25.6</td><td>0.1</td><td>0</td></tr>
+                                <tr><td>いか（するめいか、生）</td><td>76</td><td>17.9</td><td>0.8</td><td>0.2</td><td>0</td></tr>
+                                <tr><td>鶏むね肉（皮なし、生）</td><td>105</td><td>23.3</td><td>1.9</td><td>0.1</td><td>0</td></tr>
+                                <tr><td>納豆（糸引き）</td><td>184</td><td>16.5</td><td>10.0</td><td>5.4</td><td>6.7</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="mamerui">
+                    <h3>1.4 【新規】豆類（Mamerui）：植物性たんぱく質と食物繊維の宝庫</h3>
+                    <p>豆類は、たんぱく質・炭水化物・食物繊維を併せ持つ**「栄養の架け橋」**である。特に食物繊維の含有量が卓越しており、血糖値の安定に寄与する。ただし、市販の煮豆は調理法により糖質が高くなる場合がある。</p>
+                     <div class="overflow-x-auto">
+                        <table>
+                            <thead><tr><th>食品名（調理状態）</th><th>カロリー (kcal)</th><th>たんぱく質 (g)</th><th>脂質 (g)</th><th>糖質 (g)</th><th>食物繊維 (g)</th></tr></thead>
+                            <tbody>
+                                <tr><td>黒豆（煮豆、市販品）</td><td>204</td><td>11.1</td><td>5.3</td><td>24.8</td><td>6.5</td></tr>
+                                <tr><td>インゲン豆（ゆで）</td><td>147</td><td>9.3</td><td>1.2</td><td>17.3</td><td>13.6</td></tr>
+                                <tr><td>ひよこ豆（ゆで）</td><td>149</td><td>9.5</td><td>2.5</td><td>15.8</td><td>11.6</td></tr>
+                                <tr><td>枝豆（ゆで）</td><td>134</td><td>11.5</td><td>6.1</td><td>3.8</td><td>5.0</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="part2">
+                <h2>第2部 特定食品群の重点分析：果物・種実類・油脂類</h2>
+                <p>これらの食品群はユニークな栄養プロファイルをもち、健康的な食生活において重要な役割を担う。</p>
+                
+                <h3>2.1 果物（Kudamono）：天然糖質の供給源</h3>
+                <p>果物はビタミン等の供給源だが、果糖などの単純糖質も含む。特に**アボカド**は栄養学的に特異な存在で、糖質は極めて低い一方、脂質が非常に多い。**「良質な脂質と食物繊維の供給源」**として捉えるべきである。</p>
+
+                <h3>2.2 種実類（Shujitsurui）：凝縮されたエネルギーと栄養素</h3>
+                <p>種実類は「カロリー密度」と「栄養密度」が共に高い食品群である。健康に有益だが、**ポーションコントロール（量）の重要性**を認識し、「戦略的スナック」として少量摂取するのが賢明である。</p>
+
+                <h3>2.3 油脂類（Yushirui）：純粋な脂質の役割</h3>
+                <p>油脂類はほぼ100%が脂質である。その種類と脂肪酸組成が健康への影響を決定づける。例えばココナッツオイルは飽和脂肪酸の割合が高いが、その多くがエネルギーとして速やかに利用されやすい**中鎖脂肪酸（MCTs）**である。</p>
+            </section>
+
+            <section id="part3">
+                <h2>第3部 統合分析：全食品群を横断する糖質ランドスケープ</h2>
+                
+                <div id="ranking-interactive-section">
+                    <h3>拡張版・食品群横断 栄養成分ランキング</h3>
+                    <p class="mb-6">以下の表とグラフは、本レポートで分析した全ての食品のデータです。並び替えや検索機能を使って、食品の栄養価を自由に比較・探索してください。</p>
+                    
+                    <div class="bg-white rounded-xl shadow-md p-4 sm:p-6 mb-8">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label for="sort-select" class="block text-sm font-medium text-slate-700 mb-1">並び替え基準</label>
+                                <select id="sort-select" class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="carbs">糖質</option>
+                                    <option value="fiber">食物繊維</option>
+                                    <option value="calories">カロリー</option>
+                                    <option value="protein">たんぱく質</option>
+                                    <option value="fat">脂質</option>
+                                </select>
+                            </div>
+                            <div class="md:col-span-2">
+                                <label for="search-input" class="block text-sm font-medium text-slate-700 mb-1">食品名で検索</label>
+                                <input type="text" id="search-input" placeholder="例: ごはん, トマト..." class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chart-container mb-8">
+                        <canvas id="nutritionChart"></canvas>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table id="master-table">
+                            <thead>
+                                <tr>
+                                    <th>順位</th>
+                                    <th>食品名</th>
+                                    <th>食品群</th>
+                                    <th>糖質 (g)</th>
+                                    <th>食物繊維 (g)</th>
+                                    <th>カロリー (kcal)</th>
+                                    <th>たんぱく質 (g)</th>
+                                    <th>脂質 (g)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- JSで動的に生成 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="sogo-kosatsu">
+                    <h3>総合考察と実践的提言の深化</h3>
+                    <p>この総合ランキングから、糖質含有量に基づく食品の階層構造がより鮮明になる。血糖管理においては、白米（高糖質・低繊維）の一部をレンズ豆（中糖質・高繊維・高たんぱく）に置き換えるなど、**「中糖質・高繊維質」**の食品群を戦略的に活用することが有効である。また、ナッツ類やアボカドのように「カロリー密度」と「栄養密度」の概念を理解し、食品を選択することが体重管理において重要となる。</p>
+                </div>
+            </section>
+
+            <section id="conclusion">
+                <h2>結論と専門的提言</h2>
+                <p>本レポートの分析から、以下の3点を提言する。</p>
+                <ol class="list-decimal list-inside space-y-2 mt-4">
+                    <li><strong>食物繊維と全粒食品の優先:</strong> 単に糖質量を減らすだけでなく、食物繊維の豊富な食品（玄米、全粒穀物、野菜、豆類）を積極的に摂取することが極めて重要である。</li>
+                    <li><strong>戦略的な組み合わせと量の調整:</strong> 主食を単独で大量摂取するのではなく、必ず低糖質・高繊維の副菜と良質なたんぱく質を含む主菜と組み合わせることが、バランスの取れた食事の鍵となる。</li>
+                    <li><strong>データに基づいた情報的代替:</strong> 本レポートのデータを活用し、「バターの代わりにアボカドを使う」といったデータに基づいた小さな選択を積み重ねることが、長期的な健康達成に繋がる。</li>
+                </ol>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const foodData = [
+            { name: '精白米（生）', category: '主食', calories: 342, protein: 6.1, fat: 0.9, carbs: 77.1, fiber: 0.5 },
+            { name: 'ごはん（精白米・炊飯後）', category: '主食', calories: 152, protein: 2.5, fat: 0.3, carbs: 35.6, fiber: 1.5 },
+            { name: '玄米ごはん（炊飯後）', category: '主食', calories: 165, protein: 2.8, fat: 1.0, carbs: 34.2, fiber: 1.4 },
+            { name: '食パン（角形）', category: '主食', calories: 248, protein: 8.9, fat: 4.1, carbs: 41.7, fiber: 4.7 },
+            { name: 'うどん（ゆで）', category: '主食', calories: 95, protein: 2.6, fat: 0.4, carbs: 19.5, fiber: 0.8 },
+            { name: 'そば（ゆで）', category: '主食', calories: 132, protein: 4.8, fat: 1.0, carbs: 24.0, fiber: 2.0 },
+            { name: 'スパゲッティ（ゆで）', category: '主食', calories: 150, protein: 5.8, fat: 0.9, carbs: 29.2, fiber: 3.0 },
+            { name: 'さつまいも（蒸し、皮つき）', category: '副菜', calories: 140, protein: 0.9, fat: 0.2, carbs: 29.9, fiber: 3.8 },
+            { name: 'じゃがいも（生、皮つき）', category: '副菜', calories: 51, protein: 1.8, fat: 0.1, carbs: 6.1, fiber: 9.8 },
+            { name: 'ごぼう（ゆで）', category: '副菜', calories: 58, protein: 1.5, fat: 0.1, carbs: 7.6, fiber: 6.1 },
+            { name: 'カボチャ（西洋、ゆで）', category: '副菜', calories: 93, protein: 1.6, fat: 0.3, carbs: 15.1, fiber: 4.1 },
+            { name: 'だいこん（根、皮なし、生）', category: '副菜', calories: 15, protein: 0.4, fat: 0.1, carbs: 2.8, fiber: 1.3 },
+            { name: 'にんじん（根、皮なし、生）', category: '副菜', calories: 32, protein: 0.7, fat: 0.2, carbs: 5.8, fiber: 2.8 },
+            { name: 'たまねぎ（生）', category: '副菜', calories: 33, protein: 1.0, fat: 0.1, carbs: 6.9, fiber: 1.5 },
+            { name: 'ニンニク（りん茎、生）', category: '副菜', calories: 136, protein: 6.4, fat: 0.9, carbs: 21.2, fiber: 6.2 },
+            { name: 'なす（果実、生）', category: '副菜', calories: 18, protein: 1.1, fat: 0.1, carbs: 2.9, fiber: 2.2 },
+            { name: 'きゅうり（果実、生）', category: '副菜', calories: 13, protein: 1.0, fat: 0.1, carbs: 1.9, fiber: 1.1 },
+            { name: 'ピーマン（緑、生）', category: '副菜', calories: 22, protein: 0.9, fat: 0.2, carbs: 2.8, fiber: 2.3 },
+            { name: 'トマト（生）', category: '副菜', calories: 20, protein: 0.7, fat: 0.1, carbs: 3.7, fiber: 1.0 },
+            { name: 'アスパラガス（若茎、生）', category: '副菜', calories: 21, protein: 2.6, fat: 0.2, carbs: 1.9, fiber: 2.0 },
+            { name: 'セロリ（生）', category: '副菜', calories: 15, protein: 0.4, fat: 0.1, carbs: 1.9, fiber: 1.5 },
+            { name: 'キャベツ（生）', category: '副菜', calories: 23, protein: 1.2, fat: 0.1, carbs: 3.4, fiber: 1.8 },
+            { name: 'ほうれんそう（ゆで）', category: '副菜', calories: 25, protein: 2.6, fat: 0.5, carbs: 1.3, fiber: 2.8 },
+            { name: 'レタス（結球、土耕、生）', category: '副菜', calories: 11, protein: 0.6, fat: 0.1, carbs: 1.7, fiber: 1.1 },
+            { name: 'ネギ（根深ねぎ、白、生）', category: '副菜', calories: 35, protein: 1.4, fat: 0.1, carbs: 5.8, fiber: 2.5 },
+            { name: 'マッシュルーム（生）', category: '副菜', calories: 15, protein: 2.9, fat: 0.3, carbs: 0.1, fiber: 2.0 },
+            { name: 'しいたけ（生）', category: '副菜', calories: 19, protein: 3.0, fat: 0.4, carbs: 0.7, fiber: 4.2 },
+            { name: 'わかめ（原藻、生）', category: '副菜', calories: 24, protein: 1.9, fat: 0.2, carbs: 2.0, fiber: 3.6 },
+            { name: 'さんま（皮つき、生）', category: '主菜', calories: 287, protein: 18.1, fat: 25.6, carbs: 0.1, fiber: 0 },
+            { name: 'まさば（生）', category: '主菜', calories: 211, protein: 20.6, fat: 16.8, carbs: 0.3, fiber: 0 },
+            { name: 'しろさけ（生）', category: '主菜', calories: 124, protein: 22.3, fat: 4.1, carbs: 0.1, fiber: 0 },
+            { name: 'きはだまぐろ（生）', category: '主菜', calories: 106, protein: 24.3, fat: 0.7, carbs: 0.1, fiber: 0 },
+            { name: 'いか（するめいか、生）', category: '主菜', calories: 76, protein: 17.9, fat: 0.8, carbs: 0.2, fiber: 0 },
+            { name: 'たこ（まだこ、生）', category: '主菜', calories: 70, protein: 16.4, fat: 0.7, carbs: 0.1, fiber: 0 },
+            { name: 'アサリ（生）', category: '主菜', calories: 30, protein: 6.0, fat: 0.3, carbs: 0.4, fiber: 0 },
+            { name: 'アサリ（缶詰、水煮）', category: '主菜', calories: 102, protein: 20.3, fat: 2.2, carbs: 1.9, fiber: 0 },
+            { name: '牛ばら肉（生）', category: '主菜', calories: 472, protein: 11.0, fat: 50.0, carbs: 0.2, fiber: 0 },
+            { name: '豚ばら肉（生）', category: '主菜', calories: 366, protein: 14.4, fat: 35.4, carbs: 0.1, fiber: 0 },
+            { name: '鶏むね肉（皮なし、生）', category: '主菜', calories: 105, protein: 23.3, fat: 1.9, carbs: 0.1, fiber: 0 },
+            { name: '鶏卵（全卵、生）', category: '主菜', calories: 142, protein: 12.2, fat: 10.2, carbs: 0.4, fiber: 0 },
+            { name: '木綿豆腐', category: '主菜', calories: 73, protein: 7.0, fat: 4.8, carbs: 1.1, fiber: 0.4 },
+            { name: '納豆（糸引き）', category: '主菜', calories: 184, protein: 16.5, fat: 10.0, carbs: 5.4, fiber: 6.7 },
+            { name: '黒豆（煮豆、市販品）', category: '豆類', calories: 204, protein: 11.1, fat: 5.3, carbs: 24.8, fiber: 6.5 },
+            { name: 'インゲン豆（ゆで）', category: '豆類', calories: 147, protein: 9.3, fat: 1.2, carbs: 17.3, fiber: 13.6 },
+            { name: 'ひよこ豆（ゆで）', category: '豆類', calories: 149, protein: 9.5, fat: 2.5, carbs: 15.8, fiber: 11.6 },
+            { name: '小豆（ゆで）', category: '豆類', calories: 122, protein: 8.6, fat: 0.8, carbs: 13.5, fiber: 8.7 },
+            { name: 'レンズ豆（ゆで）', category: '豆類', calories: 170, protein: 9.0, fat: 0.8, carbs: 19.7, fiber: 9.4 },
+            { name: '枝豆（ゆで）', category: '豆類', calories: 134, protein: 11.5, fat: 6.1, carbs: 3.8, fiber: 5.0 },
+            { name: 'バナナ（生）', category: '果物', calories: 93, protein: 1.1, fat: 0.2, carbs: 21.4, fiber: 1.1 },
+            { name: 'りんご（皮なし、生）', category: '果物', calories: 53, protein: 0.1, fat: 0.2, carbs: 14.1, fiber: 1.4 },
+            { name: 'うんしゅうみかん（じょうのう、生）', category: '果物', calories: 49, protein: 0.7, fat: 0.1, carbs: 11.0, fiber: 1.0 },
+            { name: 'キウイフルーツ（緑肉種、生）', category: '果物', calories: 51, protein: 1.0, fat: 0.2, carbs: 10.8, fiber: 2.6 },
+            { name: 'メロン（温室、生）', category: '果物', calories: 42, protein: 1.1, fat: 0.1, carbs: 9.6, fiber: 0.5 },
+            { name: 'ブルーベリー（生）', category: '果物', calories: 49, protein: 0.5, fat: 0.1, carbs: 9.6, fiber: 3.3 },
+            { name: 'スイカ（生）', category: '果物', calories: 41, protein: 0.6, fat: 0.1, carbs: 9.2, fiber: 0.3 },
+            { name: '桃（生）', category: '果物', calories: 38, protein: 0.6, fat: 0.1, carbs: 8.9, fiber: 1.3 },
+            { name: 'いちご（生）', category: '果物', calories: 31, protein: 0.9, fat: 0.1, carbs: 7.1, fiber: 1.4 },
+            { name: 'アボカド（生）', category: '果物', calories: 176, protein: 2.1, fat: 17.5, carbs: 2.3, fiber: 5.6 },
+            { name: 'くるみ（いり）', category: '種実類', calories: 713, protein: 14.6, fat: 68.8, carbs: 4.2, fiber: 7.5 },
+            { name: 'ピスタチオ（いり、味付け）', category: '種実類', calories: 617, protein: 17.4, fat: 56.1, carbs: 11.7, fiber: 9.2 },
+            { name: 'アーモンド（いり）', category: '種実類', calories: 608, protein: 20.3, fat: 54.1, carbs: 9.7, fiber: 11.0 },
+            { name: 'ごま（いり）', category: '種実類', calories: 599, protein: 20.3, fat: 54.2, carbs: 5.9, fiber: 12.6 },
+            { name: 'カシューナッツ（フライ、味付け）', category: '種実類', calories: 576, protein: 19.8, fat: 47.6, carbs: 20.0, fiber: 6.7 },
+            { name: 'ピーナッツ（いり）', category: '種実類', calories: 585, protein: 26.5, fat: 49.4, carbs: 12.4, fiber: 7.2 },
+            { name: 'オリーブ油', category: '油脂類', calories: 894, protein: 0, fat: 100.0, carbs: 0, fiber: 0 },
+            { name: 'ごま油', category: '油脂類', calories: 890, protein: 0, fat: 100.0, carbs: 0, fiber: 0 },
+            { name: 'ココナッツオイル', category: '油脂類', calories: 889, protein: 0, fat: 100.0, carbs: 0, fiber: 0 },
+            { name: 'サラダ油（調合油）', category: '油脂類', calories: 886, protein: 0, fat: 100.0, carbs: 0, fiber: 0 },
+            { name: 'バター（有塩）', category: '油脂類', calories: 700, protein: 0.6, fat: 81.0, carbs: 0.2, fiber: 0 },
+        ];
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            let chartInstance = null;
+            let currentSortKey = 'carbs';
+            let currentSearchTerm = '';
+
+            const sortSelect = document.getElementById('sort-select');
+            const searchInput = document.getElementById('search-input');
+            const tableBody = document.querySelector('#master-table tbody');
+
+            const nutrientLabels = {
+                calories: 'カロリー (kcal)',
+                protein: 'たんぱく質 (g)',
+                fat: '脂質 (g)',
+                carbs: '糖質 (g)',
+                fiber: '食物繊維 (g)'
+            };
+
+            function render() {
+                const filteredData = foodData.filter(d => d.name.toLowerCase().includes(currentSearchTerm));
+                const sortedData = [...filteredData].sort((a, b) => b[currentSortKey] - a[currentSortKey]);
+                
+                renderTable(sortedData);
+                renderChart(sortedData.slice(0, 20)); // 上位20件をグラフ表示
+            }
+            
+            function renderTable(data) {
+                tableBody.innerHTML = data.map((d, index) => `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${d.name}</td>
+                        <td>${d.category}</td>
+                        <td class="font-medium ${currentSortKey === 'carbs' ? 'bg-blue-100' : ''}">${d.carbs.toFixed(1)}</td>
+                        <td class="font-medium ${currentSortKey === 'fiber' ? 'bg-blue-100' : ''}">${d.fiber.toFixed(1)}</td>
+                        <td class="font-medium ${currentSortKey === 'calories' ? 'bg-blue-100' : ''}">${d.calories.toFixed(0)}</td>
+                        <td class="font-medium ${currentSortKey === 'protein' ? 'bg-blue-100' : ''}">${d.protein.toFixed(1)}</td>
+                        <td class="font-medium ${currentSortKey === 'fat' ? 'bg-blue-100' : ''}">${d.fat.toFixed(1)}</td>
+                    </tr>
+                `).join('');
+            }
+
+            function renderChart(data) {
+                const ctx = document.getElementById('nutritionChart').getContext('2d');
+                
+                const chartData = {
+                    labels: data.map(d => d.name),
+                    datasets: [{
+                        label: nutrientLabels[currentSortKey],
+                        data: data.map(d => d[currentSortKey]),
+                        backgroundColor: '#3b82f6',
+                        borderColor: '#1e3a8a',
+                        borderWidth: 1
+                    }]
+                };
+
+                if (chartInstance) {
+                    chartInstance.destroy();
+                }
+
+                chartInstance = new Chart(ctx, {
+                    type: 'bar',
+                    data: chartData,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        scales: {
+                            x: { beginAtZero: true, title: { display: true, text: nutrientLabels[currentSortKey] } },
+                            y: { ticks: { font: { size: 10 } } }
+                        },
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+
+            sortSelect.addEventListener('change', e => {
+                currentSortKey = e.target.value;
+                render();
+            });
+
+            searchInput.addEventListener('input', e => {
+                currentSearchTerm = e.target.value.trim().toLowerCase();
+                render();
+            });
+
+            render();
+        });
+    </script>
+</body>
+</html>
