@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日本の食品栄養インタラクティブ分析</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Harmony -->
+    <!-- Application Structure Plan: A three-section dashboard. 1) An interactive "Nutrition Explorer" with category filters and a dynamic radar chart for detailed comparison. 2) A "Sugar Content Ranking" using a horizontal bar chart to visualize the report's key analysis on sugar. 3) A "Smart Eating Tips" section with actionable advice. This structure transforms the linear report into a non-linear, task-oriented exploration tool, guiding the user from general exploration to specific analysis and finally to practical application, which is optimal for usability and data comprehension. -->
+    <!-- Visualization & Content Choices: Food Categories (Buttons) -> Goal: Organize/Filter -> Method: JS click handlers to update food lists. Nutrition Breakdown -> Goal: Compare -> Method: Chart.js Radar Chart on Canvas to show a multi-variate "fingerprint" of each food. Justification: Superior to tables for at-a-glance comparison. Sugar Ranking -> Goal: Compare/Rank -> Method: Chart.js Horizontal Bar Chart on Canvas. Justification: The clearest way to visualize a hierarchy. Key Takeaways -> Goal: Inform -> Method: Styled HTML/Tailwind cards. Justification: Improves readability of the report's conclusions. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #F8F7F4;
+            color: #5D544D;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 40vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .nutrient-bar-container {
+            position: relative;
+            width: 100%;
+            height: 600px;
+            max-height: 70vh;
+        }
+        .custom-btn {
+            transition: all 0.3s ease;
+        }
+        .custom-btn.active {
+            background-color: #6A8A82;
+            color: #F8F7F4;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .food-item-btn.active {
+            background-color: #B88A7D;
+            color: #F8F7F4;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-[#5D544D] mb-2">食の羅針盤</h1>
+            <p class="text-lg text-[#6A8A82]">インタラクティブ栄養分析</p>
+            <p class="mt-4 max-w-3xl mx-auto text-base">ご提供いただいた「日本人が食する主要食品の栄養成分分析」レポートに基づき、食品の栄養価をインタラクティブに探求できるツールです。気になる食品を選んで、その栄養バランスを深く理解しましょう。</p>
+        </header>
+
+        <main>
+            <!-- Section 1: Nutrition Explorer -->
+            <section id="explorer" class="mb-16 p-6 md:p-8 bg-[#EAE7E1] rounded-2xl shadow-lg">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-[#5D544D] mb-2">栄養成分エクスプローラー</h2>
+                    <p class="max-w-2xl mx-auto text-base">下のカテゴリーを選んで食品リストを表示し、個々の食品をクリックすると、その栄養バランスがレーダーチャートで視覚化されます。複数の食品を切り替えて、その特性の違いを比較してみましょう。</p>
+                </div>
+
+                <div id="category-filters" class="flex flex-wrap justify-center gap-2 md:gap-4 mb-8">
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8 items-start">
+                    <div class="bg-[#F8F7F4] p-4 rounded-xl shadow-inner">
+                        <h3 class="text-xl font-bold text-center mb-4 text-[#6A8A82]">食品リスト</h3>
+                        <div id="food-list" class="flex flex-wrap justify-center gap-2 max-h-96 overflow-y-auto p-2">
+                            <p class="text-center w-full">上のカテゴリーを選択してください。</p>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="bg-[#F8F7F4] p-4 rounded-xl shadow-inner">
+                            <div id="details-panel" class="text-center min-h-[380px] md:min-h-[460px] flex flex-col justify-center">
+                                <p id="instruction-text" class="text-lg">食品を選択するとここに詳細が表示されます。</p>
+                                <div id="chart-and-info" class="hidden">
+                                    <h3 id="food-name" class="text-2xl font-bold mb-2 text-[#B88A7D]"></h3>
+                                    <div class="chart-container">
+                                        <canvas id="nutrientRadarChart"></canvas>
+                                    </div>
+                                    <div id="nutrient-details" class="text-sm mt-4 grid grid-cols-2 sm:grid-cols-4 gap-2 px-2"></div>
+                                    <p id="food-insight" class="text-sm mt-4 p-2 bg-[#EAE7E1] rounded-md max-w-md mx-auto"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Section 2: Sugar Content Ranking -->
+            <section id="ranking" class="mb-16 p-6 md:p-8 bg-[#EAE7E1] rounded-2xl shadow-lg">
+                 <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-[#5D544D] mb-2">糖質量ランキング (100gあたり)</h2>
+                    <p class="max-w-2xl mx-auto text-base">レポートの中心的な分析の一つである、食品群を横断した糖質（利用可能炭水化物）含有量の比較です。どの食品が主な糖質源となるかが一目でわかります。</p>
+                </div>
+                <div class="bg-[#F8F7F4] p-4 rounded-xl shadow-inner">
+                    <div class="nutrient-bar-container">
+                        <canvas id="sugarBarChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 3: Smart Eating Tips -->
+            <section id="tips" class="p-6 md:p-8 bg-[#EAE7E1] rounded-2xl shadow-lg">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-[#5D544D] mb-2">賢い食事のためのヒント</h2>
+                    <p class="max-w-2xl mx-auto text-base">レポートの結論から導き出された、データに基づく実践的な食事戦略です。日々の食生活をより良くするための知識としてご活用ください。</p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="bg-[#F8F7F4] p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold text-[#6A8A82] mb-3">① 食物繊維と全粒食品を優先</h3>
+                        <p class="text-base">単に糖質を減らすだけでなく、食物繊維が豊富な食品を積極的に摂りましょう。玄米、全粒粉パン、丸ごとの果物、そしてたっぷりの野菜やきのこ、海藻を。これらは血糖値の上昇を緩やかにし、満腹感を持続させます。</p>
+                    </div>
+                    <div class="bg-[#F8F7F4] p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold text-[#6A8A82] mb-3">② 戦略的な組み合わせと量の調整</h3>
+                        <p class="text-base">主食を完全に断つのではなく、活動量に合わせて量を調整しましょう。重要なのは、主食（高糖質）を、副菜（低糖質・高繊維）や主菜（たんぱく質）と必ず組み合わせること。この「ペアリング」が、バランスの取れた食事の鍵です。</p>
+                    </div>
+                    <div class="bg-[#F8F7F4] p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold text-[#6A8A82] mb-3">③ データに基づいた食品の置き換え</h3>
+                        <p class="text-base">このツールで得た知識を活かし、賢い食品の置き換えを実践しましょう。「うどんをそばに」「ごはんの一部を豆腐に」。こうした小さな選択の積み重ねが、長期的な健康へと繋がります。</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer class="text-center mt-12 pt-8 border-t border-[#D9D3C7]">
+            <p class="text-sm">本アプリケーションは、提供されたレポート「日本人が食する主要食品の栄養成分分析」のデータを視覚化したものです。</p>
+            <p class="text-xs mt-2 text-gray-500">データ出典: 文部科学省「日本食品標準成分表2020年版（八訂）」</p>
+        </footer>
+
+    </div>
+
+    <script>
+        const foodData = {
+            '主食': [
+                { id: 'rice_cooked', name: 'ごはん(炊飯後)', calorie: 152, protein: 2.5, fat: 0.3, sugar: 35.6, fiber: 1.5, insight: 'パンに比べて脂質が非常に少ない、日本の基本主食です。' },
+                { id: 'brown_rice_cooked', name: '玄米ごはん', calorie: 165, protein: 2.8, fat: 1.0, sugar: 34.2, fiber: 1.4, insight: '白米と糖質量は大差ないですが、ビタミンやミネラルが豊富です。' },
+                { id: 'bread', name: '食パン', calorie: 248, protein: 8.9, fat: 4.1, sugar: 41.7, fiber: 4.7, insight: '水分量が少なく、単位重量あたりのカロリーと糖質が高めです。' },
+                { id: 'udon', name: 'うどん(ゆで)', calorie: 95, protein: 2.6, fat: 0.4, sugar: 19.5, fiber: 0.8, insight: '麺類の中では最も低カロリー・低糖質で、消化に良いです。' },
+                { id: 'soba', name: 'そば(ゆで)', calorie: 132, protein: 4.8, fat: 1.0, sugar: 24.0, fiber: 2.0, insight: 'たんぱく質と食物繊維が多く、栄養価の高い選択肢です。' },
+                { id: 'spaghetti', name: 'スパゲッティ(ゆで)', calorie: 150, protein: 5.8, fat: 0.9, sugar: 29.2, fiber: 3.0, insight: '他の麺類よりカロリー・糖質共に高いですが、腹持ちが良いです。' }
+            ],
+            '副菜': [
+                { id: 'cabbage', name: 'キャベツ(生)', calorie: 23, protein: 1.2, fat: 0.1, sugar: 3.4, fiber: 1.8, insight: '非常に低カロリー・低糖質。食事のかさを増やすのに最適です。' },
+                { id: 'spinach', name: 'ほうれんそう(ゆで)', calorie: 25, protein: 2.6, fat: 0.5, sugar: 1.3, fiber: 2.8, insight: '糖質が極めて低く、鉄分やビタミンが豊富な緑黄色野菜の代表です。' },
+                { id: 'daikon', name: 'だいこん(生)', calorie: 15, protein: 0.4, fat: 0.1, sugar: 2.8, fiber: 1.3, insight: '水分が多く低カロリー。消化酵素も含まれています。' },
+                { id: 'tomato', name: 'トマト(生)', calorie: 20, protein: 0.7, fat: 0.1, sugar: 3.7, fiber: 1.0, insight: 'リコピンが豊富。糖質も低く、彩りも豊かにします。' },
+                { id: 'onion', name: 'たまねぎ(生)', calorie: 33, protein: 1.0, fat: 0.1, sugar: 6.9, fiber: 1.5, insight: '野菜の中ではやや糖質が高いですが、血液サラサラ効果が期待されます。' },
+                { id: 'carrot', name: 'にんじん(生)', calorie: 32, protein: 0.7, fat: 0.2, sugar: 5.8, fiber: 2.8, insight: 'βカロテンが豊富。甘みがあり、糖質は野菜の中では中程度です。' },
+                { id: 'shiitake', name: 'しいたけ(生)', calorie: 19, protein: 3.0, fat: 0.4, sugar: 0.7, fiber: 4.2, insight: '炭水化物の多くが食物繊維。糖質はほぼゼロで、旨味成分が豊富です。' },
+                { id: 'wakame', name: 'わかめ(生)', calorie: 24, protein: 1.9, fat: 0.2, sugar: 2.0, fiber: 3.6, insight: '低カロリーでミネラル豊富。食物繊維が多く、糖質は非常に少ないです。' }
+            ],
+            '主菜': [
+                { id: 'salmon', name: 'しろさけ(生)', calorie: 124, protein: 22.3, fat: 4.1, sugar: 0.1, insight: '良質なたんぱく質とDHA・EPAを含む健康的な魚です。' },
+                { id: 'mackerel', name: 'まさば(生)', calorie: 211, protein: 20.6, fat: 16.8, sugar: 0.3, insight: '脂質が多いですが、体に良いn-3系脂肪酸が非常に豊富です。' },
+                { id: 'tuna', name: 'きはだまぐろ(生)', calorie: 106, protein: 24.3, fat: 0.7, sugar: 0.1, insight: '高たんぱく・超低脂質の代表格。ほぼ純粋なたんぱく質源です。' },
+                { id: 'chicken_breast', name: '鶏むね肉(皮なし)', calorie: 105, protein: 23.3, fat: 1.9, sugar: 0.1, insight: '肉類の中で際立って低脂質・高たんぱく。ダイエットの強い味方です。' },
+                { id: 'pork_belly', name: '豚ばら肉', calorie: 366, protein: 14.4, fat: 35.4, sugar: 0.1, insight: '脂質が非常に多く高カロリー。部位の選択が重要です。' },
+                { id: 'beef_ribs', name: '牛ばら肉', calorie: 472, protein: 11.0, fat: 50.0, sugar: 0.2, insight: '極めて高カロリー。脂質の旨味が特徴ですが、量は控えめに。' },
+                { id: 'egg', name: '鶏卵(生)', calorie: 142, protein: 12.2, fat: 10.2, sugar: 0.4, insight: '完全栄養食品と呼ばれるほど、栄養バランスに優れています。' },
+                { id: 'tofu', name: '木綿豆腐', calorie: 73, protein: 7.0, fat: 4.8, sugar: 1.1, insight: '低カロリーな植物性たんぱく質の優れた供給源です。' },
+                { id: 'natto', name: '納豆', calorie: 184, protein: 16.5, fat: 10.0, sugar: 5.4, insight: '栄養満点の発酵食品。主菜の中では糖質がありますが、食物繊維も豊富。' }
+            ],
+            '果物': [
+                { id: 'banana', name: 'バナナ', calorie: 93, protein: 1.1, fat: 0.2, sugar: 21.4, fiber: 1.1, insight: '果物の中では糖質が突出して多く、エネルギー補給に最適です。' },
+                { id: 'apple', name: 'りんご', calorie: 53, protein: 0.1, fat: 0.2, sugar: 14.1, fiber: 1.4, insight: '中程度の糖質を含み、食物繊維もバランス良く含まれています。' },
+                { id: 'mikan', name: 'みかん', calorie: 49, protein: 0.7, fat: 0.1, sugar: 11.0, fiber: 1.0, insight: '手軽にビタミンCが摂れる、糖質が中程度の果物です。' },
+                { id: 'kiwi', name: 'キウイフルーツ', calorie: 51, protein: 1.0, fat: 0.2, sugar: 10.8, fiber: 2.6, insight: '糖質量は中程度で、特に食物繊維が豊富です。' },
+                { id: 'strawberry', name: 'いちご', calorie: 31, protein: 0.9, fat: 0.1, sugar: 7.1, fiber: 1.4, insight: 'ベリー類は糖質が比較的低く、ビタミンCも豊富です。' }
+            ],
+            '種実類': [
+                { id: 'almond', name: 'アーモンド', calorie: 608, protein: 20.3, fat: 54.1, sugar: 9.7, fiber: 11.0, insight: '低糖質・高脂質。ビタミンEと食物繊維が非常に豊富です。' },
+                { id: 'walnut', name: 'くるみ', calorie: 713, protein: 14.6, fat: 68.8, sugar: 4.2, fiber: 7.5, insight: '糖質が極めて低いですが、カロリーは最高クラス。n-3系脂肪酸が特徴です。' },
+                { id: 'sesame', name: 'ごま', calorie: 599, protein: 20.3, fat: 54.2, sugar: 5.9, fiber: 12.6, insight: '低糖質でカルシウムなどのミネラルも豊富。脂質が多いです。' },
+                { id: 'peanut', name: 'らっかせい', calorie: 613, protein: 25.0, fat: 49.6, sugar: 9.9, fiber: 11.4, insight: 'たんぱく質が豊富。糖質は低めですが、食べ過ぎに注意。' }
+            ],
+            '油脂類': [
+                 { id: 'olive_oil', name: 'オリーブ油', calorie: 894, protein: 0, fat: 100.0, sugar: 0, fiber: 0, insight: '純粋な脂質。糖質ゼロ。オレイン酸が豊富で、健康効果が注目されます。' },
+                 { id: 'sesame_oil', name: 'ごま油', calorie: 890, protein: 0, fat: 100.0, sugar: 0, fiber: 0, insight: '純粋な脂質。糖質ゼロ。特有の香りが食欲をそそります。' },
+                 { id: 'butter', name: 'バター', calorie: 700, protein: 0.6, fat: 81.0, sugar: 0.2, fiber: 0, insight: 'ほぼ脂質ですが、水分も含むため油よりは低カロリー。飽和脂肪酸が多いです。' }
+            ]
+        };
+
+        let nutrientRadarChart = null;
+        let sugarBarChart = null;
+        let activeCategory = '主食';
+        let activeFoodId = null;
+
+        const categoryContainer = document.getElementById('category-filters');
+        const foodListContainer = document.getElementById('food-list');
+        const detailsPanel = document.getElementById('details-panel');
+        const instructionText = document.getElementById('instruction-text');
+        const chartAndInfo = document.getElementById('chart-and-info');
+        const foodNameEl = document.getElementById('food-name');
+        const nutrientDetailsEl = document.getElementById('nutrient-details');
+        const foodInsightEl = document.getElementById('food-insight');
+
+        const setupCategories = () => {
+            Object.keys(foodData).forEach(category => {
+                const button = document.createElement('button');
+                button.textContent = category;
+                button.className = 'custom-btn px-4 py-2 text-sm md:text-base bg-[#F8F7F4] rounded-full shadow-md hover:bg-[#6A8A82] hover:text-white';
+                if (category === activeCategory) {
+                    button.classList.add('active');
+                }
+                button.onclick = () => {
+                    activeCategory = category;
+                    document.querySelectorAll('#category-filters button').forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    renderFoodList();
+                };
+                categoryContainer.appendChild(button);
+            });
+        };
+
+        const renderFoodList = () => {
+            foodListContainer.innerHTML = '';
+            foodData[activeCategory].forEach(food => {
+                const button = document.createElement('button');
+                button.textContent = food.name;
+                button.className = 'food-item-btn custom-btn px-3 py-1.5 text-sm bg-white rounded-lg shadow hover:shadow-lg';
+                button.dataset.id = food.id;
+                if(food.id === activeFoodId) {
+                    button.classList.add('active');
+                }
+                button.onclick = () => {
+                    activeFoodId = food.id;
+                    document.querySelectorAll('#food-list button').forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    updateDetails(food.id);
+                };
+                foodListContainer.appendChild(button);
+            });
+        };
+
+        const updateDetails = (foodId) => {
+            const food = foodData[activeCategory].find(f => f.id === foodId);
+            if (!food) return;
+
+            instructionText.classList.add('hidden');
+            chartAndInfo.classList.remove('hidden');
+            
+            foodNameEl.textContent = food.name;
+            foodInsightEl.textContent = `💡 ${food.insight}`;
+
+            nutrientDetailsEl.innerHTML = `
+                <span><strong>カロリー:</strong> ${food.calorie}kcal</span>
+                <span><strong>たんぱく質:</strong> ${food.protein}g</span>
+                <span><strong>脂質:</strong> ${food.fat}g</span>
+                <span><strong>糖質:</strong> ${food.sugar}g</span>
+            `;
+
+            const chartData = {
+                labels: ['糖質', 'たんぱく質', '脂質', '食物繊維'],
+                datasets: [{
+                    label: food.name,
+                    data: [food.sugar, food.protein, food.fat, food.fiber || 0],
+                    backgroundColor: 'rgba(184, 138, 125, 0.2)',
+                    borderColor: 'rgba(184, 138, 125, 1)',
+                    pointBackgroundColor: 'rgba(184, 138, 125, 1)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(184, 138, 125, 1)',
+                    borderWidth: 2
+                }]
+            };
+
+            if (nutrientRadarChart) {
+                nutrientRadarChart.data = chartData;
+                nutrientRadarChart.update();
+            } else {
+                const ctx = document.getElementById('nutrientRadarChart').getContext('2d');
+                nutrientRadarChart = new Chart(ctx, {
+                    type: 'radar',
+                    data: chartData,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                             tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.r !== null) {
+                                            label += context.parsed.r + 'g';
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            r: {
+                                angleLines: {
+                                    color: '#D9D3C7'
+                                },
+                                grid: {
+                                    color: '#D9D3C7'
+                                },
+                                pointLabels: {
+                                    font: {
+                                        size: 12,
+                                        weight: 'bold'
+                                    },
+                                    color: '#5D544D'
+                                },
+                                ticks: {
+                                    backdropColor: 'rgba(248, 247, 244, 0.75)',
+                                    color: '#6A8A82',
+                                    stepSize: 10
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        };
+        
+        const setupSugarBarChart = () => {
+            const allFoods = Object.values(foodData).flat();
+            allFoods.sort((a, b) => b.sugar - a.sugar);
+            
+            const ctx = document.getElementById('sugarBarChart').getContext('2d');
+            sugarBarChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: allFoods.map(f => f.name.length > 16 ? f.name.substring(0, 15) + '...' : f.name),
+                    datasets: [{
+                        label: '糖質量 (g/100g)',
+                        data: allFoods.map(f => f.sugar),
+                        backgroundColor: (context) => {
+                            const value = context.raw;
+                            if (value > 40) return 'rgba(184, 77, 77, 0.7)';
+                            if (value > 20) return 'rgba(184, 138, 125, 0.7)';
+                            if (value > 10) return 'rgba(224, 177, 125, 0.7)';
+                            return 'rgba(106, 138, 130, 0.7)';
+                        },
+                        borderColor: (context) => {
+                            const value = context.raw;
+                            if (value > 40) return 'rgba(184, 77, 77, 1)';
+                            if (value > 20) return 'rgba(184, 138, 125, 1)';
+                            if (value > 10) return 'rgba(224, 177, 125, 1)';
+                            return 'rgba(106, 138, 130, 1)';
+                        },
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false,
+                        },
+                        tooltip: {
+                           callbacks: {
+                                label: function(context) {
+                                    let label = ' ' + allFoods[context.dataIndex].name || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.x !== null) {
+                                        label += context.parsed.x + 'g';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '糖質量 (g)',
+                                color: '#5D544D'
+                            },
+                             grid: {
+                                color: '#EAE7E1'
+                             }
+                        },
+                        y: {
+                            ticks: {
+                                color: '#5D544D',
+                                autoSkip: false,
+                                font: {
+                                    size: 10
+                                }
+                            },
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        };
+
+        window.onload = () => {
+            setupCategories();
+            renderFoodList();
+            setupSugarBarChart();
+        };
+
+    </script>
+</body>
+</html>
