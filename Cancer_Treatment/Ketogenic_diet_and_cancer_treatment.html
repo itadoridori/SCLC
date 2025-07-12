@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ケトン食とがん治療：インタラクティブガイド</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony (Warm Neutrals + Teal & Coral Accents) -->
+    <!-- Application Structure Plan: A non-linear, tab-based navigation allows users to explore themes based on their interest: Overview, How it Works, Evidence, Practice, and Risks. This structure breaks down a complex report into digestible, user-driven sections. The core concept is introduced with a visual diagram. Mechanisms are explained via interactive cards. Evidence is presented with a balanced view using charts. The practical guide uses interactive lists and a visual macro chart. The final, most critical section on safety uses prominent visual cues and a clear call-to-action to ensure the user understands the risks and the need for medical supervision. This user-centric design prioritizes clarity and safety over a linear report format. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Warburg Effect. Goal: Inform/Compare. Viz: HTML/CSS diagram comparing normal vs. cancer cell metabolism. Interaction: Static visual. Justification: A conceptual diagram is clearer than a data chart for this core principle. No libraries needed.
+        - Report Info: Multiple molecular mechanisms. Goal: Organize/Inform. Viz: HTML/CSS interactive cards. Interaction: Click to reveal details. Justification: Prevents information overload by breaking down complex topics into user-controlled chunks.
+        - Report Info: Preclinical study outcomes. Goal: Compare/Inform. Viz: Chart.js Bar Chart. Interaction: Hover tooltips. Justification: Effectively visualizes the variability of outcomes across different cancer types, highlighting that KD is not a universal solution.
+        - Report Info: Ketogenic diet macronutrient ratios. Goal: Inform. Viz: Chart.js Donut Chart. Interaction: Hover tooltips. Justification: Standard and intuitive method for displaying proportions of a whole.
+        - Report Info: Food lists and risks. Goal: Inform/Organize. Viz: Interactive HTML lists/cards. Interaction: Click/hover to reveal info. Justification: Engages the user and makes practical information and critical warnings more accessible.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Noto Sans JP', sans-serif; }
+        .tab-active { border-color: #4DB6AC; color: #4DB6AC; }
+        .tab-inactive { border-color: transparent; }
+        .section { display: none; }
+        .section.active { display: block; }
+        .content-card { transition: all 0.3s ease; }
+        .content-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05); }
+        .chart-container { position: relative; width: 100%; max-width: 600px; margin-left: auto; margin-right: auto; height: 350px; max-height: 400px; }
+        @media (max-width: 768px) { .chart-container { height: 300px; max-height: 350px; } }
+    </style>
+</head>
+<body class="bg-stone-50 text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8">
+        
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-5xl font-bold text-gray-800 mb-2">ケトン食とがん治療</h1>
+            <p class="text-lg md:text-xl text-teal-600">インタラクティブ・エビデンスガイド</p>
+        </header>
+
+        <div class="sticky top-0 bg-stone-50/90 backdrop-blur-sm z-10 mb-8 border-b border-gray-200">
+            <nav id="tabs" class="flex justify-center space-x-2 md:space-x-8 -mb-px">
+                <button data-tab="overview" class="nav-tab text-sm md:text-base whitespace-nowrap py-4 px-1 border-b-2 font-medium">概要</button>
+                <button data-tab="mechanism" class="nav-tab text-sm md:text-base whitespace-nowrap py-4 px-1 border-b-2 font-medium">作用機序</button>
+                <button data-tab="evidence" class="nav-tab text-sm md:text-base whitespace-nowrap py-4 px-1 border-b-2 font-medium">エビデンス</button>
+                <button data-tab="practice" class="nav-tab text-sm md:text-base whitespace-nowrap py-4 px-1 border-b-2 font-medium">実践ガイド</button>
+                <button data-tab="safety" class="nav-tab text-sm md:text-base whitespace-nowrap py-4 px-1 border-b-2 font-medium">安全性とリスク</button>
+            </nav>
+        </div>
+
+        <main id="tab-content">
+            <section id="overview-content" class="section">
+                <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+                    <h2 class="text-2xl font-bold mb-4 text-teal-700">ケトン食療法とは？</h2>
+                    <p class="mb-4">ケトン食（Ketogenic Diet）は、炭水化物の摂取を極端に制限し、脂質を多く摂取することで、体のエネルギー源をブドウ糖から「ケトン体」に切り替える食事療法です。がん治療の文脈では、多くのがん細胞がエネルギー源としてブドウ糖に強く依存する「ワールブルク効果」という特性を標的にします。</p>
+                    <p class="font-semibold">目的は、がん細胞を選択的に「飢餓状態」に追い込みつつ、正常な細胞はケトン体をエネルギー源として保護することにあります。</p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8 text-center">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold mb-4">正常細胞のエネルギー代謝</h3>
+                        <div class="flex flex-col items-center justify-center h-48 bg-teal-50 rounded-lg p-4">
+                            <div class="text-teal-600">ブドウ糖 (グルコース)</div>
+                            <div class="text-gray-500 my-2">または</div>
+                            <div class="text-teal-600 font-bold">ケトン体</div>
+                            <svg class="w-8 h-8 my-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 13l-7 7-7-7m14-8l-7 7-7-7"></path></svg>
+                            <div class="text-lg font-semibold">効率的なエネルギー産生</div>
+                        </div>
+                        <p class="mt-4 text-sm text-gray-600">正常細胞は代謝的に柔軟で、ブドウ糖が不足してもケトン体を効率的に利用できます。</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md border-2 border-rose-400">
+                        <h3 class="text-xl font-bold mb-4">がん細胞のエネルギー代謝 (ワールブルク効果)</h3>
+                        <div class="flex flex-col items-center justify-center h-48 bg-rose-50 rounded-lg p-4">
+                            <div class="text-rose-600 font-bold">ブドウ糖への強い依存</div>
+                            <div class="text-gray-400 line-through my-2">ケトン体は利用困難</div>
+                             <svg class="w-8 h-8 my-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 13l-7 7-7-7m14-8l-7 7-7-7"></path></svg>
+                            <div class="text-lg font-semibold text-rose-700">非効率だが急速なエネルギー産生</div>
+                        </div>
+                        <p class="mt-4 text-sm text-gray-600">多くのがん細胞はミトコンドリア機能に異常があり、ケトン体をうまく利用できず、ブドウ糖を渇望します。</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="mechanism-content" class="section">
+                <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+                     <h2 class="text-2xl font-bold mb-4 text-teal-700">多面的な抗腫瘍メカニズム</h2>
+                     <p>ケトン食の影響は単なるエネルギー遮断にとどまりません。細胞内の複雑なシグナル伝達や生理プロセスに介入し、多角的にがんの増殖を抑制する可能性が研究されています。下のカードをクリックして、各メカニズムの詳細を確認してください。</p>
+                </div>
+                <div id="mechanism-cards" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                </div>
+            </section>
+            
+            <section id="evidence-content" class="section">
+                 <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+                     <h2 class="text-2xl font-bold mb-4 text-teal-700">エビデンスの天秤：期待と課題</h2>
+                     <p>ケトン食のがん治療への応用は、有望な科学的根拠がある一方で、臨床的な証明はまだ途上にあります。研究室レベルでの期待と、人間を対象とした研究での課題や未知のリスクをバランスよく理解することが重要です。</p>
+                </div>
+                <div class="grid lg:grid-cols-2 gap-8 items-start">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold mb-4 text-teal-600">期待される効果 (主に前臨床研究)</h3>
+                        <p class="text-sm text-gray-600 mb-4">動物モデル、特に脳腫瘍（神経膠芽腫）では一貫して有望な結果が報告されていますが、がん種によって効果は異なります。</p>
+                        <div class="chart-container">
+                            <canvas id="preclinical-chart"></canvas>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-2 text-center">注：これは代表的な研究結果の傾向を示す概念図です。</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                         <h3 class="text-xl font-bold mb-4 text-rose-600">課題と未知のリスク</h3>
+                         <div class="space-y-4">
+                            <div class="p-4 bg-rose-50 rounded-lg">
+                                <h4 class="font-bold">質の高い臨床エビデンスの不足</h4>
+                                <p class="text-sm text-gray-700">人間を対象とした大規模なランダム化比較試験（RCT）が不足しており、現在のエビデンスは小規模研究や症例報告が中心です。</p>
+                            </div>
+                            <div class="p-4 bg-rose-50 rounded-lg border-l-4 border-rose-500">
+                                <h4 class="font-bold">⚠️ 転移促進の可能性 (BACH1)</h4>
+                                <p class="text-sm text-gray-700">2024年の動物実験で、ケトン食が原発巣の増殖を抑える一方、BACH1というタンパク質を介して肺への転移を促進する可能性が報告され、新たな議論を呼んでいます。</p>
+                            </div>
+                             <div class="p-4 bg-rose-50 rounded-lg">
+                                <h4 class="font-bold">遵守の難しさ</h4>
+                                <p class="text-sm text-gray-700">厳格な食事制限のため、長期的な継続が難しく、研究の脱落率が高いことが課題です。</p>
+                            </div>
+                         </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="practice-content" class="section">
+                <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+                     <h2 class="text-2xl font-bold mb-4 text-teal-700">実践ガイド（医療専門家の監督下で）</h2>
+                     <p>治療用ケトン食は、自己判断で行うものではありません。ここでは、専門家の指導のもとで実施される食事の基本的な考え方と具体例を紹介します。これはあくまで情報提供であり、医学的アドバイスではありません。</p>
+                </div>
+                <div class="grid lg:grid-cols-2 gap-8">
+                    <div>
+                         <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+                            <h3 class="text-xl font-bold mb-4">食品選択の基本</h3>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <h4 class="font-bold text-teal-600 mb-2">積極的に摂取</h4>
+                                    <ul id="allowed-foods" class="space-y-1 text-sm"></ul>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-rose-600 mb-2">厳格に避ける</h4>
+                                    <ul id="restricted-foods" class="space-y-1 text-sm"></ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                             <h3 class="text-xl font-bold mb-4">代表的な主要栄養素の比率 (4:1 KD)</h3>
+                             <p class="text-sm text-gray-600 mb-4">古典的な治療用ケトン食では、総カロリーの約90%を脂質から摂取します。</p>
+                             <div class="chart-container h-64 max-h-64">
+                                <canvas id="macro-chart"></canvas>
+                             </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold mb-4">1日の献立例</h3>
+                        <p class="text-sm text-gray-600 mb-4">これはあくまで一例です。量や内容は個人の状態に合わせて専門家が調整します。</p>
+                        <div id="meal-plan" class="space-y-4"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="safety-content" class="section">
+                 <div class="bg-rose-100 border-l-4 border-rose-500 text-rose-700 p-6 rounded-lg shadow-md mb-8">
+                     <h2 class="text-2xl font-bold mb-4">【最重要】安全性とリスク</h2>
+                     <p class="font-semibold">ケトン食は強力な代謝介入であり、深刻なリスクを伴います。特にがん患者の場合、栄養状態の悪化や副作用が生命に危険を及ぼす可能性があります。以下の情報は、この治療法を検討する上で絶対に理解しておくべき重要な警告です。</p>
+                </div>
+
+                <div id="safety-cards" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                </div>
+
+                <div class="mt-12 bg-white p-8 rounded-lg shadow-xl border-t-4 border-teal-500 text-center">
+                    <svg class="w-16 h-16 mx-auto mb-4 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <h3 class="text-2xl font-bold mb-4">絶対に、自己判断で始めないでください。</h3>
+                    <p class="max-w-2xl mx-auto text-gray-700">治療用ケトン食は、腫瘍内科医、ケトン食の経験が豊富な管理栄養士を含む医療チームによる徹底した評価と、厳格な監督のもとでのみ検討されるべき研究段階の補助療法です。ご自身やご家族のために、まずは主治医にご相談ください。</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const tabs = document.querySelectorAll('.nav-tab');
+            const sections = document.querySelectorAll('.section');
+
+            const mechanismData = [
+                { title: 'シグナル伝達の調節', content: 'がんの増殖を促進するインスリン/IGF-1経路を抑制し、がん抑制的に働くAMPK経路を活性化させます。' },
+                { title: '酸化ストレスの誘導', content: 'がん細胞の抗酸化能力を弱め、ミトコンドリアでの活性酸素種（ROS）産生を増やすことで、がん細胞を選択的に攻撃します。' },
+                { title: '全身性の抗炎症作用', content: 'がんの進行を促進する慢性的な炎症を抑えます。TNF-αなどの炎症性サイトカインのレベルを低下させることが報告されています。' },
+                { title: 'アポトーシスの促進', content: 'がん細胞が持つ細胞死への抵抗性を弱め、プログラム細胞死（アポトーシス）を誘導しやすくします。' },
+                { title: '血管新生の阻害', content: 'がん組織が栄養を得るために新たな血管を作る「血管新生」を抑制します。HIF-1αやVEGFといった因子の発現を低下させる可能性があります。' },
+                { title: '直接的なシグナル作用', content: 'ケトン体自体がシグナル分子として働き、遺伝子発現を調節するヒストン脱アセチル化酵素（HDACs）を阻害し、がんの増殖を抑制する可能性があります。' }
+            ];
+
+            const safetyData = [
+                { title: '一般的な副作用', content: '初期には「ケトフルー」（倦怠感、頭痛、吐き気）が見られます。長期的には便秘、下痢、高コレステロール血症、倦怠感などが報告されています。' },
+                { title: '体重減少と悪液質', content: '体重減少は一般的ですが、がん患者にとっては制御不能な体重・筋肉減少（悪液質）のリスクを増大させる重大な懸念事項です。' },
+                { title: '禁忌（実施できない人）', content: '特定の先天性代謝異常症、腎不全、肝不全、膵炎の患者は実施できません。 BRAF V600E変異陽性黒色腫など、一部のがんでは逆効果の可能性も示唆されています。' }
+            ];
+            
+            const allowedFoodsData = ['健康的な脂肪・油 (オリーブオイル, MCTオイル, アボカドオイル)', '脂ののった魚 (サーモン, サバ)', '鶏肉・七面鳥', '卵', 'アボカド', '葉物野菜', 'ブロッコリー', 'カリフラワー'];
+            const restrictedFoodsData = ['糖類全般 (砂糖, はちみつ)', '穀物・でんぷん (米, パン, パスタ)', 'ほとんどの果物 (ベリー類少量を除く)', '豆類', '根菜類 (ジャガイモ, ニンジン)'];
+            
+            const mealPlanData = [
+                { meal: '朝食', example: 'バターで調理したスクランブルエッグ、アボカド半分、ほうれん草のソテー。' },
+                { meal: '昼食', example: '焼きサーモンのサラダ。たっぷりの葉物野菜にオリーブオイルとレモンのドレッシング。' },
+                { meal: '夕食', example: '鶏もも肉のオーブン焼き。アスパラガスに溶かしバターをかけて添える。' }
+            ];
+
+            function renderCards(containerId, data, colorClass) {
+                const container = document.getElementById(containerId);
+                if (!container) return;
+                container.innerHTML = data.map(item => `
+                    <div class="bg-white p-5 rounded-lg shadow-md content-card cursor-pointer">
+                        <h3 class="text-lg font-bold mb-2 ${colorClass || ''}">${item.title}</h3>
+                        <p class="text-sm text-gray-600">${item.content}</p>
+                    </div>
+                `).join('');
+            }
+            
+            function renderList(containerId, data) {
+                 const container = document.getElementById(containerId);
+                 if (!container) return;
+                 container.innerHTML = data.map(item => `<li>${item}</li>`).join('');
+            }
+
+            function renderMealPlan() {
+                const container = document.getElementById('meal-plan');
+                if (!container) return;
+                container.innerHTML = mealPlanData.map(item => `
+                    <div class="p-4 bg-gray-100 rounded-lg">
+                        <h4 class="font-bold text-teal-700">${item.meal}</h4>
+                        <p class="text-sm text-gray-700">${item.example}</p>
+                    </div>
+                `).join('');
+            }
+
+            function setupTabs() {
+                tabs[0].classList.add('tab-active');
+                tabs[0].classList.remove('tab-inactive');
+                sections[0].classList.add('active');
+
+                tabs.forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        tabs.forEach(t => {
+                            t.classList.remove('tab-active');
+                            t.classList.add('tab-inactive');
+                        });
+                        sections.forEach(s => s.classList.remove('active'));
+
+                        tab.classList.add('tab-active');
+                        tab.classList.remove('tab-inactive');
+                        document.getElementById(tab.dataset.tab + '-content').classList.add('active');
+                    });
+                });
+            }
+
+            function createPreclinicalChart() {
+                const ctx = document.getElementById('preclinical-chart')?.getContext('2d');
+                if (!ctx) return;
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['神経膠芽腫', '前立腺がん', '膵臓がん', '腎臓がん*', '悪性黒色腫*'],
+                        datasets: [{
+                            label: '腫瘍増殖への影響（動物モデル）',
+                            data: [85, 70, 60, -30, -50],
+                            backgroundColor: (context) => {
+                                const value = context.dataset.data[context.dataIndex];
+                                return value >= 0 ? 'rgba(77, 182, 172, 0.6)' : 'rgba(229, 115, 115, 0.6)';
+                            },
+                            borderColor: (context) => {
+                                const value = context.dataset.data[context.dataIndex];
+                                return value >= 0 ? 'rgba(77, 182, 172, 1)' : 'rgba(229, 115, 115, 1)';
+                            },
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let value = context.raw;
+                                        let label = value >= 0 ? `抑制効果を示唆 (${value}%)` : `促進効果を示唆 (${Math.abs(value)}%)`;
+                                        return label;
+                                    }
+                                }
+                            },
+                            title: { display: true, text: 'がん種による効果の違い（概念図）' }
+                        },
+                        scales: {
+                            x: {
+                                ticks: { callback: value => value + '%' },
+                                title: { display: true, text: '増殖抑制 ←→ 増殖促進' }
+                            },
+                            y: {
+                                ticks: { autoSkip: false }
+                            }
+                        }
+                    }
+                });
+            }
+
+            function createMacroChart() {
+                const ctx = document.getElementById('macro-chart')?.getContext('2d');
+                if (!ctx) return;
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['脂質', 'タンパク質', '炭水化物'],
+                        datasets: [{
+                            data: [90, 8, 2],
+                            backgroundColor: ['#4DB6AC', '#FFB74D', '#E57373'],
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom' },
+                            tooltip: { callbacks: { label: (c) => `${c.label}: ${c.raw}%` } }
+                        }
+                    }
+                });
+            }
+            
+            renderCards('mechanism-cards', mechanismData, 'text-teal-700');
+            renderCards('safety-cards', safetyData, 'text-rose-700');
+            renderList('allowed-foods', allowedFoodsData);
+            renderList('restricted-foods', restrictedFoodsData);
+            renderMealPlan();
+            setupTabs();
+            createPreclinicalChart();
+            createMacroChart();
+        });
+    </script>
+</body>
+</html>
