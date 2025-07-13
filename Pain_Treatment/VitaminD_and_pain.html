@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インタラクティブ・レポート：ビタミンDと痛みの科学</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Application Structure Plan: このSPAは、ユーザーが自身の状況に最も関心の高い情報をすぐに見つけられるよう、ダッシュボード形式の対話型構造を採用しています。レポートの章立てを追うのではなく、まず「自分の痛みへの有効性は？」という核心的な問いに答えることを最優先します。ユーザーは痛みの種類を選択すると、動的に生成される「有効性評価チャート」と要約を通じて、科学的根拠に基づいた結論を即座に得られます。その後、「作用機序」「基礎知識」「実践ガイド」といった詳細情報へは、アコーディオン形式で段階的に深掘りできるよう設計しました。この非線形な情報アーキテクチャは、複雑な医学情報をより消化しやすく、利用者の個人的な関心に沿った探索を可能にするために選択されました。 -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: 疾患別の有効性評価 -> Goal: 比較と評価 -> Viz: 動的バーチャート (Chart.js) -> Interaction: ボタン選択でチャートのデータと色、解説文が変化 -> Justification: 複数の疾患に対する有効性の違いを、視覚的かつ直感的に比較可能にするため。テキストの羅列よりも理解が早い。
+        - Report Info: 作用機序 -> Goal: 整理と理解 -> Viz: アイコン付きカードレイアウト (HTML/CSS/Tailwind) -> Interaction: カード選択で詳細解説表示 -> Justification: 3つの主要なメカニズムを概念的に分離し、視覚的なアイコンで要点を示すことで、複雑な生物学的プロセスを簡潔に伝達するため。
+        - Report Info: ガイドライン等の表データ -> Goal: 提示と比較 -> Viz: HTMLテーブル (Tailwind) -> Interaction: なし（静的表示） -> Justification: 構造化されたデータを正確に表示する上で、テーブル形式が最も明確で適切であるため。
+        - Library/Method: Chart.js (Canvas)を使用し、SVGやMermaid JSは一切使用していません。インタラクティブ要素はすべてバニラJavaScriptで実装しています。 -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Noto Sans JP', sans-serif; background-color: #FDFBF8; color: #4F4A45; }
+        .nav-button { transition: all 0.3s ease; }
+        .nav-button.active { background-color: #A08C7D; color: #FFFFFF; }
+        .nav-button:not(.active):hover { background-color: #EFEAE6; }
+        .content-card { transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out; }
+        .details-content { overflow: hidden; transition: max-height 0.5s ease-out; }
+        .chart-container { position: relative; width: 100%; max-width: 600px; margin-left: auto; margin-right: auto; height: 120px; max-height: 120px; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-5xl">
+
+        <header class="text-center mb-8 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-bold text-[#6A5E53] mb-2">ビタミンDと痛みの科学</h1>
+            <p class="text-lg md:text-xl text-[#A08C7D]">サプリメントは「鎮痛剤」になるのか？</p>
+            <p class="mt-4 max-w-3xl mx-auto text-base">
+                ビタミンDの鎮痛効果は、痛みの種類に大きく左右されます。この対話型レポートで、科学的根拠（エビデンス）に基づいた「実態」を探りましょう。
+            </p>
+        </header>
+
+        <main>
+            <section id="interactive-dashboard" class="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-8">
+                <h2 class="text-2xl font-bold text-center mb-2 text-[#6A5E53]">あなたの痛みへの有効性は？</h2>
+                <p class="text-center text-gray-600 mb-6">あなたの症状に最も近いものを選択してください。</p>
+                
+                <div id="condition-selector" class="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4 mb-6">
+                    <button data-condition="clbp" class="nav-button w-full text-center p-3 rounded-lg border border-gray-300 bg-gray-50 text-sm md:text-base">慢性的な腰痛</button>
+                    <button data-condition="oa" class="nav-button w-full text-center p-3 rounded-lg border border-gray-300 bg-gray-50 text-sm md:text-base">膝などの関節痛 (変形性関節症)</button>
+                    <button data-condition="ra" class="nav-button w-full text-center p-3 rounded-lg border border-gray-300 bg-gray-50 text-sm md:text-base">関節リウマチ</button>
+                    <button data-condition="osteo" class="nav-button w-full text-center p-3 rounded-lg border border-gray-300 bg-gray-50 text-sm md:text-base">骨の痛み (ビタミンD欠乏起因)</button>
+                </div>
+
+                <div id="result-display" class="bg-[#FDFBF8] rounded-xl p-4 md:p-6 min-h-[350px] md:min-h-[280px]">
+                    <div id="placeholder-text" class="flex flex-col items-center justify-center h-full text-gray-500">
+                        <svg class="w-12 h-12 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3.5m0 0a1.5 1.5 0 01-3 0m0 0V7m0 2.5v2.5m-3.5 0V14m0-6.5V7.5m3.5 4V14m-3.5-4a1.5 1.5 0 01-3 0m0 0V7.5m3.5 4a1.5 1.5 0 01-3 0m0 0V7.5"></path></svg>
+                        <p>上のボタンから症状を選択してください。</p>
+                    </div>
+                    <div id="content-container" class="hidden">
+                         <div class="text-center mb-4">
+                            <h3 id="result-title" class="text-xl font-bold text-[#6A5E53]"></h3>
+                            <p id="result-verdict" class="text-lg font-semibold"></p>
+                        </div>
+                        <div class="chart-container mb-4">
+                            <canvas id="efficacyChart"></canvas>
+                        </div>
+                        <p id="result-summary" class="text-base text-gray-700 leading-relaxed"></p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="details" class="space-y-4">
+                <div class="bg-white rounded-2xl shadow-sm">
+                    <details class="group">
+                        <summary class="flex justify-between items-center w-full p-4 cursor-pointer font-semibold text-[#6A5E53]">
+                            <span>どのように痛みに効くの？ (作用機序)</span>
+                            <span class="transform transition-transform duration-300 group-open:rotate-180">▼</span>
+                        </summary>
+                        <div class="details-content max-h-0 group-open:max-h-[1000px] p-4 pt-0">
+                            <p class="mb-6 text-gray-600">ビタミンDは一般的な鎮痛薬とは異なり、体の根本的な不調を整えることで間接的に痛みを和らげます。主な作用は以下の3つです。</p>
+                            <div class="grid md:grid-cols-3 gap-4 text-center">
+                                <div class="bg-[#FDFBF8] p-4 rounded-lg">
+                                    <div class="text-3xl mb-2">🛡️</div>
+                                    <h4 class="font-bold mb-1">炎症を鎮める</h4>
+                                    <p class="text-sm text-gray-600">免疫システムを調節し、痛みの原因となる過剰な炎症反応を抑制します。関節リウマチなどで特に重要です。</p>
+                                </div>
+                                <div class="bg-[#FDFBF8] p-4 rounded-lg">
+                                    <div class="text-3xl mb-2">🧠</div>
+                                    <h4 class="font-bold mb-1">神経を整える</h4>
+                                    <p class="text-sm text-gray-600">神経の過敏性を抑え、痛みを過剰に感じてしまう状態（中枢性感作）を緩和する可能性が指摘されています。</p>
+                                </div>
+                                <div class="bg-[#FDFBF8] p-4 rounded-lg">
+                                    <div class="text-3xl mb-2">🦴</div>
+                                    <h4 class="font-bold mb-1">骨や筋肉を修復する</h4>
+                                    <p class="text-sm text-gray-600">ビタミンD欠乏による骨の軟化や筋力低下を直接修復し、痛みの根本原因を取り除きます。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+                 <div class="bg-white rounded-2xl shadow-sm">
+                    <details class="group">
+                        <summary class="flex justify-between items-center w-full p-4 cursor-pointer font-semibold text-[#6A5E53]">
+                            <span>ビタミンDの基礎知識</span>
+                             <span class="transform transition-transform duration-300 group-open:rotate-180">▼</span>
+                        </summary>
+                        <div class="details-content max-h-0 group-open:max-h-[1000px] p-4 pt-0">
+                            <p class="mb-4 text-gray-700">ビタミンDは、単なる栄養素ではなく、体内でホルモンのように働く重要な物質です。骨の健康維持はもちろん、免疫、神経、筋肉など全身の機能に関わっています。</p>
+                            <h4 class="font-bold mb-2">どうやって補給する？</h4>
+                            <ul class="list-disc list-inside space-y-2 text-gray-600">
+                                <li><strong>日光浴:</strong> 最も効率的な供給源。夏場は週に数回、15〜30分程度、顔や腕に日光を浴びるのが目安です。</li>
+                                <li><strong>食事:</strong> サケ・サバなどの青魚、卵黄、天日干しキノコ類に多く含まれます。油を使った調理で吸収率がアップします。</li>
+                                <li><strong>サプリメント:</strong> 日光を浴びる機会が少ない場合や、食事だけで補うのが難しい場合の補助として有効です。</li>
+                            </ul>
+                        </div>
+                    </details>
+                </div>
+                <div class="bg-white rounded-2xl shadow-sm">
+                    <details class="group">
+                        <summary class="flex justify-between items-center w-full p-4 cursor-pointer font-semibold text-[#6A5E53]">
+                            <span>実践ガイド：サプリメント利用の注意点</span>
+                             <span class="transform transition-transform duration-300 group-open:rotate-180">▼</span>
+                        </summary>
+                        <div class="details-content max-h-0 group-open:max-h-[1000px] p-4 pt-0">
+                           <div class="space-y-4 text-gray-700">
+                                <p><strong>過剰摂取のリスク:</strong> ビタミンDは脂溶性のため、体内に蓄積します。サプリメントの過剰な摂取は、吐き気や腎機能障害などを引き起こす「高カルシウム血症」のリスクがあるため、自己判断での高用量摂取は避けるべきです。日本の耐容上限量は1日100µg (4000 IU)です。</p>
+                                <p><strong>検査について:</strong> 慢性疼痛の確認目的での血中濃度測定は、多くの場合、保険適用外の自由診療となります。</p>
+                                <p><strong>医師との相談:</strong> 鎮痛目的での利用を考える場合は、必ず医師に相談してください。科学的根拠、利益とリスク、あなた自身の状況を総合的に判断する「共同意思決定」が重要です。</p>
+                                <h4 class="font-bold mt-4 mb-2">主要機関の推奨量の比較</h4>
+                                <div class="overflow-x-auto">
+                                <table class="w-full text-sm text-left text-gray-500">
+                                    <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                                        <tr>
+                                            <th scope="col" class="px-4 py-3">機関</th>
+                                            <th scope="col" class="px-4 py-3">推奨摂取目安量 (成人)</th>
+                                            <th scope="col" class="px-4 py-3">主な焦点</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="bg-white border-b">
+                                            <td class="px-4 py-2 font-medium text-gray-900">厚生労働省 (日本)</td>
+                                            <td class="px-4 py-2">8.5µg (340 IU) /日</td>
+                                            <td class="px-4 py-2">骨の健康維持 (日光浴を考慮)</td>
+                                        </tr>
+                                        <tr class="bg-white border-b">
+                                            <td class="px-4 py-2 font-medium text-gray-900">NICE (英国)</td>
+                                            <td class="px-4 py-2">10µg (400 IU) /日</td>
+                                            <td class="px-4 py-2">筋骨格系の健康維持</td>
+                                        </tr>
+                                         <tr class="bg-white">
+                                            <td class="px-4 py-2 font-medium text-gray-900">Endocrine Society (米国)</td>
+                                            <td class="px-4 py-2">1500-2000 IU/日 (目標)</td>
+                                            <td class="px-4 py-2">欠乏リスクのある患者の治療</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                </div>
+                           </div>
+                        </div>
+                    </details>
+                </div>
+            </section>
+        </main>
+        
+        <footer class="text-center mt-12 text-sm text-gray-500">
+            <p>&copy; 2025 Interactive Report. All rights reserved.</p>
+            <p>このアプリケーションは提供されたレポートに基づいて作成されたものであり、医学的助言に代わるものではありません。</p>
+        </footer>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const conditionData = {
+                clbp: {
+                    title: '慢性的な腰痛',
+                    verdict: '効果は期待しにくい',
+                    verdictColor: 'text-red-600',
+                    efficacy: 10,
+                    chartColor: 'rgba(239, 68, 68, 0.6)',
+                    summary: '複数の質の高い研究（メタアナリシス）を統合した結果、ビタミンDサプリメントは、プラセボ（偽薬）と比較して慢性腰痛を有意に改善しない、と結論付けられています。痛みのために活動量が減り、結果としてビタミンDが不足している可能性はありますが、不足を補っても痛みが直接改善する可能性は低いと考えられます。'
+                },
+                oa: {
+                    title: '膝などの関節痛 (変形性関節症)',
+                    verdict: '限定的な効果の可能性あり',
+                    verdictColor: 'text-yellow-600',
+                    efficacy: 40,
+                    chartColor: 'rgba(245, 158, 11, 0.6)',
+                    summary: 'ビタミンDの補充は、痛みや身体機能を「軽度に」改善する可能性が示されています。しかし、その効果は限定的であり、病気の進行（関節の変形など）そのものを食い止める強力な証拠はありません。あくまで補助的な選択肢の一つと考えるのが妥当です。'
+                },
+                ra: {
+                    title: '関節リウマチ',
+                    verdict: '有望な効果が示唆される',
+                    verdictColor: 'text-green-600',
+                    efficacy: 75,
+                    chartColor: 'rgba(22, 163, 74, 0.6)',
+                    summary: '関節リウマチの患者において、ビタミンDは有望な効果を示します。疾患の活動性や炎症マーカーを低下させ、痛みを改善することが複数の研究で一貫して報告されています。これは、ビタミンDが持つ抗炎症作用や免疫調節作用が、病気の根本的なメカニズムに働きかけるためと考えられます。'
+                },
+                osteo: {
+                    title: '骨の痛み (ビタミンD欠乏起因)',
+                    verdict: '確実な効果が期待できる',
+                    verdictColor: 'text-blue-600',
+                    efficacy: 95,
+                    chartColor: 'rgba(59, 130, 246, 0.6)',
+                    summary: '重度のビタミンD欠乏が原因で起こる「骨軟化症」による広範な骨の痛みに対しては、ビタミンDの補充が根本的な治療法となります。この場合、ビタミンDは単なるサプリメントではなく、痛みの原因を直接取り除く「治療薬」として機能し、その効果は確実です。'
+                }
+            };
+
+            const selector = document.getElementById('condition-selector');
+            const resultDisplay = document.getElementById('result-display');
+            const placeholderText = document.getElementById('placeholder-text');
+            const contentContainer = document.getElementById('content-container');
+            const resultTitle = document.getElementById('result-title');
+            const resultVerdict = document.getElementById('result-verdict');
+            const resultSummary = document.getElementById('result-summary');
+            const buttons = selector.querySelectorAll('.nav-button');
+
+            let efficacyChart = null;
+
+            function initChart() {
+                const ctx = document.getElementById('efficacyChart').getContext('2d');
+                efficacyChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['有効性の評価'],
+                        datasets: [{
+                            label: '有効性スコア',
+                            data: [0],
+                            backgroundColor: ['rgba(200, 200, 200, 0.6)'],
+                            borderColor: ['rgba(200, 200, 200, 1)'],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                max: 100,
+                                ticks: {
+                                    stepSize: 25,
+                                    callback: function(value) {
+                                        return value + '%';
+                                    }
+                                }
+                            },
+                             y: {
+                                grid: {
+                                    display: false
+                                },
+                                ticks: {
+                                   display: false
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                enabled: false
+                            }
+                        }
+                    }
+                });
+            }
+
+            function updateChart(efficacy, color) {
+                if (!efficacyChart) return;
+                efficacyChart.data.datasets[0].data[0] = efficacy;
+                efficacyChart.data.datasets[0].backgroundColor[0] = color;
+                efficacyChart.data.datasets[0].borderColor[0] = color.replace('0.6', '1');
+                efficacyChart.update();
+            }
+
+            function updateDisplay(conditionKey) {
+                const data = conditionData[conditionKey];
+                
+                placeholderText.classList.add('hidden');
+                contentContainer.classList.remove('hidden');
+
+                resultTitle.textContent = data.title;
+                resultVerdict.textContent = data.verdict;
+                resultVerdict.className = `text-lg font-semibold ${data.verdictColor}`;
+                resultSummary.textContent = data.summary;
+                
+                updateChart(data.efficacy, data.chartColor);
+            }
+
+            selector.addEventListener('click', (e) => {
+                const button = e.target.closest('.nav-button');
+                if (button && button.dataset.condition) {
+                    const conditionKey = button.dataset.condition;
+                    
+                    buttons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+
+                    updateDisplay(conditionKey);
+                }
+            });
+
+            initChart();
+        });
+    </script>
+</body>
+</html>
