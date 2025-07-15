@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>対話型ガイド：小細胞肺癌の骨転移による痛みの管理</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans JP', sans-serif; background-color: #F9F8F6; }
+        .chart-container { position: relative; width: 100%; max-width: 700px; margin-left: auto; margin-right: auto; height: 350px; max-height: 50vh; }
+        @media (min-width: 768px) { .chart-container { height: 400px; } }
+        .tab-active { border-color: #3B82F6; color: #3B82F6; background-color: #EFF6FF; }
+        .tab-inactive { border-color: transparent; color: #6B7280; }
+        .section-icon { width: 50px; height: 50px; }
+        .kpi-box { transition: all 0.3s ease-in-out; }
+        .kpi-box:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); }
+    </style>
+</head>
+<body class="bg-[#F9F8F6] text-gray-800">
+
+<!-- 
+Chosen Palette: "Calm Harmony" - A calming and professional theme using a base of warm off-white (#F9F8F6), with deep teal (#044343), gentle blue-gray (#607d8b), and a soft amber (#ffc107) for accents to create a sense of trust, clarity, and hope.
+Application Structure Plan: A user-centric, non-linear, tab-based single-page application. The structure is designed to answer three key user questions: "Why does it hurt?", "What are my options?", and "How can I manage daily life?". This thematic approach, rather than mirroring the report's chapters, allows users to navigate directly to their area of interest, making complex information digestible and empowering them to be active participants in their care. The flow guides users from understanding their condition to exploring treatments and finally to practical self-management.
+Visualization & Content Choices: 
+- Report Info: Pain Pathophysiology -> Goal: Explain -> Viz: HTML/CSS Diagram -> Interaction: Static Visual -> Justification: Simplifies the complex "Vicious Cycle" concept into an easily understandable graphic.
+- Report Info: Local Therapy Comparison (Table 3) -> Goal: Compare -> Viz: Interactive Bar Chart (Chart.js) -> Interaction: Dropdown filter to change metrics (e.g., speed of relief, duration) -> Justification: Allows users to compare complex treatment options based on factors most important to them, transforming a dense table into an exploratory tool.
+- Report Info: Opioid Side Effects -> Goal: Inform/Action -> Viz: Accordion/Checklist (HTML/CSS/JS) -> Interaction: Click to expand -> Justification: Provides actionable advice for managing side effects without overwhelming the user, focusing on the most common and critical issue (constipation).
+- Report Info: Complementary Therapies (Table 4) -> Goal: Evaluate -> Viz: Bar Chart (Chart.js) -> Interaction: Hover for details -> Justification: Visualizes the evidence level for each therapy, helping users make informed, evidence-based decisions about complementary care.
+CONFIRMATION: NO SVG graphics used. NO Mermaid JS used.
+-->
+
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-md">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl md:text-2xl font-bold text-[#044343]">痛みの管理ガイド</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#intro" class="text-gray-600 hover:text-[#607d8b] px-3 py-2 rounded-md text-sm font-medium">はじめに</a>
+                        <a href="#understanding" class="text-gray-600 hover:text-[#607d8b] px-3 py-2 rounded-md text-sm font-medium">痛みの理解</a>
+                        <a href="#treatments" class="text-gray-600 hover:text-[#607d8b] px-3 py-2 rounded-md text-sm font-medium">治療の選択肢</a>
+                        <a href="#self-care" class="text-gray-600 hover:text-[#607d8b] px-3 py-2 rounded-md text-sm font-medium">生活の工夫</a>
+                        <a href="#teamwork" class="text-gray-600 hover:text-[#607d8b] px-3 py-2 rounded-md text-sm font-medium">チームとの連携</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+
+        <section id="intro" class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-[#044343] mb-4">小細胞肺癌の骨転移による痛みと向き合う、あなたへ</h2>
+            <p class="max-w-3xl mx-auto text-lg text-gray-700 mb-8">
+                骨転移による痛みは、生活の質に大きく影響します。しかし、それは決して避けることのできない運命ではありません。現代の医療には、痛みを効果的に管理するための多くの選択肢があります。このガイドは、あなたがご自身の状況を理解し、治療チームの一員として最適な選択をするための知識と希望を提供します。
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                <div class="kpi-box bg-white p-6 rounded-xl shadow-lg border-l-4 border-[#ffc107]">
+                    <h3 class="text-xl font-bold text-[#044343] mb-2">個別化された治療</h3>
+                    <p class="text-gray-600">あなたの痛みの「種類」と「強さ」に合わせた、最適な治療法を組み合わせます。</p>
+                </div>
+                <div class="kpi-box bg-white p-6 rounded-xl shadow-lg border-l-4 border-[#607d8b]">
+                    <h3 class="text-xl font-bold text-[#044343] mb-2">チームアプローチ</h3>
+                    <p class="text-gray-600">医師、看護師、薬剤師など多職種の専門家があなたを支えます。</p>
+                </div>
+                <div class="kpi-box bg-white p-6 rounded-xl shadow-lg border-l-4 border-[#044343]">
+                    <h3 class="text-xl font-bold text-[#044343] mb-2">生活の質の向上</h3>
+                    <p class="text-gray-600">痛みを管理し、「自分らしい生活」を取り戻すことが最大の目標です。</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="understanding" class="mb-16 scroll-mt-16">
+            <h2 class="text-3xl font-bold text-center text-[#044343] mb-8">ステップ1：痛みの正体を理解する</h2>
+            <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+                <p class="text-gray-700 mb-6">骨転移の痛みは、単一の原因ではなく、複数の要因が絡み合って生じます。痛みの「なぜ？」を知ることが、効果的な治療への第一歩です。痛みの主な原因は、骨の破壊、神経の圧迫、そして炎症の3つです。</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <h3 class="text-2xl font-bold text-[#044343] mb-4">骨破壊の「悪循環」</h3>
+                        <p class="text-gray-600 mb-4">がん細胞は、骨を溶かす細胞（破骨細胞）を過剰に活性化させます。骨が壊れると、今度はがん細胞の増殖を促す物質が放出され、さらに骨破壊が進むという悪循環が生まれます。このサイクルを断ち切ることが治療の鍵となります。</p>
+                        <div class="space-y-4">
+                            <div class="flex items-start">
+                                <span class="text-2xl text-[#ffc107] mr-3">①</span>
+                                <p><strong class="text-[#044343]">がん細胞が指令：</strong> 骨を溶かすよう指令を出す。</p>
+                            </div>
+                            <div class="flex items-start">
+                                <span class="text-2xl text-[#ffc107] mr-3">②</span>
+                                <p><strong class="text-[#044343]">骨の破壊：</strong> 破骨細胞が骨を溶かし、痛みの原因に。</p>
+                            </div>
+                             <div class="flex items-start">
+                                <span class="text-2xl text-[#ffc107] mr-3">③</span>
+                                <p><strong class="text-[#044343]">がん細胞が増殖：</strong> 壊れた骨から放出された物質で、がん細胞がさらに増える。</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-[#044343] mb-4">痛みの種類を知る</h3>
+                        <p class="text-gray-600 mb-4">あなたの痛みがどのタイプかを知ることで、効果的な薬が選びやすくなります。</p>
+                        <div class="space-y-3">
+                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                <h4 class="font-bold text-lg text-blue-800">体性痛</h4>
+                                <p class="text-blue-700">骨そのものが壊れたり、骨膜が引き伸ばされたりする痛み。「ズキズキ」「うずくような」と表現されます。</p>
+                            </div>
+                            <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                                <h4 class="font-bold text-lg text-green-800">神経障害性疼痛</h4>
+                                <p class="text-green-700">腫瘍が神経を圧迫したり傷つけたりする痛み。「ビリビリ」「焼けるような」と表現されます。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="treatments" class="mb-16 scroll-mt-16">
+            <h2 class="text-3xl font-bold text-center text-[#044343] mb-8">ステップ2：治療の選択肢を探る</h2>
+            <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+                <p class="text-gray-700 mb-6">痛みを管理するためには、全身に作用する治療と、痛みの発生源を直接たたく局所治療を組み合わせます。ここでは、主な治療法をインタラクティブに比較・検討できます。</p>
+                <div id="treatment-tabs">
+                    <div class="border-b border-gray-200 mb-6">
+                        <nav class="-mb-px flex space-x-4" aria-label="Tabs">
+                            <button class="tab-btn whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm tab-active" data-tab="local">局所治療</button>
+                            <button class="tab-btn whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm tab-inactive" data-tab="systemic">全身薬物療法</button>
+                            <button class="tab-btn whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm tab-inactive" data-tab="bma">骨を守る治療</button>
+                            <button class="tab-btn whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm tab-inactive" data-tab="integrative">統合・補完医療</button>
+                        </nav>
+                    </div>
+
+                    <div id="local" class="tab-content">
+                        <h3 class="text-2xl font-bold text-[#044343] mb-4">局所治療：痛みの発生源を直接たたく</h3>
+                        <p class="text-gray-600 mb-4">痛みが特定の場所に集中している場合に特に有効です。放射線治療や、より新しい低侵襲治療などがあります。</p>
+                        <div class="flex items-center justify-center mb-4 space-x-2">
+                            <label for="local-therapy-metric" class="text-sm font-medium text-gray-700">比較項目:</label>
+                            <select id="local-therapy-metric" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2">
+                                <option value="effect_speed">鎮痛効果の発現時期</option>
+                                <option value="duration">効果の持続性</option>
+                                <option value="pain_reduction">疼痛軽減効果</option>
+                            </select>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="localTherapyChart"></canvas>
+                        </div>
+                        <p class="text-center text-xs text-gray-500 mt-2">グラフは一般的な傾向を示すもので、効果には個人差があります。</p>
+                    </div>
+                    
+                    <div id="systemic" class="tab-content hidden">
+                        <h3 class="text-2xl font-bold text-[#044343] mb-4">全身薬物療法：痛みをコントロールする基盤</h3>
+                        <p class="text-gray-600 mb-4">鎮痛薬は、痛みの種類と強さに応じて組み合わせて使用します。特にオピオイドは中等度以上の痛みの主役ですが、副作用対策が不可欠です。</p>
+                         <div id="accordion-opioid">
+                            <div class="border rounded-lg mb-2">
+                                <button class="accordion-header w-full text-left p-4 bg-gray-50 hover:bg-gray-100 flex justify-between items-center">
+                                    <span class="font-semibold text-lg text-[#044343]">最重要課題：オピオイドによる便秘対策</span>
+                                    <span class="accordion-icon transform transition-transform duration-300">▼</span>
+                                </button>
+                                <div class="accordion-content hidden p-4 border-t">
+                                    <p class="mb-4 text-gray-700">便秘は、オピオイド治療で最も一般的で、かつ体が慣れることのない副作用です。治療の成功は、便秘対策にかかっていると言っても過言ではありません。オピオイドを開始するのと<strong class="text-red-600">同時に</strong>、予防的に下剤を開始することが鉄則です。</p>
+                                    <ul class="list-disc list-inside space-y-2 text-gray-600">
+                                        <li><strong>予防が第一：</strong> オピオイド開始と同時に下剤も開始する。</li>
+                                        <li><strong>水分を十分に：</strong> 意識して水分を多く摂る。</li>
+                                        <li><strong>生活習慣：</strong> 無理のない範囲で体を動かす。</li>
+                                        <li><strong>我慢しない：</strong> 効果が不十分な場合は、すぐに医師・薬剤師に相談する。</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="bma" class="tab-content hidden">
+                        <h3 class="text-2xl font-bold text-[#044343] mb-4">骨修飾薬 (BMA)：骨破壊の悪循環を断つ</h3>
+                        <p class="text-gray-600 mb-4">BMAは骨を壊す細胞の働きを抑え、骨折などの合併症（骨関連事象）を防ぎ、痛みを和らげます。</p>
+                        <div class="grid md:grid-cols-2 gap-6 mt-4">
+                            <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                                <h4 class="font-bold text-lg text-blue-800">デノスマブ (ランマーク®)</h4>
+                                <ul class="list-disc list-inside mt-2 text-blue-700 space-y-1">
+                                    <li>4週間に1回の皮下注射</li>
+                                    <li>骨折予防効果が高いとされるデータあり</li>
+                                    <li><strong>注意：</strong>低カルシウム血症。カルシウム/ビタミンDの補充が必須。</li>
+                                </ul>
+                            </div>
+                            <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                                <h4 class="font-bold text-lg text-green-800">ゾレドロン酸 (ゾメタ®)</h4>
+                                <ul class="list-disc list-inside mt-2 text-green-700 space-y-1">
+                                    <li>3〜4週間に1回の点滴</li>
+                                    <li>長年の実績がある標準薬</li>
+                                    <li><strong>注意：</strong>腎機能への影響。投与前の確認が必要。</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="mt-6 bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-r-lg" role="alert">
+                            <p class="font-bold">極めて重要：歯科連携とMRONJ予防</p>
+                            <p>BMA治療を開始する<strong class="underline">前</strong>に、必ず歯科を受診し、必要な治療を済ませてください。治療中の口腔ケアも、顎の骨が壊死する重篤な副作用（MRONJ）を防ぐために不可欠です。</p>
+                        </div>
+                    </div>
+                    
+                    <div id="integrative" class="tab-content hidden">
+                        <h3 class="text-2xl font-bold text-[#044343] mb-4">統合・補完医療：QOLを高めるアプローチ</h3>
+                        <p class="text-gray-600 mb-4">標準治療を補い、生活の質を高めるための選択肢です。科学的根拠のレベルは様々ですが、QOL改善に役立つ可能性があります。試す前には必ず主治医に相談してください。</p>
+                        <div class="chart-container">
+                            <canvas id="camTherapyChart"></canvas>
+                        </div>
+                        <p class="text-center text-xs text-gray-500 mt-2">グラフはエビデンス（科学的根拠）の現在の評価を示します。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="self-care" class="mb-16 scroll-mt-16">
+            <h2 class="text-3xl font-bold text-center text-[#044343] mb-8">ステップ3：生活の中での工夫と自己管理</h2>
+            <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+                <p class="text-gray-700 mb-6">日常生活での小さな工夫が、痛みの軽減と骨折予防につながります。これらは「機械的な緩和ケア」とも言える重要な自己管理です。</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-gray-50 p-5 rounded-lg">
+                        <h3 class="font-bold text-lg text-[#044343] mb-2">安全な環境づくり</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-600">
+                            <li>床に物を置かない</li>
+                            <li>滑りやすい敷物は固定・撤去</li>
+                            <li>夜間の足元照明を確保</li>
+                            <li>浴室や廊下に手すりを設置</li>
+                            <li>滑りにくい履物を選ぶ</li>
+                        </ul>
+                    </div>
+                    <div class="bg-gray-50 p-5 rounded-lg">
+                        <h3 class="font-bold text-lg text-[#044343] mb-2">安全な動き方</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-600">
+                            <li><strong class="text-red-600">「ひねらない」</strong>が鉄則</li>
+                            <li>向きを変える時は体ごと</li>
+                            <li>重い物は持たない</li>
+                            <li>床の物は膝を曲げて拾う</li>
+                            <li>理学療法士に相談する</li>
+                        </ul>
+                    </div>
+                    <div class="bg-gray-50 p-5 rounded-lg">
+                        <h3 class="font-bold text-lg text-[#044343] mb-2">ペース配分と休息</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-600">
+                            <li>活動と休息のバランスを取る</li>
+                            <li>一度にやろうとしない</li>
+                            <li>痛みが強くなる前に休む</li>
+                            <li>自分の体の声に耳を傾ける</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="teamwork" class="scroll-mt-16">
+            <h2 class="text-3xl font-bold text-center text-[#044343] mb-8">最終ステップ：あなたがチームの主役になる</h2>
+            <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+                <p class="text-gray-700 mb-6">痛みの管理は「チームスポーツ」です。そして、その中心にいるのは、あなた自身です。正確な情報を伝え、治療に積極的に参加することが、より良い結果につながります。</p>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-xl font-bold text-[#044343] mb-3">医師に伝えるべきこと</h3>
+                        <p class="text-gray-600 mb-4">痛み日記をつけるのが効果的です。</p>
+                        <ul class="space-y-3">
+                            <li class="flex items-start"><span class="bg-[#ffc107] text-white rounded-full w-6 h-6 flex items-center justify-center font-bold mr-3">1</span> 痛みの場所・性質・強さ</li>
+                            <li class="flex items-start"><span class="bg-[#ffc107] text-white rounded-full w-6 h-6 flex items-center justify-center font-bold mr-3">2</span> いつ、どんな時に痛むか</li>
+                            <li class="flex items-start"><span class="bg-[#ffc107] text-white rounded-full w-6 h-6 flex items-center justify-center font-bold mr-3">3</span> 何をすると悪化・改善するか</li>
+                            <li class="flex items-start"><span class="bg-[#ffc107] text-white rounded-full w-6 h-6 flex items-center justify-center font-bold mr-3">4</span> 睡眠や気分への影響</li>
+                        </ul>
+                    </div>
+                     <div>
+                        <h3 class="text-xl font-bold text-[#044343] mb-3">あなたの行動計画</h3>
+                        <p class="text-gray-600 mb-4">知識は力になります。今日からできることがあります。</p>
+                        <ul class="space-y-3">
+                            <li class="flex items-start"><span class="bg-[#607d8b] text-white rounded-full w-6 h-6 flex items-center justify-center font-bold mr-3">✓</span> 痛みを我慢せず、軽いうちに伝える。</li>
+                            <li class="flex items-start"><span class="bg-[#607d8b] text-white rounded-full w-6 h-6 flex items-center justify-center font-bold mr-3">✓</span> 緩和ケアチームのサポートを早期から求める。</li>
+                            <li class="flex items-start"><span class="bg-[#607d8b] text-white rounded-full w-6 h-6 flex items-center justify-center font-bold mr-3">✓</span> 処方された薬の目的と副作用対策を理解する。</li>
+                             <li class="flex items-start"><span class="bg-[#607d8b] text-white rounded-full w-6 h-6 flex items-center justify-center font-bold mr-3">✓</span> 新しい治療法（SBRTや神経ブロック等）の適格性を質問する。</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-[#044343] text-white mt-16">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-4 text-center">
+            <p class="text-sm">このガイドは情報提供を目的としており、医学的アドバイスに代わるものではありません。治療に関する決定は、必ず主治医にご相談ください。</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const tabId = button.dataset.tab;
+
+                    tabButtons.forEach(btn => {
+                        btn.classList.remove('tab-active');
+                        btn.classList.add('tab-inactive');
+                    });
+                    button.classList.add('tab-active');
+                    button.classList.remove('tab-inactive');
+
+                    tabContents.forEach(content => {
+                        if (content.id === tabId) {
+                            content.classList.remove('hidden');
+                        } else {
+                            content.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+            
+            const accordions = document.querySelectorAll('#accordion-opioid .accordion-header');
+            accordions.forEach(accordion => {
+                accordion.addEventListener('click', () => {
+                    const content = accordion.nextElementSibling;
+                    const icon = accordion.querySelector('.accordion-icon');
+                    content.classList.toggle('hidden');
+                    icon.classList.toggle('rotate-180');
+                });
+            });
+
+            const localTherapyData = {
+                labels: ['通常放射線(EBRT)', '定位放射線(SBRT)', '肋間神経ブロック', 'ラジオ波焼灼(RFA)', '凍結療法', 'MRgFUS'],
+                datasets: {
+                    effect_speed: {
+                        label: '鎮痛効果の発現時期（日）- 短いほど速い',
+                        data: [10.5, 7, 0.5, 1, 1, 3], 
+                        backgroundColor: 'rgba(255, 193, 7, 0.6)',
+                        borderColor: 'rgba(255, 193, 7, 1)',
+                    },
+                    duration: {
+                        label: '効果の持続性（月）- 長いほど持続',
+                        data: [6, 12, 3, 6, 6, 6],
+                        backgroundColor: 'rgba(96, 125, 139, 0.6)',
+                        borderColor: 'rgba(96, 125, 139, 1)',
+                    },
+                    pain_reduction: {
+                        label: '疼痛軽減を経験する患者の割合（%）',
+                        data: [75, 85, 90, 85, 85, 80],
+                        backgroundColor: 'rgba(4, 67, 67, 0.6)',
+                        borderColor: 'rgba(4, 67, 67, 1)',
+                    }
+                }
+            };
+            
+            const camTherapyData = {
+                labels: ['認知行動療法(CBT)', 'マインドフルネス', '鍼灸', 'マッサージ', '抗炎症食'],
+                datasets: [{
+                    label: 'エビデンスレベル (高いほど根拠が強い)',
+                    data: [3, 2, 1, 1, 2],
+                    backgroundColor: [
+                        'rgba(4, 67, 67, 0.6)',
+                        'rgba(96, 125, 139, 0.6)',
+                        'rgba(255, 193, 7, 0.6)',
+                        'rgba(255, 193, 7, 0.6)',
+                        'rgba(96, 125, 139, 0.6)'
+                    ],
+                    borderColor: [
+                        'rgba(4, 67, 67, 1)',
+                        'rgba(96, 125, 139, 1)',
+                        'rgba(255, 193, 7, 1)',
+                        'rgba(255, 193, 7, 1)',
+                        'rgba(96, 125, 139, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            };
+
+            const localCtx = document.getElementById('localTherapyChart').getContext('2d');
+            const localTherapyChart = new Chart(localCtx, {
+                type: 'bar',
+                data: {
+                    labels: localTherapyData.labels,
+                    datasets: [localTherapyData.datasets.effect_speed]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'top' },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) { label += ': '; }
+                                    if (context.parsed.x !== null) {
+                                        const metric = document.getElementById('local-therapy-metric').value;
+                                        if (metric === 'effect_speed') label += context.parsed.x + '日';
+                                        else if (metric === 'duration') label += context.parsed.x + 'ヶ月';
+                                        else if (metric === 'pain_reduction') label += context.parsed.x + '%';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: { display: true, text: '値' }
+                        },
+                        y: {
+                           ticks: {
+                                autoSkip: false
+                           }
+                        }
+                    }
+                }
+            });
+
+            document.getElementById('local-therapy-metric').addEventListener('change', (e) => {
+                const metric = e.target.value;
+                localTherapyChart.data.datasets[0] = localTherapyData.datasets[metric];
+                localTherapyChart.options.scales.x.title.text = localTherapyData.datasets[metric].label.split('-')[0].trim();
+                localTherapyChart.update();
+            });
+            
+            const camCtx = document.getElementById('camTherapyChart').getContext('2d');
+            const camTherapyChart = new Chart(camCtx, {
+                type: 'bar',
+                data: camTherapyData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const value = context.parsed.y;
+                                    let level = '';
+                                    if (value === 3) level = '高い';
+                                    else if (value === 2) level = '中程度';
+                                    else level = '低い〜非常に低い';
+                                    return `エビデンスレベル: ${level}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 3.5,
+                            ticks: {
+                                stepSize: 1,
+                                callback: function(value, index, values) {
+                                    if (value === 1) return '低い';
+                                    if (value === 2) return '中程度';
+                                    if (value === 3) return '高い';
+                                    return '';
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: '科学的根拠のレベル'
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
