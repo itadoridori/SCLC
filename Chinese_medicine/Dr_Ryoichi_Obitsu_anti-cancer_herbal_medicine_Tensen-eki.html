@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インタラクティブ・レポート：帯津良一医師と天仙液の全貌</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Earthy Calm -->
+    <!-- Application Structure Plan: 利用者の疑問（誰が？→物語は？→科学的根拠は？→現実的な課題は？→結論は？）に沿った5部構成のテーマ別レイアウトを採用。ナビゲーションで各セクションにジャンプできる。中心となる「科学」セクションでは、トグルボタンで「基礎研究」と「臨床研究」の表示を切り替え、Chart.jsで臨床データを可視化。この構造は、利用者が情報を段階的に、かつ主体的に探求できるように設計されており、複雑な医学情報を消化しやすくすることを目的としている。 -->
+    <!-- Visualization & Content Choices: 
+        - 登場人物紹介 (Goal: Inform): HTML/CSSのカードレイアウトで帯津医師と王医師の役割を明確化。
+        - 開発の歴史 (Goal: Change/Process): HTML/CSSの水平タイムラインで、製品の進化を時系列で示す。
+        - 科学的根拠 (Goal: Compare/Inform): Chart.jsの棒グラフで、臨床研究における「有効性（有意差なし）」と「QOL改善（有意差あり）」を対比。基礎研究の結果はアイコンとテキストで要約。これにより、"Evidence Gap"を視覚的に強調する。
+        - 費用とリスク (Goal: Inform): アイコン付き情報カードで、高額な費用、個人輸入のリスク、法的地位を提示。
+        - 結論 (Goal: Summarize): HTMLのリストで、患者への提言を明確に要約。
+        - Justification: すべての選択は、脆弱な立場にある可能性のある利用者に、希望と現実のバランスを取りながら、正確かつ客観的な情報を提供することを目的としている。 -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Noto Sans JP', sans-serif; }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #A0522D; /* sienna */
+            border-bottom-color: #A0522D;
+        }
+        .toggle-btn {
+            transition: all 0.3s ease;
+        }
+        .toggle-btn.active {
+            background-color: #556B2F; /* darkolivegreen */
+            color: #F5F5DC; /* beige */
+        }
+        .toggle-btn:not(.active) {
+            background-color: #F5F5DC; /* beige */
+            color: #556B2F;
+        }
+    </style>
+</head>
+<body class="bg-[#FDFBF5] text-[#3a3a3a]">
+
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <h1 class="text-xl md:text-2xl font-bold text-[#556B2F]">天仙液：インタラクティブ・レポート</h1>
+            <div class="hidden md:flex space-x-6">
+                <a href="#intro" class="nav-link font-medium">序論</a>
+                <a href="#story" class="nav-link font-medium">物語</a>
+                <a href="#science" class="nav-link font-medium">科学</a>
+                <a href="#reality" class="nav-link font-medium">現実</a>
+                <a href="#conclusion" class="nav-link font-medium">結論</a>
+            </div>
+             <div class="md:hidden">
+                <select id="mobile-nav" class="bg-white border border-gray-300 rounded-md p-2">
+                    <option value="#intro">序論</option>
+                    <option value="#story">物語</option>
+                    <option value="#science">科学</option>
+                    <option value="#reality">現実</option>
+                    <option value="#conclusion">結論</option>
+                </select>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-8">
+
+        <section id="intro" class="py-12 md:py-16 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold text-[#556B2F] mb-4">帯津良一医師と天仙液の全貌</h2>
+            <p class="max-w-3xl mx-auto text-lg leading-relaxed mb-8">
+                このインタラクティブ・レポートは、がん代替医療の一つとして知られる漢方「天仙液」と、その普及に貢献した帯津良一医師について、科学的・客観的な視点から探求します。ここでは、希望、科学的根拠、そして現実的な課題のすべてを公平に提示し、情報に基づいた意思決定を支援することを目指します。
+            </p>
+            <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto text-left">
+                <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-[#A0522D]">
+                    <h3 class="text-2xl font-semibold mb-3 text-[#A0522D]">帯津 良一 医師</h3>
+                    <p class="font-medium text-gray-600 mb-2">臨床の革新者 | ホリスティック医学の先駆者</p>
+                    <p>東大病院の外科医から、心・体・生命を一体として捉えるホリスティック医学へ。天仙液の「発明者」ではなく、カプセルから患者が飲みやすい「液体」への改良を提案した「触媒」的存在。彼の哲学が、製品の進化を促しました。</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-[#556B2F]">
+                    <h3 class="text-2xl font-semibold mb-3 text-[#556B2F]">王 振国 医師</h3>
+                    <p class="font-medium text-gray-600 mb-2">発明者 | 中国の漢方研究者</p>
+                    <p>天仙液の原型である複合漢方薬「天仙丸」を1983年に開発した創始者。彼の研究は中国政府に承認され、国家的なプロジェクトとして臨床試験が行われました。伝統的な知恵と近代的な研究を結びつけました。</p>
+                </div>
+            </div>
+        </section>
+
+        <hr class="my-12 border-t-2 border-gray-200">
+
+        <section id="story" class="py-12 md:py-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-[#556B2F] mb-4">天仙液 誕生の物語</h2>
+                <p class="max-w-3xl mx-auto text-lg leading-relaxed">
+                    一つの漢方薬が、中国での発明から日本の臨床現場を経て、世界的な製品へと進化するまでの道のりです。これは、国境を越えた協力と、患者を想う一人の医師の提案から生まれたイノベーションの物語です。
+                </p>
+            </div>
+            <div class="relative w-full">
+                <div class="border-l-4 border-[#A0522D] absolute h-full top-0 left-1/2 -ml-[2px]"></div>
+                <div class="space-y-12">
+                    <div class="flex items-center w-full">
+                        <div class="w-1/2 flex justify-end pr-8">
+                            <div class="bg-white p-5 rounded-lg shadow-lg w-full max-w-sm">
+                                <h3 class="font-bold text-[#556B2F]">1983年: 誕生</h3>
+                                <p class="text-sm">中国の王振国医師が、複数の生薬を配合した「天仙丸」（カプセル）を開発。</p>
+                            </div>
+                        </div>
+                        <div class="w-10 h-10 bg-[#A0522D] rounded-full absolute left-1/2 -ml-5 flex items-center justify-center text-white font-bold">1</div>
+                        <div class="w-1/2"></div>
+                    </div>
+                    <div class="flex items-center w-full">
+                         <div class="w-1/2"></div>
+                        <div class="w-10 h-10 bg-[#A0522D] rounded-full absolute left-1/2 -ml-5 flex items-center justify-center text-white font-bold">2</div>
+                        <div class="w-1/2 flex justify-start pl-8">
+                            <div class="bg-white p-5 rounded-lg shadow-lg w-full max-w-sm">
+                                <h3 class="font-bold text-[#556B2F]">1988年: 国家の承認</h3>
+                                <p class="text-sm">中国政府が「天仙丸」を「ガン治療薬剤」として公式に認定。大規模な臨床試験の道が開かれる。</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center w-full">
+                        <div class="w-1/2 flex justify-end pr-8">
+                            <div class="bg-white p-5 rounded-lg shadow-lg w-full max-w-sm">
+                                <h3 class="font-bold text-[#556B2F]">運命の出会い</h3>
+                                <p class="text-sm">帯津良一医師が中国で王医師と面会し、「天仙丸」の可能性を確信。自身の臨床現場での使用を開始する。</p>
+                            </div>
+                        </div>
+                        <div class="w-10 h-10 bg-[#A0522D] rounded-full absolute left-1/2 -ml-5 flex items-center justify-center text-white font-bold">3</div>
+                        <div class="w-1/2"></div>
+                    </div>
+                    <div class="flex items-center w-full">
+                        <div class="w-1/2"></div>
+                        <div class="w-10 h-10 bg-[#A0522D] rounded-full absolute left-1/2 -ml-5 flex items-center justify-center text-white font-bold">4</div>
+                         <div class="w-1/2 flex justify-start pl-8">
+                            <div class="bg-white p-5 rounded-lg shadow-lg w-full max-w-sm">
+                                <h3 class="font-bold text-[#556B2F]">革新的な提案と進化</h3>
+                                <p class="text-sm">帯津医師が「液体の方が患者は飲みやすい」と提案。この一言が触媒となり、液剤タイプの「天仙液」が共同開発される。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <hr class="my-12 border-t-2 border-gray-200">
+
+        <section id="science" class="py-12 md:py-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-[#556B2F] mb-4">科学的根拠の探求</h2>
+                <p class="max-w-3xl mx-auto text-lg leading-relaxed">
+                    天仙液の有効性について、科学は何を語っているのでしょうか。ここでは、実験室レベルでの有望な結果と、人間を対象とした臨床研究との間に存在する「エビデンス・ギャップ（根拠の隔たり）」に焦点を当てます。下のボタンで表示を切り替え、データを客観的に比較してください。
+                </p>
+            </div>
+            
+            <div class="flex justify-center mb-8">
+                <button id="showLab" class="toggle-btn active py-2 px-6 rounded-l-full font-semibold">基礎研究 (実験室/動物)</button>
+                <button id="showHuman" class="toggle-btn py-2 px-6 rounded-r-full font-semibold">臨床研究 (人間)</button>
+            </div>
+
+            <div id="lab-content">
+                <h3 class="text-2xl font-semibold text-center mb-6">基礎研究：細胞レベルでの有望な作用</h3>
+                <div class="grid md:grid-cols-3 gap-6 text-center">
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <div class="text-5xl mb-3">🔬</div>
+                        <h4 class="text-xl font-bold mb-2 text-[#556B2F]">アポトーシス誘導</h4>
+                        <p>がん細胞に「自ら死滅せよ」という指令を出す（アポトーシス）働きが、複数の研究で確認されています。正常細胞には影響が少なかったという報告もあります。</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow">
+                         <div class="text-5xl mb-3">🛡️</div>
+                        <h4 class="text-xl font-bold mb-2 text-[#556B2F]">抗転移・免疫調整</h4>
+                        <p>動物実験では、がんの転移に関わるマーカーを低下させる可能性が示唆されました。また、免疫を調整する作用も報告されています。</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow">
+                         <div class="text-5xl mb-3"> Petri Dish</div>
+                        <h4 class="text-xl font-bold mb-2 text-[#556B2F]">重要な注意点</h4>
+                        <p>これらの結果は、あくまで実験室のシャーレ内や動物での話です。「細胞を殺す」ことと「人間のがんを治す」ことの間には、大きな壁が存在します。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="human-content" class="hidden">
+                 <h3 class="text-2xl font-semibold text-center mb-6">臨床研究：人間における効果の検証</h3>
+                 <p class="text-center max-w-3xl mx-auto mb-10">現在、人間における有効性を証明する大規模な臨床試験は不足しています。ここでは、類似製品を用いた数少ない臨床データ（非小細胞肺がん患者対象）を可視化します。</p>
+                <div class="grid md:grid-cols-2 gap-8 items-start">
+                    <div>
+                        <h4 class="text-xl font-bold text-center mb-2">がんへの直接効果 (奏効率)</h4>
+                        <div class="chart-container">
+                            <canvas id="efficacyChart"></canvas>
+                        </div>
+                        <p class="text-center mt-4 p-3 bg-yellow-100 border-l-4 border-yellow-500 rounded-r-lg"><strong>結論：</strong>化学療法に天仙液系統の製品を加えても、がんの縮小率や進行を抑える確率に<strong>統計的な差は見られなかった。</strong></p>
+                    </div>
+                    <div>
+                        <h4 class="text-xl font-bold text-center mb-2">QOL (生活の質) への効果</h4>
+                        <div class="chart-container">
+                            <canvas id="qolChart"></canvas>
+                        </div>
+                         <p class="text-center mt-4 p-3 bg-green-100 border-l-4 border-green-500 rounded-r-lg"><strong>結論：</strong>併用群では、倦怠感などの自覚症状スコアが<strong>有意に改善した。</strong>生活の質の向上には寄与する可能性を示唆している。</p>
+                    </div>
+                </div>
+                 <div class="mt-12 bg-white p-6 rounded-lg shadow-md border-l-4 border-red-500">
+                    <h4 class="text-xl font-bold text-red-700 mb-2">「NCI (米国国立がん研究所) に掲載」の真実</h4>
+                    <p>この表現は誤解を招きやすいものです。正しくは、NCIではなくNIH（米国国立衛生研究所）の一部門が運営する学術データベース(PubMed)に、天仙液に関する研究論文が「収録」されている、という意味です。これはNCIが製品の有効性を「承認・推奨」していることとは全く異なります。科学的研究の存在を示すものであり、効果の保証ではありません。</p>
+                </div>
+            </div>
+        </section>
+
+        <hr class="my-12 border-t-2 border-gray-200">
+
+        <section id="reality" class="py-12 md:py-16">
+             <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-[#556B2F] mb-4">患者が直面する現実</h2>
+                <p class="max-w-3xl mx-auto text-lg leading-relaxed">
+                    天仙液の使用を検討する上で、科学的根拠と同じくらい重要なのが、費用、入手方法、そして潜在的なリスクです。ここでは、患者とその家族が直面する現実的な課題を整理しました。
+                </p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-lg text-center border-t-4 border-red-500">
+                    <div class="text-6xl mb-4">💰</div>
+                    <h3 class="text-2xl font-bold mb-3 text-red-700">莫大な費用</h3>
+                    <p class="text-4xl font-bold text-red-600 mb-2">月額 約21万円〜</p>
+                    <p class="text-gray-600">(1日2本使用の場合の目安)</p>
+                    <p class="mt-4">公的医療保険は適用されず、全額が自己負担となります。これは治療を継続する上で最大の障壁の一つです。</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg text-center border-t-4 border-yellow-500">
+                    <div class="text-6xl mb-4">⚖️</div>
+                    <h3 class="text-2xl font-bold mb-3 text-yellow-700">法的地位と入手方法</h3>
+                    <p class="text-xl font-semibold mb-2">国内未承認・個人輸入のみ</p>
+                    <p class="mt-4">日本では医薬品として承認されていません。入手方法は、代行業者を通じた個人輸入に限られます。これは合法ですが、厚生労働省は健康被害のリスクについて注意を喚起しています。</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg text-center border-t-4 border-orange-500">
+                    <div class="text-6xl mb-4">⚠️</div>
+                    <h3 class="text-2xl font-bold mb-3 text-orange-700">品質と安全性のリスク</h3>
+                    <p class="text-xl font-semibold mb-2">全責任は使用者個人に</p>
+                    <p class="mt-4">製造元は品質管理を主張していますが、「天然物だから安全」とは限りません。他の薬剤との相互作用や、汚染物質のリスクはゼロではなく、万が一健康被害が起きても、その責任はすべて輸入した本人が負うことになります。</p>
+                </div>
+            </div>
+        </section>
+
+        <hr class="my-12 border-t-2 border-gray-200">
+
+        <section id="conclusion" class="py-12 md:py-16 bg-white rounded-lg shadow-xl p-8 md:p-12">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl md:text-4xl font-bold text-[#556B2F] mb-4">結論と専門家からの提言</h2>
+                 <p class="max-w-3xl mx-auto text-lg leading-relaxed">
+                   これまでの情報を踏まえ、天仙液の使用を検討するがん患者さんとご家族へ、情報に基づいた意思決定のための専門的な提言をまとめます。これは最終的な判断を支援するためのガイドです。
+                </p>
+            </div>
+            <div class="max-w-4xl mx-auto space-y-6">
+                <div class="flex items-start">
+                    <div class="text-3xl mr-4 text-[#556B2F]">1.</div>
+                    <div>
+                        <h3 class="text-xl font-semibold">標準治療を最優先に</h3>
+                        <p>天仙液を含むいかなる補完・代替療法も、科学的根拠に基づいて確立された標準治療（手術、化学療法、放射線治療など）に取って代わるものではありません。あくまで補助的な選択肢として捉えるべきです。</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <div class="text-3xl mr-4 text-[#556B2F]">2.</div>
+                    <div>
+                        <h3 class="text-xl font-semibold">主治医との相談は必須</h3>
+                        <p>使用を開始する前に、必ず担当の主治医に相談してください。他の薬剤との予期せぬ相互作用を防ぎ、安全を確保するために不可欠です。「何を試しているか」を主治医が把握していることが、最善の治療の前提となります。</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <div class="text-3xl mr-4 text-[#556B2F]">3.</div>
+                    <div>
+                        <h3 class="text-xl font-semibold">期待と現実の比較衡量</h3>
+                        <p>「生活の質の改善」という期待される利益と、「莫大な費用」「潜在的な健康リスク」という現実的な課題を天秤にかけ、ご自身の価値観に基づいて慎重に判断する必要があります。</p>
+                    </div>
+                </div>
+                 <div class="mt-8 p-6 bg-[#F5F5DC] rounded-lg text-center">
+                    <h3 class="text-xl font-bold text-[#556B2F]">最終的な決断は、一つの「治療戦略」の選択です</h3>
+                    <p class="mt-2 max-w-2xl mx-auto">それは単に「薬を選ぶ」行為ではなく、ご自身の包括的な治療計画の中に、この選択肢をどう位置づけるかという戦略的な判断です。常に主治医と透明性のあるコミュニケーションを保ち、主体的に治療に関わることが最も重要です。</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const efficacyChartCtx = document.getElementById('efficacyChart').getContext('2d');
+            const qolChartCtx = document.getElementById('qolChart').getContext('2d');
+
+            const commonOptions = {
+                maintainAspectRatio: false,
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.dataset.label}: ${context.parsed.y}%`;
+                            }
+                        }
+                    }
+                }
+            };
+
+            const efficacyChart = new Chart(efficacyChartCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['客観的奏効率(ORR)', '病勢コントロール率(DCR)'],
+                    datasets: [{
+                        label: '化学療法単独群',
+                        data: [19.2, 84.6],
+                        backgroundColor: 'rgba(169, 169, 169, 0.6)',
+                        borderColor: 'rgba(169, 169, 169, 1)',
+                        borderWidth: 1
+                    }, {
+                        label: '化学療法 + 併用群',
+                        data: [27.8, 90.7],
+                        backgroundColor: 'rgba(85, 107, 47, 0.6)',
+                        borderColor: 'rgba(85, 107, 47, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    ...commonOptions,
+                    plugins: {
+                        ...commonOptions.plugins,
+                        title: {
+                            display: true,
+                            text: 'がん縮小効果の比較 (統計的有意差なし)',
+                            padding: { bottom: 10 }
+                        }
+                    }
+                }
+            });
+
+            const qolChart = new Chart(qolChartCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['TCM症候群スコア改善率'],
+                    datasets: [{
+                        label: '化学療法単独群',
+                        data: [21.2],
+                        backgroundColor: 'rgba(169, 169, 169, 0.6)',
+                        borderColor: 'rgba(169, 169, 169, 1)',
+                        borderWidth: 1
+                    }, {
+                        label: '化学療法 + 併用群',
+                        data: [44.4],
+                        backgroundColor: 'rgba(85, 107, 47, 0.6)',
+                        borderColor: 'rgba(85, 107, 47, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    ...commonOptions,
+                    plugins: {
+                        ...commonOptions.plugins,
+                        title: {
+                            display: true,
+                            text: '自覚症状改善率の比較 (統計的有意差あり)',
+                            padding: { bottom: 10 }
+                        }
+                    }
+                }
+            });
+            
+            const showLabBtn = document.getElementById('showLab');
+            const showHumanBtn = document.getElementById('showHuman');
+            const labContent = document.getElementById('lab-content');
+            const humanContent = document.getElementById('human-content');
+
+            showLabBtn.addEventListener('click', () => {
+                labContent.classList.remove('hidden');
+                humanContent.classList.add('hidden');
+                showLabBtn.classList.add('active');
+                showHumanBtn.classList.remove('active');
+            });
+
+            showHumanBtn.addEventListener('click', () => {
+                labContent.classList.add('hidden');
+                humanContent.classList.remove('hidden');
+                showLabBtn.classList.remove('active');
+                showHumanBtn.classList.add('active');
+            });
+
+            const mobileNav = document.getElementById('mobile-nav');
+            mobileNav.addEventListener('change', (e) => {
+                window.location.hash = e.target.value;
+            });
+        });
+    </script>
+
+</body>
+</html>
