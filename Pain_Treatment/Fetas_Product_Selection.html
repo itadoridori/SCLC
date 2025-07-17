@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>フェイタス®製品えらび - あなたの痛みに最適な一枚を</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Soothing Teal and Amber -->
+    <!-- Application Structure Plan: 利用者の「骨の痛み」という曖昧な表現を安全に解決するため、ガイド付きの製品選択ツールとして構成。1. 「骨の痛み」に関する注意喚起と正しい理解を促す導入部。2. 「痛みの強さ」「痛みの種類」で絞り込む対話的なフィルター。3. フィルター結果に基づき、推奨製品をカード形式で動的に表示。4. 全製品の有効成分量を比較できるインタラクティブなチャートと一覧表。このステップバイステップの構成は、利用者を安全かつ的確な製品選択に導き、単なる情報提供を超えた実用的な価値を提供するために選択された。 -->
+    <!-- Visualization & Content Choices: 1. 製品比較: 棒グラフ (Chart.js) - 目的: 製品の「強さ」の比較。手法: 主要成分の配合量を視覚的に比較することで、利用者が直感的に違いを理解できるようにする。操作: 成分系統（フェルビナク系/ジクロフェナク系）で表示を切り替え可能。2. 製品選択: 対話型フィルター (HTML/JS) - 目的: 利用者の症状に合わせた製品を提示。手法: ボタンクリックで製品カードを絞り込み表示。これにより、利用者は自身のニーズに集中できる。3. 注意喚起: スタイル付きテキストブロック (HTML/Tailwind) - 目的: 安全な使用を促進。手法: 背景色とアイコンで目立たせ、重要な医学的アドバイス（医師への相談）を明確に伝える。これらの選択は、SVGやMermaidを使用せず、利用者の理解と操作性を最大化するために行われた。 -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 50vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .product-card {
+            transition: all 0.3s ease-in-out;
+            transform-origin: top;
+        }
+        .filter-btn.active {
+            background-color: #0d9488; /* teal-600 */
+            color: white;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .filter-btn {
+            transition: all 0.2s ease;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-5xl">
+
+        <header class="text-center mb-8 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-bold text-teal-700">フェイタス®製品えらび</h1>
+            <p class="mt-2 text-lg text-gray-600">あなたの痛みに最適な一枚を見つけよう</p>
+        </header>
+
+        <main>
+            <section id="intro" class="mb-10 p-6 bg-amber-50 border-l-4 border-amber-400 rounded-r-lg">
+                <div class="flex items-start">
+                    <div class="flex-shrink-0">
+                        <span class="text-2xl">💡</span>
+                    </div>
+                    <div class="ml-4">
+                        <h2 class="text-xl font-bold text-amber-900 mb-2">はじめに：「骨の痛み」について</h2>
+                        <p class="text-gray-700 mb-4">
+                            「骨が痛い」と感じる場合、その多くは骨の周りにある<strong class="text-teal-700">関節や筋肉の深い部分の痛み</strong>である可能性があります。フェイタス®のような外用鎮痛消炎薬は、こうした関節痛や筋肉痛を和らげることを目的としています。
+                        </p>
+                        <div class="mt-4 p-4 bg-white border border-red-200 rounded-lg shadow-sm">
+                            <h3 class="font-bold text-red-700">⚠️ まずは医師への相談を</h3>
+                            <p class="text-sm text-gray-600 mt-1">
+                                原因のわからない長引く痛み、我慢できないほどの激しい痛み、しびれや変形を伴う場合、または打撲や骨折が疑われる場合は、自己判断せず、<strong class="text-red-600">必ず整形外科などの医療機関を受診してください。</strong>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="selector" class="mb-10">
+                <h2 class="text-2xl font-bold text-center mb-6 text-teal-700">あなたの痛みを教えてください</h2>
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <div class="mb-6">
+                        <p class="font-semibold mb-3 text-lg text-center">1. 痛みの強さはどのくらいですか？</p>
+                        <div id="pain-level-filter" class="flex flex-col sm:flex-row justify-center gap-3">
+                            <button data-filter="severe" class="filter-btn w-full sm:w-auto text-lg py-3 px-8 rounded-full font-semibold border-2 border-teal-600 text-teal-700 hover:bg-teal-50">つらい・急な痛みに</button>
+                            <button data-filter="daily" class="filter-btn w-full sm:w-auto text-lg py-3 px-8 rounded-full font-semibold border-2 border-teal-600 text-teal-700 hover:bg-teal-50">日常的な・慢性の痛みに</button>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="font-semibold mb-3 text-lg text-center">2. どのような痛みですか？</p>
+                        <div id="pain-type-filter" class="flex flex-wrap justify-center gap-3">
+                            <button data-filter="joint" class="filter-btn py-2 px-5 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100">肩・腰・関節の痛み</button>
+                            <button data-filter="muscle" class="filter-btn py-2 px-5 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100">筋肉の痛み</button>
+                            <button data-filter="liquid" class="filter-btn py-2 px-5 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100">広範囲に塗りたい</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="recommendation" class="mb-12">
+                <h2 class="text-2xl font-bold text-center mb-6 text-teal-700">あなたへのおすすめ</h2>
+                <div id="product-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                </div>
+                <div id="no-results" class="text-center py-10 px-6 bg-gray-50 rounded-lg hidden">
+                    <p class="text-gray-600">選択された条件に合う製品が見つかりませんでした。<br>条件を変更してお試しください。</p>
+                </div>
+            </section>
+
+            <section id="comparison">
+                <h2 class="text-2xl font-bold text-center mb-2 text-teal-700">製品ラインナップ比較</h2>
+                <p class="text-center text-gray-600 mb-6">有効成分の配合量や特徴を比べてみましょう。</p>
+                <div class="bg-white p-4 sm:p-6 rounded-xl shadow-lg">
+                    <div class="text-center mb-4">
+                        <div id="chart-filter" class="inline-flex rounded-md shadow-sm" role="group">
+                            <button type="button" data-chart="diclofenac" class="chart-filter-btn active px-4 py-2 text-sm font-medium text-white bg-teal-600 border border-gray-200 rounded-l-lg hover:bg-teal-700">
+                                ジクロフェナク系
+                            </button>
+                            <button type="button" data-chart="felbinac" class="chart-filter-btn px-4 py-2 text-sm font-medium text-gray-900 bg-white border-t border-b border-gray-200 hover:bg-gray-100">
+                                フェルビナク系
+                            </button>
+                             <button type="button" data-chart="all" class="chart-filter-btn px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-r-lg hover:bg-gray-100">
+                                全製品
+                            </button>
+                        </div>
+                    </div>
+                    <div class="chart-container mb-6">
+                        <canvas id="productChart"></canvas>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full min-w-[600px] text-sm text-left text-gray-500">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3">製品名</th>
+                                    <th scope="col" class="px-6 py-3">有効成分</th>
+                                    <th scope="col" class="px-6 py-3">配合量</th>
+                                    <th scope="col" class="px-6 py-3">剤形</th>
+                                    <th scope="col" class="px-6 py-3">主な用途</th>
+                                </tr>
+                            </thead>
+                            <tbody id="product-table-body">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 pt-8 border-t">
+            <p class="text-sm text-gray-500">この情報は製品選択の参考にするためのものであり、医学的なアドバイスに代わるものではありません。</p>
+            <p class="text-sm text-gray-500 mt-1">ご使用の際は、製品の添付文書をよく読み、用法・用量を守って正しくお使いください。不明な点は医師、薬剤師にご相談ください。</p>
+        </footer>
+    </div>
+
+<script>
+const productData = [
+    {
+        id: 'z-alpha',
+        name: 'フェイタスZαジクサス',
+        ingredient: 'ジクロフェナクナトリウム',
+        ingredientFamily: 'diclofenac',
+        strength: 2.0,
+        format: 'テープ',
+        description: '効きめ成分ジクロフェナクナトリウムを2.0%配合。つらい痛みに24時間効きつづける。',
+        tags: ['severe', 'joint', 'muscle'],
+        image: 'https://placehold.co/400x300/0d9488/ffffff?text=Z%CE%B1'
+    },
+    {
+        id: 'z',
+        name: 'フェイタスZジクサス',
+        ingredient: 'ジクロフェナクナトリウム',
+        ingredientFamily: 'diclofenac',
+        strength: 1.0,
+        format: 'テープ',
+        description: '効きめ成分ジクロフェナクナトリウムを1.0%配合。肩・腰・関節の痛みに。',
+        tags: ['daily', 'joint', 'muscle'],
+        image: 'https://placehold.co/400x300/14b8a6/ffffff?text=Z'
+    },
+    {
+        id: '5.0',
+        name: 'フェイタス5.0',
+        ingredient: 'フェルビナク',
+        ingredientFamily: 'felbinac',
+        strength: 5.0,
+        format: 'テープ',
+        description: '優れた鎮痛消炎効果をもつ「フェルビナク」を5.0%配合。肩・腰・関節・筋肉の痛みに。',
+        tags: ['severe', 'daily', 'joint', 'muscle'],
+        image: 'https://placehold.co/400x300/2dd4bf/ffffff?text=5.0'
+    },
+    {
+        id: '5.0-warm',
+        name: 'フェイタス5.0 温感',
+        ingredient: 'フェルビナク',
+        ingredientFamily: 'felbinac',
+        strength: 5.0,
+        format: 'テープ（温感）',
+        description: 'フェルビナク5.0%に加え、血行促進成分配合。心地よい温感で、慢性の痛みに。',
+        tags: ['daily', 'joint'],
+        image: 'https://placehold.co/400x300/f97316/ffffff?text=5.0温感'
+    },
+    {
+        id: 'cream',
+        name: 'フェイタスクリーム',
+        ingredient: 'フェルビナク',
+        ingredientFamily: 'felbinac',
+        strength: 3.0,
+        format: 'クリーム',
+        description: 'べたつかず、のびの良いクリームタイプ。マッサージしながら塗り込める。',
+        tags: ['daily', 'liquid', 'muscle'],
+        image: 'https://placehold.co/400x300/64748b/ffffff?text=Cream'
+    },
+    {
+        id: 'lotion',
+        name: 'フェイタスローション',
+        ingredient: 'フェルビナク',
+        ingredientFamily: 'felbinac',
+        strength: 3.0,
+        format: 'ローション',
+        description: '手を汚さずにサッと塗れるローションタイプ。広範囲の痛みに。',
+        tags: ['daily', 'liquid', 'muscle'],
+        image: 'https://placehold.co/400x300/64748b/ffffff?text=Lotion'
+    },
+];
+
+let activeFilters = {
+    painLevel: null,
+    painType: null
+};
+
+const productGrid = document.getElementById('product-grid');
+const noResultsDiv = document.getElementById('no-results');
+const painLevelFilter = document.getElementById('pain-level-filter');
+const painTypeFilter = document.getElementById('pain-type-filter');
+
+function renderProducts() {
+    let filteredProducts = productData;
+
+    if (activeFilters.painLevel) {
+        filteredProducts = filteredProducts.filter(p => p.tags.includes(activeFilters.painLevel));
+    }
+    if (activeFilters.painType) {
+        filteredProducts = filteredProducts.filter(p => p.tags.includes(activeFilters.painType));
+    }
+    
+    productGrid.innerHTML = '';
+    
+    if (filteredProducts.length === 0) {
+        noResultsDiv.classList.remove('hidden');
+    } else {
+        noResultsDiv.classList.add('hidden');
+    }
+
+    filteredProducts.forEach(product => {
+        const card = document.createElement('div');
+        card.className = 'product-card bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl';
+        card.innerHTML = `
+            <div class="h-48 bg-cover bg-center" style="background-image: url('${product.image}')"></div>
+            <div class="p-6">
+                <h3 class="text-xl font-bold mb-2 text-gray-800">${product.name}</h3>
+                <p class="text-sm text-gray-600 mb-4">${product.description}</p>
+                <div class="flex justify-between items-center text-sm">
+                    <span class="font-semibold text-teal-600">${product.ingredient} ${product.strength}%</span>
+                    <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700">${product.format}</span>
+                </div>
+            </div>
+        `;
+        productGrid.appendChild(card);
+    });
+}
+
+function handleFilterClick(event, filterGroup, filterKey) {
+    const button = event.target.closest('button');
+    if (!button) return;
+
+    const filterValue = button.dataset.filter;
+    const currentlyActive = button.classList.contains('active');
+    
+    filterGroup.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+
+    if (currentlyActive) {
+        activeFilters[filterKey] = null;
+    } else {
+        button.classList.add('active');
+        activeFilters[filterKey] = filterValue;
+    }
+    
+    renderProducts();
+}
+
+painLevelFilter.addEventListener('click', (e) => handleFilterClick(e, painLevelFilter, 'painLevel'));
+painTypeFilter.addEventListener('click', (e) => handleFilterClick(e, painTypeFilter, 'painType'));
+
+// Chart.js implementation
+const ctx = document.getElementById('productChart').getContext('2d');
+let productChart;
+
+function createChart(data) {
+    if (productChart) {
+        productChart.destroy();
+    }
+    productChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: data.map(p => p.name),
+            datasets: [{
+                label: '有効成分配合量 (%)',
+                data: data.map(p => p.strength),
+                backgroundColor: data.map(p => p.ingredientFamily === 'diclofenac' ? 'rgba(13, 148, 136, 0.7)' : 'rgba(20, 184, 166, 0.7)'),
+                borderColor: data.map(p => p.ingredientFamily === 'diclofenac' ? 'rgba(13, 148, 136, 1)' : 'rgba(20, 184, 166, 1)'),
+                borderWidth: 1
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            responsive: true,
+            indexAxis: 'x',
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: '有効成分配合量 (%)'
+                    }
+                },
+                x: {
+                   ticks: {
+                        autoSkip: false,
+                        maxRotation: 45,
+                        minRotation: 45,
+                        callback: function(value, index, values) {
+                            const label = this.getLabelForValue(value);
+                            return label.length > 10 ? label.substring(0, 10) + '…' : label;
+                        }
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        title: function(context) {
+                            return context[0].label;
+                        },
+                        label: function(context) {
+                            const product = data[context.dataIndex];
+                            return `成分: ${product.ingredient} ${product.strength}%`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+const chartFilterButtons = document.querySelectorAll('.chart-filter-btn');
+chartFilterButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        chartFilterButtons.forEach(btn => {
+            btn.classList.remove('active', 'bg-teal-600', 'text-white');
+            btn.classList.add('bg-white', 'text-gray-900');
+        });
+        button.classList.add('active', 'bg-teal-600', 'text-white');
+        button.classList.remove('bg-white', 'text-gray-900');
+        
+        const filter = button.dataset.chart;
+        let chartData;
+        if(filter === 'all') {
+            chartData = productData;
+        } else {
+            chartData = productData.filter(p => p.ingredientFamily === filter);
+        }
+        createChart(chartData);
+    });
+});
+
+// Table implementation
+const tableBody = document.getElementById('product-table-body');
+function renderTable(){
+    tableBody.innerHTML = '';
+    productData.forEach(p => {
+        const row = document.createElement('tr');
+        row.className = 'bg-white border-b';
+        row.innerHTML = `
+            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">${p.name}</th>
+            <td class="px-6 py-4">${p.ingredient}</td>
+            <td class="px-6 py-4">${p.strength.toFixed(1)}%</td>
+            <td class="px-6 py-4">${p.format}</td>
+            <td class="px-6 py-4">${p.tags.includes('severe') ? 'つらい痛み' : '日常の痛み'} / ${p.tags.includes('joint') ? '関節' : '筋肉'}</td>
+        `;
+        tableBody.appendChild(row);
+    });
+}
+
+
+// Initial render
+window.onload = () => {
+    renderProducts();
+    createChart(productData.filter(p => p.ingredientFamily === 'diclofenac'));
+    renderTable();
+};
+
+</script>
+</body>
+</html>
