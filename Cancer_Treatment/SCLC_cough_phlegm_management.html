@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小細胞肺がんと咳・痰の管理ガイド</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony (Warm neutrals: bg-stone-50/100, Accent: muted teal/blue) -->
+    <!-- Application Structure Plan: A thematic, single-page application designed for patient/caregiver understanding. The structure progresses logically from an overview (Introduction) to the 'why' (Mechanism, including sputum color analysis), then to the 'how' (Management), and finally to 'when to act' (Consult Doctor). This user-centric flow prioritizes clarity and actionability. Interactivity (clickable diagrams, expandable cards, visual cues for sputum color) is used to break down complex information into manageable chunks, reducing cognitive load and empowering the user. -->
+    <!-- Visualization & Content Choices: 1. Report Info: Common symptoms of SCLC and their prevalence. -> Goal: Compare symptom frequency. -> Viz: Horizontal Bar Chart (Chart.js/Canvas). -> Interaction: Hover tooltips. -> Justification: Quickly establishes context. 2. Report Info: Causes of airway irritation. -> Goal: Organize & Explain. -> Presentation: HTML/CSS diagram. -> Interaction: Clickable buttons highlight diagram parts and show text. -> Justification: Simplifies complex mechanisms. 3. Report Info: Sputum color interpretation. -> Goal: Inform & Guide Action. -> Presentation: Color-coded info cards. -> Interaction: Static, clear visual guide. -> Justification: Provides critical, actionable information in an easy-to-scan format. 4. Report Info: Management strategies. -> Goal: Organize & Inform. -> Presentation: Expandable info cards. -> Interaction: Click to reveal details. -> Justification: Prevents information overload. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans JP', 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (max-width: 640px) {
+            .chart-container {
+                height: 300px;
+            }
+        }
+        .diagram-highlight {
+            border-width: 3px;
+            border-style: solid;
+            transition: all 0.3s ease-in-out;
+        }
+        .tab-button.active {
+            border-color: #0d9488; /* teal-600 */
+            background-color: #f0fdfa; /* teal-50 */
+            color: #0d9488;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-5xl">
+        
+        <header class="text-center mb-10">
+            <h1 class="text-3xl md:text-4xl font-bold text-teal-800 mb-2">小細胞肺がんと咳・痰の管理ガイド</h1>
+            <p class="text-lg text-gray-600">つらい症状の原因を理解し、対策を知るためのインタラクティブガイド</p>
+        </header>
+
+        <main>
+            <!-- Section 1: Introduction -->
+            <section id="intro" class="mb-12 bg-white p-6 rounded-xl shadow-sm">
+                <h2 class="text-2xl font-bold text-teal-700 mb-4">はじめに：なぜ咳や痰がでるのか</h2>
+                <p class="text-gray-700 leading-relaxed mb-4">
+                    小細胞肺がん（SCLC）と診断された方の多くが、しつこい咳や痰に悩まされます。これらは、がんそのものや治療が気管や気管支に影響を与えることで生じる、非常によく見られる症状です。このガイドでは、なぜこれらの症状が起こるのか、そして症状を和らげるために何ができるのかを、視覚的に分かりやすく解説します。ご自身の体の状態を理解し、より良い療養生活を送るための一助となれば幸いです。
+                </p>
+                <div class="chart-container">
+                    <canvas id="symptomChart"></canvas>
+                </div>
+                 <p class="text-center text-sm text-gray-500 mt-2">小細胞肺がんで見られる主な初期症状の一般的な割合</p>
+            </section>
+            
+            <!-- Section 2: Mechanism -->
+            <section id="mechanism" class="mb-12 bg-white p-6 rounded-xl shadow-sm">
+                <h2 class="text-2xl font-bold text-teal-700 mb-4">咳と痰のメカニズム</h2>
+                <p class="text-gray-700 leading-relaxed mb-6">
+                    気道（空気の通り道）で何が起こっているのかを見てみましょう。がんは気道を狭めたり、刺激したりすることで咳や痰を引き起こします。下のボタンで主な原因を確認し、さらにその下にスクロールして、痰の色が示す重要なサインについても学びましょう。
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-6 items-center">
+                    <!-- Diagram -->
+                    <div class="p-4 border rounded-lg bg-slate-50">
+                        <h3 class="font-bold text-center mb-2 text-lg">気道の変化</h3>
+                        <div class="flex justify-around">
+                            <div class="text-center">
+                                <strong class="text-blue-600">正常な気道</strong>
+                                <div class="w-24 h-40 mx-auto bg-blue-100 rounded-full border-2 border-blue-300 flex items-center justify-center p-2">
+                                    <div id="normal-airway" class="w-full h-full bg-white rounded-full"></div>
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <strong class="text-red-600">影響を受けた気道</strong>
+                                <div class="w-24 h-40 mx-auto bg-red-100 rounded-full border-2 border-red-300 flex items-center justify-center p-2 relative">
+                                    <div id="affected-airway" class="w-12 h-full bg-white rounded-full relative overflow-hidden">
+                                        <div id="sputum" class="absolute bottom-0 w-full h-1/3 bg-yellow-200 opacity-75"></div>
+                                    </div>
+                                    <div id="tumor" class="absolute w-8 h-8 bg-red-500 rounded-full -right-2 top-1/3"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Explanations -->
+                    <div class="flex flex-col space-y-4">
+                        <div>
+                            <button onclick="showExplanation('tumor')" class="w-full text-left p-3 bg-teal-50 hover:bg-teal-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors">
+                                <h4 class="font-bold">1. 腫瘍による気道の圧迫・閉塞</h4>
+                            </button>
+                        </div>
+                        <div>
+                           <button onclick="showExplanation('inflammation')" class="w-full text-left p-3 bg-teal-50 hover:bg-teal-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors">
+                                <h4 class="font-bold">2. 炎症と刺激</h4>
+                            </button>
+                        </div>
+                        <div>
+                            <button onclick="showExplanation('infection')" class="w-full text-left p-3 bg-teal-50 hover:bg-teal-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors">
+                                <h4 class="font-bold">3. 感染のリスク</h4>
+                            </button>
+                        </div>
+                        <div id="explanation-box" class="mt-4 p-4 bg-gray-100 rounded-lg min-h-[100px] text-gray-700">
+                            <p>上のボタンをクリックして詳細を表示します。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- New Section: Sputum Color Guide -->
+                <div class="mt-12 pt-6 border-t border-gray-200">
+                    <h3 class="text-xl font-bold text-teal-700 mb-4 text-center">痰の色が示すサイン</h3>
+                    <p class="text-gray-700 leading-relaxed mb-6 text-center max-w-2xl mx-auto">痰の色や状態は、気道で何が起きているかを知るための大切な手がかりです。変化に気づいたら、医師や看護師に伝えましょう。</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-white p-4 rounded-lg shadow-sm border-l-4 border-red-500">
+                            <h4 class="font-bold text-red-700">赤、ピンク、血が混じる</h4>
+                            <p class="text-sm text-gray-600 mt-1"><strong>考えられる意味:</strong> 気道からの出血のサイン。腫瘍が血管を傷つけている可能性があります。</p>
+                            <p class="text-sm font-semibold text-red-800 mt-2"><strong>推奨される対応:</strong> 量にかかわらず、速やかに医療チームに連絡してください。</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm border-l-4 border-yellow-500">
+                            <h4 class="font-bold text-yellow-700">黄色、緑色</h4>
+                            <p class="text-sm text-gray-600 mt-1"><strong>考えられる意味:</strong> 細菌感染の可能性が高いです。白血球が細菌と戦ったサインです。</p>
+                            <p class="text-sm font-semibold text-yellow-800 mt-2"><strong>推奨される対応:</strong> 発熱を伴う場合は特に、次の受診を待たずに報告してください。</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm border-l-4 border-gray-400">
+                            <h4 class="font-bold text-gray-700">白く泡立っている</h4>
+                            <p class="text-sm text-gray-600 mt-1"><strong>考えられる意味:</strong> 特定の種類の肺がんや、心不全の可能性も考えられます。</p>
+                            <p class="text-sm font-semibold text-gray-800 mt-2"><strong>推奨される対応:</strong> 量が多い、または息苦しさを伴う場合は報告してください。</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm border-l-4 border-blue-400">
+                            <h4 class="font-bold text-blue-700">透明、白色（量が増加）</h4>
+                            <p class="text-sm text-gray-600 mt-1"><strong>考えられる意味:</strong> 非特異的な炎症や、がんの初期症状の場合があります。</p>
+                            <p class="text-sm font-semibold text-blue-800 mt-2"><strong>推奨される対応:</strong> 症状が続く、または量が増える場合は必ず報告してください。</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 3: Management -->
+            <section id="management" class="mb-12">
+                <h2 class="text-2xl font-bold text-teal-700 mb-4 text-center">症状を和らげるための対策</h2>
+                <p class="text-gray-700 leading-relaxed mb-6 text-center">
+                    つらい症状は、医療的なアプローチと日常生活の工夫を組み合わせることで管理できます。ここでは、主な対策を「医療的アプローチ」と「セルフケア」に分けてご紹介します。気になる項目をクリックして、詳しい内容を確認してください。
+                </p>
+
+                <div class="mb-6 flex justify-center border-b border-gray-200">
+                    <button id="tab-medical" onclick="switchTab('medical')" class="tab-button active py-2 px-6 border-b-2 font-medium text-lg text-gray-500 hover:text-teal-600 transition-colors">医療的アプローチ</button>
+                    <button id="tab-selfcare" onclick="switchTab('selfcare')" class="tab-button py-2 px-6 border-b-2 font-medium text-lg text-gray-500 hover:text-teal-600 transition-colors">セルフケアと工夫</button>
+                </div>
+                
+                <div id="content-medical">
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div class="card cursor-pointer bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow" onclick="toggleCard(this)">
+                            <h3 class="font-bold text-lg text-teal-700">がん治療</h3>
+                            <div class="details hidden mt-2 text-gray-600">
+                                <p>咳や痰の根本原因であるがん自体を治療することが最も重要です。化学療法や放射線治療でがんが小さくなると、気道への圧迫が減り、症状が改善することが期待されます。</p>
+                            </div>
+                        </div>
+                        <div class="card cursor-pointer bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow" onclick="toggleCard(this)">
+                            <h3 class="font-bold text-lg text-teal-700">去痰薬（きょたんやく）</h3>
+                            <div class="details hidden mt-2 text-gray-600">
+                                <p>痰の粘り気を少なくし、排出しやすくする薬です。カルボシステインやアンブロキソールなどがよく使われます。痰が切れやすくなり、咳も楽になります。</p>
+                            </div>
+                        </div>
+                        <div class="card cursor-pointer bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow" onclick="toggleCard(this)">
+                            <h3 class="font-bold text-lg text-teal-700">鎮咳薬（ちんがいやく）</h3>
+                            <div class="details hidden mt-2 text-gray-600">
+                                <p>咳中枢に作用して咳反射を抑える薬です。体力を消耗するような空咳が続く場合に用いられます。ただし、痰を出す必要がある場合は使用を控えることもあります。医師の判断が重要です。</p>
+                            </div>
+                        </div>
+                        <div class="card cursor-pointer bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow" onclick="toggleCard(this)">
+                            <h3 class="font-bold text-lg text-teal-700">気管支拡張薬</h3>
+                            <div class="details hidden mt-2 text-gray-600">
+                                <p>気管支を広げて空気の通りを良くする薬です。息苦しさを伴う咳の場合に効果的です。吸入薬が一般的です。</p>
+                            </div>
+                        </div>
+                        <div class="card cursor-pointer bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow" onclick="toggleCard(this)">
+                            <h3 class="font-bold text-lg text-teal-700">ステロイド</h3>
+                            <div class="details hidden mt-2 text-gray-600">
+                                <p>気道の炎症を強力に抑えることで、咳や息苦しさを和らげます。放射線治療による肺の炎症（放射線性肺臓炎）などにも使われます。</p>
+                            </div>
+                        </div>
+                        <div class="card cursor-pointer bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow" onclick="toggleCard(this)">
+                            <h3 class="font-bold text-lg text-teal-700">抗菌薬（抗生物質）</h3>
+                            <div class="details hidden mt-2 text-gray-600">
+                                <p>気道が塞がれることで細菌感染（肺炎など）を合併した場合に使用します。感染が治まると、痰の量や色が改善し、咳も落ち着きます。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="content-selfcare" class="hidden">
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div class="card cursor-pointer bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow" onclick="toggleCard(this)">
+                            <h3 class="font-bold text-lg text-teal-700">水分補給</h3>
+                            <div class="details hidden mt-2 text-gray-600">
+                                <p>十分な水分を摂ることで、痰が柔らかくなり、出しやすくなります。白湯や麦茶など、カフェインの入っていない飲み物がおすすめです。</p>
+                            </div>
+                        </div>
+                         <div class="card cursor-pointer bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow" onclick="toggleCard(this)">
+                            <h3 class="font-bold text-lg text-teal-700">加湿</h3>
+                            <div class="details hidden mt-2 text-gray-600">
+                                <p>室内の空気が乾燥すると、喉や気管支への刺激が強くなります。加湿器を使ったり、濡れたタオルを干したりして、湿度を40～60%に保つと楽になります。</p>
+                            </div>
+                        </div>
+                        <div class="card cursor-pointer bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow" onclick="toggleCard(this)">
+                            <h3 class="font-bold text-lg text-teal-700">体位の工夫（排痰）</h3>
+                            <div class="details hidden mt-2 text-gray-600">
+                                <p>少し前かがみになったり、横向きになったりするなど、楽に痰を出せる姿勢を探してみましょう。理学療法士から専門的な排痰法（体位ドレナージ）の指導を受けることもできます。</p>
+                            </div>
+                        </div>
+                        <div class="card cursor-pointer bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow" onclick="toggleCard(this)">
+                            <h3 class="font-bold text-lg text-teal-700">刺激を避ける</h3>
+                            <div class="details hidden mt-2 text-gray-600">
+                                <p>タバコの煙（受動喫煙を含む）、ホコリ、強い香水、冷たい空気などは気道を刺激し、咳を誘発します。これらの刺激を生活環境からできるだけ排除しましょう。</p>
+                            </div>
+                        </div>
+                         <div class="card cursor-pointer bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow" onclick="toggleCard(this)">
+                            <h3 class="font-bold text-lg text-teal-700">休息と栄養</h3>
+                            <div class="details hidden mt-2 text-gray-600">
+                                <p>咳は体力を消耗します。十分な休息をとり、バランスの良い食事を心がけることが、体の抵抗力を保つ上で大切です。</p>
+                            </div>
+                        </div>
+                        <div class="card cursor-pointer bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow" onclick="toggleCard(this)">
+                            <h3 class="font-bold text-lg text-teal-700">口内の清潔</h3>
+                            <div class="details hidden mt-2 text-gray-600">
+                                <p>うがいや歯磨きをこまめに行い、口の中を清潔に保つことは、細菌の繁殖を防ぎ、感染症のリスクを減らすのに役立ちます。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+            
+            <!-- Section 4: When to consult -->
+            <section id="consult" class="bg-amber-50 border border-amber-200 p-6 rounded-xl shadow-sm">
+                <h2 class="text-2xl font-bold text-amber-800 mb-4">すぐに医師や看護師に相談すべきサイン</h2>
+                <p class="text-amber-900 leading-relaxed mb-4">
+                    以下の様な症状の変化が見られた場合は、我慢せずに速やかに医療チームに連絡してください。早期の対応が重要です。
+                </p>
+                <ul class="space-y-3">
+                    <li class="flex items-start"><span class="text-2xl mr-3">⚠️</span><span>息苦しさが急に強くなった、または安静にしていても息が切れる</span></li>
+                    <li class="flex items-start"><span class="text-2xl mr-3">⚠️</span><span>痰に血が混じる、またはピンク色や錆び色になった</span></li>
+                    <li class="flex items-start"><span class="text-2xl mr-3">⚠️</span><span>痰の色が濃い黄色や緑色に変わり、量が増えた（感染のサイン）</span></li>
+                    <li class="flex items-start"><span class="text-2xl mr-3">⚠️</span><span>胸に強い痛みを感じるようになった</span></li>
+                    <li class="flex items-start"><span class="text-2xl mr-3">⚠️</span><span>38度以上の熱が出た</span></li>
+                </ul>
+            </section>
+        </main>
+        
+        <footer class="mt-12 pt-6 border-t text-center text-sm text-gray-500">
+            <p>この情報は医療専門家による診断や治療に代わるものではありません。</p>
+            <p>ご自身の症状や治療については、必ず主治医にご相談ください。</p>
+        </footer>
+
+    </div>
+
+    <script>
+        const explanationData = {
+            tumor: {
+                text: "がん細胞が増殖してできた腫瘍が、気管支の内側を物理的に塞いだり、外側から圧迫したりします。これにより空気の通り道が狭くなり、刺激となって咳が誘発されます。",
+                highlight: ['tumor', 'affected-airway']
+            },
+            inflammation: {
+                text: "がん細胞の存在そのものが、周囲の組織に炎症を引き起こします。炎症が起こると気道が敏感になり、わずかな刺激でも咳が出やすくなります。また、炎症反応として痰の分泌量が増加します。",
+                highlight: ['affected-airway', 'sputum']
+            },
+            infection: {
+                text: "気道が塞がれると、痰などの分泌物がうまく排出できなくなります。溜まった分泌物の中で細菌が繁殖し、肺炎や気管支炎などの感染症を引き起こすことがあります。これも咳や痰を悪化させる原因です。",
+                highlight: ['sputum']
+            }
+        };
+
+        const explanationBox = document.getElementById('explanation-box');
+        const tumorEl = document.getElementById('tumor');
+        const airwayEl = document.getElementById('affected-airway');
+        const sputumEl = document.getElementById('sputum');
+        const allDiagramEls = { tumor: tumorEl, 'affected-airway': airwayEl, sputum: sputumEl };
+        
+        function showExplanation(type) {
+            const data = explanationData[type];
+            explanationBox.innerHTML = `<p>${data.text}</p>`;
+
+            Object.values(allDiagramEls).forEach(el => {
+                el.classList.remove('diagram-highlight', 'border-teal-500', 'border-orange-500');
+            });
+            
+            data.highlight.forEach(part => {
+                if (allDiagramEls[part]) {
+                   allDiagramEls[part].classList.add('diagram-highlight', 'border-teal-500');
+                }
+            });
+        }
+        
+        function toggleCard(cardElement) {
+            const details = cardElement.querySelector('.details');
+            details.classList.toggle('hidden');
+            cardElement.classList.toggle('bg-teal-50');
+        }
+
+        const medicalTab = document.getElementById('tab-medical');
+        const selfcareTab = document.getElementById('tab-selfcare');
+        const medicalContent = document.getElementById('content-medical');
+        const selfcareContent = document.getElementById('content-selfcare');
+
+        function switchTab(tabName) {
+            if (tabName === 'medical') {
+                medicalTab.classList.add('active');
+                selfcareTab.classList.remove('active');
+                medicalContent.classList.remove('hidden');
+                selfcareContent.classList.add('hidden');
+            } else {
+                medicalTab.classList.remove('active');
+                selfcareTab.classList.add('active');
+                medicalContent.classList.add('hidden');
+                selfcareContent.classList.remove('hidden');
+            }
+        }
+
+        const ctx = document.getElementById('symptomChart').getContext('2d');
+        const symptomChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['咳', '息切れ', '胸の痛み', '痰', '倦怠感', '食欲不振'],
+                datasets: [{
+                    label: '症状を経験する患者の割合 (%)',
+                    data: [70, 60, 45, 40, 35, 30],
+                    backgroundColor: 'rgba(20, 184, 166, 0.6)', // teal-500 with opacity
+                    borderColor: 'rgba(15, 118, 110, 1)', // teal-700
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: '小細胞肺がんの一般的な症状',
+                        font: {
+                            size: 16
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return ` ${context.raw}%`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%'
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
