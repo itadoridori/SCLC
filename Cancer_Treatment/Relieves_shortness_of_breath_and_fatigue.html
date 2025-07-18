@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小細胞肺癌（SCLC）患者様の息苦しさ・倦怠感緩和ガイド</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony -->
+    <!-- Application Structure Plan: タブ形式のナビゲーションを採用し、ユーザーが「緊急時の対応」「呼吸を楽にする工夫」「体力と栄養の管理」「医療チームとの相談」の4つの主要カテゴリーに直接アクセスできるように設計。この構造は、ユーザーが直面している状況（緊急性）や関心事に応じて情報を迅速に見つけられるようにするため。例えば、パニック状態にあるかもしれないユーザーは「緊急時の対応」を、日々の生活の質を改善したいユーザーは他のタブを直感的に選択できる。各セクションでは、インタラクティブな要素（クリックで詳細表示、チェックリストなど）を用いて、情報の探索と理解を促進し、ユーザーの能動的な関与を促す。-->
+    <!-- Visualization & Content Choices: 
+        - Report Info: 緊急時の対応（SpO2低下など）。Goal: 行動喚起。Viz/Presentation: アイコン付きの警告ボックス。Interaction: なし（明確さを優先）。Justification: 緊急性を視覚的に伝え、即時行動を促す。Method: HTML/CSS/Tailwind。
+        - Report Info: 呼吸法（口すぼめ呼吸、腹式呼吸）。Goal: 指導。Viz/Presentation: CSSアニメーションによる呼吸の視覚化。Interaction: アニメーションの再生。Justification: 複雑な動作を直感的に理解させる。Method: HTML/CSS/Tailwind。
+        - Report Info: 食事の工夫。Goal: 比較・理解。Viz/Presentation: Chart.jsによる「少量頻回食vs通常食」の棒グラフ。Interaction: 静的グラフ。Justification: 栄養摂取パターンの違いを明確に比較できる。Library: Chart.js。
+        - Report Info: 様々な治療選択肢。Goal: 整理・情報提供。Viz/Presentation: アコーディオン形式のリスト。Interaction: クリックで詳細情報の開閉。Justification: 情報量を管理し、ユーザーが必要な情報だけを選択的に閲覧できるようにする。Method: HTML/JS。
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #FDFDF6; /* Slightly off-white, calm background */
+        }
+        .tab-button {
+            transition: all 0.3s ease;
+            border-bottom: 4px solid transparent;
+        }
+        .tab-button.active {
+            border-bottom-color: #87A96B; /* Muted Green */
+            color: #3B5323; /* Darker Green */
+            font-weight: 700;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .accordion-title {
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out, padding 0.5s ease-out;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .lung-animation-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 150px;
+            height: 150px;
+        }
+        .lung {
+            width: 60px;
+            height: 100px;
+            background-color: #F8C8DC; /* Soft Pink */
+            border-radius: 50% 50% 10% 10% / 60% 60% 40% 40%;
+            margin: 0 5px;
+            animation-duration: 4s;
+            animation-iteration-count: infinite;
+            transform-origin: bottom;
+        }
+        .pursed-lip-lung { animation-name: pursedLipAnimation; }
+        .diaphragmatic-lung { animation-name: diaphragmaticAnimation; }
+        @keyframes pursedLipAnimation {
+            0%, 100% { transform: scaleY(1); }
+            25% { transform: scaleY(1.1); } /* Inhale 1 */
+            75% { transform: scaleY(0.95); } /* Exhale 3 */
+        }
+        @keyframes diaphragmaticAnimation {
+            0%, 100% { transform: scaleY(1); }
+            40% { transform: scaleY(1.15); } /* Inhale 2 */
+            90% { transform: scaleY(1); } /* Exhale 3 */
+        }
+    </style>
+</head>
+<body class="text-gray-700">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-5xl">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-[#3B5323]">小細胞肺癌（SCLC）と共に</h1>
+            <p class="mt-2 text-lg text-gray-600">息苦しさ・倦怠感を和らげ、あなたらしい毎日を送るためのガイド</p>
+        </header>
+
+        <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-lg mb-8" role="alert">
+            <p class="font-bold">重要：はじめにお読みください</p>
+            <p>このガイドは情報提供を目的としており、医学的アドバイスに代わるものではありません。記載されている内容は、必ず主治医や医療チームと相談の上で実践してください。特に、急な体調の変化を感じた場合は、速やかに医療機関に連絡してください。</p>
+        </div>
+
+        <div class="sticky top-0 bg-[#FDFDF6] z-10 mb-8 border-b-2 border-gray-200">
+            <nav id="tab-nav" class="flex flex-wrap justify-center -mb-px">
+                <button data-tab="emergency" class="tab-button text-sm md:text-base p-4 active">🚨 緊急時の対応</button>
+                <button data-tab="breathing" class="tab-button text-sm md:text-base p-4">😮‍💨 呼吸を楽にする工夫</button>
+                <button data-tab="energy" class="tab-button text-sm md:text-base p-4">🥗 体力と栄養の管理</button>
+                <button data-tab="consult" class="tab-button text-sm md:text-base p-4">🧑‍⚕️ 医療チームとの相談</button>
+            </nav>
+        </div>
+
+        <main>
+            <!-- 緊急時の対応 -->
+            <section id="emergency" class="content-section active">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h2 class="text-2xl font-bold text-[#3B5323] mb-4">緊急時の対応：まず、落ち着いて行動しましょう</h2>
+                    <p class="mb-6 text-gray-600">血中酸素濃度が92%以下になる、急に息苦しさが強まる、意識がもうろうとするなどの症状は、迅速な対応が必要です。これらの兆候は体が重要なサインを送っている証拠です。</p>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-red-100 border border-red-300 p-6 rounded-lg">
+                            <h3 class="font-bold text-xl text-red-800 mb-3">ステップ1：すぐに医療機関へ連絡</h3>
+                            <p class="text-red-700">ためらわずに、かかりつけの病院や緊急連絡先に電話してください。現在の症状、血中酸素濃度の数値（測定できれば）、意識の状態を具体的に伝えましょう。</p>
+                        </div>
+                        <div class="bg-blue-100 border border-blue-300 p-6 rounded-lg">
+                            <h3 class="font-bold text-xl text-blue-800 mb-3">ステップ2：楽な姿勢をとる</h3>
+                            <p class="text-blue-700">連絡を待つ間、体を起こし、前に少し傾いた姿勢をとりましょう。椅子に座り、テーブルにクッションを置いて腕を乗せると、呼吸がしやすくなります。</p>
+                        </div>
+                    </div>
+                     <div class="mt-6 bg-gray-100 p-4 rounded-lg">
+                        <h3 class="font-semibold text-lg text-gray-800 mb-2">主な医学的介入</h3>
+                        <p class="text-gray-600 mb-4">医師は状況に応じて以下のような治療を検討します。</p>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li><strong>酸素療法：</strong>不足している酸素を補い、体の負担を軽減します。</li>
+                            <li><strong>薬物療法：</strong>息苦しさの感覚を和らげる医療用麻薬（オピオイド）、気道を広げる薬、炎症を抑えるステロイドなどが用いられます。</li>
+                            <li><strong>原因への対処：</strong>胸水が原因であればその排出（胸腔穿刺）、貧血が原因であれば輸血など、根本的な原因に対する治療が行われます。</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 呼吸を楽にする工夫 -->
+            <section id="breathing" class="content-section">
+                 <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h2 class="text-2xl font-bold text-[#3B5323] mb-4">呼吸を楽にする工夫：日常生活でできること</h2>
+                    <p class="mb-6 text-gray-600">息苦しさは不安を招き、不安はさらに呼吸を浅くします。ここでは、穏やかな呼吸を取り戻し、心身をリラックスさせるための具体的な方法を紹介します。ご自身のペースで、無理なく試してみてください。</p>
+                    
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-3">1. 呼吸法をマスターする</h3>
+                            <div class="space-y-6">
+                                <div class="bg-emerald-50 p-4 rounded-lg">
+                                    <h4 class="font-bold text-emerald-800">口すぼめ呼吸</h4>
+                                    <p class="text-sm text-emerald-700 mb-2">息を吐きやすくし、肺に空気が残るのを防ぎます。</p>
+                                    <div class="flex items-center">
+                                        <div class="lung-animation-container mr-4"><div class="lung pursed-lip-lung"></div></div>
+                                        <ol class="list-decimal list-inside text-sm">
+                                            <li>鼻から静かに息を吸う (1, 2)</li>
+                                            <li>口をすぼめ、ろうそくの火を吹き消すようにゆっくり息を吐く (1, 2, 3, 4)</li>
+                                        </ol>
+                                    </div>
+                                </div>
+                                <div class="bg-sky-50 p-4 rounded-lg">
+                                    <h4 class="font-bold text-sky-800">腹式呼吸</h4>
+                                    <p class="text-sm text-sky-700 mb-2">横隔膜を使い、効率よく深い呼吸をします。</p>
+                                     <div class="flex items-center">
+                                        <div class="lung-animation-container mr-4"><div class="lung diaphragmatic-lung"></div></div>
+                                        <ol class="list-decimal list-inside text-sm">
+                                            <li>お腹に手を当て、お腹が膨らむのを意識しながら鼻から息を吸う</li>
+                                            <li>お腹がへこむのを意識しながら、口からゆっくり息を吐く</li>
+                                        </ol>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-3">2. 環境と姿勢を整える</h3>
+                            <ul class="space-y-3 bg-gray-50 p-4 rounded-lg">
+                                <li class="flex items-start">
+                                    <span class="text-green-600 mr-2">✔️</span>
+                                    <span><strong>楽な姿勢：</strong>座って前かがみになる、枕で上半身を高くして寝るなど、自分が一番楽だと感じる姿勢を見つけましょう。</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="text-green-600 mr-2">✔️</span>
+                                    <span><strong>送風の活用：</strong>うちわや扇風機で顔にやさしい風を送ると、神経が刺激されて息苦しさが和らぐことがあります。</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="text-green-600 mr-2">✔️</span>
+                                    <span><strong>快適な環境：</strong>室内の換気を良くし、煙や強い香りなど、呼吸の刺激になるものを避けましょう。加湿器で適度な湿度を保つのも効果的です。</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 体力と栄養の管理 -->
+            <section id="energy" class="content-section">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h2 class="text-2xl font-bold text-[#3B5323] mb-4">体力と栄養の管理：エネルギーを上手に使う</h2>
+                    <p class="mb-6 text-gray-600">倦怠感や食欲不振は、治療中によく見られる症状です。エネルギーを賢く使い、栄養をしっかり摂ることが、体力を維持し、QOL（生活の質）を高める鍵となります。</p>
+
+                    <div class="grid md:grid-cols-2 gap-8 mb-8">
+                        <div class="bg-orange-50 p-6 rounded-lg">
+                            <h3 class="text-xl font-semibold text-orange-800 mb-3">エネルギー節約のコツ</h3>
+                            <ul class="list-disc list-inside space-y-2 text-orange-700">
+                                <li><strong>計画的に動く：</strong>1日のうちで比較的元気な時間帯に、大切な用事を済ませましょう。</li>
+                                <li><strong>ペース配分：</strong>活動と休息を交互に。一つの作業を短く区切り、無理をしないことが大切です。</li>
+                                <li><strong>便利な道具を活用：</strong>シャワーチェアやキャスター付きのワゴンなど、少しでも楽ができる道具を使いましょう。</li>
+                                <li><strong>助けを求める：</strong>買い物や掃除など、大変なことは遠慮なく家族や友人に頼みましょう。</li>
+                            </ul>
+                        </div>
+                        <div class="bg-lime-50 p-6 rounded-lg">
+                            <h3 class="text-xl font-semibold text-lime-800 mb-3">食欲がない時の工夫</h3>
+                            <ul class="list-disc list-inside space-y-2 text-lime-700">
+                                <li><strong>少量頻回食：</strong>1日3回の食事にこだわらず、5〜6回に分けて少しずつ食べましょう。</li>
+                                <li><strong>高カロリー・高タンパク：</strong>チーズ、ヨーグルト、ナッツ、卵などを少量でも食事にプラス。</li>
+                                <li><strong>食べやすいものを：</strong>のどごしの良いスープ、茶わん蒸し、プリン、アイスクリームなども良い選択です。</li>
+                                <li><strong>栄養補助食品：</strong>ドラッグストアなどで手に入る栄養ドリンクやゼリーも上手に活用しましょう。</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-xl font-semibold text-center text-gray-800 mb-3">食事のとり方のイメージ</h3>
+                        <p class="text-center text-gray-600 mb-4">下のグラフは、「通常食」と「少量頻回食」の1日の食事量の分布を比較したものです。少量頻回食は、一度の負担を減らしながら、総摂取量を確保することを目指します。</p>
+                        <div class="chart-container">
+                            <canvas id="mealChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 医療チームとの相談 -->
+            <section id="consult" class="content-section">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h2 class="text-2xl font-bold text-[#3B5323] mb-4">医療チームとの相談：あなたの最高のサポーター</h2>
+                    <p class="mb-6 text-gray-600">あなた一人で悩む必要はありません。医師、看護師、薬剤師、栄養士、理学療法士など、多くの専門家があなたを支えるためにいます。あなたの症状や不安、希望を具体的に伝えることが、より良いケアへの第一歩です。</p>
+                    
+                    <div id="accordion-container" class="space-y-3">
+                        <div class="border rounded-lg overflow-hidden">
+                            <h3 class="accordion-title bg-gray-100 hover:bg-gray-200 p-4 font-semibold flex justify-between items-center">
+                                息苦しさについて相談する
+                                <span class="accordion-icon transform transition-transform duration-300">▼</span>
+                            </h3>
+                            <div class="accordion-content bg-gray-50">
+                                <ul class="list-disc list-inside p-4 space-y-2 text-gray-700">
+                                    <li>どんな時に、どのくらい息苦しいか伝えましょう。（例：「階段を5段のぼると息が切れる」）</li>
+                                    <li>息苦しさ以外の症状（胸の痛み、咳、痰など）も伝えましょう。</li>
+                                    <li>試しているセルフケア（呼吸法など）とその効果を共有しましょう。</li>
+                                    <li>利用できる薬（医療用麻薬など）や酸素療法について質問してみましょう。</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="border rounded-lg overflow-hidden">
+                            <h3 class="accordion-title bg-gray-100 hover:bg-gray-200 p-4 font-semibold flex justify-between items-center">
+                                倦怠感や食欲不振について相談する
+                                <span class="accordion-icon transform transition-transform duration-300">▼</span>
+                            </h3>
+                            <div class="accordion-content bg-gray-50">
+                                <ul class="list-disc list-inside p-4 space-y-2 text-gray-700">
+                                    <li>倦怠感で日常生活にどんな支障が出ているか具体的に話しましょう。（例：「着替えるだけで疲れてしまう」）</li>
+                                    <li>食べられない原因（吐き気、口内炎、味覚の変化など）を伝えましょう。</li>
+                                    <li>栄養士に、食べやすい食事や栄養補助食品について相談してみましょう。</li>
+                                    <li>貧血など、倦怠感の医学的な原因がないか調べてもらいましょう。</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                         <div class="border rounded-lg overflow-hidden">
+                            <h3 class="accordion-title bg-gray-100 hover:bg-gray-200 p-4 font-semibold flex justify-between items-center">
+                                心のつらさについて相談する
+                                <span class="accordion-icon transform transition-transform duration-300">▼</span>
+                            </h3>
+                            <div class="accordion-content bg-gray-50">
+                                <ul class="list-disc list-inside p-4 space-y-2 text-gray-700">
+                                    <li>息苦しさからくる不安や、将来への心配など、感じている気持ちを正直に話してみましょう。</li>
+                                    <li>不眠や気分の落ち込みが続く場合は、専門的なサポート（カウンセリングや薬物療法）について尋ねてみましょう。</li>
+                                    <li>がん相談支援センターでは、療養生活全般の相談ができます。</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 py-6 border-t">
+            <p class="text-sm text-gray-500">この情報が、あなたの穏やかな毎日の助けになることを願っています。</p>
+        </footer>
+
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const tabs = document.querySelectorAll('.tab-button');
+    const sections = document.querySelectorAll('.content-section');
+    const nav = document.getElementById('tab-nav');
+
+    nav.addEventListener('click', (e) => {
+        if (e.target.matches('.tab-button')) {
+            const tabId = e.target.dataset.tab;
+
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+            e.target.classList.add('active');
+
+            sections.forEach(section => {
+                section.classList.remove('active');
+                if (section.id === tabId) {
+                    section.classList.add('active');
+                }
+            });
+            
+            if (tabId === 'energy') {
+                renderMealChart();
+            }
+        }
+    });
+
+    const accordionContainer = document.getElementById('accordion-container');
+    if (accordionContainer) {
+        accordionContainer.addEventListener('click', function(e) {
+            const header = e.target.closest('.accordion-title');
+            if (!header) return;
+
+            const content = header.nextElementSibling;
+            const icon = header.querySelector('.accordion-icon');
+            
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+                content.style.padding = "0px";
+                icon.style.transform = 'rotate(0deg)';
+            } else {
+                content.style.maxHeight = content.scrollHeight + "px";
+                content.style.padding = "1rem";
+                icon.style.transform = 'rotate(180deg)';
+            }
+        });
+    }
+    
+    let mealChartInstance = null;
+    function renderMealChart() {
+        if (mealChartInstance) {
+            return;
+        }
+        const ctx = document.getElementById('mealChart').getContext('2d');
+        mealChartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['朝', '午前間食', '昼', '午後間食', '夕', '夜食'],
+                datasets: [{
+                    label: '少量頻回食の例',
+                    data: [2, 1.5, 2, 1.5, 2, 1],
+                    backgroundColor: '#A7C957', // Muted Green
+                    borderColor: '#6A994E',
+                    borderWidth: 1
+                }, {
+                    label: '通常食の例',
+                    data: [3, 0, 4, 0, 3, 0],
+                    backgroundColor: '#D3D3D3', // Light Gray
+                    borderColor: '#A9A9A9',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '食事量のイメージ'
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.y !== null) {
+                                    if(context.parsed.y > 0)
+                                        label += context.parsed.y + '単位';
+                                    else
+                                        label = '';
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
+
+</body>
+</html>
