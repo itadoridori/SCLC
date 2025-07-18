@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小細胞肺がん(SCLC) 化学療法レジメン解説</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals with Soft Blue/Green Accents -->
+    <!-- Application Structure Plan: The application is designed as an educational dashboard for patients. It starts with a clear overview of the treatment regimen (EP療法), followed by an interactive timeline of the 21-day cycle. This allows users to grasp the schedule immediately. The core of the app is the "薬剤の詳細" (Drug Details) section, using a tabbed interface. This separates the primary anti-cancer drugs from the supportive care drugs, reducing cognitive load and allowing users to focus on one piece of information at a time. Finally, an interactive chart visualizes the typical timeline of major side effects, which directly addresses a key patient concern. This structure logically guides the user from the "what" (regimen), to the "when" (schedule), to the "details" (drugs), and finally to "what to expect" (side effects), creating a comprehensive and user-friendly learning path. -->
+    <!-- Visualization & Content Choices: 
+        1. Regimen Schedule: Report Info -> 21-day treatment cycle. Goal -> Organize/Show Change. Viz -> Interactive HTML/CSS Timeline. Interaction -> Clicking a day/period highlights it and shows relevant drug info. Justification -> A visual timeline is more intuitive than a text list for understanding a multi-week schedule. Method -> HTML/CSS with JS for interactivity.
+        2. Drug Information: Report Info -> List of drugs. Goal -> Inform. Presentation -> Tabbed cards. Interaction -> Clicking tabs reveals detailed info. Justification -> Tabs organize complex information cleanly, preventing an overwhelmingly long page and allowing focused learning on each drug's purpose and side effects. Method -> HTML/CSS (Tailwind) with JS to toggle visibility.
+        3. Side Effect Timeline: Report Info -> Researched side effect onset data. Goal -> Compare/Show Change. Viz -> Horizontal Bar Chart. Interaction -> Hovering over bars shows tooltips with details. Justification -> A chart is highly effective for visualizing and comparing when different side effects are likely to occur, helping manage patient expectations. Library -> Chart.js (Canvas).
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #FDFBF8;
+            color: #3f3c3a;
+        }
+        .tab-active {
+            background-color: #3B82F6;
+            color: #ffffff;
+            border-color: #3B82F6;
+        }
+        .tab-inactive {
+            background-color: #ffffff;
+            color: #3B82F6;
+            border-color: #3B82F6;
+        }
+        .day-block {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .day-block:hover, .day-block.selected {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
+
+        <header class="text-center mb-10">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">小細胞肺がん(SCLC) 化学療法レジメン解説</h1>
+            <p class="text-md text-gray-500">処方箋に基づく治療サイクルの理解のために</p>
+        </header>
+
+        <main>
+            <!-- Regimen Overview Section -->
+            <section id="regimen-overview" class="mb-12">
+                <h2 class="text-2xl font-bold text-gray-700 border-l-4 border-blue-500 pl-4 mb-6">治療レジメンの概要</h2>
+                <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                    <p class="text-gray-600 mb-6">
+                        このアプリケーションは、提示された小細胞肺がんの化学療法処方箋（EP療法）の内容を分かりやすく解説するものです。治療は複数の薬剤を組み合わせ、数週間のサイクルで実施されます。ここでは、治療のスケジュール、各薬剤の役割と注意すべき副作用、そして副作用が起こりやすい時期について対話的に学ぶことができます。
+                    </p>
+                    <div class="grid md:grid-cols-2 gap-6 items-start">
+                        <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-300">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">処方内容：EP療法</h3>
+                            <p class="text-sm text-gray-600 mb-4">エトポシド(E)とシスプラチン(P)を併用する標準的な化学療法です。</p>
+                            <ul class="space-y-2 text-gray-700">
+                                <li class="flex items-center"><span class="font-bold w-28">抗がん剤:</span><span>シスプラチン, エトポシド</span></li>
+                                <li class="flex items-center"><span class="font-bold w-28">支持療法薬:</span><span>アプレピタント, デキサメタゾン, アロキシ (吐き気止め)</span></li>
+                                <li class="flex items-center"><span class="font-bold w-28">サイクル:</span><span>3週間 (21日間) を1サイクルとする</span></li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-green-50 p-4 rounded-lg border-l-4 border-green-300">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">重要事項</h3>
+                            <p class="text-sm text-gray-600">この情報は医療専門家による説明を補完するものであり、自己判断で治療を中止・変更するためのものではありません。体調の変化や不安な点は、必ず医師や看護師、薬剤師に相談してください。</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Treatment Cycle Section -->
+            <section id="treatment-cycle" class="mb-12">
+                <h2 class="text-2xl font-bold text-gray-700 border-l-4 border-blue-500 pl-4 mb-6">治療スケジュール (21日間サイクル)</h2>
+                 <p class="text-gray-600 mb-6">
+                    治療は21日間を1つの区切り（サイクル）として行われます。以下の図は、そのサイクル中の投薬スケジュールを示しています。ブロックをクリックすると、その日に投与される薬剤を確認できます。
+                </p>
+                <div class="flex flex-wrap -m-1" id="cycle-timeline">
+                    <!-- Day blocks will be generated by JS -->
+                </div>
+                <div id="cycle-info" class="mt-4 p-4 bg-white rounded-lg shadow-md border border-gray-200 min-h-[100px]">
+                    <p class="text-center text-gray-500">上のカレンダーの日付をクリックして、その日の投与計画詳細をご覧ください。</p>
+                </div>
+            </section>
+
+            <!-- Drug Details Section -->
+            <section id="drug-details" class="mb-12">
+                <h2 class="text-2xl font-bold text-gray-700 border-l-4 border-blue-500 pl-4 mb-6">薬剤の詳細</h2>
+                <p class="text-gray-600 mb-6">
+                    この治療で使われる薬剤は、がん細胞を攻撃する「抗がん剤」と、その副作用を軽減する「支持療法薬」に大別されます。下のタブを選択して、それぞれの薬剤の目的と主な副作用について確認しましょう。
+                </p>
+                <div class="mb-4 flex flex-wrap justify-center border-b border-gray-200">
+                    <button class="tab-button tab-active py-2 px-4 font-semibold" onclick="showTab('cisplatin')">シスプラチン</button>
+                    <button class="tab-button tab-inactive py-2 px-4 font-semibold" onclick="showTab('etoposide')">エトポシド</button>
+                    <button class="tab-button tab-inactive py-2 px-4 font-semibold" onclick="showTab('support')">支持療法薬</button>
+                </div>
+
+                <div id="cisplatin" class="tab-content">
+                    <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                        <h3 class="text-xl font-bold text-blue-600 mb-3">シスプラチン (抗がん剤)</h3>
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-semibold text-lg mb-2">主な目的・効能</h4>
+                                <p class="text-gray-700">プラチナ製剤と呼ばれる種類の抗がん剤です。がん細胞のDNAと結合し、細胞の分裂・増殖を妨げることで、がん細胞を死滅させる効果があります。</p>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-lg mb-2 text-red-600">主な副作用</h4>
+                                <ul class="list-disc list-inside space-y-1 text-gray-700">
+                                    <li><span class="font-semibold">吐き気・嘔吐:</span> 非常に強く出やすい副作用です。</li>
+                                    <li><span class="font-semibold">腎機能障害:</span> 腎臓への負担が大きいため、点滴量を増やし尿量を確保します。</li>
+                                    <li><span class="font-semibold">骨髄抑制:</span> 白血球、赤血球、血小板が減少します。感染症や貧血に注意が必要です。</li>
+                                    <li><span class="font-semibold">末梢神経障害:</span> 手足のしびれや感覚の低下が起こることがあります。</li>
+                                    <li><span class="font-semibold">聴力低下:</span> 耳鳴りや高音域が聞こえにくくなることがあります。</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="etoposide" class="tab-content hidden">
+                     <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                        <h3 class="text-xl font-bold text-blue-600 mb-3">エトポシド (抗がん剤)</h3>
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-semibold text-lg mb-2">主な目的・効能</h4>
+                                <p class="text-gray-700">トポイソメラーゼ阻害薬という種類の抗がん剤です。がん細胞が増殖する際に必要な酵素の働きを妨げ、がん細胞を死滅させます。</p>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-lg mb-2 text-red-600">主な副作用</h4>
+                                <ul class="list-disc list-inside space-y-1 text-gray-700">
+                                    <li><span class="font-semibold">骨髄抑制:</span> 特に白血球の減少が顕著です。発熱時には注意が必要です。</li>
+                                    <li><span class="font-semibold">脱毛:</span> 高い頻度で起こります。治療終了後、数ヶ月で再生し始めます。</li>
+                                    <li><span class="font-semibold">吐き気・嘔吐:</span> シスプラチンほどではありませんが、起こることがあります。</li>
+                                    <li><span class="font-semibold">口内炎:</span> 口の中の粘膜が荒れることがあります。</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="support" class="tab-content hidden">
+                    <div class="space-y-4">
+                        <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                            <h3 class="text-xl font-bold text-green-600 mb-3">アプレピタント / アロキシ / デキサメタゾン (支持療法薬)</h3>
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <div>
+                                    <h4 class="font-semibold text-lg mb-2">主な目的・効能</h4>
+                                    <p class="text-gray-700">これらは全て<span class="font-bold">吐き気止め</span>の薬です。抗がん剤による吐き気や嘔吐を強力に予防するために、作用の異なる複数の薬を組み合わせて使用します。
+                                        <br><br>
+                                        <strong class="text-green-700">アロキシ(パロノセトロン)</strong>と<strong class="text-green-700">デキサメタゾン</strong>は、点滴直後の急な吐き気を抑えます。
+                                        <br><br>
+                                        <strong class="text-green-700">アプレピタント</strong>は、点滴から1日以上経ってから現れる遅発性の吐き気に特に効果的です。
+                                    </p>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-lg mb-2 text-red-600">主な副作用</h4>
+                                    <ul class="list-disc list-inside space-y-1 text-gray-700">
+                                        <li><span class="font-semibold">アプレピタント:</span> しゃっくり、便秘、倦怠感など。</li>
+                                        <li><span class="font-semibold">アロキシ:</span> 頭痛、便秘など。</li>
+                                        <li><span class="font-semibold">デキサメタゾン:</span> 不眠、気分の高揚、血糖値の上昇、消化不良など。</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+             <!-- Side Effect Timeline Section -->
+            <section id="side-effect-timeline" class="mb-12">
+                <h2 class="text-2xl font-bold text-gray-700 border-l-4 border-blue-500 pl-4 mb-6">副作用の時期と対策</h2>
+                 <p class="text-gray-600 mb-6">
+                    副作用は種類によって現れる時期が異なります。以下のグラフは、主な副作用が最も起こりやすい期間の目安を示しています。この時期を知ることで、心の準備や対策がしやすくなります。グラフの各項目にカーソルを合わせると、簡単な説明が表示されます。
+                </p>
+                <div class="bg-white p-4 md:p-6 rounded-lg shadow-md border border-gray-200">
+                    <div class="chart-container">
+                        <canvas id="sideEffectChart"></canvas>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer class="text-center mt-12 py-6 border-t border-gray-200">
+            <p class="text-sm text-gray-500">&copy; 2024 SCLC 化学療法解説. この情報は教育目的であり、専門的な医療アドバイスに代わるものではありません。</p>
+        </footer>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const cycleData = {
+        'Day 1': {
+            color: 'bg-red-500', textColor: 'text-white',
+            info: `
+                <h3 class="text-lg font-bold text-red-600 mb-2">1日目: 点滴治療日</h3>
+                <p class="mb-4">抗がん剤と吐き気止めを中心に投与する最も重要な日です。</p>
+                <ul class="list-disc list-inside space-y-1">
+                    <li>シスプラチン (抗がん剤)</li>
+                    <li>エトポシド (抗がん剤)</li>
+                    <li>アプレピタント (吐き気止め - 内服)</li>
+                    <li>デキサメタゾン (吐き気止め)</li>
+                    <li>アロキシ (吐き気止め)</li>
+                </ul>`
+        },
+        'Day 2-3': {
+            color: 'bg-orange-500', textColor: 'text-white',
+            info: `
+                <h3 class="text-lg font-bold text-orange-600 mb-2">2-3日目: 点滴治療日</h3>
+                <p class="mb-4">追加の抗がん剤と、遅れてくる吐き気を抑えるための内服薬を続けます。</p>
+                <ul class="list-disc list-inside space-y-1">
+                    <li>エトポシド (抗がん剤)</li>
+                    <li>アプレピタント (吐き気止め - 内服)</li>
+                </ul>`
+        },
+        'Day 4-21': {
+            color: 'bg-green-500', textColor: 'text-white',
+            info: `
+                <h3 class="text-lg font-bold text-green-600 mb-2">4-21日目: 休薬期間</h3>
+                <p class="mb-4">薬剤の投与はなく、体が回復するための期間です。副作用の管理が中心となります。</p>
+                <ul class="list-disc list-inside space-y-1">
+                    <li>投与はありません。</li>
+                    <li>体調管理を行い、次のサイクルに備えます。</li>
+                </ul>`
+        }
+    };
+
+    const timelineContainer = document.getElementById('cycle-timeline');
+    let dayCounter = 1;
+    for (let i = 0; i < 21; i++) {
+        const dayBlock = document.createElement('div');
+        dayBlock.className = 'day-block p-1';
+        let periodKey = '';
+        let bgColor = 'bg-gray-200';
+        let textColor = 'text-gray-700';
+
+        if (dayCounter === 1) { 
+            periodKey = 'Day 1';
+            bgColor = cycleData[periodKey].color;
+            textColor = cycleData[periodKey].textColor;
+        } else if (dayCounter >= 2 && dayCounter <= 3) {
+            periodKey = 'Day 2-3';
+             bgColor = cycleData[periodKey].color;
+             textColor = cycleData[periodKey].textColor;
+        } else {
+            periodKey = 'Day 4-21';
+             bgColor = cycleData[periodKey].color;
+             textColor = cycleData[periodKey].textColor;
+        }
+        
+        dayBlock.innerHTML = `<div class="w-full h-full rounded-md flex items-center justify-center text-xs sm:text-sm font-semibold ${bgColor} ${textColor} aspect-square">${dayCounter}</div>`;
+        dayBlock.dataset.period = periodKey;
+        dayBlock.style.width = `${100/7}%`;
+
+        dayBlock.addEventListener('click', () => {
+            document.getElementById('cycle-info').innerHTML = cycleData[periodKey].info;
+             document.querySelectorAll('.day-block').forEach(db => db.classList.remove('selected', 'ring-2', 'ring-blue-500'));
+             dayBlock.classList.add('selected', 'ring-2', 'ring-blue-500');
+        });
+        timelineContainer.appendChild(dayBlock);
+        dayCounter++;
+    }
+
+    const ctx = document.getElementById('sideEffectChart').getContext('2d');
+    const sideEffectChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['吐き気・嘔吐', '口内炎', '脱毛', '白血球減少', '血小板減少', '貧血', '末梢神経障害', '腎機能障害'],
+            datasets: [{
+                label: '副作用が出やすい期間 (日)',
+                data: [
+                    [1, 5],   // 吐き気
+                    [5, 14],  // 口内炎
+                    [14, 21], // 脱毛 (始まり)
+                    [7, 14],  // 白血球減少
+                    [10, 18], // 血小板減少
+                    [14, 21], // 貧血 (徐々に)
+                    [1, 21],  // 末梢神経障害 (蓄積性)
+                    [1, 7]    // 腎機能障害
+                ],
+                backgroundColor: [
+                    'rgba(239, 68, 68, 0.6)',
+                    'rgba(249, 115, 22, 0.6)',
+                    'rgba(132, 204, 22, 0.6)',
+                    'rgba(59, 130, 246, 0.6)',
+                    'rgba(99, 102, 241, 0.6)',
+                    'rgba(217, 70, 239, 0.6)',
+                    'rgba(107, 114, 128, 0.6)',
+                    'rgba(245, 158, 11, 0.6)'
+                ],
+                borderColor: [
+                    'rgba(239, 68, 68, 1)',
+                    'rgba(249, 115, 22, 1)',
+                    'rgba(132, 204, 22, 1)',
+                    'rgba(59, 130, 246, 1)',
+                    'rgba(99, 102, 241, 1)',
+                    'rgba(217, 70, 239, 1)',
+                    'rgba(107, 114, 128, 1)',
+                    'rgba(245, 158, 11, 1)'
+                ],
+                borderWidth: 1,
+                borderSkipped: false,
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    min: 1,
+                    max: 21,
+                    title: { display: true, text: '治療サイクル日数' }
+                },
+                y: {
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const val = context.raw;
+                            const label = context.label || '';
+                            let tip = `${label}: おおよそ${val[0]}日目から${val[1]}日目に注意が必要です。`;
+                            if (label === '末梢神経障害') tip = `${label}: 治療中いつでも起こり、回数を重ねると強くなることがあります。`;
+                            if (label === '脱毛') tip = `${label}: おおよそ14日目頃から始まり、サイクルを通して続きます。`;
+                            return tip;
+                        }
+                    }
+                }
+            }
+        }
+    });
+});
+
+function showTab(tabName) {
+    const tabs = document.querySelectorAll('.tab-content');
+    tabs.forEach(tab => {
+        tab.classList.add('hidden');
+    });
+    document.getElementById(tabName).classList.remove('hidden');
+
+    const buttons = document.querySelectorAll('.tab-button');
+    buttons.forEach(button => {
+        button.classList.remove('tab-active');
+        button.classList.add('tab-inactive');
+    });
+    event.target.classList.add('tab-active');
+    event.target.classList.remove('tab-inactive');
+}
+</script>
+
+</body>
+</html>
+
