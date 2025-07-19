@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>石原式断食道場 食事プログラム</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Earthy Harmony -->
+    <!-- Application Structure Plan: このアプリケーションは、ユーザーが石原式断食の食事法を直感的に理解できるよう、テーマ別のセクション構造を採用しています。まず概要と基本理念を紹介し、次に「朝・昼・夜」のタブ切り替えによるインタラクティブな食事プラン体験を提供します。これにより、ユーザーは一日の流れに沿って食事内容を簡単に把握できます。その後、プログラムの核となる「主要な飲み物」と「食材の役割」をそれぞれ独立したセクションで深く掘り下げます。この構造は、単に情報を羅列するのではなく、基本から詳細へと段階的に知識を深めていける学習体験を意図しており、ユーザビリティを最大化するために選択されました。 -->
+    <!-- Visualization & Content Choices: 
+        - レポート情報: 一日の食事メニュー -> ゴール: 整理・通知 -> Viz/Presentation: HTML/CSSタブ（朝・昼・夜） -> インタラクション: クリックで内容表示 -> 理由: 時系列に沿った直感的な情報提供。
+        - レポート情報: 主要食材（人参、りんご、生姜など）の効能 -> ゴール: 関係性の可視化・比較 -> Viz/Presentation: Chart.jsによる横棒グラフ（体を温める効果） -> インタラクション: ツールチップで詳細表示 -> 理由: 「体を温める」という中心的な概念を視覚的に強調し、食材間の比較を容易にするため。
+        - レポート情報: プログラムの基本理念 -> ゴール: 要約・通知 -> Viz/Presentation: アイコン付きのカード型グリッド -> インタラクション: 静的表示 -> 理由: 複雑な概念を簡潔で消化しやすい塊に分割し、可読性を向上させるため。
+        - レポート情報: 主要な飲み物（人参りんごジュース、生姜紅茶） -> ゴール: 比較・通知 -> Viz/Presentation: 2カラムのカードレイアウト -> インタラクション: 静的表示 -> 理由: プログラムにおける2つの柱の重要性を同等に示し、並べて比較しやすくするため。
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #FDFBF5;
+            color: #4A4A4A;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 40vh;
+        }
+        .tab-btn {
+            transition: all 0.3s ease;
+        }
+        .tab-btn.active {
+            background-color: #D97706;
+            color: #FFFFFF;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto px-4 py-8 md:py-12">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-amber-800 mb-4">石原式断食道場 食事プログラム</h1>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+                石原結實先生が提唱する断食法は、単に食事を抜くのではなく、体を温め、内臓を休ませながら生命力を高めることを目的とした独自のプログラムです。このアプリケーションで、その食事内容と哲学をインタラクティブに探ってみましょう。
+            </p>
+        </header>
+
+        <main>
+            <section id="meal-plan" class="mb-16">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-2xl md:text-3xl font-bold text-center text-amber-700 mb-2">一日の食事モデル</h2>
+                    <p class="text-center text-gray-500 mb-8">
+                        下のタブをクリックして、時間帯ごとの食事内容を確認できます。基本は「朝食抜き」で、体を温める飲み物を中心に構成されています。
+                    </p>
+                    <div class="flex justify-center space-x-2 md:space-x-4 mb-8">
+                        <button id="btn-morning" class="tab-btn text-lg font-semibold py-3 px-6 rounded-full bg-amber-100 text-amber-800 active">朝</button>
+                        <button id="btn-lunch" class="tab-btn text-lg font-semibold py-3 px-6 rounded-full bg-amber-100 text-amber-800">昼</button>
+                        <button id="btn-evening" class="tab-btn text-lg font-semibold py-3 px-6 rounded-full bg-amber-100 text-amber-800">夜</button>
+                    </div>
+
+                    <div id="content-morning" class="meal-content">
+                        <div class="grid md:grid-cols-2 gap-6 items-center">
+                            <div class="text-center md:text-left">
+                                <h3 class="text-2xl font-bold text-amber-600 mb-3">朝の献立</h3>
+                                <p class="text-gray-700 mb-4">
+                                    朝は固形物を摂らず、体を温め、必要なビタミン・ミネラルを補給する特製のジュースを飲みます。これが石原式プログラムの基本です。
+                                </p>
+                                <ul class="space-y-2 text-left">
+                                    <li class="flex items-start">
+                                        <span class="text-xl mr-3">🥕</span>
+                                        <div><strong>人参りんごジュース:</strong> 2〜3杯。低速ジューサーで作るのが理想です。</div>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <span class="text-xl mr-3">☕️</span>
+                                        <div><strong>生姜紅茶:</strong> 1〜2杯。すりおろした生姜と黒糖やはちみつを加えます。</div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="flex justify-center">
+                                <div class="text-6xl md:text-8xl p-8 bg-amber-50 rounded-full">🥕🍎</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="content-lunch" class="meal-content hidden">
+                        <div class="grid md:grid-cols-2 gap-6 items-center">
+                            <div class="text-center md:text-left">
+                                <h3 class="text-2xl font-bold text-amber-600 mb-3">昼の献立</h3>
+                                <p class="text-gray-700 mb-4">
+                                    昼食も基本的には朝と同様です。空腹感に応じて調整し、無理なく内臓を休ませることを優先します。
+                                </p>
+                                <ul class="space-y-2 text-left">
+                                    <li class="flex items-start">
+                                        <span class="text-xl mr-3">🥕</span>
+                                        <div><strong>人参りんごジュース</strong> または <strong>生姜紅茶</strong> のみ。</div>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <span class="text-xl mr-3">💡</span>
+                                        <div>空腹が強い場合は、具なしの味噌汁や梅干しを摂ることもあります。</div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="flex justify-center">
+                               <div class="text-6xl md:text-8xl p-8 bg-amber-50 rounded-full">🍵</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="content-evening" class="meal-content hidden">
+                        <div class="grid md:grid-cols-2 gap-6 items-center">
+                           <div class="text-center md:text-left">
+                                <h3 class="text-2xl font-bold text-amber-600 mb-3">夜の献立</h3>
+                                <p class="text-gray-700 mb-4">
+                                    一日のうちで唯一の「普通食」ですが、量は少なめに、体を温める消化の良いものを中心とします。
+                                </p>
+                                <ul class="space-y-2 text-left">
+                                    <li class="flex items-start">
+                                        <span class="text-xl mr-3">🍜</span>
+                                        <div><strong>主食:</strong> とろろ蕎麦、玄米粥、または豆腐など。量は通常の半分程度。</div>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <span class="text-xl mr-3">🥬</span>
+                                        <div><strong>副菜:</strong> 季節の温野菜、海藻、きのこ類など少量。</div>
+                                    </li>
+                                     <li class="flex items-start">
+                                        <span class="text-xl mr-3">🥣</span>
+                                        <div><strong>汁物:</strong> 根菜の入った味噌汁など。</div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="flex justify-center">
+                               <div class="text-6xl md:text-8xl p-8 bg-amber-50 rounded-full">🍲</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="key-beverages" class="mb-16">
+                <h2 class="text-2xl md:text-3xl font-bold text-center text-amber-700 mb-2">プログラムを支える2つの柱</h2>
+                <p class="text-center text-gray-500 mb-8">
+                    石原式断食では、以下の2つの飲み物が体調を整え、プログラムを成功に導くための鍵となります。
+                </p>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="bg-white rounded-2xl shadow-lg p-6 card-hover">
+                        <h3 class="text-xl font-bold text-green-700 mb-3">人参りんごジュース</h3>
+                        <p class="text-gray-600 mb-4">生命活動に必要なビタミン、ミネラル、酵素を効率よく補給します。</p>
+                        <ul class="space-y-1">
+                            <li><strong><span class="font-sans">●</span> 材料:</strong> 人参2本、りんご1個</li>
+                            <li><strong><span class="font-sans">●</span> 役割:</strong> 栄養補給、抗酸化作用</li>
+                            <li><strong><span class="font-sans">●</span> ポイント:</strong> 皮ごと低速ジューサーで搾る</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-lg p-6 card-hover">
+                        <h3 class="text-xl font-bold text-red-700 mb-3">生姜紅茶</h3>
+                        <p class="text-gray-600 mb-4">体を芯から温め、代謝を促進し、発汗・利尿作用を促します。</p>
+                         <ul class="space-y-1">
+                            <li><strong><span class="font-sans">●</span> 材料:</strong> 紅茶、すりおろし生姜、黒糖/はちみつ</li>
+                            <li><strong><span class="font-sans">●</span> 役割:</strong> 体温上昇、代謝促進</li>
+                            <li><strong><span class="font-sans">●</span> ポイント:</strong> 一日に数回、温かいものを飲む</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="ingredients-chart" class="mb-16">
+                 <h2 class="text-2xl md:text-3xl font-bold text-center text-amber-700 mb-2">主要食材の「温め効果」</h2>
+                <p class="text-center text-gray-500 mb-8">
+                    この食事法では、体を温める「陽性」の食材が重視されます。下のグラフは、主要食材が持つ体を温める力のイメージを表したものです。
+                </p>
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <div class="chart-container">
+                        <canvas id="warmingEffectChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <section id="philosophy">
+                <h2 class="text-2xl md:text-3xl font-bold text-center text-amber-700 mb-2">石原式食事法の基本理念</h2>
+                <p class="text-center text-gray-500 mb-8">
+                    このプログラムは、以下の3つの原則に基づいて構成されています。
+                </p>
+                <div class="grid md:grid-cols-3 gap-6 text-center">
+                    <div class="bg-white rounded-2xl shadow-lg p-6 card-hover">
+                        <div class="text-4xl mb-4">🌡️</div>
+                        <h3 class="text-lg font-bold mb-2">体を温める</h3>
+                        <p class="text-sm text-gray-600">低体温は万病のもと。生姜や根菜で体温を上げ、免疫力や代謝を高めます。</p>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-lg p-6 card-hover">
+                        <div class="text-4xl mb-4">💧</div>
+                        <h3 class="text-lg font-bold mb-2">血液を浄化する</h3>
+                        <p class="text-sm text-gray-600">食べ過ぎによる血液の汚れを「少食」によって改善し、血流を促進します。</p>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-lg p-6 card-hover">
+                        <div class="text-4xl mb-4">😌</div>
+                        <h3 class="text-lg font-bold mb-2">内臓を休ませる</h3>
+                        <p class="text-sm text-gray-600">消化に使われるエネルギーを節約し、体の修復やデトックスに回します。</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-16 pt-8 border-t border-amber-200">
+            <p class="text-gray-500 text-sm">
+                このアプリケーションは、石原結實先生の著書や公開情報に基づき作成されたものです。実践する際は専門家の指導のもと行ってください。
+            </p>
+        </footer>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabs = [
+                { btn: document.getElementById('btn-morning'), content: document.getElementById('content-morning') },
+                { btn: document.getElementById('btn-lunch'), content: document.getElementById('content-lunch') },
+                { btn: document.getElementById('btn-evening'), content: document.getElementById('content-evening') }
+            ];
+
+            tabs.forEach(tab => {
+                tab.btn.addEventListener('click', () => {
+                    tabs.forEach(t => {
+                        t.btn.classList.remove('active');
+                        t.content.classList.add('hidden');
+                    });
+                    tab.btn.classList.add('active');
+                    tab.content.classList.remove('hidden');
+                });
+            });
+
+            const ctx = document.getElementById('warmingEffectChart').getContext('2d');
+            const warmingEffectChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['生姜 (Ginger)', '蕎麦 (Buckwheat)', '人参 (Carrot)', '玄米 (Brown Rice)', 'りんご (Apple)', '豆腐 (Tofu)'],
+                    datasets: [{
+                        label: '体を温める効果 (イメージ)',
+                        data: [100, 75, 65, 60, 40, 30],
+                        backgroundColor: [
+                            'rgba(217, 53, 44, 0.6)',
+                            'rgba(120, 83, 62, 0.6)',
+                            'rgba(249, 115, 22, 0.6)',
+                            'rgba(161, 98, 7, 0.6)',
+                            'rgba(220, 38, 38, 0.6)',
+                            'rgba(236, 235, 224, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(217, 53, 44, 1)',
+                            'rgba(120, 83, 62, 1)',
+                            'rgba(249, 115, 22, 1)',
+                            'rgba(161, 98, 7, 1)',
+                            'rgba(220, 38, 38, 1)',
+                            'rgba(168, 162, 158, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.x !== null) {
+                                        label += context.parsed.x + ' (相対値)';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '温め効果指数 (イメージ)'
+                            }
+                        },
+                         y: {
+                            ticks: {
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
