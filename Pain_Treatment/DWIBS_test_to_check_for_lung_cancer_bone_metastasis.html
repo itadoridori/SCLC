@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>北陸DWIBS検査 医療機関ファインダー</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chosen Palette: Warm Neutrals (Tailwind Slate, Amber, Sky) -->
+    <!-- Application Structure Plan: A user-centric, tab-based single-page application. The primary navigation allows users to immediately select their prefecture (Toyama, Ishikawa, Fukui) to view a list of relevant medical institutions. This task-oriented design prioritizes finding a hospital quickly. The view for each prefecture clearly distinguishes between 'Confirmed' and 'Potential' facilities using visual cues. Supporting information, such as an introduction to DWIBS and a critical step-by-step guide on obtaining the scan (emphasizing doctor referrals and the insurance vs. self-pay distinction), is organized into separate, easily digestible sections. This structure was chosen to reduce cognitive load for users who are likely seeking specific information under stressful circumstances, guiding them from initial interest to actionable steps. -->
+    <!-- Visualization & Content Choices:
+    - Report Info: Count of hospitals per prefecture by status (Confirmed, Potential). -> Goal: Provide a quick regional overview. -> Viz/Presentation: Interactive Bar Chart. -> Interaction: Highlighting the bars corresponding to the currently selected prefecture tab. -> Justification: Offers an immediate visual summary of the options available in each area, aiding comparison. -> Library/Method: Chart.js (Canvas).
+    - Report Info: Detailed list of hospitals, their status, and contact info. -> Goal: Present actionable, detailed options. -> Viz/Presentation: Styled Information Cards. -> Interaction: Filtered display based on the selected prefecture tab. -> Justification: Cards organize complex information into clean, reusable components, improving readability and scannability. -> Library/Method: HTML/CSS (Tailwind).
+    - Report Info: The process of getting a scan (consult doctor, get referral). -> Goal: Guide the user on the necessary real-world actions. -> Viz/Presentation: Numbered step-by-step guide. -> Interaction: Static, but visually clear and directive. -> Justification: A simple, linear process flow is the most effective way to communicate a sequence of required actions. -> Library/Method: HTML/CSS (Tailwind).
+    - Report Info: Distinction between Diagnosis (insurance) and Screening (self-pay). -> Goal: Prevent costly user errors. -> Viz/Presentation: Highlighted callout box with icons. -> Interaction: Static. -> Justification: Uses strong visual emphasis to convey a critical piece of information that has significant financial implications for the user. -> Library/Method: HTML/CSS (Tailwind).
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+        }
+        .tab-active {
+            border-color: #0284c7; /* sky-600 */
+            background-color: #f0f9ff; /* sky-50 */
+            color: #0284c7; /* sky-600 */
+            font-weight: 600;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 40vh;
+        }
+        .card-confirmed {
+            border-left: 5px solid #059669; /* emerald-600 */
+        }
+        .card-potential {
+            border-left: 5px solid #f59e0b; /* amber-500 */
+        }
+        .card-alternative {
+            border-left: 5px solid #6366f1; /* indigo-500 */
+        }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <header class="bg-white shadow-md">
+        <div class="container mx-auto px-4 py-4 md:py-6">
+            <h1 class="text-2xl md:text-3xl font-bold text-slate-700 text-center">
+                <span class="text-sky-600">北陸3県</span> 肺癌骨転移を調べる
+            </h1>
+            <h2 class="text-3xl md:text-4xl font-bold text-slate-800 text-center mt-1">DWIBS検査 医療機関ファインダー</h2>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-6">
+        
+        <section id="intro" class="mb-8 bg-white p-6 rounded-lg shadow">
+            <h3 class="text-xl font-bold mb-3 text-slate-700">DWIBS（ドゥイブス）検査とは？</h3>
+            <p class="text-slate-600 leading-relaxed">
+                DWIBSは、MRIを利用して全身のがんや転移を調べるための先進的な検査法です。「Diffusion-Weighted Whole-body Imaging with Background body signal Suppression」の略で、日本語では「背景信号抑制広範囲拡散強調画像」と訳されます。
+            </p>
+            <div class="mt-4 grid md:grid-cols-2 gap-4">
+                <div class="bg-emerald-50 p-4 rounded-lg border border-emerald-200">
+                    <h4 class="font-bold text-emerald-800">患者さんへの主なメリット</h4>
+                    <ul class="list-disc list-inside mt-2 text-emerald-700 space-y-1">
+                        <li>放射線による被ばくがありません。</li>
+                        <li>多くの場合、造影剤の注射が不要です。</li>
+                        <li>一度の検査で全身を評価できます。</li>
+                    </ul>
+                </div>
+                <div class="bg-sky-50 p-4 rounded-lg border border-sky-200">
+                    <h4 class="font-bold text-sky-800">肺癌の骨転移診断に有効</h4>
+                    <p class="mt-2 text-sky-700">
+                        DWIBSは、特に骨への転移を発見するのに非常に有効とされています。がん細胞は密度が高く、水分が動きにくいため、その特性を捉えて転移巣を白く鮮明に描き出します。
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section id="finder" class="mb-8">
+            <h3 class="text-2xl font-bold text-center mb-4 text-slate-700">お住まいの県を選択してください</h3>
+            <nav class="flex justify-center border-b border-slate-200 mb-6">
+                <button data-prefecture="toyama" class="prefecture-tab flex-1 md:flex-none md:px-8 py-3 text-lg border-b-4 border-transparent text-slate-500 hover:bg-slate-100 transition-colors duration-200">富山県</button>
+                <button data-prefecture="ishikawa" class="prefecture-tab flex-1 md:flex-none md:px-8 py-3 text-lg border-b-4 border-transparent text-slate-500 hover:bg-slate-100 transition-colors duration-200">石川県</button>
+                <button data-prefecture="fukui" class="prefecture-tab flex-1 md:flex-none md:px-8 py-3 text-lg border-b-4 border-transparent text-slate-500 hover:bg-slate-100 transition-colors duration-200">福井県</button>
+            </nav>
+
+            <div id="hospitals-container" class="space-y-6">
+            </div>
+        </section>
+
+        <section id="chart-section" class="mb-8 bg-white p-6 rounded-lg shadow">
+            <h3 class="text-xl font-bold mb-4 text-slate-700 text-center">北陸3県 DWIBS検査対応状況の概要</h3>
+            <div class="chart-container">
+                <canvas id="prefectureChart"></canvas>
+            </div>
+            <p class="text-center text-sm text-slate-500 mt-4">
+                「可能性あり」は、高精度な検査が可能な3テスラMRIを保有している医療機関を示します。
+            </p>
+        </section>
+
+        <section id="how-to" class="mb-8">
+            <div class="bg-amber-50 border-l-4 border-amber-400 p-6 rounded-r-lg">
+                <h3 class="text-2xl font-bold text-amber-800 mb-4">検査を受けるための最重要ガイド</h3>
+                <p class="text-amber-700 mb-6 leading-relaxed">
+                    このリストは、あくまで情報提供を目的としています。実際に検査を受けるためには、<strong class="font-bold">必ず現在治療を受けている主治医の先生にご相談ください。</strong>自己判断で病院に連絡するのではなく、以下のステップを踏むことが、スムーズで適切な医療を受けるための鍵となります。
+                </p>
+
+                <div class="grid md:grid-cols-3 gap-6 text-center">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <div class="text-4xl mb-3">①</div>
+                        <h4 class="text-lg font-bold text-slate-700 mb-2">主治医に相談</h4>
+                        <p class="text-sm text-slate-600">この情報をもとに、DWIBS検査が現在の治療方針に合っているか、主治医と話し合います。</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <div class="text-4xl mb-3">②</div>
+                        <h4 class="text-lg font-bold text-slate-700 mb-2">紹介状を依頼</h4>
+                        <p class="text-sm text-slate-600">検査を受ける病院が決まったら、主治医に「診療情報提供書（紹介状）」を作成してもらいます。</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <div class="text-4xl mb-3">③</div>
+                        <h4 class="text-lg font-bold text-slate-700 mb-2">病院間の連携</h4>
+                        <p class="text-sm text-slate-600">主治医の病院から、検査を受ける病院の「地域医療連携室」などを通じて予約を取るのが一般的です。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="insurance-info" class="bg-white p-6 rounded-lg shadow">
+            <h3 class="text-xl font-bold text-slate-700 mb-3">重要：「診断」と「検診」の違い</h3>
+            <p class="text-slate-600 mb-4">
+                検査には、医師が必要と判断して行う「診断」と、自己希望で行う「検診（人間ドックなど）」の2種類があり、費用負担が大きく異なります。
+            </p>
+            <div class="grid md:grid-cols-2 gap-4">
+                <div class="border border-green-300 bg-green-50 p-4 rounded-lg">
+                    <h4 class="font-bold text-green-800">診断（保険適用）</h4>
+                    <p class="text-sm text-green-700 mt-1">肺がんの診断が確定している患者さんが、医師の指示で骨転移を調べるために行う検査です。公的医療保険が適用され、自己負担は1〜3割となります。</p>
+                    <p class="text-center font-bold text-lg mt-2 text-green-800">➡️ 主治医経由で依頼する検査</p>
+                </div>
+                <div class="border border-red-300 bg-red-50 p-4 rounded-lg">
+                    <h4 class="font-bold text-red-800">検診（全額自己負担）</h4>
+                    <p class="text-sm text-red-700 mt-1">症状がない方が、がんの早期発見などを目的に自費で行う検査です。保険は適用されず、数万円〜十数万円の費用がかかります。</p>
+                    <p class="text-center font-bold text-lg mt-2 text-red-800">➡️ 人間ドックのオプションなど</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-800 text-white mt-12 py-6">
+        <div class="container mx-auto px-4 text-center text-sm text-slate-400">
+            <p>本アプリケーションは、公開されている情報を基に作成されたものであり、医学的助言に代わるものではありません。</p>
+            <p class="mt-1">最終的な医療判断は、必ず主治医とご相談の上で行ってください。</p>
+        </div>
+    </footer>
+
+<script>
+const hospitalData = {
+    toyama: [
+        { name: '富山労災病院', city: '魚津市', status: 'confirmed', tech: 'DWIBS', contact: '0765-22-1280', note: '主治医から総合サポートセンターを通じて診断目的の検査を依頼。' },
+        { name: '厚生連滑川病院', city: '滑川市', status: 'potential', tech: '3T-MRI', contact: '076-475-1000', note: '主治医から放射線科へDWIBSプロトコルの実施可否を直接問い合わせ。' },
+        { name: '富山県済生会高岡病院', city: '高岡市', status: 'potential', tech: '3T-MRI', contact: '0766-21-0570', note: '主治医から放射線科へDWIBSプロトコルの実施可否を直接問い合わせ。' },
+        { name: '富山県立中央病院', city: '富山市', status: 'potential', tech: '3T-MRI (2台)', contact: '076-424-1531', note: 'がん診療連携拠点病院。主治医から放射線科へ実施可否を問い合わせ。' },
+        { name: 'マルカワ病院', city: '高岡市', status: 'potential', tech: '3T-MRI', contact: '0766-22-2273', note: '主治医から放射線科へDWIBSプロトコルの実施可否を直接問い合わせ。' },
+        { name: '高岡市民病院', city: '高岡市', status: 'potential', tech: '3T-MRI', contact: '0766-23-0204', note: '主治医から放射線科へ実施可否を問い合わせ。紹介状持参を推奨。' }
+    ],
+    ishikawa: [
+        { name: '金沢先進医学センター', city: '金沢市', status: 'confirmed', tech: 'DWIBS', contact: '0120-960-255', note: '大学病院関連施設。主治医からの紹介状が必須。医療連携室経由での予約が必要。' },
+        { name: '能美市立病院', city: '能美市', status: 'confirmed', tech: 'DWIBS', contact: '0761-55-2310', note: '診断目的の場合は、主治医からの紹介が必要。市の助成は検診目的。' },
+        { name: '芳珠記念病院', city: '能美市', status: 'confirmed', tech: 'DWIBS', contact: '0761-51-5553', note: '診断目的の場合は、主治医からの紹介が必要。市の助成は検診目的。' },
+        { name: '浅ノ川総合病院', city: '金沢市', status: 'potential', tech: '3T-MRI, PET-CT', contact: '076-252-2101', note: '主治医から放射線科へDWIBSプロトコルの実施可否を直接問い合わせ。' },
+        { name: '石川県立中央病院', city: '金沢市', status: 'potential', tech: '3T-MRI', contact: '076-237-8211', note: '紹介検査を積極的に受け入れ。主治医からの問い合わせが有効。' }
+    ],
+    fukui: [
+        { name: '福井大学医学部附属病院', city: '永平寺町', status: 'alternative', tech: 'PET-MRI, 3T-MRI (2台)', contact: '0776-61-8550', note: '県内で最も先進的な施設。主治医から診断目的のPET-MRIまたは全身MRIの実施を相談・依頼することが最善。' },
+        { name: '丹南医療センター', city: '鯖江市', status: 'potential', tech: '3T-MRI', contact: '0778-52-1111', note: '主治医から放射線科へDWIBSに類する全身MRIプロトコルの実施可否を問い合わせ。' },
+        { name: '福井県済生会病院', city: '福井市', status: 'potential', tech: '3T-MRI (2台)', contact: '0776-23-1111', note: '主治医から放射線科へDWIBSに類する全身MRIプロトコルの実施可否を問い合わせ。' },
+        { name: '敦賀医療センター', city: '敦賀市', status: 'potential', tech: '3T-MRI', contact: '0770-22-3600', note: '主治医から放射線科へDWIBSに類する全身MRIプロトコルの実施可否を問い合わせ。' },
+        { name: '福井県立病院', city: '福井市', status: 'potential', tech: '3T-MRI', contact: '0776-54-5151', note: '主治医から放射線科へDWIBSに類する全身MRIプロトコルの実施可否を問い合わせ。' }
+    ]
+};
+
+const statusMap = {
+    confirmed: { label: '実施を確認', class: 'card-confirmed', badgeColor: 'bg-emerald-100 text-emerald-800' },
+    potential: { label: '実施の可能性あり', class: 'card-potential', badgeColor: 'bg-amber-100 text-amber-800' },
+    alternative: { label: 'より優れた選択肢', class: 'card-alternative', badgeColor: 'bg-indigo-100 text-indigo-800' }
+};
+
+const hospitalsContainer = document.getElementById('hospitals-container');
+const prefectureTabs = document.querySelectorAll('.prefecture-tab');
+
+function createHospitalCard(hospital) {
+    const statusInfo = statusMap[hospital.status];
+    return `
+        <div class="bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl ${statusInfo.class}">
+            <div class="p-5">
+                <div class="flex flex-col sm:flex-row justify-between sm:items-start">
+                    <div>
+                        <span class="px-3 py-1 text-xs font-semibold rounded-full ${statusInfo.badgeColor}">${statusInfo.label}</span>
+                        <h4 class="text-xl font-bold mt-2 text-slate-800">${hospital.name}</h4>
+                        <p class="text-slate-500 text-sm mt-1">📍 ${hospital.city}</p>
+                    </div>
+                    <div class="mt-3 sm:mt-0 sm:text-right">
+                        <p class="text-sm font-semibold text-slate-600">主要技術</p>
+                        <p class="font-bold text-sky-700">${hospital.tech}</p>
+                    </div>
+                </div>
+                <div class="mt-4 pt-4 border-t border-slate-200">
+                    <p class="text-sm font-semibold text-slate-600 mb-1">📞 連絡先: <span class="font-normal">${hospital.contact}</span></p>
+                    <div class="bg-slate-50 p-3 rounded-md mt-2">
+                        <p class="text-sm font-semibold text-slate-700">💡 推奨されるアクション</p>
+                        <p class="text-sm text-slate-600 mt-1">${hospital.note}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function renderHospitals(prefecture) {
+    hospitalsContainer.innerHTML = '';
+    const data = hospitalData[prefecture] || [];
+    if (data.length === 0) {
+        hospitalsContainer.innerHTML = '<p class="text-center text-slate-500">この県の医療機関情報はありません。</p>';
+        return;
+    }
+    data.forEach(hospital => {
+        hospitalsContainer.innerHTML += createHospitalCard(hospital);
+    });
+}
+
+let prefectureChart;
+
+function createChart() {
+    const ctx = document.getElementById('prefectureChart').getContext('2d');
+    const labels = ['富山県', '石川県', '福井県'];
+    const confirmedData = labels.map(label => {
+        const key = { '富山県': 'toyama', '石川県': 'ishikawa', '福井県': 'fukui' }[label];
+        return hospitalData[key].filter(h => h.status === 'confirmed' || h.status === 'alternative').length;
+    });
+    const potentialData = labels.map(label => {
+        const key = { '富山県': 'toyama', '石川県': 'ishikawa', '福井県': 'fukui' }[label];
+        return hospitalData[key].filter(h => h.status === 'potential').length;
+    });
+
+    prefectureChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: '実施を確認/代替選択肢',
+                    data: confirmedData,
+                    backgroundColor: '#d1fae5', // emerald-100
+                    borderColor: '#059669', // emerald-600
+                    borderWidth: 2
+                },
+                {
+                    label: '実施の可能性あり (3T-MRI保有)',
+                    data: potentialData,
+                    backgroundColor: '#fef3c7', // amber-100
+                    borderColor: '#f59e0b', // amber-500
+                    borderWidth: 2
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false
+                }
+            },
+            interaction: {
+                mode: 'index',
+                intersect: false,
+            },
+        }
+    });
+}
+
+function updateChartHighlight(selectedPrefecture) {
+    const prefectureMap = { toyama: 0, ishikawa: 1, fukui: 2 };
+    const selectedIndex = prefectureMap[selectedPrefecture];
+    
+    prefectureChart.data.datasets.forEach((dataset, i) => {
+        const baseColors = i === 0 
+            ? ['#d1fae5', '#d1fae5', '#e0e7ff'] // confirmed/alternative base colors
+            : ['#fef3c7', '#fef3c7', '#fef3c7']; // potential base colors
+        const highlightColors = i === 0
+            ? ['#6ee7b7', '#6ee7b7', '#a5b4fc'] // confirmed/alternative highlight colors
+            : ['#fcd34d', '#fcd34d', '#fcd34d']; // potential highlight colors
+
+        dataset.backgroundColor = baseColors.map((color, index) => 
+            index === selectedIndex ? highlightColors[index] : color
+        );
+    });
+    prefectureChart.update();
+}
+
+
+function setActiveTab(selectedTab) {
+    prefectureTabs.forEach(tab => {
+        if (tab === selectedTab) {
+            tab.classList.add('tab-active');
+        } else {
+            tab.classList.remove('tab-active');
+        }
+    });
+}
+
+window.addEventListener('load', () => {
+    const initialPrefecture = 'toyama';
+    
+    prefectureTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const prefecture = tab.dataset.prefecture;
+            setActiveTab(tab);
+            renderHospitals(prefecture);
+            updateChartHighlight(prefecture);
+        });
+    });
+
+    createChart();
+    
+    const initialTab = document.querySelector(`.prefecture-tab[data-prefecture="${initialPrefecture}"]`);
+    setActiveTab(initialTab);
+    renderHospitals(initialPrefecture);
+    updateChartHighlight(initialPrefecture);
+});
+
+</script>
+</body>
+</html>
